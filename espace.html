@@ -7,7 +7,14 @@
 <meta name="description" content="Espace étudiante de l'Académie Sérénaissance : tes cours, tes informations et tes documents de stage.">
 <meta name="robots" content="noindex">
 <link rel="icon" type="image/jpeg" href="logo.jpg">
+<link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#a85743">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sérénaissance">
+<link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
+<script src="/appli.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -104,6 +111,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
       </form>
     </div>
     <p class="note" style="text-align:center;">Pas encore inscrite ? <a href="index.html#formations">Découvre les formations</a></p>
+    <div class="bloc-appli" data-toujours hidden style="margin-top:22px;"></div>
   </section>
 
   <!-- Confirmation d'un lien reçu par courriel -->
@@ -167,6 +175,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <section class="vue" id="vue-cours" hidden>
     <h1 id="bonjour">Mes cours</h1>
     <p class="sous">Ta progression est sauvegardée dans ton compte : tu la retrouves sur ton ordinateur, ta tablette ou ton cellulaire.</p>
+    <div class="bloc-appli" hidden></div>
     <div id="attente" class="message info" hidden>
       <strong>⏳ Ton dossier est en cours de vérification.</strong><br>
       Sabrina vérifie ton inscription<span id="attente-diplome"> et ton diplôme de doula</span>. Tu recevras un courriel dès que ton accès sera ouvert (habituellement en 24 à 48 heures). En attendant, tu peux compléter tes informations.

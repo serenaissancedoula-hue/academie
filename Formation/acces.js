@@ -29,6 +29,10 @@
 
   /* ---------------- Refus d'accès ---------------- */
   function refus(raison) {
+    if (!navigator.onLine) {
+      document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f7f1ea;font-family:Inter,Arial,sans-serif;"><div style="max-width:440px;background:#fffbf8;border:1px solid #e3d5c8;border-radius:22px;padding:34px 26px;text-align:center;color:#2c221e;"><div style="font-size:42px;">📶</div><h1 style="font-family:Fraunces,Georgia,serif;font-size:1.4rem;">Pas de connexion Internet</h1><p style="color:#5a4a42;line-height:1.6;">Reconnecte-toi à Internet pour ouvrir ta formation.</p><button onclick="location.reload()" style="background:#a85743;color:#fff;border:0;border-radius:50px;padding:12px 24px;font-weight:700;cursor:pointer;">Réessayer</button></div></div>';
+      return;
+    }
     ss('cle:' + FORMATION, null);
     var connectee = raison === 'sans-acces';
     document.body.innerHTML =

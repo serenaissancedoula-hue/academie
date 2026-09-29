@@ -1,0 +1,25 @@
+{
+  "name": "Académie Sérénaissance",
+  "short_name": "Sérénaissance",
+  "description": "Tes formations de l'Académie Sérénaissance : cours, progression, informations et documents de stage.",
+  "lang": "fr",
+  "dir": "ltr",
+  "id": "/espace.html",
+  "start_url": "/espace.html?source=appli",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2ece0",
+  "theme_color": "#a85743",
+  "categories": ["education"],
+  "icons": [
+    { "src": "/icones/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icones/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icones/icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Mes cours", "url": "/espace.html#cours", "icons": [{ "src": "/icones/icone-192.png", "sizes": "192x192" }] },
+    { "name": "Mes informations", "url": "/espace.html#infos", "icons": [{ "src": "/icones/icone-192.png", "sizes": "192x192" }] },
+    { "name": "Documents de stage", "url": "/espace.html#stage", "icons": [{ "src": "/icones/icone-192.png", "sizes": "192x192" }] }
+  ]
+}

@@ -17,8 +17,14 @@
     <link rel="alternate" hreflang="fr" href="https://academiesere.ca/">
     <link rel="alternate" hreflang="x-default" href="https://academiesere.ca/">
     <link rel="icon" type="image/jpeg" href="logo.jpg">
-    <link rel="apple-touch-icon" href="logo.jpg">
+    <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#a85743">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Sérénaissance">
+    <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
+    <script src="/appli.js" defer></script>
 
     <!-- Aperçu quand on partage le lien (Facebook, Messenger, etc.) -->
     <meta property="og:type" content="website">
@@ -2432,6 +2438,7 @@
         <div class="faq-page-container">
             <h2>Foire aux questions</h2>
             <p>Tout ce qu'il faut savoir sur les formations de l'Académie Sérénaissance. Une autre question ? <a href="#" onclick="ouvrirContact(); return false;">Écris-moi</a> 💕</p>
+            <div class="bloc-appli" data-toujours hidden style="margin-top:20px; text-align:left;"></div>
             <h3 class="faq-groupe">Les formations</h3>
             <div class="faq-accordeon">
                 <details><summary>Quelles formations offre l'Académie ?</summary><p>Deux formations 100 % en ligne : <strong>l'Accompagnement de pointe du 4ᵉ trimestre</strong> (environ 30 h, 5 modules, 33 chapitres), réservée aux doulas diplômées, et la formation de <strong>marraine d'allaitement</strong> (environ 8 h 30, 6 chapitres), ouverte à toutes, sans prérequis.</p></details>
@@ -2462,6 +2469,7 @@
                 <details><summary>Que puis-je faire dans Mon compte ?</summary><p>Retrouver tes cours et ta progression, modifier tes informations (courriel, téléphone, date de naissance, adresse), transmettre tes documents de stage et réserver du mentorat. Ton nom et ton prénom, qui figurent sur ton certificat, se modifient sur demande.</p></details>
                 <details><summary>Comment remettre mes documents de stage ?</summary><p>Dans Mon compte, section « Documents de stage » : tu choisis le type de document (contrat, journal de bord, grille d'observation, rapport de stage…) et tu envoies un ou plusieurs fichiers. Je les reçois automatiquement et tu en gardes une copie.</p></details>
                 <details><summary>Comment recevrai-je mon certificat ?</summary><p>Imprimé, par la poste, à l'adresse inscrite dans ton compte. C'est pourquoi l'adresse est choisie dans une liste de suggestions : ça évite les erreurs de livraison.</p></details>
+                <details><summary>Y a-t-il une application ?</summary><p>Oui ! L'Académie s'installe comme une appli sur ton cellulaire, ta tablette ou ton ordinateur, sans passer par l'App Store ni Google Play. Sur iPhone : ouvre le site dans Safari, touche Partager, puis « Sur l'écran d'accueil ». Sur Android : menu ⋮ de Chrome, puis « Installer l'application ». Sur ordinateur : l'icône d'installation dans la barre d'adresse de Chrome ou Edge. Tu peux aussi simplement suivre ta formation dans ton navigateur.</p></details>
                 <details><summary>J'ai oublié mon mot de passe.</summary><p>Dans Mon compte, clique sur « Mot de passe oublié ? » : tu recevras un courriel avec un bouton pour en choisir un nouveau.</p></details>
             </div>
         </div>
