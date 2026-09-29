@@ -46,7 +46,7 @@
         : 'Cette page fait partie de ' + NOMS[FORMATION] + '. Connecte-toi à ton compte pour continuer ta formation.') +
       '</p>' +
       '<a href="' + ESPACE + '" style="display:inline-block;background:#a85743;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:50px;margin:4px;">' + (connectee ? 'Mon compte' : 'Me connecter') + '</a>' +
-      '<a href="' + RACINE + '#formations" style="display:inline-block;color:#a85743;text-decoration:none;font-weight:700;padding:12px 22px;border:1px solid #a85743;border-radius:50px;margin:4px;">Voir les formations</a>' +
+      (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone ? '' : '<a href="' + RACINE + '#formations" style="display:inline-block;color:#a85743;text-decoration:none;font-weight:700;padding:12px 22px;border:1px solid #a85743;border-radius:50px;margin:4px;">Voir les formations</a>') +
       '</div></div>';
   }
 

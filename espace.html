@@ -72,6 +72,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 .fichiers li { display: flex; justify-content: space-between; gap: 12px; align-items: center; background: #fff; border: 1px solid var(--bord); border-radius: 12px; padding: 11px 14px; font-size: .9rem; }
 .fichiers small { display: block; color: var(--doux); font-size: .78rem; }
 .fichiers .vide { justify-content: center; color: var(--doux); font-style: italic; }
+@media (display-mode: standalone) { .site-seulement { display: none !important; } }
 @media (max-width: 900px) {
   .cadre { grid-template-columns: 1fr; padding-bottom: 120px; }
   .menu { position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 30; flex-direction: row; gap: 0; background: var(--carte); border-top: 1px solid var(--bord); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
@@ -88,8 +89,8 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 </head>
 <body>
 <header class="entete">
-  <a href="index.html"><img src="logo.jpg" alt="Académie Sérénaissance"></a>
-  <a class="retour" href="index.html">← Retour au site</a>
+  <a href="index.html" id="lien-logo"><img src="logo.jpg" alt="Académie Sérénaissance"></a>
+  <a class="retour site-seulement" href="index.html">← Retour au site</a>
 </header>
 
 <div class="cadre sans-menu" id="cadre">
@@ -110,7 +111,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
         <a href="#" id="c-oubli" style="font-size:.88rem;text-align:center;">Mot de passe oublié ?</a>
       </form>
     </div>
-    <p class="note" style="text-align:center;">Pas encore inscrite ? <a href="index.html#formations">Découvre les formations</a></p>
+    <p class="note site-seulement" style="text-align:center;">Pas encore inscrite ? <a href="index.html#formations">Découvre les formations</a></p>
     <div class="bloc-appli" data-toujours hidden style="margin-top:22px;"></div>
   </section>
 
@@ -278,6 +279,8 @@ var ADMIN = 'serenaissance.doula@gmail.com';
 var EMAILJS = { service: 'service_82vfhfg', avis: 'template_gy588ot', cle: 'HNvKdORRpRy_vT_FI' };
 var ICI = 'https://academiesere.ca/espace.html';
 var sb = window.supabase.createClient(SB_URL, SB_CLE);
+var APPLI = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+if (APPLI) document.getElementById('lien-logo').setAttribute('href', 'espace.html#cours');
 try { emailjs.init(EMAILJS.cle); } catch (e) {}
 
 var MODULES = [
@@ -405,7 +408,7 @@ $('form-mdp').addEventListener('submit', function (e) {
 function charger(session, bienvenue) {
   etat.session = session;
   var courriel = (session.user.email || '').toLowerCase();
-  if (courriel === ADMIN) { location.href = 'index.html#admin'; return; }
+  if (courriel === ADMIN) { location.href = 'admin.html'; return; }
   $('menu-courriel').textContent = courriel;
   sb.from('etudiantes').select('*').or('user_id.eq.' + session.user.id + ',courriel.ilike.' + courriel)
     .order('created_at', { ascending: false }).then(function (r) {
@@ -414,6 +417,9 @@ function charger(session, bienvenue) {
       etat.dossier = d;
       etat.valide = liste.some(function (x) { return (x.statut || '').trim().toLowerCase() === 'valide'; });
       etat.marraine = liste.some(function (x) { return !!x.acces_marraine; });
+      var susp = liste.filter(function (x) { return x.suspendu; })[0];
+      etat.suspendu = !!susp; etat.motif = susp ? susp.motif_suspension : '';
+      if (etat.suspendu) { etat.valide = false; etat.marraine = false; }
       if (d) {
         $('menu-nom').textContent = d.prenom ? d.prenom + ' ' + (d.nom || '') : 'Mon compte';
         $('bonjour').textContent = 'Bonjour ' + (d.prenom || '') + ' 🌸';
@@ -446,6 +452,7 @@ function afficherCours() {
   var acces = etat.valide || etat.marraine;
   $('attente').hidden = acces || !d;
   $('attente-diplome').hidden = !!(d && d.formation === 'marraine');
+  if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Ton accès est suspendu pour le moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Ta progression est conservée. Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> ou appelle au 506-759-2044 pour régler la situation, et ton accès sera rouvert.'; }
   if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'Nous n\'avons pas trouvé de dossier d\'inscription relié à ce courriel. Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> et Sabrina règle ça rapidement.'; }
   $('bloc-4e').hidden = !etat.valide;
   $('bloc-marraine').hidden = !etat.marraine;

@@ -27,7 +27,7 @@
   document.head.appendChild(css);
 
   function etapes() {
-    if (ios) return '<ol class="etapes"><li>Ouvre ce site dans <strong>Safari</strong>.</li><li>Touche le bouton <strong>Partager</strong> <span aria-hidden="true">⬆️</span> en bas de l\'écran.</li><li>Choisis <strong>« Sur l\'écran d\'accueil »</strong>, puis <strong>Ajouter</strong>.</li></ol>';
+    if (ios) return '<ol class="etapes"><li>Touche le bouton <strong>Partager</strong> <span aria-hidden="true">⬆️</span> (en bas dans Safari, en haut à droite dans Chrome ou Edge).</li><li>Choisis <strong>« Sur l\'écran d\'accueil »</strong>, puis <strong>Ajouter</strong>.</li></ol>';
     if (android) return '<ol class="etapes"><li>Dans <strong>Chrome</strong>, touche le menu <strong>⋮</strong> en haut à droite.</li><li>Choisis <strong>« Installer l\'application »</strong> ou <strong>« Ajouter à l\'écran d\'accueil »</strong>.</li></ol>';
     if (safariMac) return '<ol class="etapes"><li>Dans Safari, ouvre le menu <strong>Fichier</strong>.</li><li>Choisis <strong>« Ajouter au Dock »</strong>.</li></ol>';
     if (firefox) return '<p style="margin-top:6px;">Firefox ne permet pas d\'installer l\'appli : ouvre ce site dans <strong>Chrome</strong>, <strong>Edge</strong> ou <strong>Safari</strong> pour l\'installer, ou continue simplement ici.</p>';

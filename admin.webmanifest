@@ -1,0 +1,17 @@
+{
+  "name": "Académie Sérénaissance · Admin",
+  "short_name": "Admin Séré",
+  "description": "Gestion des étudiantes de l'Académie Sérénaissance.",
+  "lang": "fr",
+  "id": "/admin.html",
+  "start_url": "/admin.html?source=appli",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#f2ece0",
+  "theme_color": "#2c221e",
+  "icons": [
+    { "src": "/icones/admin-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icones/admin-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icones/admin-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

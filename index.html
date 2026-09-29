@@ -2663,6 +2663,7 @@
                 window.pagePrecedente = pageActuelle.id.replace('page-', '');
             }
             if (pageId === 'compte' && window.estConnecteeAdmin) pageId = 'admin';
+            if (pageId === 'admin') { window.location.href = 'admin.html'; return; }
             if (['compte', 'formation', 'nouveau-mdp'].includes(pageId)) { window.location.href = 'espace.html' + (pageId === 'nouveau-mdp' ? '#motdepasse' : ''); return; }
             if (pageId === 'admin' && typeof chargerEtudiantes === 'function' && window.estConnecteeAdmin) {
                 setTimeout(chargerEtudiantes, 0);
@@ -3193,8 +3194,8 @@
             window.estConnecteeAdmin = true;
             const nav = document.getElementById('nav-compte');
             if (nav) {
-                nav.setAttribute('href', '#admin');
-                nav.setAttribute('onclick', "switchPage('admin', this, event)");
+                nav.setAttribute('href', 'admin.html');
+                nav.removeAttribute('onclick');
                 nav.innerHTML = '<i class="fa-solid fa-user-shield" style="font-size: 0.8rem; margin-right: 4px;"></i>Admin';
                 nav.id = 'nav-admin';
             }
@@ -3510,7 +3511,7 @@
                 if (!session) return;
                 if (estAdmin(session.user.email)) {
                     activerNavAdmin();
-                    if ((window.location.hash || '').toLowerCase() === '#admin') ouvrirAdmin();
+                    if ((window.location.hash || '').toLowerCase() === '#admin') window.location.href = 'admin.html';
                     return;
                 }
                 const nav = document.getElementById('nav-compte');

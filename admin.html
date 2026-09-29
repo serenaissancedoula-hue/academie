@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Admin · Académie Sérénaissance</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="/admin.webmanifest">
+<meta name="theme-color" content="#2c221e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Admin Séré">
+<link rel="apple-touch-icon" href="/icones/admin-apple-touch-icon.png">
+<link rel="icon" href="/icones/admin-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<style>
+:root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; --rouge: #9b3a2a; --jaune: #8a6d1d; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background: var(--bg); color: var(--texte); line-height: 1.5; min-height: 100vh; }
+h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; line-height: 1.25; }
+a { color: var(--terra); }
+.entete { position: sticky; top: 0; z-index: 30; background: var(--texte); color: #fff; padding: calc(12px + env(safe-area-inset-top)) 18px 12px; display: flex; align-items: center; gap: 12px; }
+.entete img { width: 36px; height: 36px; border-radius: 9px; }
+.entete h1 { font-size: 1.1rem; flex: 1; }
+.entete .direct { font-size: .72rem; background: #3d6b4a; border-radius: 50px; padding: 3px 9px; }
+.entete .direct.hors { background: #7a685e; }
+main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 110px; }
+.vue[hidden] { display: none !important; }
+.carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.stat { background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; padding: 14px; cursor: pointer; }
+.stat b { display: block; font-family: 'Playfair Display', serif; font-size: 1.9rem; color: var(--terra); }
+.stat span { font-size: .8rem; color: var(--doux); }
+.stat.alerte b { color: var(--rouge); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 50px; padding: 10px 16px; font: inherit; font-size: .88rem; font-weight: 700; cursor: pointer; text-decoration: none; background: var(--terra); color: #fff; }
+.btn.fantome { background: transparent; color: var(--terra); border: 1px solid var(--terra); }
+.btn.danger { background: var(--rouge); }
+.btn.vert { background: var(--vert); }
+.btn.gris { background: #efe6dc; color: var(--texte); }
+.btn:disabled { opacity: .5; cursor: wait; }
+input, select, textarea { font: inherit; padding: 11px 13px; border: 1px solid var(--bord); border-radius: 12px; background: #fff; color: var(--texte); width: 100%; }
+label.champ { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 600; color: var(--doux); }
+.rang { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.filtres { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin: 10px 0 12px; }
+.filtres button { white-space: nowrap; border: 1px solid var(--bord); background: var(--carte); border-radius: 50px; padding: 8px 14px; font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; }
+.filtres button.actif { background: var(--terra); color: #fff; border-color: var(--terra); }
+.liste { display: flex; flex-direction: column; gap: 8px; }
+.ligne { background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; padding: 14px 16px; display: flex; gap: 12px; align-items: center; cursor: pointer; }
+.ligne:hover { border-color: var(--terra); }
+.avatar { width: 42px; height: 42px; border-radius: 50%; background: #efe6dc; color: var(--terra); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
+.ligne .qui { flex: 1; min-width: 0; }
+.ligne .qui strong { display: block; }
+.ligne .qui small { color: var(--doux); font-size: .8rem; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pastille { display: inline-block; font-size: .72rem; font-weight: 700; border-radius: 50px; padding: 3px 9px; margin: 2px 4px 0 0; }
+.p-attente { background: #fbf0d9; color: var(--jaune); }
+.p-valide { background: #e4f1e1; color: var(--vert); }
+.p-marraine { background: #f3e5dc; color: var(--terra); }
+.p-suspendu { background: #f6dcd6; color: var(--rouge); }
+.p-lien { background: #e8e4f3; color: #4b3f7a; }
+.vide { text-align: center; color: var(--doux); padding: 30px 10px; font-style: italic; }
+/* Fiche */
+.fiche { position: fixed; inset: 0; z-index: 50; background: var(--bg); overflow-y: auto; padding: 0 0 120px; }
+.fiche[hidden] { display: none; }
+.fiche .haut { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--bord); padding: calc(12px + env(safe-area-inset-top)) 16px 12px; display: flex; align-items: center; gap: 10px; z-index: 2; }
+.fiche .haut h2 { font-size: 1.2rem; flex: 1; }
+.fiche .corps { max-width: 820px; margin: 0 auto; padding: 16px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.infos-ligne { font-size: .9rem; margin: 4px 0; }
+.infos-ligne b { color: var(--doux); font-weight: 600; }
+table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+th, td { text-align: left; padding: 7px 6px; border-bottom: 1px solid #efe6dc; }
+th { color: var(--doux); font-weight: 600; }
+.ok { color: var(--vert); font-weight: 700; } .ko { color: var(--rouge); font-weight: 700; }
+.fichiers { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.fichiers li { display: flex; justify-content: space-between; gap: 10px; background: #fff; border: 1px solid var(--bord); border-radius: 10px; padding: 9px 12px; font-size: .86rem; }
+.fichiers small { display: block; color: var(--doux); }
+.onglets-bas { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--carte); border-top: 1px solid var(--bord); display: flex; padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+.onglets-bas button { flex: 1; background: none; border: 0; font: inherit; font-size: .72rem; font-weight: 600; color: var(--doux); display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px; cursor: pointer; }
+.onglets-bas button span { font-size: 1.3rem; }
+.onglets-bas button.actif { color: var(--terra); background: #f3e5dc; }
+.toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: var(--texte); color: #fff; padding: 11px 18px; border-radius: 50px; font-size: .9rem; z-index: 80; opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 90vw; text-align: center; }
+.toast.voir { opacity: 1; }
+.connexion { max-width: 420px; margin: 40px auto; }
+.installer-admin { font-size: .82rem; color: var(--doux); margin-top: 12px; }
+@media (min-width: 900px) { .onglets-bas { top: 64px; bottom: auto; left: auto; right: 24px; flex-direction: column; width: 170px; border: 1px solid var(--bord); border-radius: 16px; gap: 4px; padding: 8px; } .onglets-bas button { flex-direction: row; justify-content: flex-start; font-size: .9rem; padding: 10px; gap: 10px; } main { padding-right: 220px; } }
+@media (max-width: 560px) { .rang { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="entete">
+  <img src="/icones/admin-192.png" alt="">
+  <h1>Admin · Académie</h1>
+  <span class="direct hors" id="etat-direct" hidden>● en direct</span>
+</header>
+
+<main>
+  <!-- Connexion -->
+  <section class="vue connexion" id="vue-connexion" hidden>
+    <div class="carte">
+      <h2 style="margin-bottom:10px;">Connexion administratrice</h2>
+      <p id="msg-connexion" style="font-size:.9rem;color:var(--doux);margin-bottom:12px;">Connecte-toi avec ton courriel d'administratrice.</p>
+      <form id="form-connexion" style="display:flex;flex-direction:column;gap:10px;">
+        <input type="email" id="c-courriel" placeholder="Courriel" required autocomplete="email" value="serenaissance.doula@gmail.com">
+        <input type="password" id="c-mdp" placeholder="Mot de passe" required autocomplete="current-password">
+        <button class="btn" type="submit">Me connecter</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Tableau de bord -->
+  <section class="vue" id="vue-bord" hidden>
+    <h2 style="margin-bottom:12px;">Bonjour Sabrina 🌸</h2>
+    <div class="stats" id="stats"></div>
+    <div class="carte">
+      <h3 style="margin-bottom:10px;">À faire</h3>
+      <div class="liste" id="a-faire"></div>
+    </div>
+    <div class="carte">
+      <h3 style="margin-bottom:10px;">Dernières inscriptions</h3>
+      <div class="liste" id="recentes"></div>
+    </div>
+  </section>
+
+  <!-- Étudiantes -->
+  <section class="vue" id="vue-etudiantes" hidden>
+    <input type="search" id="recherche" placeholder="🔍 Chercher (nom, courriel, téléphone…)">
+    <div class="filtres" id="filtres">
+      <button data-f="toutes" class="actif">Toutes</button>
+      <button data-f="attente">En attente</button>
+      <button data-f="valide">Validées</button>
+      <button data-f="marraine">Marraine</button>
+      <button data-f="suspendu">Suspendues</button>
+    </div>
+    <div class="liste" id="liste"></div>
+  </section>
+
+  <!-- Outils -->
+  <section class="vue" id="vue-outils" hidden>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">✉️ Lien d'inscription à envoyer</h3>
+      <p style="font-size:.86rem;color:var(--doux);margin-bottom:10px;">Pour une étudiante qui a payé mais dont l'inscription a bogué : elle crée son compte et téléverse son diplôme avec ce lien.</p>
+      <form id="form-lien" style="display:flex;flex-direction:column;gap:8px;">
+        <div class="rang"><input id="l-prenom" placeholder="Prénom"><input id="l-nom" placeholder="Nom"></div>
+        <input type="email" id="l-courriel" placeholder="Courriel" required>
+        <select id="l-formation"><option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option><option value="marraine">Marraine d'allaitement</option></select>
+        <button class="btn" type="submit">Créer le lien</button>
+      </form>
+      <div id="l-resultat" hidden style="margin-top:10px;">
+        <input id="l-texte" readonly>
+        <div class="actions" style="margin-top:8px;"><button class="btn gris" type="button" id="l-copier">📋 Copier</button><a class="btn" id="l-mail" href="#">✉️ Préparer le courriel</a></div>
+      </div>
+    </div>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">⬇️ Copies de sauvegarde</h3>
+      <div class="actions"><button class="btn gris" id="export-dossiers">Dossiers (Excel)</button><button class="btn gris" id="export-resultats">Résultats (Excel)</button></div>
+    </div>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">🔗 Raccourcis</h3>
+      <div class="actions">
+        <a class="btn gris" href="https://dashboard.stripe.com/payments" target="_blank" rel="noopener">Stripe · paiements</a>
+        <a class="btn gris" href="https://dashboard.stripe.com/subscriptions" target="_blank" rel="noopener">Stripe · versements</a>
+        <a class="btn gris" href="https://dashboard.emailjs.com/admin/history" target="_blank" rel="noopener">Courriels envoyés</a>
+        <a class="btn gris" href="https://supabase.com/dashboard/project/zeptirfcwstufcpgvkzx" target="_blank" rel="noopener">Supabase</a>
+        <a class="btn gris" href="index.html">Voir le site</a>
+      </div>
+    </div>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">📲 L'appli Admin sur ton cellulaire</h3>
+      <p style="font-size:.86rem;color:var(--doux);">Sur iPhone : dans Safari ou Chrome, touche <strong>Partager</strong> puis <strong>« Sur l'écran d'accueil »</strong>. Sur Android : menu <strong>⋮</strong> de Chrome, puis <strong>« Installer l'application »</strong>. Elle s'ouvre directement ici, séparée de l'appli des étudiantes.</p>
+      <button class="btn" id="installer-admin" hidden style="margin-top:10px;">Installer l'appli Admin</button>
+    </div>
+    <button class="btn fantome" id="deconnexion" style="width:100%;">Me déconnecter</button>
+  </section>
+</main>
+
+<!-- Fiche étudiante -->
+<div class="fiche" id="fiche" hidden>
+  <div class="haut"><button class="btn gris" id="fiche-fermer" type="button">←</button><h2 id="fiche-nom"></h2></div>
+  <div class="corps" id="fiche-corps"></div>
+</div>
+
+<nav class="onglets-bas" id="onglets" hidden>
+  <button data-v="bord" class="actif"><span>🏠</span>Tableau de bord</button>
+  <button data-v="etudiantes"><span>👩‍🎓</span>Étudiantes</button>
+  <button data-v="outils"><span>🧰</span>Outils</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+'use strict';
+var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co', SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
+var ADMIN = 'serenaissance.doula@gmail.com';
+var EJ = { service: 'service_82vfhfg', bienvenue: 'template_b0thpvn', marraine: 'template_hsrhluk', cle: 'HNvKdORRpRy_vT_FI' };
+var ESPACE = 'https://academiesere.ca/espace.html';
+var MODULES = { 1: 9, 2: 6, 3: 8, 4: 6, 5: 4 };
+var sb = window.supabase.createClient(SB_URL, SB_CLE);
+try { emailjs.init(EJ.cle); } catch (e) {}
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});
+var toutes = [], filtre = 'toutes', ficheId = null;
+
+function $(id) { return document.getElementById(id); }
+function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
+function jour(d) { return d ? new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; }
+function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('voir'); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('voir'); }, 3200); }
+function valide(e) { return (e.statut || '').trim().toLowerCase() === 'valide'; }
+function paiement(v) {
+  var s = String(v || '');
+  if (s === 'marraine') return "Marraine · 175 $";
+  if (s === 'lien-manuel') return '🔗 Lien manuel (vérifier le paiement dans Stripe)';
+  var base = { '1': 'Paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[0]] || s;
+  return base + (s.indexOf('offre') >= 0 ? ' · offre 250 $ 🎁' : '');
+}
+function pastilles(e) {
+  var p = '';
+  if (e.suspendu) p += '<span class="pastille p-suspendu">⛔ Suspendue</span>';
+  if (e.formation === 'marraine') p += e.acces_marraine ? '<span class="pastille p-valide">Marraine · accès ouvert</span>' : '<span class="pastille p-attente">Marraine · en attente</span>';
+  else {
+    p += valide(e) ? '<span class="pastille p-valide">4ᵉ trimestre · validée</span>' : '<span class="pastille p-attente">4ᵉ trimestre · en attente</span>';
+    if (e.acces_marraine) p += '<span class="pastille p-marraine">🎁 marraine</span>';
+  }
+  if (e.option_paiement === 'lien-manuel') p += '<span class="pastille p-lien">lien manuel</span>';
+  return p;
+}
+function enAttente(e) { return e.formation === 'marraine' ? !e.acces_marraine : !valide(e); }
+
+/* ---------- Navigation ---------- */
+function vue(v) {
+  document.querySelectorAll('.vue').forEach(function (x) { x.hidden = x.id !== 'vue-' + v; });
+  document.querySelectorAll('.onglets-bas button').forEach(function (b) { b.classList.toggle('actif', b.dataset.v === v); });
+  window.scrollTo(0, 0);
+}
+$('onglets').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) vue(b.dataset.v); });
+
+/* ---------- Connexion ---------- */
+function demarrer() {
+  sb.auth.getSession().then(function (r) {
+    var s = r.data && r.data.session;
+    if (!s || (s.user.email || '').toLowerCase() !== ADMIN) {
+      if (s) $('msg-connexion').innerHTML = 'Tu es connectée avec ' + esc(s.user.email) + ', qui n\'est pas le compte administratrice. <a href="espace.html">Aller à Mon compte</a>';
+      vue('connexion'); return;
+    }
+    $('onglets').hidden = false; vue('bord');
+    charger(); direct();
+  });
+}
+$('form-connexion').addEventListener('submit', function (e) {
+  e.preventDefault();
+  sb.auth.signInWithPassword({ email: $('c-courriel').value.trim(), password: $('c-mdp').value }).then(function (r) {
+    if (r.error) { $('msg-connexion').textContent = 'Courriel ou mot de passe incorrect.'; return; }
+    demarrer();
+  });
+});
+$('deconnexion').addEventListener('click', function () { sb.auth.signOut().then(function () { location.reload(); }); });
+
+/* ---------- Données ---------- */
+function charger() {
+  return sb.from('etudiantes').select('*').order('created_at', { ascending: false }).then(function (r) {
+    if (r.error) { toast('Impossible de charger les dossiers : ' + r.error.message); return; }
+    toutes = r.data || [];
+    afficherBord(); afficherListe();
+    if (ficheId) ouvrirFiche(ficheId, true);
+  });
+}
+function direct() {
+  sb.channel('etudiantes-admin').on('postgres_changes', { event: '*', schema: 'public', table: 'etudiantes' }, function (p) {
+    if (p.eventType === 'INSERT') toast('🌸 Nouvelle inscription : ' + (p.new.prenom || '') + ' ' + (p.new.nom || ''));
+    charger();
+  }).subscribe(function (etat) {
+    var el = $('etat-direct'); el.hidden = false;
+    el.classList.toggle('hors', etat !== 'SUBSCRIBED');
+    el.textContent = etat === 'SUBSCRIBED' ? '● en direct' : '○ hors ligne';
+  });
+}
+
+function carteLigne(e) {
+  var init = ((e.prenom || '?')[0] + (e.nom || '')[0] || '').toUpperCase();
+  return '<div class="ligne" data-id="' + e.id + '"><div class="avatar">' + esc(init) + '</div><div class="qui"><strong>' + esc(e.prenom) + ' ' + esc(e.nom) + '</strong>' +
+    '<small>' + esc(e.courriel) + ' · ' + jour(e.created_at) + '</small><div>' + pastilles(e) + '</div></div><span>›</span></div>';
+}
+function afficherBord() {
+  var n = { total: toutes.length, attente: toutes.filter(enAttente).length, valide: toutes.filter(function (e) { return e.formation !== 'marraine' && valide(e); }).length,
+    marraine: toutes.filter(function (e) { return e.acces_marraine; }).length, suspendu: toutes.filter(function (e) { return e.suspendu; }).length };
+  $('stats').innerHTML =
+    '<div class="stat' + (n.attente ? ' alerte' : '') + '" data-f="attente"><b>' + n.attente + '</b><span>En attente de validation</span></div>' +
+    '<div class="stat" data-f="valide"><b>' + n.valide + '</b><span>4ᵉ trimestre validées</span></div>' +
+    '<div class="stat" data-f="marraine"><b>' + n.marraine + '</b><span>Accès marraine</span></div>' +
+    '<div class="stat' + (n.suspendu ? ' alerte' : '') + '" data-f="suspendu"><b>' + n.suspendu + '</b><span>Suspendues</span></div>' +
+    '<div class="stat" data-f="toutes"><b>' + n.total + '</b><span>Dossiers au total</span></div>';
+  var af = toutes.filter(function (e) { return enAttente(e) && !e.suspendu; });
+  $('a-faire').innerHTML = af.length ? af.map(carteLigne).join('') : '<div class="vide">Rien à valider pour le moment ✨</div>';
+  $('recentes').innerHTML = toutes.slice(0, 5).map(carteLigne).join('') || '<div class="vide">Aucune inscription pour l\'instant.</div>';
+}
+$('stats').addEventListener('click', function (e) { var s = e.target.closest('.stat'); if (!s) return; choisirFiltre(s.dataset.f); vue('etudiantes'); });
+function choisirFiltre(f) { filtre = f; document.querySelectorAll('#filtres button').forEach(function (b) { b.classList.toggle('actif', b.dataset.f === f); }); afficherListe(); }
+$('filtres').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) choisirFiltre(b.dataset.f); });
+$('recherche').addEventListener('input', afficherListe);
+function afficherListe() {
+  var q = ($('recherche').value || '').toLowerCase().trim();
+  var l = toutes.filter(function (e) {
+    if (filtre === 'attente' && !enAttente(e)) return false;
+    if (filtre === 'valide' && !(e.formation !== 'marraine' && valide(e))) return false;
+    if (filtre === 'marraine' && !e.acces_marraine && e.formation !== 'marraine') return false;
+    if (filtre === 'suspendu' && !e.suspendu) return false;
+    if (q && [e.prenom, e.nom, e.courriel, e.telephone, e.adresse].join(' ').toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+  $('liste').innerHTML = l.length ? l.map(carteLigne).join('') : '<div class="vide">Aucune étudiante ici.</div>';
+}
+document.addEventListener('click', function (e) { var l = e.target.closest('.ligne'); if (l) ouvrirFiche(+l.dataset.id); });
+
+/* ---------- Fiche détaillée ---------- */
+function ouvrirFiche(id, rafraichir) {
+  var e = toutes.find(function (x) { return x.id === id; });
+  if (!e) { if (rafraichir) fermerFiche(); return; }
+  ficheId = id;
+  $('fiche-nom').textContent = (e.prenom || '') + ' ' + (e.nom || '');
+  var f = e.formation === 'marraine';
+  var acts = [];
+  if (!f) acts.push(valide(e) ? '<button class="btn gris" data-a="renvoyer">✉️ Renvoyer le courriel de bienvenue</button>' : '<button class="btn vert" data-a="valider">✓ Valider et envoyer le courriel</button>');
+  if (!f && valide(e)) acts.push('<button class="btn gris" data-a="retirer4e">Retirer la validation</button>');
+  acts.push(e.acces_marraine ? '<button class="btn gris" data-a="marraine">Retirer l\'accès marraine</button>' : '<button class="btn' + (f ? ' vert' : '') + '" data-a="marraine">' + (f ? '✓ Ouvrir l\'accès marraine' : '🎁 Donner l\'accès marraine') + '</button>');
+  acts.push(e.suspendu ? '<button class="btn vert" data-a="reactiver">▶️ Réactiver l\'accès</button>' : '<button class="btn danger" data-a="suspendre">⛔ Suspendre l\'accès</button>');
+  var html =
+    '<div class="carte"><div>' + pastilles(e) + '</div>' +
+    (e.suspendu ? '<p class="infos-ligne ko" style="margin-top:8px;">⛔ Accès suspendu' + (e.motif_suspension ? ' : ' + esc(e.motif_suspension) : '') + '</p>' : '') +
+    '<p class="infos-ligne" style="margin-top:8px;"><b>Formation :</b> ' + (f ? "Marraine d'allaitement" : 'Accompagnement de pointe du 4ᵉ trimestre') + '</p>' +
+    '<p class="infos-ligne"><b>Paiement :</b> ' + esc(paiement(e.option_paiement)) + '</p>' +
+    '<p class="infos-ligne"><b>Inscrite le :</b> ' + jour(e.created_at) + '</p>' +
+    '<p class="infos-ligne"><b>Compte :</b> <span id="f-compte">vérification…</span></p>' +
+    '<div class="actions" style="margin-top:12px;">' + acts.join('') + '</div></div>' +
+
+    '<div class="carte"><h3 style="margin-bottom:10px;">Coordonnées</h3><form id="f-infos" style="display:flex;flex-direction:column;gap:8px;">' +
+    '<div class="rang"><label class="champ">Prénom<input id="fi-prenom" value="' + esc(e.prenom) + '"></label><label class="champ">Nom<input id="fi-nom" value="' + esc(e.nom) + '"></label></div>' +
+    '<div class="rang"><label class="champ">Courriel (contact)<input id="fi-courriel" type="email" value="' + esc(e.courriel) + '"></label><label class="champ">Téléphone<input id="fi-tel" value="' + esc(e.telephone) + '"></label></div>' +
+    '<label class="champ">Date de naissance<input id="fi-naissance" type="date" value="' + esc(e.date_naissance || '') + '"></label>' +
+    '<label class="champ">Adresse postale<textarea id="fi-adresse" rows="2">' + esc(e.adresse) + '</textarea></label>' +
+    '<div class="actions"><button class="btn" type="submit">Enregistrer</button>' +
+    (e.telephone ? '<a class="btn gris" href="tel:' + esc(e.telephone) + '">📞 Appeler</a>' : '') +
+    '<a class="btn gris" href="mailto:' + esc(e.courriel) + '">✉️ Écrire</a></div></form></div>' +
+
+    '<div class="carte"><h3 style="margin-bottom:10px;">Documents</h3>' +
+    (e.diplome_url ? '<div class="actions" style="margin-bottom:10px;"><button class="btn gris" data-a="diplome">🎓 Voir le diplôme</button></div>' : '<p class="infos-ligne" style="margin-bottom:8px;">' + (f ? 'Aucun diplôme requis.' : 'Aucun diplôme téléversé.') + '</p>') +
+    '<ul class="fichiers" id="f-stage"><li>Chargement des documents de stage…</li></ul></div>' +
+
+    '<div class="carte"><h3 style="margin-bottom:10px;">Progression et résultats</h3><div id="f-progression">Chargement…</div></div>' +
+
+    '<div class="carte"><h3 style="margin-bottom:6px;">Notes privées</h3><p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Visibles seulement par toi.</p>' +
+    '<textarea id="f-notes" rows="3" placeholder="Ex. : paiement 2/4 reçu le…"></textarea><div class="actions" style="margin-top:8px;"><button class="btn gris" data-a="notes">Enregistrer la note</button></div></div>' +
+
+    '<div class="carte"><h3 style="margin-bottom:10px;">Compte de connexion</h3><div class="actions">' +
+    '<button class="btn gris" data-a="reconfirmer">Renvoyer le courriel de confirmation</button>' +
+    '<button class="btn gris" data-a="motdepasse">Envoyer un lien « nouveau mot de passe »</button></div></div>' +
+
+    '<div class="carte" style="border-color:#e3b5a8;"><h3 style="margin-bottom:6px;color:var(--rouge);">Supprimer</h3>' +
+    '<p style="font-size:.85rem;color:var(--doux);margin-bottom:10px;">Supprime définitivement le dossier, le compte de connexion, les résultats, la progression, le diplôme et les documents de stage. À utiliser pour les tests ou sur demande de l\'étudiante.</p>' +
+    '<button class="btn danger" data-a="supprimer">🗑️ Supprimer définitivement</button></div>';
+  $('fiche-corps').innerHTML = html;
+  $('fiche').hidden = false;
+  if (!rafraichir) $('fiche').scrollTop = 0;
+  $('f-infos').addEventListener('submit', function (ev) { ev.preventDefault(); enregistrerInfos(e); });
+  chargerDetails(e);
+}
+function fermerFiche() { $('fiche').hidden = true; ficheId = null; }
+$('fiche-fermer').addEventListener('click', fermerFiche);
+
+function chargerDetails(e) {
+  sb.from('notes_admin').select('texte').eq('etudiante_id', e.id).maybeSingle().then(function (r) { if (r.data && $('f-notes')) $('f-notes').value = r.data.texte || ''; });
+  $('f-compte').textContent = e.user_id ? 'créé ✓' : 'pas encore créé (elle n\'a pas fini l\'inscription)';
+  if (e.user_id) sb.storage.from('rapports').list(e.user_id, { sortBy: { column: 'created_at', order: 'desc' } }).then(function (r) {
+    var l = (r.data || []).filter(function (x) { return x.name && x.name.charAt(0) !== '.'; });
+    $('f-stage').innerHTML = l.length ? l.map(function (x) {
+      var m = x.name.match(/^\d+_(.+?)__(.+)$/);
+      return '<li><span>📄 ' + esc(m ? m[2] : x.name.replace(/^\d+_/, '')) + '<small>' + esc(m ? m[1].replace(/_/g, ' ') : 'Document') + ' · ' + jour(x.created_at) + '</small></span><a href="#" data-fichier="' + esc(e.user_id + '/' + x.name) + '">Ouvrir</a></li>';
+    }).join('') : '<li>Aucun document de stage déposé.</li>';
+  }); else $('f-stage').innerHTML = '<li>Aucun document de stage déposé.</li>';
+  var p1 = e.user_id ? sb.from('progression').select('donnees,updated_at').eq('user_id', e.user_id).maybeSingle() : Promise.resolve({});
+  var p2 = sb.from('resultats').select('*').or((e.user_id ? 'user_id.eq.' + e.user_id + ',' : '') + 'courriel.ilike.' + e.courriel).order('created_at', { ascending: false }).limit(200);
+  Promise.all([p1, p2]).then(function (r) {
+    var d = (r[0] && r[0].data && r[0].data.donnees) || {}, res = (r[1] && r[1].data) || [];
+    function sc(k) { try { return JSON.parse(d[k]); } catch (x) { return null; } }
+    function ok(x) { return x && x.score / x.total >= 0.8; }
+    var h = '';
+    if (e.formation !== 'marraine' && valide(e)) {
+      h += '<table><tr><th>Module</th><th>Quiz réussis</th><th>Examen</th></tr>';
+      Object.keys(MODULES).forEach(function (m) {
+        var q = 0; for (var i = 1; i <= MODULES[m]; i++) if (ok(sc('m' + m + ':score:' + m + '.' + i))) q++;
+        var ex = sc('m' + m + ':score:exam');
+        h += '<tr><td>Module ' + m + '</td><td>' + q + ' / ' + MODULES[m] + '</td><td>' + (ex ? '<span class="' + (ok(ex) ? 'ok' : 'ko') + '">' + ex.score + '/' + ex.total + '</span>' : '—') + '</td></tr>';
+      });
+      var fin = sc('final:score');
+      h += '<tr><td>Grand examen final</td><td></td><td>' + (fin ? '<span class="' + (ok(fin) ? 'ok' : 'ko') + '">' + fin.score + '/' + fin.total + '</span>' : '—') + '</td></tr></table>';
+    }
+    if (e.acces_marraine || e.formation === 'marraine') {
+      var qm = 0; for (var j = 1; j <= 6; j++) if (ok(sc('marraine:score:1.' + j))) qm++;
+      var em = sc('marraine:score:exam');
+      h += '<p class="infos-ligne" style="margin-top:10px;"><b>Marraine :</b> ' + qm + ' / 6 quiz réussis · examen ' + (em ? '<span class="' + (ok(em) ? 'ok' : 'ko') + '">' + em.score + '/' + em.total + '</span>' : '—') + '</p>';
+    }
+    if (r[0] && r[0].data && r[0].data.updated_at) h += '<p class="infos-ligne" style="color:var(--doux);font-size:.8rem;">Dernière activité : ' + jour(r[0].data.updated_at) + '</p>';
+    if (res.length) {
+      h += '<details style="margin-top:10px;"><summary style="cursor:pointer;font-weight:700;">Historique des quiz et examens (' + res.length + ')</summary><table style="margin-top:8px;"><tr><th>Date</th><th>Évaluation</th><th>Note</th></tr>' +
+        res.map(function (x) { return '<tr><td>' + jour(x.created_at) + '</td><td>' + esc(x.evaluation) + '</td><td class="' + (x.reussi ? 'ok' : 'ko') + '">' + x.score + '/' + x.total + '</td></tr>'; }).join('') + '</table></details>';
+    }
+    $('f-progression').innerHTML = h || '<p class="infos-ligne">Pas encore d\'activité.</p>';
+  });
+}
+
+/* ---------- Actions ---------- */
+function maj(e, champs, msg) {
+  return sb.from('etudiantes').update(champs).eq('id', e.id).select().then(function (r) {
+    if (r.error || !r.data || !r.data.length) { toast('Ça n\'a pas fonctionné' + (r.error ? ' : ' + r.error.message : '')); return false; }
+    Object.assign(e, r.data[0]); if (msg) toast(msg); afficherBord(); afficherListe(); ouvrirFiche(e.id, true); return true;
+  });
+}
+function enregistrerInfos(e) {
+  maj(e, { prenom: $('fi-prenom').value.trim(), nom: $('fi-nom').value.trim(), courriel: $('fi-courriel').value.trim().toLowerCase(),
+    telephone: $('fi-tel').value.trim(), date_naissance: $('fi-naissance').value || null, adresse: $('fi-adresse').value.trim() }, '✅ Coordonnées enregistrées');
+}
+function courrielBienvenue(e) {
+  return emailjs.send(EJ.service, EJ.bienvenue, { prenom: e.prenom, nom: e.nom, courriel: e.courriel }, EJ.cle);
+}
+function courrielMarraine(e) {
+  var cadeau = e.formation !== 'marraine';
+  return emailjs.send(EJ.service, EJ.marraine, Object.assign({ prenom: e.prenom, nom: e.nom, courriel: e.courriel }, cadeau ? {
+    sujet: "🎁 Ton cadeau t'attend : la formation de marraine d'allaitement", accroche: 'Un cadeau pour toi',
+    titre: e.prenom + ", ta formation de marraine d'allaitement est ouverte 🎁",
+    message: "Merci du fond du cœur de t'être inscrite à l'Académie Sérénaissance ! 💕 Comme promis, voici ton cadeau : la formation de marraine d'allaitement (valeur de 175 $) est maintenant ouverte dans ton compte.",
+    bouton: 'Ouvrir mon cadeau 🎁' } : {
+    sujet: "Ta formation de marraine d'allaitement est ouverte 🌸", accroche: 'Bienvenue', titre: e.prenom + ", ta formation t'attend ! 🤱",
+    message: "Merci de t'être inscrite à la formation de marraine d'allaitement de l'Académie Sérénaissance ! 💕 Ton paiement est bien reçu et ton accès est maintenant ouvert dans ton compte.",
+    bouton: 'Commencer ma formation →' }), EJ.cle);
+}
+function ouvrirSigne(bucket, chemin) {
+  var w = window.open('', '_blank');
+  sb.storage.from(bucket).createSignedUrl(chemin, 300).then(function (r) {
+    if (r.error || !r.data) { if (w) w.close(); toast('Impossible d\'ouvrir ce fichier.'); return; }
+    if (w) w.location.href = r.data.signedUrl; else location.href = r.data.signedUrl;
+  });
+}
+$('fiche-corps').addEventListener('click', function (ev) {
+  var fichier = ev.target.closest('[data-fichier]');
+  if (fichier) { ev.preventDefault(); ouvrirSigne('rapports', fichier.dataset.fichier); return; }
+  var b = ev.target.closest('[data-a]'); if (!b) return;
+  var e = toutes.find(function (x) { return x.id === ficheId; }); if (!e) return;
+  var a = b.dataset.a;
+  if (a === 'valider') {
+    if (!confirm('Valider ' + e.prenom + ' ' + e.nom + ' ?\n\nVérifie d\'abord dans Stripe que son paiement est reçu.\nElle recevra le courriel de bienvenue à ' + e.courriel + '.')) return;
+    maj(e, { statut: 'valide' }).then(function (ok) { if (ok) courrielBienvenue(e).then(function () { toast('💕 ' + e.prenom + ' est validée et le courriel est parti'); }, function () { toast('Validée, mais le courriel n\'a pas pu partir'); }); });
+  } else if (a === 'renvoyer') {
+    courrielBienvenue(e).then(function () { toast('✉️ Courriel de bienvenue renvoyé'); }, function () { toast('Le courriel n\'a pas pu partir'); });
+  } else if (a === 'retirer4e') {
+    if (confirm('Retirer la validation de ' + e.prenom + ' ? Elle n\'aura plus accès à la formation du 4ᵉ trimestre.')) maj(e, { statut: 'en_attente' }, 'Validation retirée');
+  } else if (a === 'marraine') {
+    var donner = !e.acces_marraine;
+    if (!confirm((donner ? 'Donner' : 'Retirer') + ' l\'accès à la formation de marraine d\'allaitement à ' + e.prenom + ' ?')) return;
+    maj(e, { acces_marraine: donner }).then(function (ok) {
+      if (ok && donner) courrielMarraine(e).then(function () { toast('🤱 Accès ouvert et courriel envoyé'); }, function () { toast('Accès ouvert, mais le courriel n\'a pas pu partir'); });
+      else if (ok) toast('Accès marraine retiré');
+    });
+  } else if (a === 'suspendre') {
+    var motif = prompt('Suspendre l\'accès de ' + e.prenom + ' ?\n\nMotif (visible par l\'étudiante dans son compte) :', 'Paiement refusé');
+    if (motif === null) return;
+    maj(e, { suspendu: true, motif_suspension: motif.trim() || null }, '⛔ Accès suspendu').then(function (ok) {
+      if (ok && confirm('Veux-tu écrire à ' + e.prenom + ' pour l\'en informer ?')) {
+        var corps = 'Bonjour ' + e.prenom + ',\n\nTon accès à ta formation est suspendu pour le moment' + (motif ? ' (' + motif + ')' : '') + '. Dès que la situation est réglée, je rouvre ton accès et tu retrouves ta progression telle quelle.\n\nN\'hésite pas à m\'écrire ou à m\'appeler au 506-759-2044 pour qu\'on trouve une solution ensemble.\n\nAvec douceur,\nSabrina';
+        location.href = 'mailto:' + e.courriel + '?subject=' + encodeURIComponent('Ton accès à l\'Académie Sérénaissance') + '&body=' + encodeURIComponent(corps);
+      }
+    });
+  } else if (a === 'reactiver') {
+    maj(e, { suspendu: false, motif_suspension: null }, '▶️ Accès réactivé');
+  } else if (a === 'diplome') {
+    ouvrirSigne('certificats', e.diplome_url);
+  } else if (a === 'notes') {
+    sb.from('notes_admin').upsert({ etudiante_id: e.id, texte: $('f-notes').value, updated_at: new Date().toISOString() }).then(function (r) { toast(r.error ? 'Note non enregistrée' : '📝 Note enregistrée'); });
+  } else if (a === 'reconfirmer') {
+    sb.auth.resend({ type: 'signup', email: e.courriel, options: { emailRedirectTo: ESPACE } }).then(function (r) { toast(r.error ? 'Impossible : ' + r.error.message : '✉️ Courriel de confirmation renvoyé'); });
+  } else if (a === 'motdepasse') {
+    sb.auth.resetPasswordForEmail(e.courriel, { redirectTo: ESPACE }).then(function (r) { toast(r.error ? 'Impossible : ' + r.error.message : '🔑 Lien envoyé à ' + e.courriel); });
+  } else if (a === 'supprimer') {
+    var ok = prompt('Suppression définitive de ' + e.prenom + ' ' + e.nom + '.\n\nPour confirmer, écris SUPPRIMER :');
+    if (!ok || ok.trim().toUpperCase() !== 'SUPPRIMER') return;
+    b.disabled = true;
+    var menage = [];
+    if (e.diplome_url) menage.push(sb.storage.from('certificats').remove([e.diplome_url]));
+    var fichiers = e.user_id ? sb.storage.from('rapports').list(e.user_id).then(function (r) {
+      var l = (r.data || []).map(function (x) { return e.user_id + '/' + x.name; });
+      return l.length ? sb.storage.from('rapports').remove(l) : null;
+    }) : Promise.resolve();
+    Promise.all(menage.concat([fichiers])).catch(function () {}).then(function () {
+      return sb.rpc('admin_supprimer_etudiante', { p_id: e.id });
+    }).then(function (r) {
+      if (r && r.error) { b.disabled = false; toast('Suppression impossible : ' + r.error.message); return; }
+      toutes = toutes.filter(function (x) { return x.id !== e.id; });
+      fermerFiche(); afficherBord(); afficherListe(); toast('🗑️ ' + e.prenom + ' a été supprimée');
+    });
+  }
+});
+
+/* ---------- Outils ---------- */
+$('form-lien').addEventListener('submit', function (ev) {
+  ev.preventDefault();
+  var c = $('l-courriel').value.trim().toLowerCase(), p = $('l-prenom').value.trim(), n = $('l-nom').value.trim(), f = $('l-formation').value;
+  var q = new URLSearchParams({ inscription: f, courriel: c }); if (p) q.set('prenom', p); if (n) q.set('nom', n);
+  var lien = ESPACE + '?' + q.toString();
+  $('l-resultat').hidden = false; $('l-texte').value = lien;
+  var corps = 'Bonjour ' + (p || '') + ',\n\nMerci pour ton inscription ! Voici ton lien personnel pour créer ton compte étudiante' + (f === 'marraine' ? '' : ' et téléverser ton diplôme de doula') + ' :\n\n' + lien + '\n\nDès que ton dossier sera vérifié, j\'ouvre ton accès et tu reçois un courriel de bienvenue.\n\nAvec douceur,\nSabrina\nAcadémie Sérénaissance · 506-759-2044';
+  $('l-mail').href = 'mailto:' + c + '?subject=' + encodeURIComponent('Complète ton inscription à l\'Académie Sérénaissance 🌸') + '&body=' + encodeURIComponent(corps);
+});
+$('l-copier').addEventListener('click', function () {
+  var t = $('l-texte'); t.select();
+  (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).then(function () { toast('📋 Lien copié'); }, function () { document.execCommand('copy'); toast('📋 Lien copié'); });
+});
+function csv(lignes, cols) {
+  var cel = function (v) { var s = v == null ? '' : String(v); return /[";\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  return '﻿' + [cols.map(function (c) { return c[1]; }).join(';')].concat(lignes.map(function (l) { return cols.map(function (c) { return cel(typeof c[0] === 'function' ? c[0](l) : l[c[0]]); }).join(';'); })).join('\r\n');
+}
+function telecharger(nom, contenu) {
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([contenu], { type: 'text/csv;charset=utf-8' })); a.download = nom;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+$('export-dossiers').addEventListener('click', function () {
+  telecharger('dossiers-etudiantes-' + new Date().toISOString().slice(0, 10) + '.csv', csv(toutes, [
+    ['created_at', "Date d'inscription"], ['prenom', 'Prénom'], ['nom', 'Nom'], ['courriel', 'Courriel'], ['telephone', 'Téléphone'],
+    ['date_naissance', 'Date de naissance'], ['adresse', 'Adresse'], ['formation', 'Formation'], [function (l) { return paiement(l.option_paiement); }, 'Paiement'],
+    ['statut', 'Statut 4e trimestre'], [function (l) { return l.acces_marraine ? 'oui' : 'non'; }, 'Accès marraine'],
+    [function (l) { return l.suspendu ? 'oui' : 'non'; }, 'Suspendue'], ['motif_suspension', 'Motif']]));
+});
+$('export-resultats').addEventListener('click', function () {
+  sb.from('resultats').select('*').order('created_at').then(function (r) {
+    telecharger('resultats-' + new Date().toISOString().slice(0, 10) + '.csv', csv(r.data || [], [['created_at', 'Date'], ['courriel', 'Courriel'], ['formation', 'Formation'],
+      ['module', 'Module'], ['evaluation', 'Évaluation'], ['score', 'Score'], ['total', 'Sur'], ['pourcentage', '%'], [function (l) { return l.reussi ? 'réussi' : 'à reprendre'; }, 'Résultat']]));
+  });
+});
+var invite = null;
+window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); invite = e; $('installer-admin').hidden = false; });
+$('installer-admin').addEventListener('click', function () { if (invite) { invite.prompt(); invite = null; $('installer-admin').hidden = true; } });
+
+demarrer();
+})();
+</script>
+</body>
+</html>
