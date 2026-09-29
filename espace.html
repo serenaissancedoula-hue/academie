@@ -51,6 +51,8 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 .message.erreur { background: #fbeeea; border: 1px solid #e3b5a8; color: #8c4434; }
 .case { display: flex; gap: 10px; align-items: flex-start; font-size: .88rem; font-weight: 400; }
 .case input { width: auto; margin-top: 4px; }
+#fm-contacts .case { flex-wrap: wrap; }
+#fm-contacts .case input[data-valeur] { width: auto; flex: 1 1 200px; margin-top: 0; }
 /* Menu à droite */
 .menu { position: sticky; top: 104px; display: flex; flex-direction: column; gap: 8px; }
 .menu .qui { font-size: .85rem; color: var(--doux); padding: 0 6px 6px; }
@@ -230,6 +232,34 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   </section>
 
   <!-- Documents de stage -->
+  <section class="vue" id="vue-marraine" hidden>
+    <h1>Ma fiche de marraine d'allaitement</h1>
+    <p class="sous">Une fois ta formation réussie, soumets ta fiche : Sabrina vérifie tes résultats, valide ta certification et publie ta fiche sur la page « Nos marraines d'allaitement ».</p>
+    <div id="msg-marraine"></div>
+    <div id="fm-statut"></div>
+    <div class="carte" id="fm-carte" hidden>
+      <form id="form-marraine">
+        <label class="champ">Nom complet (tel qu'il apparaîtra sur la page) <input type="text" id="fm-nom" required maxlength="80"></label>
+        <label class="champ">Photo de profil <span class="note">Une photo claire de ton visage (JPG ou PNG). Elle sera affichée publiquement après validation.</span>
+          <input type="file" id="fm-photo" accept="image/jpeg,image/png,image/webp"></label>
+        <div id="fm-apercu" style="display:none;"><img id="fm-apercu-img" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 14px rgba(44,34,30,.15);"></div>
+        <label class="champ">Région ou ville <input type="text" id="fm-region" maxlength="80" placeholder="Ex. : Campbellton et Restigouche, N.-B."></label>
+        <label class="champ">Courte bio / parcours <span class="note"><span id="fm-compte">0</span> / 600 caractères</span>
+          <textarea id="fm-bio" rows="5" maxlength="600" required placeholder="Ex. : Maman de deux enfants allaités, je sais combien un mot d'encouragement peut tout changer…"></textarea></label>
+        <fieldset style="border:1px solid var(--bord);border-radius:14px;padding:14px;">
+          <legend style="font-weight:700;font-size:.9rem;padding:0 6px;">Moyens de contact préférés (affichés sur ta fiche)</legend>
+          <div id="fm-contacts" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </fieldset>
+        <div style="display:flex;flex-direction:column;gap:12px;background:#fbf5ef;border:1px solid var(--bord);border-radius:14px;padding:14px;">
+          <label class="case"><input type="checkbox" id="fm-c1" required> <span><strong>La gratuité :</strong> Je comprends et j'accepte que les jumelages de marrainage d'allaitement attribués et gérés par Sabrina (Sérénaissance) sont strictement bénévoles et gratuits pour les mamans. (Note : si je pratique par ailleurs comme doula en privé hors de ce cadre, mes services de doula peuvent être facturés de façon autonome, mais jamais sous la bannière du marrainage gratuit de Sérénaissance.)</span></label>
+          <label class="case"><input type="checkbox" id="fm-c2" required> <span><strong>La validité et la mise à jour :</strong> Je comprends que mon certificat de marraine d'allaitement est valide 2 ans et que je devrai faire une mise à jour (à 50 % de rabais si formée chez Sérénaissance, ou plein prix si formée à l'externe) pour renouveler mon statut.</span></label>
+          <label class="case"><input type="checkbox" id="fm-c3" required> <span><strong>Le consentement à l'affichage :</strong> J'autorise Sérénaissance à afficher mes informations sur le site si mon statut est validé.</span></label>
+        </div>
+        <button class="btn" type="submit" id="fm-bouton">Soumettre ma fiche à Sabrina</button>
+      </form>
+    </div>
+  </section>
+
   <section class="vue" id="vue-stage" hidden>
     <h1>Documents de stage</h1>
     <p class="sous">Transmets ici tes documents de stage à Sabrina. Elle les reçoit automatiquement, et tu en gardes une copie dans ton compte.</p>
@@ -264,6 +294,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <div class="qui"><strong id="menu-nom">Mon compte</strong><span id="menu-courriel"></span></div>
   <a href="#cours" data-vue="cours"><span class="i">📚</span><span>Mes cours</span></a>
   <a href="#infos" data-vue="infos"><span class="i">👤</span><span>Mes informations</span></a>
+  <a href="#marraine" data-vue="marraine" id="menu-marraine" hidden><span class="i">🤱</span><span>Ma fiche de marraine</span></a>
   <a href="#stage" data-vue="stage" id="menu-stage" hidden><span class="i">📝</span><span>Documents de stage</span></a>
   <a href="https://cal.com/sabrina-chavanel-zs5clq/mentorat" target="_blank" rel="noopener" class="externe"><span class="i">💬</span><span>Mentorat</span></a>
   <button type="button" class="sortir" id="menu-sortir"><span class="i">🚪</span><span>Me déconnecter</span></button>
@@ -310,9 +341,11 @@ function routeConnectee() {
   var h = (location.hash || '#cours').slice(1);
   if (h === 'motdepasse') { avecMenu(true); vue('mdp'); return; }
   if (h === 'stage' && !etat.valide) h = 'cours';
-  if (['cours', 'infos', 'stage'].indexOf(h) < 0) h = 'cours';
+  if (h === 'marraine' && !etat.marraine) h = 'cours';
+  if (['cours', 'infos', 'stage', 'marraine'].indexOf(h) < 0) h = 'cours';
   avecMenu(true); vue(h);
   if (h === 'stage') listerStage();
+  if (h === 'marraine') chargerFicheMarraine();
 }
 window.addEventListener('hashchange', function () { if (etat.session) routeConnectee(); });
 
@@ -429,6 +462,7 @@ function charger(session, bienvenue) {
         if (Object.keys(maj).length) sb.from('etudiantes').update(maj).eq('id', d.id).then(function () {});
       }
       $('menu-stage').hidden = !etat.valide;
+      $('menu-marraine').hidden = !etat.marraine;
       remplirInfos();
       return sb.from('progression').select('donnees').eq('user_id', session.user.id).maybeSingle();
     }).then(function (r) {
@@ -474,7 +508,8 @@ function afficherCours() {
     var f = 0; for (var j = 1; j <= 6; j++) if (reussi(score('marraine:score:1.' + j))) f++;
     var exm = reussi(score('marraine:score:exam'));
     $('liste-marraine').innerHTML = ligneCours("Formation de marraine d'allaitement", exm ? '✓ Formation réussie' : f + ' / 6 quiz réussis', f, 6, exm,
-      'Formation/marraine/index.html', f === 0 && !exm ? 'Commencer' : (exm ? 'Revoir' : 'Continuer'));
+      'Formation/marraine/index.html', f === 0 && !exm ? 'Commencer' : (exm ? 'Revoir' : 'Continuer'))
+      + (exm ? '<li><div><h3>🤱 Ma fiche de marraine certifiée</h3><div class="etat">Soumets ta fiche pour être validée et apparaître sur le site</div></div><a class="btn" href="#marraine">Ma fiche →</a></li>' : '');
   }
 }
 
@@ -630,6 +665,109 @@ function preparerInscription() {
 $('menu-sortir').addEventListener('click', function () {
   try { sessionStorage.removeItem('cle:4e-trimestre'); sessionStorage.removeItem('cle:marraine'); } catch (e) {}
   sb.auth.signOut().finally(function () { location.href = 'espace.html?deconnectee=1'; });
+});
+
+/* ---------------- Fiche de marraine d'allaitement ---------------- */
+var TYPES_CONTACT = [['courriel', 'Courriel', 'email'], ['telephone', 'Téléphone / texto', 'tel'], ['facebook', 'Facebook / Messenger', 'text'], ['instagram', 'Instagram', 'text'], ['autre', 'Autre', 'text']];
+var ficheM = null, photoM = null;
+function aujourdhui() { return new Date().toISOString().slice(0, 10); }
+function chargerFicheMarraine() {
+  var uid = etat.session.user.id;
+  var r = etat.progression['marraine:score:exam'], ex = null; try { ex = JSON.parse(r); } catch (e) {}
+  var reussi = !!(ex && ex.score / ex.total >= 0.8);
+  sb.from('marraines').select('*').eq('user_id', uid).maybeSingle().then(function (x) {
+    ficheM = x.data || null;
+    var st = $('fm-statut'), carte = $('fm-carte');
+    carte.hidden = true; st.innerHTML = '';
+    if (!ficheM && !reussi) {
+      st.innerHTML = '<div class="message info">📚 Ta fiche sera disponible dès que tu auras <strong>réussi l\'examen final</strong> de la formation de marraine d\'allaitement (80 % et plus). <a href="Formation/marraine/index.html">Continuer ma formation →</a></div>';
+      return;
+    }
+    if (ficheM) {
+      var exp = ficheM.date_expiration, expiree = ficheM.statut === 'validee' && exp && exp < aujourdhui();
+      var t = {
+        soumise: '<div class="message info">⏳ <strong>Ta fiche est envoyée.</strong> Sabrina vérifie tes résultats et ta fiche ; tu recevras un courriel dès qu\'elle est validée. Tu peux encore la modifier ci-dessous.</div>',
+        a_corriger: '<div class="message erreur">✏️ <strong>Sabrina te demande une petite correction :</strong><br>' + echapper(ficheM.commentaire_admin || '') + '</div>',
+        retiree: '<div class="message info">Ta fiche n\'est plus affichée sur le site. Écris à Sabrina pour la réactiver.</div>',
+        validee: expiree
+          ? '<div class="message erreur">⌛ <strong>Ta certification est arrivée à échéance le ' + jour(exp) + '.</strong> Pour renouveler ton statut, fais la mise à jour de la formation (50 % de rabais pour les marraines formées chez Sérénaissance). Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a>.</div>'
+          : '<div class="message ok">🎉 <strong>Tu es marraine d\'allaitement certifiée !</strong><br>Certifiée le ' + jour(ficheM.date_certification) + ' · valide jusqu\'au ' + jour(exp) + '.<br>Ta fiche est visible sur la page <a href="index.html#nos-marraines" target="_blank">Nos marraines d\'allaitement</a>.' +
+            (ficheM.certificat_path ? '<br><a href="#" id="fm-certificat">📜 Télécharger mon certificat</a>' : '') +
+            '<br><span class="note">Une modification de ta fiche la retire de la page jusqu\'à la nouvelle validation de Sabrina.</span></div>'
+      }[ficheM.statut] || '';
+      st.innerHTML = t;
+      var c = $('fm-certificat');
+      if (c) c.addEventListener('click', function (e) { e.preventDefault(); ouvrirFichier('certificats-marraines', ficheM.certificat_path); });
+      if (expiree || ficheM.statut === 'retiree') return;
+    }
+    remplirFormMarraine(); carte.hidden = false;
+  });
+}
+function ouvrirFichier(seau, chemin) {
+  var w = window.open('', '_blank');
+  sb.storage.from(seau).createSignedUrl(chemin, 300).then(function (r) {
+    if (r.error || !r.data) { if (w) w.close(); alert('Fichier introuvable.'); return; }
+    if (w) w.location.href = r.data.signedUrl; else location.href = r.data.signedUrl;
+  });
+}
+function remplirFormMarraine() {
+  var d = etat.dossier || {}, f = ficheM || {};
+  $('fm-nom').value = f.nom_complet || ((d.prenom || '') + ' ' + (d.nom || '')).trim();
+  $('fm-region').value = f.region || '';
+  $('fm-bio').value = f.bio || ''; $('fm-compte').textContent = $('fm-bio').value.length;
+  var cs = f.contacts || [];
+  $('fm-contacts').innerHTML = TYPES_CONTACT.map(function (t) {
+    var v = (cs.filter(function (c) { return c.type === t[0]; })[0] || {}).valeur || '';
+    if (!f.id && t[0] === 'courriel') v = etat.session.user.email || '';
+    return '<label class="case" style="align-items:center;"><input type="checkbox" data-contact="' + t[0] + '"' + (v && (f.id ? true : t[0] === 'courriel') ? ' checked' : '') + '> <span style="min-width:150px;">' + t[1] + '</span>' +
+      '<input type="' + t[2] + '" data-valeur="' + t[0] + '" value="' + echapper(v) + '" style="flex:1;"></label>';
+  }).join('');
+  ['fm-c1', 'fm-c2', 'fm-c3'].forEach(function (id) { $(id).checked = !!(f.id && f.consent_gratuite); });
+  if (f.photo_path) sb.storage.from('marraines').createSignedUrl(f.photo_path, 600).then(function (r) { if (r.data) { $('fm-apercu-img').src = r.data.signedUrl; $('fm-apercu').style.display = 'block'; } });
+  $('fm-photo').required = !f.photo_path;
+}
+$('fm-bio').addEventListener('input', function () { $('fm-compte').textContent = this.value.length; });
+$('fm-photo').addEventListener('change', function () {
+  var f = this.files && this.files[0]; photoM = null; if (!f) return;
+  var img = new Image(), url = URL.createObjectURL(f);
+  img.onload = function () {
+    var max = 800, k = Math.min(1, max / Math.max(img.width, img.height));
+    var c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    c.toBlob(function (b) { photoM = b; $('fm-apercu-img').src = URL.createObjectURL(b); $('fm-apercu').style.display = 'block'; }, 'image/jpeg', 0.86);
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = function () { alert('Cette image ne peut pas être lue. Essaie une photo JPG ou PNG.'); };
+  img.src = url;
+});
+$('form-marraine').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var contacts = [];
+  document.querySelectorAll('#fm-contacts [data-contact]').forEach(function (cb) {
+    var v = document.querySelector('[data-valeur="' + cb.dataset.contact + '"]').value.trim();
+    if (cb.checked && v) contacts.push({ type: cb.dataset.contact, valeur: v });
+  });
+  if (!contacts.length) return message('msg-marraine', 'erreur', 'Coche et remplis au moins un moyen de contact.');
+  if (!photoM && !(ficheM && ficheM.photo_path)) return message('msg-marraine', 'erreur', 'Ajoute une photo de profil.');
+  var b = $('fm-bouton'); b.disabled = true; b.textContent = 'Envoi…';
+  var uid = etat.session.user.id;
+  var envoi = photoM ? sb.storage.from('marraines').upload(uid + '/photo-' + Date.now() + '.jpg', photoM, { contentType: 'image/jpeg' }) : Promise.resolve({ data: null });
+  envoi.then(function (r) {
+    if (r.error) throw new Error('La photo n\'a pas pu être envoyée (' + r.error.message + ').');
+    var ligne = { nom_complet: $('fm-nom').value.trim(), region: $('fm-region').value.trim(), bio: $('fm-bio').value.trim(), contacts: contacts,
+      consent_gratuite: $('fm-c1').checked, consent_validite: $('fm-c2').checked, consent_affichage: $('fm-c3').checked };
+    if (r.data) ligne.photo_path = r.data.path;
+    return ficheM ? sb.from('marraines').update(ligne).eq('id', ficheM.id) : sb.from('marraines').insert([ligne]);
+  }).then(function (r) {
+    b.disabled = false; b.textContent = 'Soumettre ma fiche à Sabrina';
+    if (r.error) throw new Error(r.error.message);
+    photoM = null;
+    message('msg-marraine', 'ok', '🌸 Ta fiche est envoyée à Sabrina ! Elle vérifie tes résultats et te revient rapidement.');
+    chargerFicheMarraine();
+  }).catch(function (err) {
+    b.disabled = false; b.textContent = 'Soumettre ma fiche à Sabrina';
+    message('msg-marraine', 'erreur', echapper(err.message) + ' Réessaie ou écris à serenaissance.doula@gmail.com.');
+  });
 });
 
 demarrer();

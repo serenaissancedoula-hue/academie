@@ -114,6 +114,11 @@ th { color: var(--doux); font-weight: 600; }
   <!-- Tableau de bord -->
   <section class="vue" id="vue-bord" hidden>
     <h2 style="margin-bottom:12px;">Bonjour Sabrina 🌸</h2>
+    <div class="carte" id="carte-notif">
+      <h3 style="margin-bottom:6px;">🔔 Notifications sur ce cellulaire</h3>
+      <p id="notif-etat" style="font-size:.88rem;color:var(--doux);margin-bottom:10px;"></p>
+      <div class="actions"><button class="btn" id="notif-activer" hidden>Activer les notifications</button><button class="btn gris" id="notif-test" hidden>Envoyer une notification test</button></div>
+    </div>
     <div class="stats" id="stats"></div>
     <div class="carte">
       <h3 style="margin-bottom:10px;">À faire</h3>
@@ -136,6 +141,21 @@ th { color: var(--doux); font-weight: 600; }
       <button data-f="suspendu">Suspendues</button>
     </div>
     <div class="liste" id="liste"></div>
+  </section>
+
+  <!-- Marraines certifiées -->
+  <section class="vue" id="vue-marraines" hidden>
+    <h2 style="margin-bottom:6px;">Marraines d'allaitement</h2>
+    <p style="font-size:.86rem;color:var(--doux);margin-bottom:6px;">Fiches soumises par les étudiantes. Tu vérifies leurs résultats, tu valides, et la fiche apparaît sur la page publique <a href="index.html#nos-marraines" target="_blank">Nos marraines</a> pour 2 ans.</p>
+    <div class="filtres" id="filtres-m">
+      <button data-f="soumise" class="actif">À valider</button>
+      <button data-f="validee">Certifiées</button>
+      <button data-f="expire">À renouveler (≤ 60 jours)</button>
+      <button data-f="a_corriger">À corriger</button>
+      <button data-f="retiree">Retirées</button>
+      <button data-f="toutes">Toutes</button>
+    </div>
+    <div class="liste" id="liste-m"></div>
   </section>
 
   <!-- Outils -->
@@ -186,6 +206,7 @@ th { color: var(--doux); font-weight: 600; }
 <nav class="onglets-bas" id="onglets" hidden>
   <button data-v="bord" class="actif"><span>🏠</span>Tableau de bord</button>
   <button data-v="etudiantes"><span>👩‍🎓</span>Étudiantes</button>
+  <button data-v="marraines"><span>🤱</span>Marraines</button>
   <button data-v="outils"><span>🧰</span>Outils</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -201,7 +222,26 @@ var MODULES = { 1: 9, 2: 6, 3: 8, 4: 6, 5: 4 };
 var sb = window.supabase.createClient(SB_URL, SB_CLE);
 try { emailjs.init(EJ.cle); } catch (e) {}
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});
-var toutes = [], filtre = 'toutes', ficheId = null;
+var toutes = [], filtre = 'toutes', ficheId = null, marraines = [], filtreM = 'soumise', ficheMId = null;
+var VAPID = 'BA1eSxrp55R_nk6-rHpCI0Pi6OjPh-0MIOmlG2XZOLEptXG0xFUS4eB9aKAl3qQelLJqfouEq3FXWkYf02YhKMc';
+var APPLI = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function cleVapid(b) { var p = '='.repeat((4 - b.length % 4) % 4), s = atob((b + p).replace(/-/g, '+').replace(/_/g, '/')), u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+function etatNotif() {
+  var etat = $('notif-etat'), act = $('notif-activer'), test = $('notif-test');
+  act.hidden = true; test.hidden = true;
+  if (IOS && !APPLI) { etat.innerHTML = 'Sur iPhone, les notifications fonctionnent seulement dans l\'<strong>appli Admin installée</strong> : touche <strong>Partager</strong> puis <strong>« Sur l\'écran d\'accueil »</strong>, ouvre l\'appli Admin depuis ton écran d\'accueil et reviens ici pour activer.'; return; }
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) { etat.textContent = 'Cet appareil ou ce navigateur ne permet pas les notifications.'; return; }
+  if (Notification.permission === 'denied') { etat.innerHTML = 'Les notifications sont <strong>bloquées</strong>. Sur iPhone : Réglages → Notifications → Admin Séré → Autoriser. Sur Android : paramètres du site ou de l\'appli.'; return; }
+  navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (ab) {
+    if (ab && Notification.permission === 'granted') { etat.innerHTML = '✅ <strong>Activées</strong> : tu es avertie des inscriptions, comptes créés et confirmés, accès ouverts, documents de stage, examens et fiches de marraine.'; test.hidden = false; enregistrerAbonnement(ab); }
+    else { etat.textContent = 'Reçois une alerte (son, vibration et pastille sur l\'icône) à chaque inscription, document de stage, examen ou demande de fiche de marraine.'; act.hidden = false; }
+  });
+}
+function enregistrerAbonnement(ab) {
+  return sb.from('push_abonnements').upsert({ endpoint: ab.endpoint, abonnement: ab.toJSON(), appareil: navigator.userAgent.slice(0, 180) });
+}
+
 
 function $(id) { return document.getElementById(id); }
 function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
@@ -246,6 +286,7 @@ function demarrer() {
     }
     $('onglets').hidden = false; vue('bord');
     charger(); direct();
+    etatNotif(); viderPastille();
   });
 }
 $('form-connexion').addEventListener('submit', function (e) {
@@ -262,13 +303,22 @@ function charger() {
   return sb.from('etudiantes').select('*').order('created_at', { ascending: false }).then(function (r) {
     if (r.error) { toast('Impossible de charger les dossiers : ' + r.error.message); return; }
     toutes = r.data || [];
+    return sb.from('marraines').select('*').order('updated_at', { ascending: false }).then(function (m) {
+      marraines = (m && m.data) || [];
+      afficherMarraines(); if (ficheMId) ouvrirFicheM(ficheMId, true);
+    });
+  }).then(function () {
     afficherBord(); afficherListe();
+    ouvrirDepuisLien();
     if (ficheId) ouvrirFiche(ficheId, true);
   });
 }
 function direct() {
   sb.channel('etudiantes-admin').on('postgres_changes', { event: '*', schema: 'public', table: 'etudiantes' }, function (p) {
     if (p.eventType === 'INSERT') toast('🌸 Nouvelle inscription : ' + (p.new.prenom || '') + ' ' + (p.new.nom || ''));
+    charger();
+  }).on('postgres_changes', { event: '*', schema: 'public', table: 'marraines' }, function (p) {
+    if (p.eventType !== 'DELETE' && p.new && p.new.statut === 'soumise') toast('🤱 Fiche de marraine à valider : ' + (p.new.nom_complet || ''));
     charger();
   }).subscribe(function (etat) {
     var el = $('etat-direct'); el.hidden = false;
@@ -290,12 +340,13 @@ function afficherBord() {
     '<div class="stat" data-f="valide"><b>' + n.valide + '</b><span>4ᵉ trimestre validées</span></div>' +
     '<div class="stat" data-f="marraine"><b>' + n.marraine + '</b><span>Accès marraine</span></div>' +
     '<div class="stat' + (n.suspendu ? ' alerte' : '') + '" data-f="suspendu"><b>' + n.suspendu + '</b><span>Suspendues</span></div>' +
-    '<div class="stat" data-f="toutes"><b>' + n.total + '</b><span>Dossiers au total</span></div>';
+    '<div class="stat" data-f="toutes"><b>' + n.total + '</b><span>Dossiers au total</span></div>' +
+    '<div class="stat' + (marraines.filter(function (m) { return m.statut === 'soumise'; }).length ? ' alerte' : '') + '" data-m="1"><b>' + marraines.filter(function (m) { return m.statut === 'soumise'; }).length + '</b><span>Fiches de marraine à valider</span></div>';
   var af = toutes.filter(function (e) { return enAttente(e) && !e.suspendu; });
   $('a-faire').innerHTML = af.length ? af.map(carteLigne).join('') : '<div class="vide">Rien à valider pour le moment ✨</div>';
   $('recentes').innerHTML = toutes.slice(0, 5).map(carteLigne).join('') || '<div class="vide">Aucune inscription pour l\'instant.</div>';
 }
-$('stats').addEventListener('click', function (e) { var s = e.target.closest('.stat'); if (!s) return; choisirFiltre(s.dataset.f); vue('etudiantes'); });
+$('stats').addEventListener('click', function (e) { var s = e.target.closest('.stat'); if (!s) return; if (s.dataset.m) { vue('marraines'); return; } choisirFiltre(s.dataset.f); vue('etudiantes'); });
 function choisirFiltre(f) { filtre = f; document.querySelectorAll('#filtres button').forEach(function (b) { b.classList.toggle('actif', b.dataset.f === f); }); afficherListe(); }
 $('filtres').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) choisirFiltre(b.dataset.f); });
 $('recherche').addEventListener('input', afficherListe);
@@ -349,6 +400,8 @@ function ouvrirFiche(id, rafraichir) {
 
     '<div class="carte"><h3 style="margin-bottom:10px;">Progression et résultats</h3><div id="f-progression">Chargement…</div></div>' +
 
+    (function () { var mm = marraines.filter(function (x) { return x.user_id && x.user_id === e.user_id; })[0];
+      return mm ? '<div class="carte"><h3 style="margin-bottom:8px;">🤱 Fiche de marraine</h3><p class="infos-ligne">' + statutM(mm) + '</p><div class="actions" style="margin-top:8px;"><button class="btn gris" data-a="voir-marraine" data-m="' + mm.id + '">Ouvrir la fiche de marraine</button></div></div>' : ''; })() +
     '<div class="carte"><h3 style="margin-bottom:6px;">Notes privées</h3><p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Visibles seulement par toi.</p>' +
     '<textarea id="f-notes" rows="3" placeholder="Ex. : paiement 2/4 reçu le…"></textarea><div class="actions" style="margin-top:8px;"><button class="btn gris" data-a="notes">Enregistrer la note</button></div></div>' +
 
@@ -365,7 +418,7 @@ function ouvrirFiche(id, rafraichir) {
   $('f-infos').addEventListener('submit', function (ev) { ev.preventDefault(); enregistrerInfos(e); });
   chargerDetails(e);
 }
-function fermerFiche() { $('fiche').hidden = true; ficheId = null; }
+function fermerFiche() { $('fiche').hidden = true; ficheId = null; ficheMId = null; }
 $('fiche-fermer').addEventListener('click', fermerFiche);
 
 function chargerDetails(e) {
@@ -447,6 +500,7 @@ $('fiche-corps').addEventListener('click', function (ev) {
   var b = ev.target.closest('[data-a]'); if (!b) return;
   var e = toutes.find(function (x) { return x.id === ficheId; }); if (!e) return;
   var a = b.dataset.a;
+  if (a === 'voir-marraine') { fermerFiche(); vue('marraines'); ouvrirFicheM(+b.dataset.m); return; }
   if (a === 'valider') {
     if (!confirm('Valider ' + e.prenom + ' ' + e.nom + ' ?\n\nVérifie d\'abord dans Stripe que son paiement est reçu.\nElle recevra le courriel de bienvenue à ' + e.courriel + '.')) return;
     maj(e, { statut: 'valide' }).then(function (ok) { if (ok) courrielBienvenue(e).then(function () { toast('💕 ' + e.prenom + ' est validée et le courriel est parti'); }, function () { toast('Validée, mais le courriel n\'a pas pu partir'); }); });
@@ -499,6 +553,189 @@ $('fiche-corps').addEventListener('click', function (ev) {
     });
   }
 });
+
+/* ---------- Marraines certifiées ---------- */
+var SB_PUBLIC = SB_URL + '/storage/v1/object/public/marraines-publiques/';
+var LIBELLES_CONTACT = { courriel: 'Courriel', telephone: 'Téléphone / texto', facebook: 'Facebook / Messenger', instagram: 'Instagram', autre: 'Autre' };
+function aujourdhui() { return new Date().toISOString().slice(0, 10); }
+function dans2ans(d) { var x = new Date(d + 'T12:00:00'); x.setFullYear(x.getFullYear() + 2); return x.toISOString().slice(0, 10); }
+function expireeM(m) { return m.statut === 'validee' && m.date_expiration && m.date_expiration < aujourdhui(); }
+function statutM(m) {
+  if (expireeM(m)) return '<span class="pastille p-suspendu">⌛ Expirée le ' + jour(m.date_expiration) + '</span>';
+  return { soumise: '<span class="pastille p-attente">⏳ À valider</span>', validee: '<span class="pastille p-valide">✓ Certifiée jusqu\'au ' + jour(m.date_expiration) + '</span>',
+    a_corriger: '<span class="pastille p-marraine">✏️ Correction demandée</span>', retiree: '<span class="pastille p-lien">Retirée de la page</span>' }[m.statut] || esc(m.statut);
+}
+$('filtres-m').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; filtreM = b.dataset.f; document.querySelectorAll('#filtres-m button').forEach(function (x) { x.classList.toggle('actif', x === b); }); afficherMarraines(); });
+function afficherMarraines() {
+  var l = marraines.filter(function (m) {
+    if (filtreM === 'toutes') return true;
+    if (filtreM === 'expire') { var lim = new Date(Date.now() + 60 * 864e5).toISOString().slice(0, 10); return m.statut === 'validee' && m.date_expiration && m.date_expiration <= lim; }
+    if (filtreM === 'validee') return m.statut === 'validee' && !expireeM(m);
+    return m.statut === filtreM;
+  });
+  $('liste-m').innerHTML = l.length ? l.map(function (m) {
+    return '<div class="ligne" data-m="' + m.id + '"><div class="avatar">🤱</div><div class="qui"><strong>' + esc(m.nom_complet) + '</strong><small>' + esc(m.region || m.courriel || '') + ' · mise à jour ' + jour(m.updated_at) + '</small><div>' + statutM(m) + '</div></div><span>›</span></div>';
+  }).join('') : '<div class="vide">Aucune fiche ici.</div>';
+}
+$('liste-m').addEventListener('click', function (e) { var l = e.target.closest('.ligne'); if (l) { e.stopPropagation(); ouvrirFicheM(+l.dataset.m); } });
+function ouvrirFicheM(id, rafraichir) {
+  var m = marraines.find(function (x) { return x.id === id; }); if (!m) return;
+  ficheMId = id; ficheId = null;
+  var etu = toutes.filter(function (e) { return (m.user_id && e.user_id === m.user_id) || (e.courriel || '').toLowerCase() === (m.courriel || '').toLowerCase(); })[0];
+  $('fiche-nom').textContent = m.nom_complet;
+  var acts = [];
+  if (m.statut !== 'validee' || expireeM(m)) acts.push('<button class="btn vert" data-am="valider">✓ ' + (expireeM(m) ? 'Renouveler (2 ans) et publier' : 'Valider, certifier et publier') + '</button>');
+  if (m.statut === 'validee' && !expireeM(m)) acts.push('<button class="btn gris" data-am="renouveler">🔄 Renouveler 2 ans à partir d\'aujourd\'hui</button>');
+  if (m.statut !== 'a_corriger') acts.push('<button class="btn gris" data-am="corriger">✏️ Demander une correction</button>');
+  if (m.statut !== 'retiree') acts.push('<button class="btn gris" data-am="retirer">Retirer de la page publique</button>');
+  var h = '<div class="carte" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;"><img id="fm-photo-admin" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;background:#efe6dc;">' +
+    '<div style="flex:1;min-width:200px;"><div>' + statutM(m) + '</div>' +
+    (m.date_certification ? '<p class="infos-ligne"><b>Certifiée le :</b> ' + jour(m.date_certification) + ' · <b>jusqu\'au :</b> ' + jour(m.date_expiration) + '</p>' : '') +
+    '<p class="infos-ligne"><b>Compte :</b> ' + esc(m.courriel || '') + '</p>' +
+    (etu ? '<p class="infos-ligne"><a href="#" data-am="dossier">Ouvrir son dossier étudiante →</a></p>' : '') + '</div></div>' +
+    '<div class="carte"><h3 style="margin-bottom:8px;">Résultats de la formation (8 h 30)</h3><div id="fm-resultats">Chargement…</div></div>' +
+    '<div class="carte"><h3 style="margin-bottom:10px;">Fiche publique</h3><form id="fm-edit" style="display:flex;flex-direction:column;gap:8px;">' +
+    '<label class="champ">Nom complet<input id="fe-nom" value="' + esc(m.nom_complet) + '"></label>' +
+    '<label class="champ">Région<input id="fe-region" value="' + esc(m.region || '') + '"></label>' +
+    '<label class="champ">Bio<textarea id="fe-bio" rows="5" maxlength="800">' + esc(m.bio || '') + '</textarea></label>' +
+    '<label class="champ">Contacts affichés (un par ligne : type = valeur)<textarea id="fe-contacts" rows="4">' + esc((m.contacts || []).map(function (c) { return c.type + ' = ' + c.valeur; }).join('\n')) + '</textarea></label>' +
+    '<div class="actions"><button class="btn gris" type="submit">Enregistrer les modifications</button></div></form></div>' +
+    '<div class="carte"><h3 style="margin-bottom:8px;">Consentements</h3>' +
+    '<p class="infos-ligne">' + (m.consent_gratuite ? '✅' : '❌') + ' Gratuité et bénévolat des jumelages</p>' +
+    '<p class="infos-ligne">' + (m.consent_validite ? '✅' : '❌') + ' Validité de 2 ans et mise à jour</p>' +
+    '<p class="infos-ligne">' + (m.consent_affichage ? '✅' : '❌') + ' Affichage sur le site</p>' +
+    '<p class="infos-ligne" style="color:var(--doux);font-size:.8rem;">Acceptés le ' + (m.consent_date ? new Date(m.consent_date).toLocaleString('fr-CA') : '—') + '</p></div>' +
+    '<div class="carte"><h3 style="margin-bottom:8px;">Certificat</h3><p class="infos-ligne" style="margin-bottom:8px;">' + (m.certificat_path ? '📜 Certificat téléversé : l\'étudiante peut le télécharger dans son compte.' : 'Téléverse le certificat (PDF ou image) : l\'étudiante pourra le télécharger dans son compte.') + '</p>' +
+    '<div class="actions"><label class="btn gris" style="cursor:pointer;">📤 Téléverser le certificat<input type="file" id="fm-certif" accept=".pdf,image/*" hidden></label>' + (m.certificat_path ? '<button class="btn gris" data-am="voir-certif">Voir</button>' : '') + '</div></div>' +
+    (m.commentaire_admin ? '<div class="carte"><h3 style="margin-bottom:6px;">Dernier message envoyé</h3><p class="infos-ligne">' + esc(m.commentaire_admin) + '</p></div>' : '') +
+    '<div class="carte"><div class="actions">' + acts.join('') + '<a class="btn gris" href="index.html#nos-marraines" target="_blank">Voir la page publique</a></div></div>' +
+    '<div class="carte" style="border-color:#e3b5a8;"><button class="btn danger" data-am="supprimer">🗑️ Supprimer cette fiche</button></div>';
+  $('fiche-corps').innerHTML = h; $('fiche').hidden = false; if (!rafraichir) $('fiche').scrollTop = 0;
+  if (m.photo_path) sb.storage.from('marraines').createSignedUrl(m.photo_path, 900).then(function (r) { if (r.data && $('fm-photo-admin')) $('fm-photo-admin').src = r.data.signedUrl; });
+  else if (m.photo_publique) $('fm-photo-admin').src = SB_PUBLIC + m.photo_publique;
+  $('fm-edit').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var cs = $('fe-contacts').value.split('\n').map(function (l) { var i = l.indexOf('='); return i > 0 ? { type: l.slice(0, i).trim(), valeur: l.slice(i + 1).trim() } : null; }).filter(function (c) { return c && c.valeur; });
+    majM(m, { nom_complet: $('fe-nom').value.trim(), region: $('fe-region').value.trim(), bio: $('fe-bio').value.trim(), contacts: cs }, '✅ Fiche enregistrée');
+  });
+  $('fm-certif').addEventListener('change', function () {
+    var f = this.files && this.files[0]; if (!f || !m.user_id) return;
+    var chemin = m.user_id + '/certificat-marraine-' + Date.now() + (/\.pdf$/i.test(f.name) ? '.pdf' : '.jpg');
+    sb.storage.from('certificats-marraines').upload(chemin, f, { contentType: f.type || 'application/pdf' }).then(function (r) {
+      if (r.error) { toast('Téléversement impossible : ' + r.error.message); return; }
+      majM(m, { certificat_path: chemin }, '📜 Certificat téléversé');
+    });
+  });
+  // Résultats de la formation marraine
+  var p1 = m.user_id ? sb.from('progression').select('donnees').eq('user_id', m.user_id).maybeSingle() : Promise.resolve({});
+  var p2 = sb.from('resultats').select('*').eq('formation', 'marraine').or((m.user_id ? 'user_id.eq.' + m.user_id + ',' : '') + 'courriel.ilike.' + (m.courriel || 'x')).order('created_at', { ascending: false });
+  Promise.all([p1, p2]).then(function (r) {
+    var d = (r[0] && r[0].data && r[0].data.donnees) || {}, res = (r[1] && r[1].data) || [];
+    function sc(k) { try { return JSON.parse(d[k]); } catch (x) { return null; } }
+    function ok(x) { return x && x.score / x.total >= 0.8; }
+    var lignes = '', nq = 0;
+    for (var i = 1; i <= 6; i++) { var q = sc('marraine:score:1.' + i); if (ok(q)) nq++; lignes += '<tr><td>Quiz 1.' + i + '</td><td>' + (q ? '<span class="' + (ok(q) ? 'ok' : 'ko') + '">' + q.score + '/' + q.total + '</span>' : '—') + '</td></tr>'; }
+    var ex = sc('marraine:score:exam');
+    lignes += '<tr><td><strong>Examen final</strong></td><td>' + (ex ? '<span class="' + (ok(ex) ? 'ok' : 'ko') + '">' + ex.score + '/' + ex.total + ' (' + Math.round(ex.score / ex.total * 100) + ' %)</span>' : '—') + '</td></tr>';
+    var global = nq === 6 && ok(ex);
+    $('fm-resultats').innerHTML = '<p class="infos-ligne" style="margin-bottom:8px;">' + (global ? '<span class="ok">✅ Formation réussie : 6 quiz et examen final à 80 % et plus.</span>' : '<span class="ko">⚠️ Formation pas encore réussie au complet (' + nq + '/6 quiz, examen ' + (ok(ex) ? 'réussi' : 'non réussi') + ').</span>') + '</p>' +
+      '<table>' + lignes + '</table>' + (res.length ? '<p class="infos-ligne" style="margin-top:8px;color:var(--doux);font-size:.8rem;">' + res.length + ' tentative(s) enregistrée(s) · dernière le ' + jour(res[0].created_at) + '</p>' : '');
+  });
+}
+function majM(m, champs, msg) {
+  return sb.from('marraines').update(champs).eq('id', m.id).select().then(function (r) {
+    if (r.error || !r.data || !r.data.length) { toast('Ça n\'a pas fonctionné' + (r.error ? ' : ' + r.error.message : '')); return false; }
+    Object.assign(m, r.data[0]); if (msg) toast(msg); afficherMarraines(); afficherBord(); ouvrirFicheM(m.id, true); return true;
+  });
+}
+function publierPhoto(m) {
+  if (!m.photo_path) return Promise.resolve(m.photo_publique || null);
+  return sb.storage.from('marraines').download(m.photo_path).then(function (r) {
+    if (r.error) throw new Error('photo introuvable');
+    var nom = m.id + '-' + Date.now() + '.jpg';
+    return sb.storage.from('marraines-publiques').upload(nom, r.data, { contentType: 'image/jpeg', upsert: true }).then(function (u) {
+      if (u.error) throw new Error(u.error.message);
+      if (m.photo_publique && m.photo_publique !== nom) sb.storage.from('marraines-publiques').remove([m.photo_publique]);
+      return nom;
+    });
+  });
+}
+function courrielMarraineCertifiee(m) {
+  return emailjs.send(EJ.service, EJ.marraine, { prenom: (m.nom_complet || '').split(' ')[0], courriel: m.courriel,
+    sujet: '🎉 Tu es marraine d\'allaitement certifiée !', accroche: 'Félicitations',
+    titre: 'Tu es marraine d\'allaitement certifiée 🤱',
+    message: 'Ta fiche est validée et publiée sur la page « Nos marraines d\'allaitement » de Sérénaissance. Ta certification est valide jusqu\'au ' + jour(m.date_expiration) + '. Merci de t\'engager bénévolement auprès des familles qui allaitent ! 💕',
+    bouton: 'Voir ma fiche →' }, EJ.cle);
+}
+$('fiche-corps').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-am]'); if (!b) return;
+  ev.preventDefault(); ev.stopImmediatePropagation();
+  var m = marraines.find(function (x) { return x.id === ficheMId; }); if (!m) return;
+  var a = b.dataset.am;
+  if (a === 'dossier') {
+    var etu = toutes.filter(function (e) { return (m.user_id && e.user_id === m.user_id) || (e.courriel || '').toLowerCase() === (m.courriel || '').toLowerCase(); })[0];
+    if (etu) { ficheMId = null; vue('etudiantes'); ouvrirFiche(etu.id); }
+  } else if (a === 'valider' || a === 'renouveler') {
+    if (!m.consent_gratuite || !m.consent_validite || !m.consent_affichage) { toast('Les 3 consentements doivent être acceptés.'); return; }
+    if (!confirm((a === 'valider' ? 'Valider et publier' : 'Renouveler') + ' la fiche de ' + m.nom_complet + ' ?\n\nCertification valide 2 ans, à partir d\'aujourd\'hui.')) return;
+    b.disabled = true;
+    publierPhoto(m).then(function (photo) {
+      var d = aujourdhui();
+      return majM(m, { statut: 'validee', date_certification: d, date_expiration: dans2ans(d), photo_publique: photo, commentaire_admin: null }, '🎉 ' + m.nom_complet + ' est certifiée et publiée');
+    }).then(function (ok) {
+      if (ok && m.courriel && confirm('Envoyer le courriel de félicitations à ' + m.courriel + ' ?')) courrielMarraineCertifiee(m).then(function () { toast('✉️ Courriel envoyé'); }, function () { toast('Le courriel n\'a pas pu partir'); });
+    }).catch(function (e) { b.disabled = false; toast('Publication impossible : ' + e.message); });
+  } else if (a === 'corriger') {
+    var c = prompt('Quelle correction demandes-tu à ' + m.nom_complet + ' ? (elle verra ce message dans son compte)');
+    if (!c) return;
+    majM(m, { statut: 'a_corriger', commentaire_admin: c.trim() }, '✏️ Correction demandée').then(function (ok) {
+      if (ok && m.courriel && confirm('L\'avertir par courriel ?')) location.href = 'mailto:' + m.courriel + '?subject=' + encodeURIComponent('Ta fiche de marraine d\'allaitement') + '&body=' + encodeURIComponent('Bonjour,\n\nMerci pour ta fiche de marraine ! Une petite correction avant que je la publie :\n\n' + c + '\n\nTu peux la modifier dans ton compte (Mon compte → Ma fiche de marraine).\n\nAvec douceur,\nSabrina');
+    });
+  } else if (a === 'retirer') {
+    if (confirm('Retirer la fiche de ' + m.nom_complet + ' de la page publique ?')) majM(m, { statut: 'retiree' }, 'Fiche retirée de la page');
+  } else if (a === 'voir-certif') {
+    ouvrirSigne('certificats-marraines', m.certificat_path);
+  } else if (a === 'supprimer') {
+    if (prompt('Supprimer définitivement la fiche de ' + m.nom_complet + ' ? Écris SUPPRIMER :') !== 'SUPPRIMER') return;
+    var fichiers = [];
+    if (m.photo_publique) sb.storage.from('marraines-publiques').remove([m.photo_publique]);
+    sb.from('marraines').delete().eq('id', m.id).then(function (r) {
+      if (r.error) { toast('Suppression impossible : ' + r.error.message); return; }
+      marraines = marraines.filter(function (x) { return x.id !== m.id; });
+      fermerFiche(); afficherMarraines(); afficherBord(); toast('🗑️ Fiche supprimée');
+    });
+  }
+}, true);
+
+/* ---------- Notifications ---------- */
+$('notif-activer').addEventListener('click', function () {
+  Notification.requestPermission().then(function (p) {
+    if (p !== 'granted') { etatNotif(); return; }
+    return navigator.serviceWorker.ready.then(function (reg) {
+      return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: cleVapid(VAPID) });
+    }).then(function (ab) { return enregistrerAbonnement(ab); }).then(function (r) {
+      toast(r && r.error ? 'Abonnement non enregistré : ' + r.error.message : '🔔 Notifications activées !'); etatNotif();
+    });
+  }).catch(function (e) { toast('Impossible d\'activer : ' + e.message); });
+});
+$('notif-test').addEventListener('click', function () {
+  navigator.serviceWorker.ready.then(function (reg) {
+    return reg.showNotification('🌸 Test', { body: 'Les notifications de ton appli Admin fonctionnent !', icon: '/icones/admin-192.png', vibrate: [120, 60, 120] });
+  });
+  if (navigator.setAppBadge) navigator.setAppBadge(1).catch(function () {});
+});
+function viderPastille() {
+  if (navigator.clearAppBadge) navigator.clearAppBadge().catch(function () {});
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage('badge-zero');
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { viderPastille(); if (/^#[em]\d/.test(location.hash)) ouvrirDepuisLien(); } });
+function ouvrirDepuisLien() {
+  var m = (location.hash || '').match(/^#e(\d+)/);
+  if (m && toutes.length) { history.replaceState(null, '', 'admin.html'); ouvrirFiche(+m[1]); }
+  var k = (location.hash || '').match(/^#m(\d+)/);
+  if (k && marraines.length) { history.replaceState(null, '', 'admin.html'); vue('marraines'); ouvrirFicheM(+k[1]); }
+}
+window.addEventListener('hashchange', ouvrirDepuisLien);
 
 /* ---------- Outils ---------- */
 $('form-lien').addEventListener('submit', function (ev) {
