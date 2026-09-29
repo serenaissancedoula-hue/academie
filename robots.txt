@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /Formation/
+Allow: /Formation/module-1/apercu.html
+Disallow: /espace.html
+
+Sitemap: https://academiesere.ca/sitemap.xml

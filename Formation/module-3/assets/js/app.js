@@ -99,6 +99,8 @@
      Tous les quiz réussis             -> examen final débloqué.        */
   function passed(id) { var r = store.get('score:' + id); return !!(r && r.score / r.total >= PASS_QUIZ); }
   function isRead(id) { return !!store.get('read:' + id); }
+  function aRelire() { return store.get('arelire') || []; }
+  function doitRelire(id) { return aRelire().indexOf(id) >= 0; }
   function keyOf(href) {
     var f = (href || '').split('/').pop().split('#')[0].split('?')[0];
     var m = f.match(new RegExp('^chapitre-' + MN + '-(\\d+)\\.html$')); if (m) return { type: 'chap', id: MN + '.' + m[1] };
@@ -122,6 +124,8 @@
     }
     if (k.type === 'exam') {
       var miss = CH.filter(function (id) { return !passed(id); });
+      var relire = aRelire();
+      if (!miss.length && relire.length) return { msg: 'Avant de repasser l\'examen, relis le' + (relire.length > 1 ? 's chapitres ' : ' chapitre ') + relire.join(', ') + ' jusqu\'au bout et clique sur « J\'ai terminé ma lecture ».', href: url('chapitre', relire[0]), label: 'Relire le chapitre ' + relire[0] };
       if (!miss.length) return null;
       return { msg: 'Réussissez d\'abord les ' + NCH + ' quiz pour débloquer l\'examen final. Il vous reste : quiz ' + miss.join(', ') + '.', href: url('quiz', miss[0]), label: 'Continuer le parcours' };
     }
@@ -205,7 +209,13 @@
       readBtn.hidden = true; if (hint) hint.hidden = true;
       quizGo.hidden = false;
     };
-    if (isRead(cid)) setRead();
+    if (doitRelire(cid)) {
+      var ban = document.createElement('div');
+      ban.className = 'callout caution';
+      ban.innerHTML = '<p><strong>📖 Relecture demandée.</strong> Relis ce chapitre jusqu\'au bout et clique sur « J\'ai terminé ma lecture » en bas de page pour pouvoir repasser l\'examen.</p>';
+      var art = document.querySelector('.content'); if (art) art.insertBefore(ban, art.firstChild);
+    }
+    if (isRead(cid) && !doitRelire(cid)) setRead();
     else {
       readBtn.disabled = true;
       var check = function () {
@@ -220,6 +230,8 @@
       check();
       readBtn.addEventListener('click', function () {
         store.set('read:' + cid, true);
+        var rl = aRelire().filter(function (x) { return x !== cid; });
+        store.set('arelire', rl);
         setRead(); applyLocks();
         toast('Lecture validée : le quiz ' + cid + ' est débloqué !');
       });
@@ -348,7 +360,19 @@
       for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
       return arr;
     };
-    window.EXAM_DATA.forEach(function (d, n) {
+    // Banque de questions : on en tire la moitié par chapitre, en évitant celles de la tentative précédente
+    var parChap = {}, ordreChap = [];
+    window.EXAM_DATA.forEach(function (d) { if (!parChap[d.c]) { parChap[d.c] = []; ordreChap.push(d.c); } parChap[d.c].push(d); });
+    var vus = store.get('exam:vues') || [];
+    var TIRAGE = [];
+    ordreChap.forEach(function (c) {
+      var l = shuffle(parChap[c].slice());
+      l.sort(function (a, b) { return (vus.indexOf(a.q) >= 0 ? 1 : 0) - (vus.indexOf(b.q) >= 0 ? 1 : 0); });
+      TIRAGE = TIRAGE.concat(l.slice(0, Math.max(1, Math.round(l.length / 2))));
+    });
+    store.set('exam:vues', TIRAGE.map(function (d) { return d.q; }));
+    TOTALQ = TIRAGE.length;
+    TIRAGE.forEach(function (d, n) {
       if (d.c !== lastChap) {
         lastChap = d.c;
         var part = el('h2', 'exam-part');
@@ -364,7 +388,7 @@
       card.appendChild(fb);
       var ex = el('p', 'explain', d.e);
       card.appendChild(ex);
-      var item = { q: q, card: card, fb: fb, ex: ex, choice: null };
+      var item = { q: q, card: card, fb: fb, ex: ex, choice: null, c: d.c };
       card.querySelectorAll('.opt').forEach(function (b) {
         b.addEventListener('click', function () {
           card.querySelectorAll('.opt').forEach(function (x) { x.classList.remove('selected'); });
@@ -411,6 +435,9 @@
         x.ex.classList.add('show');
       });
       var total = all.length, ok = score / total >= PASS_EXAM;
+      var chapsRates = [];
+      all.forEach(function (x) { if (x.choice !== x.q.a && chapsRates.indexOf(x.c) < 0) chapsRates.push(x.c); });
+      if (!ok) store.set('arelire', chapsRates);
       var prev = store.get('score:exam');
       if (!prev || score >= prev.score) store.set('score:exam', { score: score, total: total });
       enregistrerResultat('Examen du module ' + MN, score, total, PASS_EXAM);
@@ -425,8 +452,9 @@
         '<h3>' + (ok ? 'Félicitations, Module ' + MN + ' validé !' : 'Module ' + MN + ' non validé pour le moment') + '</h3>' +
         '<p>Votre note : ' + score + ' / ' + total + '. Seuil de réussite : 80 % (' + Math.ceil(total * PASS_EXAM) + ' / ' + total + ').' +
         (ok ? (nextMod <= LASTMOD ? ' Le Module ' + nextMod + ' est maintenant débloqué.' : ' Les cinq modules sont validés : le grand examen final de la formation est débloqué.')
-            : ' Relisez les corrections et les explications ci-dessous, revoyez les chapitres concernés et recommencez.') + '</p>' +
-        '<div class="actions"><button class="btn-ghost" type="button" onclick="location.reload()">Recommencer l\'examen</button>' + nextBtn + '</div>';
+            : ' Relisez les corrections et les explications ci-dessous. Pour repasser l\'examen, relisez d\'abord ' + (chapsRates.length > 1 ? 'les chapitres ' : 'le chapitre ') + chapsRates.join(', ') + ' : la prochaine tentative comportera d\'autres questions.') + '</p>' +
+        '<div class="actions">' + (ok ? '<button class="btn-ghost" type="button" onclick="location.reload()">Recommencer l\'examen</button>' + nextBtn
+                                     : '<a class="btn" href="' + url('chapitre', chapsRates[0]) + '">Relire le chapitre ' + chapsRates[0] + ' →</a>') + '</div>';
       eresult.classList.add('show');
       examEl.insertBefore(eresult, examEl.firstChild);
       eresult.scrollIntoView({ behavior: 'smooth', block: 'start' });

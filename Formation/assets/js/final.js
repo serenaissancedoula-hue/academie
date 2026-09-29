@@ -74,8 +74,27 @@
       '<div class="actions"><a class="btn" href="module-' + missing[0] + '/index.html">Aller au Module ' + missing[0] + ' →</a><a class="btn-ghost" href="index.html">Accueil de la formation</a></div></section>';
     return;
   }
+  // Relecture demandée après un échec : chapitres à relire dans les modules
+  var relire = [];
+  [1, 2, 3, 4, 5].forEach(function (n) { (get('m' + n + ':arelire') || []).forEach(function (c) { relire.push({ m: n, c: c }); }); });
+  if (relire.length) {
+    box.innerHTML = '<section class="lock-page"><img src="assets/img/cadenas.svg" alt="" width="96" height="96"><h1>Relecture avant la reprise</h1>' +
+      '<p>Avant de repasser le grand examen final, relis jusqu\'au bout ' + (relire.length > 1 ? 'les chapitres ' : 'le chapitre ') +
+      relire.map(function (x) { return x.c; }).join(', ') + ' et clique sur « J\'ai terminé ma lecture » à la fin de chacun. La prochaine tentative comportera d\'autres questions.</p>' +
+      '<div class="actions"><a class="btn" href="module-' + relire[0].m + '/chapitre-' + relire[0].c.replace('.', '-') + '.html">Relire le chapitre ' + relire[0].c + ' →</a><a class="btn-ghost" href="index.html">Accueil de la formation</a></div></section>';
+    return;
+  }
   var items = [];
-  var qs = shuffle(window.FINAL_DATA.slice());
+  // Tirage : la moitié des questions de chaque module, en évitant celles de la tentative précédente
+  var parMod = {}, vus = get('final:vues') || [], qs = [];
+  window.FINAL_DATA.forEach(function (d) { (parMod[d.m] = parMod[d.m] || []).push(d); });
+  Object.keys(parMod).sort().forEach(function (m) {
+    var l = shuffle(parMod[m].slice());
+    l.sort(function (a, b) { return (vus.indexOf(a.q) >= 0 ? 1 : 0) - (vus.indexOf(b.q) >= 0 ? 1 : 0); });
+    qs = qs.concat(l.slice(0, Math.max(1, Math.round(l.length / 2))));
+  });
+  set('final:vues', qs.map(function (d) { return d.q; }));
+  qs = shuffle(qs);
   qs.forEach(function (d, n) {
     var order = shuffle([0, 1, 2, 3]);
     var q = { o: order.map(function (k) { return d.o[k]; }), a: order.indexOf(0) };
@@ -98,7 +117,7 @@
     card.appendChild(opts);
     var fb = el('div', 'feedback'); card.appendChild(fb);
     var ex = el('p', 'explain', d.e); card.appendChild(ex);
-    var it = { q: q, card: card, fb: fb, ex: ex, m: d.m, choice: null };
+    var it = { q: q, card: card, fb: fb, ex: ex, m: d.m, e: d.e || '', choice: null };
     items.push(it);
     box.appendChild(card);
   });
@@ -134,6 +153,18 @@
     var prev = get('final:score');
     if (!prev || score >= prev.score) set('final:score', { score: score, total: total });
     enregistrerResultat('Grand examen final', score, total, PASS);
+    var aRelire = {};
+    if (!pass) {
+      items.forEach(function (x) {
+        if (x.choice === x.q.a) return;
+        var ref = (x.e.match(/\((\d)\.(\d+)(?:\.\d+)?\)/) || []);
+        var c = ref[1] ? ref[1] + '.' + ref[2] : null;
+        if (c && ref[1] === String(x.m)) { aRelire[x.m] = aRelire[x.m] || []; if (aRelire[x.m].indexOf(c) < 0) aRelire[x.m].push(c); }
+      });
+      Object.keys(aRelire).forEach(function (m) { set('m' + m + ':arelire', aRelire[m]); });
+    }
+    var listeRelire = [];
+    Object.keys(aRelire).sort().forEach(function (m) { listeRelire = listeRelire.concat(aRelire[m]); });
     var pct = score / total, r = 60, c = 2 * Math.PI * r;
     var detail = Object.keys(per).sort().map(function (m) { return '<li>Module ' + m + ' : ' + per[m][0] + ' / ' + per[m][1] + '</li>'; }).join('');
     bar.style.display = 'none';
@@ -141,9 +172,9 @@
       '<circle cx="70" cy="70" r="60" fill="none" stroke="' + (pass ? '#5f8570' : '#b4654a') + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + (c * pct) + ' ' + c + '"/></svg><span>' + Math.round(pct * 100) + ' %</span></div>' +
       '<h3>' + (pass ? 'Félicitations, formation réussie !' : 'Examen final non réussi pour le moment') + '</h3>' +
       '<p>Votre note : ' + score + ' / ' + total + '. Seuil de réussite : 80 % (' + Math.ceil(total * PASS) + ' / ' + total + ').' +
-      (pass ? ' Vous avez terminé la formation Accompagnement professionnel du 4e trimestre.' : ' Consultez les explications ci-dessous et revoyez les modules où vous avez perdu le plus de points.') + '</p>' +
+      (pass ? ' Vous avez terminé la formation Accompagnement professionnel du 4e trimestre.' : ' Consultez les explications ci-dessous. Pour repasser l\'examen, relisez d\'abord ' + (listeRelire.length ? (listeRelire.length > 1 ? 'les chapitres ' : 'le chapitre ') + listeRelire.join(', ') : 'les modules où vous avez perdu des points') + ' : la prochaine tentative comportera d\'autres questions.') + '</p>' +
       '<ul class="per-module">' + detail + '</ul>' +
-      '<div class="actions"><button class="btn-ghost" type="button" onclick="location.reload()">Recommencer l\'examen</button><a class="btn" href="index.html">Accueil de la formation</a></div>';
+      '<div class="actions">' + (pass ? '<button class="btn-ghost" type="button" onclick="location.reload()">Recommencer l\'examen</button>' : '') + '<a class="btn" href="index.html">Accueil de la formation</a></div>';
     res.classList.add('show');
     box.insertBefore(res, box.firstChild);
     res.scrollIntoView({ behavior: 'smooth', block: 'start' });

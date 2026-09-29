@@ -1,61 +1,35 @@
 /* Académie Sérénaissance — accès protégé aux formations.
-   Le contenu des cours est chiffré. Il n'est déchiffré que pour une étudiante
-   connectée dont l'accès a été validé (clé remise par Supabase selon ses droits). */
+   - Le contenu des cours est chiffré ; il n'est déchiffré que pour une étudiante connectée
+     dont l'accès est validé (clé remise par Supabase selon ses droits).
+   - La progression (lectures, quiz, examens) est propre à chaque étudiante et sauvegardée
+     dans son compte : elle la retrouve sur n'importe quel appareil.
+   - Un menu « Mon compte » (Mes cours, Mes informations, Documents de stage, Déconnexion)
+     est visible sur toutes les pages de cours. */
 (function () {
   'use strict';
   var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co';
   var SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
-  var SB_JETON = 'sb-zeptirfcwstufcpgvkzx-auth-token';
-  var SITE = 'https://academiesere.ca/';
+  var SCRIPT = document.currentScript && document.currentScript.src;
+  var RACINE = SCRIPT ? new URL('../', SCRIPT).href : 'https://academiesere.ca/';
+  var ESPACE = RACINE + 'espace.html';
+  var PREFIXES = /^(m\d+|marraine|final):/;
 
   var bloc = document.getElementById('contenu-chiffre');
   if (!bloc) return;
   var FORMATION = bloc.getAttribute('data-f');
   var NOMS = { '4e-trimestre': "l'Accompagnement de pointe du 4ᵉ trimestre", 'marraine': "la formation de marraine d'allaitement" };
+  var sb = null, session = null, cleCrypto = null;
 
   function b64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
-  function lireSession() { try { return JSON.parse(localStorage.getItem(SB_JETON)); } catch (e) { return null; } }
-  function rafraichir(s) {
-    if (!s || !s.refresh_token) return Promise.resolve(null);
-    return fetch(SB_URL + '/auth/v1/token?grant_type=refresh_token', {
-      method: 'POST', headers: { 'apikey': SB_CLE, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: s.refresh_token })
-    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (n) {
-      if (!n || !n.access_token) return null;
-      try { localStorage.setItem(SB_JETON, JSON.stringify(n)); } catch (e) {}
-      return n;
-    }).catch(function () { return null; });
-  }
-  function session() {
-    var s = lireSession();
-    if (!s || !s.access_token) return Promise.resolve(null);
-    if (s.expires_at && s.expires_at * 1000 - Date.now() < 60000) return rafraichir(s);
-    return Promise.resolve(s);
-  }
-  function obtenirCle() {
-    var cache = null;
-    try { cache = sessionStorage.getItem('cle:' + FORMATION); } catch (e) {}
-    if (cache) return Promise.resolve(cache);
-    return session().then(function (s) {
-      if (!s) return { raison: 'deconnectee' };
-      return fetch(SB_URL + '/rest/v1/cles_formation?select=cle&formation=eq.' + encodeURIComponent(FORMATION), {
-        headers: { 'apikey': SB_CLE, 'Authorization': 'Bearer ' + s.access_token }
-      }).then(function (r) { return r.ok ? r.json() : []; }).then(function (l) {
-        if (!l || !l.length) return { raison: 'sans-acces' };
-        try { sessionStorage.setItem('cle:' + FORMATION, l[0].cle); } catch (e) {}
-        return l[0].cle;
-      });
-    });
-  }
-  var cleCrypto = null;
-  function importer(cle) { return crypto.subtle.importKey('raw', b64(cle), 'AES-GCM', false, ['decrypt']); }
-  function dechiffrer(octets) {
-    return crypto.subtle.decrypt({ name: 'AES-GCM', iv: octets.slice(0, 12) }, cleCrypto, octets.slice(12));
-  }
   function texte(buf) { return new TextDecoder('utf-8').decode(buf); }
+  function chargerScript(src) {
+    return new Promise(function (ok, ko) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
+  }
+  function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } }
 
+  /* ---------------- Refus d'accès ---------------- */
   function refus(raison) {
-    try { sessionStorage.removeItem('cle:' + FORMATION); } catch (e) {}
+    ss('cle:' + FORMATION, null);
     var connectee = raison === 'sans-acces';
     document.body.innerHTML =
       '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f7f1ea;font-family:Inter,Arial,sans-serif;">' +
@@ -67,11 +41,112 @@
         ? 'Ton compte n\'a pas encore accès à ' + NOMS[FORMATION] + '. Si tu viens de t\'inscrire, ton accès sera ouvert sous 24 à 48 heures après la vérification de ton dossier.'
         : 'Cette page fait partie de ' + NOMS[FORMATION] + '. Connecte-toi à ton compte pour continuer ta formation.') +
       '</p>' +
-      '<a href="' + SITE + '#compte" style="display:inline-block;background:#a85743;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:50px;margin:4px;">' + (connectee ? 'Mon compte' : 'Me connecter') + '</a>' +
-      '<a href="' + SITE + '#formations" style="display:inline-block;color:#a85743;text-decoration:none;font-weight:700;padding:12px 22px;border:1px solid #a85743;border-radius:50px;margin:4px;">Voir les formations</a>' +
+      '<a href="' + ESPACE + '" style="display:inline-block;background:#a85743;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:50px;margin:4px;">' + (connectee ? 'Mon compte' : 'Me connecter') + '</a>' +
+      '<a href="' + RACINE + '#formations" style="display:inline-block;color:#a85743;text-decoration:none;font-weight:700;padding:12px 22px;border:1px solid #a85743;border-radius:50px;margin:4px;">Voir les formations</a>' +
       '</div></div>';
   }
 
+  /* ---------------- Progression propre à chaque étudiante ---------------- */
+  function clesProgression() {
+    var l = [];
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (PREFIXES.test(k)) l.push(k); } } catch (e) {}
+    return l;
+  }
+  function instantane() {
+    var o = {};
+    clesProgression().forEach(function (k) { try { o[k] = localStorage.getItem(k); } catch (e) {} });
+    return o;
+  }
+  var brouillon = false, minuterie = null;
+  var setOrig = Storage.prototype.setItem, removeOrig = Storage.prototype.removeItem;
+  function envoyerProgression(keepalive) {
+    if (!brouillon || !session) return;
+    brouillon = false;
+    try { setOrig.call(localStorage, 'progression-a-envoyer', ''); } catch (e) {}
+    var corps = JSON.stringify({ user_id: session.user.id, donnees: instantane(), updated_at: new Date().toISOString() });
+    fetch(SB_URL + '/rest/v1/progression?on_conflict=user_id', {
+      method: 'POST', keepalive: !!keepalive,
+      headers: { 'apikey': SB_CLE, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json',
+                 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: corps
+    }).then(function (r) { if (!r.ok) marquer(); }).catch(marquer);
+  }
+  function marquer() {
+    brouillon = true;
+    try { setOrig.call(localStorage, 'progression-a-envoyer', '1'); } catch (e) {}
+    clearTimeout(minuterie);
+    minuterie = setTimeout(function () { envoyerProgression(false); }, 1500);
+  }
+  function surveiller() {
+    Storage.prototype.setItem = function (k, v) { setOrig.call(this, k, v); if (this === localStorage && PREFIXES.test(k)) marquer(); };
+    Storage.prototype.removeItem = function (k) { removeOrig.call(this, k); if (this === localStorage && PREFIXES.test(k)) marquer(); };
+    window.addEventListener('pagehide', function () { envoyerProgression(true); });
+    document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') envoyerProgression(true); });
+  }
+  function preparerProgression() {
+    var uid = session.user.id;
+    var proprio = null; try { proprio = localStorage.getItem('progression-de'); } catch (e) {}
+    if (proprio !== uid) {
+      // Autre personne sur ce navigateur (ou ancienne progression de test) : on repart à zéro
+      clesProgression().forEach(function (k) { try { removeOrig.call(localStorage, k); } catch (e) {} });
+      try { setOrig.call(localStorage, 'progression-de', uid); setOrig.call(localStorage, 'progression-a-envoyer', ''); removeOrig.call(localStorage, 'resultats-a-envoyer'); } catch (e) {}
+    }
+    var enAttente = false; try { enAttente = localStorage.getItem('progression-a-envoyer') === '1'; } catch (e) {}
+    return sb.from('progression').select('donnees').eq('user_id', uid).maybeSingle().then(function (r) {
+      if (r.error) return;                       // table absente : on garde la progression locale
+      if (enAttente || !r.data) { brouillon = true; return; }   // local plus récent : on l'enverra
+      clesProgression().forEach(function (k) { try { removeOrig.call(localStorage, k); } catch (e) {} });
+      var d = r.data.donnees || {};
+      Object.keys(d).forEach(function (k) { if (PREFIXES.test(k)) try { setOrig.call(localStorage, k, d[k]); } catch (e) {} });
+    }).catch(function () {});
+  }
+
+  /* ---------------- Menu « Mon compte » sur toutes les pages ---------------- */
+  function menu() {
+    var css = document.createElement('style');
+    css.textContent =
+      '.sere-menu{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:9000;display:flex;flex-direction:column;gap:8px;font-family:Inter,Arial,sans-serif}' +
+      '.sere-menu a,.sere-menu button{display:flex;align-items:center;gap:10px;justify-content:flex-end;background:#fffbf8;color:#2c221e;border:1px solid #e3d5c8;border-radius:50px;padding:9px 12px;font-size:.85rem;font-weight:600;text-decoration:none;cursor:pointer;box-shadow:0 4px 14px rgba(44,34,30,.10);white-space:nowrap}' +
+      '.sere-menu a span.t,.sere-menu button span.t{max-width:0;overflow:hidden;transition:max-width .25s}' +
+      '.sere-menu:hover a span.t,.sere-menu:hover button span.t,.sere-menu a:focus span.t{max-width:220px}' +
+      '.sere-menu .sortir{background:#a85743;color:#fff;border-color:#a85743}' +
+      '.sere-menu-bouton{display:none}' +
+      '@media (max-width:900px){.sere-menu{top:auto;bottom:16px;right:16px;transform:none;display:none}.sere-menu.ouvert{display:flex}' +
+      '.sere-menu a span.t,.sere-menu button span.t{max-width:none}' +
+      '.sere-menu-bouton{display:flex;position:fixed;right:16px;bottom:16px;z-index:9001;width:54px;height:54px;border-radius:50%;border:0;background:#a85743;color:#fff;font-size:1.4rem;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(44,34,30,.25);cursor:pointer}' +
+      '.sere-menu.ouvert{bottom:82px}}';
+    document.head.appendChild(css);
+    var m = document.createElement('nav');
+    m.className = 'sere-menu'; m.setAttribute('aria-label', 'Mon compte');
+    var liens = [
+      ['📚', 'Mes cours', ESPACE + '#cours'],
+      ['👤', 'Mes informations', ESPACE + '#infos'],
+      ['📝', 'Documents de stage', ESPACE + '#stage'],
+      ['💬', 'Mentorat', 'https://cal.com/sabrina-chavanel-zs5clq/mentorat']
+    ];
+    if (FORMATION === 'marraine') liens.splice(2, 1);
+    liens.forEach(function (l) {
+      var a = document.createElement('a'); a.href = l[2]; a.title = l[1];
+      if (/^https:\/\/cal/.test(l[2])) { a.target = '_blank'; a.rel = 'noopener'; }
+      a.innerHTML = '<span class="t">' + l[1] + '</span><span>' + l[0] + '</span>';
+      m.appendChild(a);
+    });
+    var sortir = document.createElement('button'); sortir.type = 'button'; sortir.className = 'sortir'; sortir.title = 'Me déconnecter';
+    sortir.innerHTML = '<span class="t">Me déconnecter</span><span>🚪</span>';
+    sortir.addEventListener('click', function () {
+      envoyerProgression(true);
+      ss('cle:4e-trimestre', null); ss('cle:marraine', null);
+      sb.auth.signOut().finally(function () { location.href = ESPACE + '?deconnectee=1'; });
+    });
+    m.appendChild(sortir);
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'sere-menu-bouton'; b.setAttribute('aria-label', 'Mon compte'); b.textContent = '👤';
+    b.addEventListener('click', function () { m.classList.toggle('ouvert'); b.textContent = m.classList.contains('ouvert') ? '✕' : '👤'; });
+    document.body.appendChild(m); document.body.appendChild(b);
+  }
+
+  /* ---------------- Déchiffrement et exécution ---------------- */
+  function importer(cle) { return crypto.subtle.importKey('raw', b64(cle), 'AES-GCM', false, ['decrypt']); }
+  function dechiffrer(octets) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: octets.slice(0, 12) }, cleCrypto, octets.slice(12)); }
   function executerScripts() {
     var anciens = Array.prototype.slice.call(document.body.querySelectorAll('script'));
     return anciens.reduce(function (p, ancien) {
@@ -84,17 +159,12 @@
             .then(function (buf) { nouveau.text = texte(buf); ancien.parentNode.replaceChild(nouveau, ancien); });
         }
         if (src) {
-          return new Promise(function (ok) {
-            nouveau.src = src; nouveau.onload = ok; nouveau.onerror = ok;
-            ancien.parentNode.replaceChild(nouveau, ancien);
-          });
+          return new Promise(function (ok) { nouveau.src = src; nouveau.onload = ok; nouveau.onerror = ok; ancien.parentNode.replaceChild(nouveau, ancien); });
         }
         nouveau.text = ancien.text; ancien.parentNode.replaceChild(nouveau, ancien);
       });
     }, Promise.resolve());
   }
-
-  // Documents protégés (PDF, Excel) : déchiffrés au clic
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[data-protege]');
     if (!a || !cleCrypto) return;
@@ -104,26 +174,49 @@
       .then(function (buf) { return dechiffrer(new Uint8Array(buf)); })
       .then(function (clair) {
         var url = URL.createObjectURL(new Blob([clair], { type: a.getAttribute('data-protege') }));
-        var lien = document.createElement('a');
-        lien.href = url;
-        lien.download = nom;
+        var lien = document.createElement('a'); lien.href = url; lien.download = nom;
         document.body.appendChild(lien); lien.click(); lien.remove();
         setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
       }).catch(function () { alert("Le document n'a pas pu être ouvert. Réessaie dans un instant."); });
   });
 
-  obtenirCle().then(function (cle) {
-    if (typeof cle !== 'string') return refus(cle.raison);
-    return importer(cle).then(function (k) {
-      cleCrypto = k;
-      return dechiffrer(b64(bloc.textContent.trim()));
-    }).then(function (buf) {
-      document.body.innerHTML = texte(buf);
-      if (location.hash) { var c = document.getElementById(location.hash.slice(1)); if (c) c.scrollIntoView(); }
-      return executerScripts();
-    }).catch(function () {
-      try { sessionStorage.removeItem('cle:' + FORMATION); } catch (e) {}
-      refus('deconnectee');
+  function obtenirCle() {
+    var cache = ss('cle:' + FORMATION);
+    if (cache && cache.indexOf(session.user.id + '|') === 0) return Promise.resolve(cache.split('|')[1]);
+    return sb.from('cles_formation').select('cle').eq('formation', FORMATION).maybeSingle().then(function (r) {
+      if (r.error || !r.data) return null;
+      ss('cle:' + FORMATION, session.user.id + '|' + r.data.cle);
+      return r.data.cle;
     });
-  }).catch(function () { refus('deconnectee'); });
+  }
+
+  chargerScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2').then(function () {
+    sb = window.supabase.createClient(SB_URL, SB_CLE);
+    return sb.auth.getSession();
+  }).then(function (r) {
+    session = r && r.data && r.data.session;
+    if (!session) return refus('deconnectee');
+    sb.auth.onAuthStateChange(function (ev, s) { if (s) session = s; });
+    return obtenirCle().then(function (cle) {
+      if (!cle) return refus('sans-acces');
+      return importer(cle).then(function (k) {
+        cleCrypto = k;
+        return preparerProgression();
+      }).then(function () {
+        return dechiffrer(b64(bloc.textContent.trim()));
+      }).then(function (buf) {
+        document.body.innerHTML = texte(buf);
+        surveiller();
+        if (location.hash) { var c = document.getElementById(location.hash.slice(1)); if (c) c.scrollIntoView(); }
+        return executerScripts();
+      }).then(function () {
+        menu();
+        if (brouillon) marquer();
+      });
+    });
+  }).catch(function (e) {
+    console.error(e);
+    ss('cle:' + FORMATION, null);
+    refus('deconnectee');
+  });
 })();

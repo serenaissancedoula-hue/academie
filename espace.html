@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon compte · Académie Sérénaissance</title>
+<meta name="description" content="Espace étudiante de l'Académie Sérénaissance : tes cours, tes informations et tes documents de stage.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+<meta name="theme-color" content="#a85743">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="adresse.js"></script>
+<style>
+:root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background: var(--bg); color: var(--texte); line-height: 1.6; min-height: 100vh; }
+a { color: var(--terra); }
+.entete { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 5%; background: var(--bg); border-bottom: 1px solid var(--bord); position: sticky; top: 0; z-index: 20; }
+.entete img { height: 58px; mix-blend-mode: darken; }
+.entete .retour { font-size: .9rem; font-weight: 600; text-decoration: none; }
+.cadre { max-width: 1180px; margin: 0 auto; padding: 34px 5% 110px; display: grid; grid-template-columns: 1fr 250px; gap: 34px; align-items: start; }
+.cadre.sans-menu { grid-template-columns: 1fr; max-width: 640px; }
+.cadre.sans-menu .menu { display: none; }
+h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; line-height: 1.25; }
+h1 { font-size: 1.9rem; margin-bottom: 6px; }
+h2 { font-size: 1.35rem; margin: 26px 0 12px; }
+.sous { color: var(--doux); margin-bottom: 22px; }
+.carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 20px; padding: 28px; margin-bottom: 20px; }
+.vue[hidden] { display: none !important; }
+form { display: flex; flex-direction: column; gap: 14px; }
+label.champ { display: flex; flex-direction: column; gap: 5px; font-size: .9rem; font-weight: 600; }
+input, select, textarea { font: inherit; font-weight: 400; padding: 12px 14px; border: 1px solid var(--bord); border-radius: 12px; background: #fff; color: var(--texte); width: 100%; }
+input[readonly] { background: #f3ede6; color: var(--doux); }
+.rang { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--terra); color: #fff; border: 0; border-radius: 50px; padding: 13px 26px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; }
+.btn:disabled { opacity: .6; cursor: wait; }
+.btn.fantome { background: transparent; color: var(--terra); border: 1px solid var(--terra); }
+.note { font-size: .82rem; color: var(--doux); font-weight: 400; }
+.message { border-radius: 14px; padding: 14px 16px; font-size: .92rem; margin-bottom: 16px; }
+.message.ok { background: #eef5ec; border: 1px solid #cfe3ca; color: var(--vert); }
+.message.info { background: #fbf5ef; border: 1px solid var(--bord); }
+.message.erreur { background: #fbeeea; border: 1px solid #e3b5a8; color: #8c4434; }
+.case { display: flex; gap: 10px; align-items: flex-start; font-size: .88rem; font-weight: 400; }
+.case input { width: auto; margin-top: 4px; }
+/* Menu à droite */
+.menu { position: sticky; top: 104px; display: flex; flex-direction: column; gap: 8px; }
+.menu .qui { font-size: .85rem; color: var(--doux); padding: 0 6px 6px; }
+.menu .qui strong { display: block; color: var(--texte); font-size: 1rem; }
+.menu a, .menu button { display: flex; align-items: center; gap: 12px; text-align: left; background: var(--carte); border: 1px solid var(--bord); border-radius: 14px; padding: 13px 16px; font: inherit; font-weight: 600; color: var(--texte); text-decoration: none; cursor: pointer; }
+.menu a.actif { border-color: var(--terra); background: #f3e5dc; color: var(--terra); }
+.menu a[hidden] { display: none; }
+.menu .sortir { background: var(--terra); border-color: var(--terra); color: #fff; margin-top: 8px; }
+/* Cours */
+.cours { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.cours li { background: #fff; border: 1px solid var(--bord); border-radius: 16px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.cours h3 { font-size: 1.05rem; margin-bottom: 3px; }
+.cours .etat { font-size: .82rem; color: var(--doux); }
+.cours .etat.fini { color: var(--vert); font-weight: 700; }
+.barre { height: 6px; background: #efe6dc; border-radius: 6px; overflow: hidden; margin-top: 8px; max-width: 280px; }
+.barre i { display: block; height: 100%; background: var(--terra); }
+.cours .btn { padding: 10px 18px; font-size: .88rem; white-space: nowrap; }
+.fichiers { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.fichiers li { display: flex; justify-content: space-between; gap: 12px; align-items: center; background: #fff; border: 1px solid var(--bord); border-radius: 12px; padding: 11px 14px; font-size: .9rem; }
+.fichiers small { display: block; color: var(--doux); font-size: .78rem; }
+.fichiers .vide { justify-content: center; color: var(--doux); font-style: italic; }
+@media (max-width: 900px) {
+  .cadre { grid-template-columns: 1fr; padding-bottom: 120px; }
+  .menu { position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 30; flex-direction: row; gap: 0; background: var(--carte); border-top: 1px solid var(--bord); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+  .menu .qui { display: none; }
+  .menu a, .menu button { flex: 1; flex-direction: column; gap: 2px; padding: 6px 2px; font-size: .68rem; border: 0; border-radius: 10px; text-align: center; background: transparent; }
+  .menu a span.i, .menu button span.i { font-size: 1.25rem; }
+  .menu .sortir { margin-top: 0; color: var(--terra); background: transparent; }
+  .menu .externe { display: none; }
+  .rang { grid-template-columns: 1fr; }
+  .cours li { flex-direction: column; align-items: flex-start; }
+  .entete img { height: 46px; }
+}
+</style>
+</head>
+<body>
+<header class="entete">
+  <a href="index.html"><img src="logo.jpg" alt="Académie Sérénaissance"></a>
+  <a class="retour" href="index.html">← Retour au site</a>
+</header>
+
+<div class="cadre sans-menu" id="cadre">
+<main>
+  <!-- Chargement -->
+  <section class="vue" id="vue-chargement"><p class="sous">Chargement de ton espace… 🌸</p></section>
+
+  <!-- Connexion -->
+  <section class="vue" id="vue-connexion" hidden>
+    <h1>Mon compte</h1>
+    <p class="sous">Connecte-toi pour retrouver tes cours, tes informations et tes documents de stage.</p>
+    <div id="msg-connexion"></div>
+    <div class="carte">
+      <form id="form-connexion">
+        <label class="champ">Adresse courriel <input type="email" id="c-courriel" required autocomplete="email"></label>
+        <label class="champ">Mot de passe <input type="password" id="c-mdp" required autocomplete="current-password"></label>
+        <button class="btn" type="submit" id="c-bouton">Me connecter</button>
+        <a href="#" id="c-oubli" style="font-size:.88rem;text-align:center;">Mot de passe oublié ?</a>
+      </form>
+    </div>
+    <p class="note" style="text-align:center;">Pas encore inscrite ? <a href="index.html#formations">Découvre les formations</a></p>
+  </section>
+
+  <!-- Confirmation d'un lien reçu par courriel -->
+  <section class="vue" id="vue-confirmation" hidden>
+    <h1 id="conf-titre">Bienvenue à l'Académie 🌸</h1>
+    <p class="sous" id="conf-texte">Clique sur le bouton pour confirmer ton adresse courriel.</p>
+    <div id="msg-confirmation"></div>
+    <button class="btn" type="button" id="conf-bouton">Confirmer mon adresse ✓</button>
+  </section>
+
+  <!-- Nouveau mot de passe -->
+  <section class="vue" id="vue-mdp" hidden>
+    <h1>Choisir un nouveau mot de passe</h1>
+    <p class="sous">Au moins 8 caractères, avec une majuscule, une minuscule et un chiffre.</p>
+    <div id="msg-mdp"></div>
+    <div class="carte">
+      <form id="form-mdp">
+        <label class="champ">Nouveau mot de passe <input type="password" id="m-1" required autocomplete="new-password"></label>
+        <label class="champ">Répète ton mot de passe <input type="password" id="m-2" required autocomplete="new-password"></label>
+        <button class="btn" type="submit" id="m-bouton">Enregistrer mon mot de passe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Inscription par lien envoyé par Sabrina -->
+  <section class="vue" id="vue-inscription" hidden>
+    <h1>Créer mon compte étudiante</h1>
+    <p class="sous" id="i-intro">Sabrina t'a envoyé ce lien pour compléter ton inscription.</p>
+    <div id="msg-inscription"></div>
+    <div class="carte">
+      <form id="form-inscription">
+        <div class="rang">
+          <label class="champ">Prénom <input type="text" id="i-prenom" required autocomplete="given-name"></label>
+          <label class="champ">Nom <input type="text" id="i-nom" required autocomplete="family-name"></label>
+        </div>
+        <div class="rang">
+          <label class="champ">Courriel <input type="email" id="i-courriel" required autocomplete="email"></label>
+          <label class="champ">Téléphone <input type="tel" id="i-tel" required autocomplete="tel"></label>
+        </div>
+        <label class="champ">Date de naissance <input type="date" id="i-naissance" required></label>
+        <label class="champ">Adresse postale (pour l'envoi de ton certificat) <input type="text" id="i-adresse" required placeholder="Commence à écrire ton adresse…"></label>
+        <div class="rang">
+          <label class="champ">App. / unité <span class="note">(facultatif)</span><input type="text" id="i-app"></label>
+          <label class="champ">Code postal <input type="text" id="i-cp" required autocomplete="postal-code"></label>
+        </div>
+        <label class="case"><input type="checkbox" id="i-adresse-ok"> Mon adresse n'apparaît pas dans la liste : je confirme qu'elle est complète et exacte.</label>
+        <label class="champ" id="i-bloc-diplome">Ton diplôme ou certificat de doula (PDF ou photo)
+          <input type="file" id="i-diplome" accept=".pdf,.jpg,.jpeg,.png"></label>
+        <div class="rang">
+          <label class="champ">Mot de passe <input type="password" id="i-mdp" required autocomplete="new-password"></label>
+          <label class="champ">Répète ton mot de passe <input type="password" id="i-mdp2" required autocomplete="new-password"></label>
+        </div>
+        <p class="note">Au moins 8 caractères, avec une majuscule, une minuscule et un chiffre.</p>
+        <label class="case"><input type="checkbox" id="i-accord" required> J'ai lu et j'accepte les <a href="index.html#conditions" target="_blank">conditions de vente</a> et la <a href="index.html#confidentialite" target="_blank">politique de confidentialité</a>.</label>
+        <button class="btn" type="submit" id="i-bouton">Créer mon compte</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Mes cours -->
+  <section class="vue" id="vue-cours" hidden>
+    <h1 id="bonjour">Mes cours</h1>
+    <p class="sous">Ta progression est sauvegardée dans ton compte : tu la retrouves sur ton ordinateur, ta tablette ou ton cellulaire.</p>
+    <div id="attente" class="message info" hidden>
+      <strong>⏳ Ton dossier est en cours de vérification.</strong><br>
+      Sabrina vérifie ton inscription<span id="attente-diplome"> et ton diplôme de doula</span>. Tu recevras un courriel dès que ton accès sera ouvert (habituellement en 24 à 48 heures). En attendant, tu peux compléter tes informations.
+    </div>
+    <div id="bloc-4e" hidden>
+      <h2>Accompagnement de pointe du 4ᵉ trimestre</h2>
+      <ul class="cours" id="liste-4e"></ul>
+    </div>
+    <div id="bloc-marraine" hidden>
+      <h2>Marraine d'allaitement</h2>
+      <ul class="cours" id="liste-marraine"></ul>
+    </div>
+    <div class="carte" style="margin-top:26px;">
+      <h3 style="margin-bottom:6px;">💬 Besoin d'un coup de pouce ?</h3>
+      <p style="margin-bottom:14px;">Une question sur un chapitre, un cas vécu, un doute sur ta pratique ? Réserve un moment de mentorat avec Sabrina, en visio.</p>
+      <a class="btn fantome" href="https://cal.com/sabrina-chavanel-zs5clq/mentorat" target="_blank" rel="noopener">Réserver mon mentorat →</a>
+    </div>
+  </section>
+
+  <!-- Mes informations -->
+  <section class="vue" id="vue-infos" hidden>
+    <h1>Mes informations</h1>
+    <p class="sous">Garde tes coordonnées à jour : c'est à cette adresse que ton certificat sera posté.</p>
+    <div id="msg-infos"></div>
+    <div class="carte">
+      <form id="form-infos">
+        <div class="rang">
+          <label class="champ">Prénom <input type="text" id="f-prenom" readonly></label>
+          <label class="champ">Nom <input type="text" id="f-nom" readonly></label>
+        </div>
+        <p class="note" style="margin-top:-6px;">Ton nom et ton prénom figurent sur ton certificat. Pour les corriger, écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a>.</p>
+        <div class="rang">
+          <label class="champ">Courriel <input type="email" id="f-courriel" required></label>
+          <label class="champ">Téléphone <input type="tel" id="f-tel"></label>
+        </div>
+        <label class="champ">Date de naissance <input type="date" id="f-naissance"></label>
+        <label class="champ">Adresse postale <input type="text" id="f-adresse" placeholder="Commence à écrire ton adresse…"></label>
+        <div class="rang">
+          <label class="champ">App. / unité <span class="note">(facultatif)</span><input type="text" id="f-app"></label>
+          <label class="champ">Code postal <input type="text" id="f-cp"></label>
+        </div>
+        <label class="case"><input type="checkbox" id="f-adresse-ok"> Mon adresse n'apparaît pas dans la liste : je confirme qu'elle est complète et exacte.</label>
+        <button class="btn" type="submit" id="f-bouton">Enregistrer mes changements</button>
+      </form>
+    </div>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">🔑 Mot de passe</h3>
+      <p style="margin-bottom:14px;">Tu peux changer ton mot de passe en tout temps.</p>
+      <a class="btn fantome" href="#motdepasse">Changer mon mot de passe</a>
+    </div>
+  </section>
+
+  <!-- Documents de stage -->
+  <section class="vue" id="vue-stage" hidden>
+    <h1>Documents de stage</h1>
+    <p class="sous">Transmets ici tes documents de stage à Sabrina. Elle les reçoit automatiquement, et tu en gardes une copie dans ton compte.</p>
+    <div id="msg-stage"></div>
+    <div class="carte">
+      <form id="form-stage">
+        <label class="champ">Type de document
+          <select id="s-type" required>
+            <option value="">— Choisis —</option>
+            <option>Contrat de services et consentement</option>
+            <option>Journal de bord des heures</option>
+            <option>Feuille de calcul des heures</option>
+            <option>Grille d'observation</option>
+            <option>Fiche d'orientation</option>
+            <option>Questionnaire d'appréciation de la famille</option>
+            <option>Rapport de stage</option>
+            <option>Autre document</option>
+          </select>
+        </label>
+        <label class="champ">Fichier(s) <span class="note">PDF, Word, Excel ou photos · 25 Mo maximum par fichier</span>
+          <input type="file" id="s-fichiers" multiple required accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.heic"></label>
+        <button class="btn" type="submit" id="s-bouton">Envoyer à Sabrina</button>
+      </form>
+      <p class="note" style="margin-top:14px;">Besoin des modèles ? <a href="Formation/stage.html">Ouvre ta trousse de stage</a>.</p>
+    </div>
+    <h2>Mes documents envoyés</h2>
+    <ul class="fichiers" id="liste-stage"><li class="vide">Aucun document pour l'instant.</li></ul>
+  </section>
+</main>
+
+<nav class="menu" id="menu" aria-label="Mon compte">
+  <div class="qui"><strong id="menu-nom">Mon compte</strong><span id="menu-courriel"></span></div>
+  <a href="#cours" data-vue="cours"><span class="i">📚</span><span>Mes cours</span></a>
+  <a href="#infos" data-vue="infos"><span class="i">👤</span><span>Mes informations</span></a>
+  <a href="#stage" data-vue="stage" id="menu-stage" hidden><span class="i">📝</span><span>Documents de stage</span></a>
+  <a href="https://cal.com/sabrina-chavanel-zs5clq/mentorat" target="_blank" rel="noopener" class="externe"><span class="i">💬</span><span>Mentorat</span></a>
+  <button type="button" class="sortir" id="menu-sortir"><span class="i">🚪</span><span>Me déconnecter</span></button>
+</nav>
+</div>
+
+<script>
+(function () {
+'use strict';
+var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co';
+var SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
+var ADMIN = 'serenaissance.doula@gmail.com';
+var EMAILJS = { service: 'service_82vfhfg', avis: 'template_gy588ot', cle: 'HNvKdORRpRy_vT_FI' };
+var ICI = 'https://academiesere.ca/espace.html';
+var sb = window.supabase.createClient(SB_URL, SB_CLE);
+try { emailjs.init(EMAILJS.cle); } catch (e) {}
+
+var MODULES = [
+  { n: 1, titre: 'Fondements physiologiques, neurobiologiques et psychosociaux', ch: 9 },
+  { n: 2, titre: 'Hygiène de vie, diététique et protocoles de soutien non invasifs', ch: 6 },
+  { n: 3, titre: 'Physiologie du nouveau-né, allaitement et soutien à la parentalité', ch: 8 },
+  { n: 4, titre: 'Éthique, cadre légal, déontologie et posture professionnelle', ch: 6 },
+  { n: 5, titre: 'Communication bienveillante, deuil périnatal et clôture du 4ᵉ trimestre', ch: 4 }
+];
+var etat = { session: null, dossier: null, valide: false, marraine: false, progression: {} };
+
+function $(id) { return document.getElementById(id); }
+function vue(nom) {
+  document.querySelectorAll('.vue').forEach(function (v) { v.hidden = v.id !== 'vue-' + nom; });
+  document.querySelectorAll('.menu a[data-vue]').forEach(function (a) { a.classList.toggle('actif', a.dataset.vue === nom); });
+  window.scrollTo(0, 0);
+}
+function avecMenu(oui) { $('cadre').classList.toggle('sans-menu', !oui); }
+function message(id, type, html) { $(id).innerHTML = html ? '<div class="message ' + type + '">' + html + '</div>' : ''; }
+function echapper(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
+function mdpValide(m) { return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(m); }
+function nomPropre(n) { return n.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9._-]+/g, '_').replace(/_+/g, '_').slice(-80); }
+function jour(d) { return d ? new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }) : ''; }
+
+/* ---------------- Routage ---------------- */
+function routeConnectee() {
+  var h = (location.hash || '#cours').slice(1);
+  if (h === 'motdepasse') { avecMenu(true); vue('mdp'); return; }
+  if (h === 'stage' && !etat.valide) h = 'cours';
+  if (['cours', 'infos', 'stage'].indexOf(h) < 0) h = 'cours';
+  avecMenu(true); vue(h);
+  if (h === 'stage') listerStage();
+}
+window.addEventListener('hashchange', function () { if (etat.session) routeConnectee(); });
+
+/* ---------------- Démarrage ---------------- */
+var params = new URLSearchParams(location.search);
+var enRecuperation = false;
+sb.auth.onAuthStateChange(function (ev, s) {
+  if (ev === 'PASSWORD_RECOVERY') { enRecuperation = true; etat.session = s; avecMenu(false); vue('mdp'); }
+});
+
+function demarrer() {
+  if (params.get('token_hash')) return preparerConfirmation();
+  if (params.get('inscription')) return preparerInscription();
+  if (/error_description=/.test(location.hash)) {
+    var err = decodeURIComponent((location.hash.match(/error_description=([^&]+)/) || [])[1] || '').replace(/\+/g, ' ');
+    message('msg-connexion', 'erreur', 'Ce lien n\'est plus valide (' + echapper(err) + '). Connecte-toi ou demande un nouveau lien avec « Mot de passe oublié ? ».');
+  }
+  sb.auth.getSession().then(function (r) {
+    if (enRecuperation) return;
+    var s = r.data && r.data.session;
+    if (!s) { avecMenu(false); vue('connexion'); if (params.get('deconnectee')) message('msg-connexion', 'ok', 'Tu es bien déconnectée. À bientôt ! 🌸'); return; }
+    charger(s);
+  });
+}
+
+/* ---------------- Connexion ---------------- */
+$('form-connexion').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var b = $('c-bouton'); b.disabled = true; b.textContent = 'Connexion…';
+  sb.auth.signInWithPassword({ email: $('c-courriel').value.trim(), password: $('c-mdp').value }).then(function (r) {
+    b.disabled = false; b.textContent = 'Me connecter';
+    if (r.error) {
+      var m = (r.error.message || '').toLowerCase();
+      message('msg-connexion', 'erreur', m.indexOf('not confirmed') >= 0
+        ? 'Confirme d\'abord ton adresse courriel : clique sur le bouton du courriel de bienvenue reçu à ton inscription (regarde aussi dans les indésirables).'
+        : 'Courriel ou mot de passe incorrect. Tu peux cliquer sur « Mot de passe oublié ? » au besoin.');
+      return;
+    }
+    charger(r.data.session);
+  });
+});
+$('c-oubli').addEventListener('click', function (e) {
+  e.preventDefault();
+  var c = $('c-courriel').value.trim();
+  if (!c) { message('msg-connexion', 'info', 'Écris d\'abord ton adresse courriel dans la case, puis clique à nouveau sur « Mot de passe oublié ? ».'); return; }
+  sb.auth.resetPasswordForEmail(c, { redirectTo: ICI }).then(function () {
+    message('msg-connexion', 'ok', 'Si un compte existe avec ce courriel, tu vas recevoir un lien pour choisir un nouveau mot de passe. Regarde aussi dans tes courriels indésirables.');
+  });
+});
+
+/* ---------------- Liens reçus par courriel (confirmation, mot de passe…) ---------------- */
+function preparerConfirmation() {
+  var type = params.get('type') || 'signup';
+  avecMenu(false); vue('confirmation');
+  if (type === 'recovery') { $('conf-titre').textContent = 'Nouveau mot de passe'; $('conf-texte').textContent = 'Clique sur le bouton pour choisir ton nouveau mot de passe.'; $('conf-bouton').textContent = 'Choisir mon nouveau mot de passe →'; }
+  if (type === 'email_change') { $('conf-titre').textContent = 'Changement de courriel'; $('conf-texte').textContent = 'Clique sur le bouton pour confirmer ta nouvelle adresse courriel.'; }
+  $('conf-bouton').addEventListener('click', function () {
+    var b = $('conf-bouton'); b.disabled = true;
+    sb.auth.verifyOtp({ token_hash: params.get('token_hash'), type: type }).then(function (r) {
+      history.replaceState(null, '', 'espace.html');
+      if (r.error) {
+        b.disabled = false;
+        message('msg-confirmation', 'erreur', 'Ce lien a expiré ou a déjà été utilisé. ' + (type === 'recovery'
+          ? '<a href="espace.html">Redemande un lien</a> avec « Mot de passe oublié ? ».'
+          : 'Si ton adresse est déjà confirmée, <a href="espace.html">connecte-toi ici</a>.'));
+        return;
+      }
+      if (type === 'recovery') { etat.session = r.data.session; vue('mdp'); return; }
+      charger(r.data.session, type === 'email_change'
+        ? '✅ Ta nouvelle adresse courriel est confirmée.'
+        : '✅ Ton adresse courriel est confirmée. Bienvenue à l\'Académie Sérénaissance ! 💕');
+    });
+  });
+}
+
+/* ---------------- Mot de passe ---------------- */
+$('form-mdp').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var m1 = $('m-1').value, m2 = $('m-2').value;
+  if (m1 !== m2) return message('msg-mdp', 'erreur', 'Les deux mots de passe ne correspondent pas.');
+  if (!mdpValide(m1)) return message('msg-mdp', 'erreur', 'Ton mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule et un chiffre.');
+  var b = $('m-bouton'); b.disabled = true;
+  sb.auth.updateUser({ password: m1 }).then(function (r) {
+    b.disabled = false;
+    if (r.error) return message('msg-mdp', 'erreur', 'Le mot de passe n\'a pas pu être changé (' + echapper(r.error.message) + '). Si ton lien a expiré, <a href="espace.html">redemande-en un</a>.');
+    $('m-1').value = ''; $('m-2').value = '';
+    enRecuperation = false;
+    sb.auth.getSession().then(function (s) { charger(s.data.session, '✅ Ton mot de passe est changé.'); });
+  });
+});
+
+/* ---------------- Chargement de l'espace ---------------- */
+function charger(session, bienvenue) {
+  etat.session = session;
+  var courriel = (session.user.email || '').toLowerCase();
+  if (courriel === ADMIN) { location.href = 'index.html#admin'; return; }
+  $('menu-courriel').textContent = courriel;
+  sb.from('etudiantes').select('*').or('user_id.eq.' + session.user.id + ',courriel.ilike.' + courriel)
+    .order('created_at', { ascending: false }).then(function (r) {
+      var liste = (r.data || []);
+      var d = liste[0] || null;
+      etat.dossier = d;
+      etat.valide = liste.some(function (x) { return (x.statut || '').trim().toLowerCase() === 'valide'; });
+      etat.marraine = liste.some(function (x) { return !!x.acces_marraine; });
+      if (d) {
+        $('menu-nom').textContent = d.prenom ? d.prenom + ' ' + (d.nom || '') : 'Mon compte';
+        $('bonjour').textContent = 'Bonjour ' + (d.prenom || '') + ' 🌸';
+        var maj = {};
+        if (!d.user_id) maj.user_id = session.user.id;
+        if (d.courriel && d.courriel.toLowerCase() !== courriel) maj.courriel = courriel;
+        if (Object.keys(maj).length) sb.from('etudiantes').update(maj).eq('id', d.id).then(function () {});
+      }
+      $('menu-stage').hidden = !etat.valide;
+      remplirInfos();
+      return sb.from('progression').select('donnees').eq('user_id', session.user.id).maybeSingle();
+    }).then(function (r) {
+      etat.progression = (r && r.data && r.data.donnees) || {};
+      afficherCours();
+      routeConnectee();
+      if (bienvenue) { var m = document.createElement('div'); m.className = 'message ok'; m.innerHTML = bienvenue; var v = document.querySelector('.vue:not([hidden])'); v.insertBefore(m, v.children[1] || null); }
+    });
+}
+
+function score(cle) { try { return JSON.parse(etat.progression[cle]); } catch (e) { return null; } }
+function reussi(r) { return !!(r && r.score / r.total >= 0.8); }
+function ligneCours(titre, sousTitre, fait, total, examOk, lien, libelle) {
+  var pct = total ? Math.round(fait / total * 100) : 0;
+  return '<li><div><h3>' + titre + '</h3><div class="etat' + (examOk ? ' fini' : '') + '">' + sousTitre + '</div>' +
+    (total ? '<div class="barre"><i style="width:' + (examOk ? 100 : pct) + '%"></i></div>' : '') + '</div>' +
+    '<a class="btn" href="' + lien + '">' + libelle + ' →</a></li>';
+}
+function afficherCours() {
+  var d = etat.dossier;
+  var acces = etat.valide || etat.marraine;
+  $('attente').hidden = acces || !d;
+  $('attente-diplome').hidden = !!(d && d.formation === 'marraine');
+  if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'Nous n\'avons pas trouvé de dossier d\'inscription relié à ce courriel. Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> et Sabrina règle ça rapidement.'; }
+  $('bloc-4e').hidden = !etat.valide;
+  $('bloc-marraine').hidden = !etat.marraine;
+  if (etat.valide) {
+    var html = MODULES.map(function (m) {
+      var fait = 0; for (var i = 1; i <= m.ch; i++) if (reussi(score('m' + m.n + ':score:' + m.n + '.' + i))) fait++;
+      var ex = reussi(score('m' + m.n + ':score:exam'));
+      var debut = fait === 0 && !ex;
+      var verrou = m.n > 1 && !reussi(score('m' + (m.n - 1) + ':score:exam'));
+      return ligneCours('Module ' + m.n + ' · ' + m.titre, ex ? '✓ Module réussi' : (verrou ? '🔒 S\'ouvre quand l\'examen du module ' + (m.n - 1) + ' est réussi' : fait + ' / ' + m.ch + ' quiz réussis'), fait, m.ch, ex,
+        'Formation/module-' + m.n + '/index.html', verrou ? 'Aperçu' : (debut ? 'Commencer' : (ex ? 'Revoir' : 'Continuer')));
+    }).join('');
+    var fin = reussi(score('final:score'));
+    html += ligneCours('Grand examen final', fin ? '✓ Formation réussie !' : 'Après les 5 modules', fin ? 1 : 0, fin ? 1 : 0, fin, 'Formation/examen-final.html', fin ? 'Revoir' : 'Ouvrir');
+    html += ligneCours('Trousse de stage', 'Modèles de documents à télécharger', 0, 0, false, 'Formation/stage.html', 'Ouvrir');
+    $('liste-4e').innerHTML = html;
+  }
+  if (etat.marraine) {
+    var f = 0; for (var j = 1; j <= 6; j++) if (reussi(score('marraine:score:1.' + j))) f++;
+    var exm = reussi(score('marraine:score:exam'));
+    $('liste-marraine').innerHTML = ligneCours("Formation de marraine d'allaitement", exm ? '✓ Formation réussie' : f + ' / 6 quiz réussis', f, 6, exm,
+      'Formation/marraine/index.html', f === 0 && !exm ? 'Commencer' : (exm ? 'Revoir' : 'Continuer'));
+  }
+}
+
+/* ---------------- Mes informations ---------------- */
+var adresseBranchee = false;
+function remplirInfos() {
+  var d = etat.dossier || {};
+  $('f-prenom').value = d.prenom || ''; $('f-nom').value = d.nom || '';
+  $('f-courriel').value = etat.session.user.email || d.courriel || '';
+  $('f-tel').value = d.telephone || ''; $('f-naissance').value = d.date_naissance || '';
+  $('f-adresse').value = d.adresse || '';
+  if (!adresseBranchee && window.AdresseAuto) { AdresseAuto.brancher($('f-adresse'), { codePostal: $('f-cp'), appartement: $('f-app'), confirmation: $('f-adresse-ok') }); adresseBranchee = true; }
+}
+$('form-infos').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var d = etat.dossier;
+  if (!d) return message('msg-infos', 'erreur', 'Aucun dossier trouvé. Écris à serenaissance.doula@gmail.com.');
+  var champ = $('f-adresse');
+  var adresseChangee = champ.value.trim() !== (d.adresse || '').trim() || $('f-app').value.trim() || $('f-cp').value.trim();
+  if (adresseChangee && window.AdresseAuto && !AdresseAuto.valide(champ))
+    return message('msg-infos', 'erreur', 'Choisis ton adresse dans la liste de suggestions, ou coche la case « Mon adresse n\'apparaît pas… » après l\'avoir écrite au complet.');
+  var maj = { telephone: $('f-tel').value.trim(), date_naissance: $('f-naissance').value || null };
+  if (adresseChangee) maj.adresse = window.AdresseAuto ? AdresseAuto.composer(champ) : champ.value.trim();
+  var b = $('f-bouton'); b.disabled = true; b.textContent = 'Enregistrement…';
+  sb.from('etudiantes').update(maj).eq('id', d.id).select().then(function (r) {
+    if (r.error && /date_naissance/.test(r.error.message || '')) { delete maj.date_naissance; return sb.from('etudiantes').update(maj).eq('id', d.id).select(); }
+    return r;
+  }).then(function (r) {
+    if (r.error) { b.disabled = false; b.textContent = 'Enregistrer mes changements'; return message('msg-infos', 'erreur', 'Tes informations n\'ont pas pu être enregistrées. Réessaie ou écris à serenaissance.doula@gmail.com.'); }
+    Object.assign(d, maj);
+    if (maj.adresse) { champ.value = maj.adresse; $('f-app').value = ''; $('f-cp').value = ''; }
+    var nouveau = $('f-courriel').value.trim().toLowerCase();
+    if (nouveau && nouveau !== (etat.session.user.email || '').toLowerCase()) {
+      return sb.auth.updateUser({ email: nouveau }, { emailRedirectTo: ICI }).then(function (u) {
+        b.disabled = false; b.textContent = 'Enregistrer mes changements';
+        message('msg-infos', u.error ? 'erreur' : 'ok', u.error
+          ? 'Tes autres informations sont enregistrées, mais ton courriel n\'a pas pu être changé : ' + echapper(u.error.message)
+          : '✅ Tes informations sont enregistrées. 📧 Pour changer ton courriel, clique sur le lien envoyé à ' + echapper(nouveau) + ' (et au besoin à ton ancienne adresse).');
+      });
+    }
+    b.disabled = false; b.textContent = 'Enregistrer mes changements';
+    message('msg-infos', 'ok', '✅ Tes informations sont enregistrées !');
+  });
+});
+
+/* ---------------- Documents de stage ---------------- */
+function listerStage() {
+  var uid = etat.session.user.id;
+  sb.storage.from('rapports').list(uid, { sortBy: { column: 'created_at', order: 'desc' } }).then(function (r) {
+    var f = (r.data || []).filter(function (x) { return x.name && x.name.charAt(0) !== '.'; });
+    $('liste-stage').innerHTML = f.length ? f.map(function (x) {
+      var m = x.name.match(/^\d+_(.+?)__(.+)$/);
+      var type = m ? m[1].replace(/_/g, ' ') : 'Document';
+      var nom = m ? m[2] : x.name.replace(/^\d+_/, '');
+      return '<li><span>📄 ' + echapper(nom) + '<small>' + echapper(type) + ' · ' + jour(x.created_at) + '</small></span><a href="#" data-chemin="' + echapper(uid + '/' + x.name) + '">Ouvrir</a></li>';
+    }).join('') : '<li class="vide">Aucun document pour l\'instant.</li>';
+  });
+}
+$('liste-stage').addEventListener('click', function (e) {
+  var a = e.target.closest('a[data-chemin]'); if (!a) return;
+  e.preventDefault();
+  var w = window.open('', '_blank');
+  sb.storage.from('rapports').createSignedUrl(a.dataset.chemin, 300).then(function (r) {
+    if (r.error || !r.data) { if (w) w.close(); alert('Impossible d\'ouvrir ce fichier.'); return; }
+    if (w) w.location.href = r.data.signedUrl; else location.href = r.data.signedUrl;
+  });
+});
+$('form-stage').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var type = $('s-type').value, fichiers = Array.prototype.slice.call($('s-fichiers').files || []);
+  if (!type || !fichiers.length) return;
+  var trop = fichiers.filter(function (f) { return f.size > 25 * 1024 * 1024; });
+  if (trop.length) return message('msg-stage', 'erreur', 'Fichier trop lourd (maximum 25 Mo) : ' + echapper(trop[0].name));
+  var b = $('s-bouton'); b.disabled = true; b.textContent = 'Envoi en cours…';
+  var uid = etat.session.user.id, ok = [], ko = [];
+  fichiers.reduce(function (p, f, i) {
+    return p.then(function () {
+      var chemin = uid + '/' + (Date.now() + i) + '_' + nomPropre(type) + '__' + nomPropre(f.name);
+      return sb.storage.from('rapports').upload(chemin, f, { contentType: f.type || 'application/octet-stream' })
+        .then(function (r) { (r.error ? ko : ok).push(f.name); });
+    });
+  }, Promise.resolve()).then(function () {
+    b.disabled = false; b.textContent = 'Envoyer à Sabrina';
+    $('s-fichiers').value = '';
+    if (ok.length) {
+      var d = etat.dossier || {};
+      try { emailjs.send(EMAILJS.service, EMAILJS.avis, { prenom: d.prenom || '', nom: d.nom || '', courriel: etat.session.user.email, telephone: d.telephone || '', adresse: d.adresse || '',
+        option_paiement: '📝 Documents de stage déposés (' + type + ') : ' + ok.join(', ') }, EMAILJS.cle); } catch (err) {}
+    }
+    message('msg-stage', ko.length ? 'erreur' : 'ok', ko.length
+      ? 'Certains fichiers n\'ont pas pu être envoyés : ' + echapper(ko.join(', ')) + '. Réessaie ou écris à serenaissance.doula@gmail.com.'
+      : '🌸 C\'est envoyé ! Sabrina a reçu ' + (ok.length > 1 ? 'tes ' + ok.length + ' documents' : 'ton document') + ', et tu en gardes une copie ci-dessous.');
+    listerStage();
+  });
+});
+
+/* ---------------- Inscription par lien (paiement déjà fait, souci technique…) ---------------- */
+function preparerInscription() {
+  var f = params.get('inscription') === 'marraine' ? 'marraine' : '4e-trimestre';
+  avecMenu(false); vue('inscription');
+  $('i-intro').textContent = f === 'marraine'
+    ? "Sabrina t'a envoyé ce lien pour compléter ton inscription à la formation de marraine d'allaitement."
+    : "Sabrina t'a envoyé ce lien pour compléter ton inscription à l'Accompagnement de pointe du 4ᵉ trimestre. Téléverse ton diplôme de doula : ton accès sera ouvert après sa vérification.";
+  $('i-bloc-diplome').hidden = f === 'marraine';
+  $('i-diplome').required = f !== 'marraine';
+  if (params.get('courriel')) $('i-courriel').value = params.get('courriel');
+  if (params.get('prenom')) $('i-prenom').value = params.get('prenom');
+  if (params.get('nom')) $('i-nom').value = params.get('nom');
+  if (window.AdresseAuto) AdresseAuto.brancher($('i-adresse'), { codePostal: $('i-cp'), appartement: $('i-app'), confirmation: $('i-adresse-ok') });
+  $('form-inscription').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var m1 = $('i-mdp').value;
+    if (m1 !== $('i-mdp2').value) return message('msg-inscription', 'erreur', 'Les deux mots de passe ne correspondent pas.');
+    if (!mdpValide(m1)) return message('msg-inscription', 'erreur', 'Ton mot de passe doit contenir au moins 8 caractères, dont une majuscule, une minuscule et un chiffre.');
+    if (window.AdresseAuto && !AdresseAuto.valide($('i-adresse'))) return message('msg-inscription', 'erreur', 'Choisis ton adresse dans la liste de suggestions, ou coche la case « Mon adresse n\'apparaît pas… ».');
+    var fichier = $('i-diplome').files && $('i-diplome').files[0];
+    if (f !== 'marraine' && !fichier) return message('msg-inscription', 'erreur', 'Téléverse ton diplôme de doula.');
+    if (fichier && fichier.size > 10 * 1024 * 1024) return message('msg-inscription', 'erreur', 'Ton fichier est trop lourd (maximum 10 Mo).');
+    var b = $('i-bouton'); b.disabled = true; b.textContent = 'Création en cours…';
+    var courriel = $('i-courriel').value.trim().toLowerCase();
+    var dossier = { prenom: $('i-prenom').value.trim(), nom: $('i-nom').value.trim(), courriel: courriel, telephone: $('i-tel').value.trim(),
+      adresse: window.AdresseAuto ? AdresseAuto.composer($('i-adresse')) : $('i-adresse').value.trim(), date_naissance: $('i-naissance').value || null,
+      formation: f, option_paiement: 'lien-manuel', statut: 'en_attente', diplome_url: null };
+    var envoi = fichier ? sb.storage.from('certificats').upload(Date.now() + '_' + nomPropre(fichier.name), fichier, { contentType: fichier.type || 'application/octet-stream' }) : Promise.resolve({ data: null });
+    envoi.then(function (r) {
+      if (r.error) throw new Error('Ton diplôme n\'a pas pu être téléversé (' + r.error.message + ').');
+      if (r.data) dossier.diplome_url = r.data.path;
+      return sb.auth.signUp({ email: courriel, password: m1, options: { emailRedirectTo: ICI } });
+    }).then(function (r) {
+      if (r.error && !/already|registered/i.test(r.error.message || '')) throw new Error('Ton compte n\'a pas pu être créé (' + r.error.message + ').');
+      if (r.data && r.data.user) dossier.user_id = r.data.user.id;
+      etat.nouvelleSession = r.data && r.data.session;
+      return sb.from('etudiantes').insert([dossier]).then(function (x) {
+        if (x.error && /date_naissance/.test(x.error.message || '')) { delete dossier.date_naissance; return sb.from('etudiantes').insert([dossier]); }
+        return x;
+      });
+    }).then(function (x) {
+      if (x.error) throw new Error('Ton dossier n\'a pas pu être enregistré (' + x.error.message + ').');
+      try { emailjs.send(EMAILJS.service, EMAILJS.avis, { prenom: dossier.prenom, nom: dossier.nom, courriel: courriel, telephone: dossier.telephone, adresse: dossier.adresse,
+        option_paiement: '🔗 Inscription par lien manuel — ' + (f === 'marraine' ? "marraine d'allaitement" : '4e trimestre') }, EMAILJS.cle); } catch (err) {}
+      history.replaceState(null, '', 'espace.html');
+      if (etat.nouvelleSession) return charger(etat.nouvelleSession, '✅ Ton compte est créé ! Sabrina vérifie ton dossier et t\'écrit dès que ton accès est ouvert.');
+      $('form-inscription').hidden = true;
+      message('msg-inscription', 'ok', '✅ Ton compte est créé et ton dossier est bien reçu ! 📧 <strong>Vérifie tes courriels</strong> : clique sur le bouton du courriel de bienvenue pour confirmer ton adresse (regarde aussi dans les indésirables). Sabrina t\'écrit dès que ton accès est ouvert.');
+    }).catch(function (err) {
+      b.disabled = false; b.textContent = 'Créer mon compte';
+      message('msg-inscription', 'erreur', echapper(err.message) + ' Réessaie ou écris à serenaissance.doula@gmail.com.');
+    });
+  });
+}
+
+/* ---------------- Déconnexion ---------------- */
+$('menu-sortir').addEventListener('click', function () {
+  try { sessionStorage.removeItem('cle:4e-trimestre'); sessionStorage.removeItem('cle:marraine'); } catch (e) {}
+  sb.auth.signOut().finally(function () { location.href = 'espace.html?deconnectee=1'; });
+});
+
+demarrer();
+})();
+</script>
+</body>
+</html>
