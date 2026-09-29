@@ -23,6 +23,7 @@
     var rue = [p.housenumber, p.street || (p.type === 'street' ? p.name : '')].filter(Boolean).join(' ');
     var nom = (!p.street && p.type !== 'street' && p.name && p.name !== p.city) ? p.name : '';
     var ville = p.city || p.town || p.village || p.district || p.county || '';
+    ville = ville.replace(/^(Communauté (régionale|rurale) (de |d'|du )|Municipalité (régionale )?(de |d')|Ville (de |d')|City of |Town of |Village (de |of )|Regional Community of |Rural Community of )/i, '');
     var region = PROVINCES[p.state] || p.state || '';
     return {
       principal: [nom, rue].filter(Boolean).join(', ') || ville,
