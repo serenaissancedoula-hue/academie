@@ -1192,37 +1192,10 @@
         }
         .carrousel-fleche.gauche { left: -14px; }
         .carrousel-fleche.droite { right: -14px; }
-        .about-mem {
-            background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-        }
-        .about-mem h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 12px; }
-        .about-mem > p { max-width: 720px; margin: 0 auto 24px; color: #555; font-size: 0.95rem; }
-        .mem-cartes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; max-width: 700px; margin: 0 auto; }
-        .mem-carte {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            text-decoration: none;
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            transition: all 0.3s;
-        }
-        .mem-carte:hover { border-color: var(--accent-terracotta); transform: translateY(-2px); }
-        .mem-carte strong { font-family: 'Playfair Display', serif; font-size: 1.1rem; }
-        .mem-carte span { font-size: 0.85rem; color: #7a685e; }
-        .mem-carte em { font-style: normal; font-size: 0.88rem; color: var(--accent-terracotta); font-weight: 600; margin-top: 4px; }
-        .mem-carte .mem-lien { color: var(--accent-terracotta); font-weight: 700; margin-top: 8px; }
         @media(max-width: 950px) {
             .about-chiffres { grid-template-columns: 1fr; gap: 12px; }
             .about-duo { grid-template-columns: 1fr; }
-            .about-carte, .about-mem { padding: 26px 20px; }
+            .about-carte { padding: 26px 20px; }
             .carrousel-piste img { flex-basis: 78%; width: 78%; }
             .carrousel-fleche { display: none; }
         }
@@ -1564,8 +1537,8 @@
 
     <!-- Bandeau discret de l'offre de lancement (disparaît tout seul après le 5 octobre) -->
     <a href="#formations" id="bandeau-offre" class="bandeau-offre" onclick="switchPage('academie', null, event)">
-        <span class="bandeau-long">✨ Offre de lancement de l'Académie : <strong>250 $</strong> <s>550 $</s> + formation de marraine d'allaitement (valeur de 175 $) en cadeau · jusqu'au 5 octobre</span>
-        <span class="bandeau-court">✨ Formation à <strong>250 $</strong> <s>550 $</s> + un cadeau · jusqu'au 5 oct. <strong>→</strong></span>
+        <span class="bandeau-long">✨ Offre de lancement de l'Académie : <strong>250 $</strong> <s>550 $</s> + formation de marraine d'allaitement (valeur de 175 $) en cadeau · 10 places · jusqu'au 5 octobre à midi</span>
+        <span class="bandeau-court">✨ Formation à <strong>250 $</strong> <s>550 $</s> + un cadeau · jusqu'au 5 oct. midi <strong>→</strong></span>
         <span class="bandeau-lien">Découvrir →</span>
     </a>
 
@@ -1577,9 +1550,9 @@
             <li><a href="#" onclick="switchPage('accompagnements', this, event)" id="nav-accompagnements">Accompagnements</a></li>
             <li><a href="#" onclick="switchPage('academie', this, event)" id="nav-academie">Formations</a></li>
             <li><a href="#" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Marraines</a></li>
-            <li><a href="espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>Mon Compte</a></li>
+            <li><a href="espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>Mon compte</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
-            <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">À Propos</a></li>
+            <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">À propos</a></li>
         </ul>
         <button class="btn-appel" onclick="ouvrirContact()" aria-label="Réserve ton appel gratuit"><i class="fa-solid fa-phone"></i><span class="txt-appel"> Réserve ton appel gratuit</span></button>
         <button class="burger" id="burger" onclick="basculerMenu()" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -1621,7 +1594,7 @@
             <div class="left-content">
                 <div class="badge-offre">Doula & Relation d'Aide</div>
                 <div class="section-tagline">Campbellton • Sérénaissance</div>
-                <h1 class="main-title">Accompagnement de la naissance et la matrescence avec cœur</h1>
+                <h1 class="main-title">Accompagnement de la naissance et de la matrescence avec cœur</h1>
                 <div class="sub-details">Soutenir les familles et former les intervenantes avec rigueur et bienveillance.</div>
                 <div class="hero-buttons">
                     <button class="btn-action" onclick="switchPage('accompagnements', null, event)">Découvrir mes accompagnements →</button>
@@ -1637,57 +1610,57 @@
 
         <div class="home-summary-box">
             <h3>Bonjour, je suis Sabrina</h3>
-            <p>Maman de 5 enfants (donc j'en connais quand même pas mal, hihi !), doula, intervenante en relation d'aide et naturothérapeute, j'offre un espace sécurisant et chaleureux aux futurs parents pour traverser la grossesse, l'accouchement et le post-partum. À travers Sérénaissance et mon Académie, je me consacre à honorer la matrescence et à outiller les professionnels.</p>
+            <p>Maman de 5 enfants (donc j'en connais quand même pas mal, hihi !), doula, intervenante en relation d'aide et naturothérapeute, j'offre un espace sécurisant et chaleureux aux futurs parents pour traverser la grossesse, l'accouchement et le post-partum. À travers Sérénaissance et mon Académie, je me consacre à honorer la matrescence et à outiller les accompagnantes.</p>
             <button class="btn-secondary" onclick="switchPage('apropos', null, event)">En savoir plus sur moi →</button>
         </div>
 
         <div class="home-summary-box" style="background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
             <h3>L'Académie Sérénaissance</h3>
-            <div class="pastille-offre offre-elem">✨ Offre de lancement : 250 $ au lieu de 550 $ + un cadeau · jusqu'au 5 octobre</div>
+            <div class="pastille-offre offre-elem">✨ Offre de lancement : 250 $ au lieu de 550 $ + un cadeau · 10 places · jusqu'au 5 octobre à midi</div>
             <p>Une formation de base de doula ne peut pas tout couvrir : j'ai voulu aller directement au cœur du 4ᵉ trimestre. Un espace de formation spécialisé et de pointe pour outiller les doulas avec des bases solides, éthiques et ancrées dans la physiologie, au Nouveau-Brunswick, au Québec, partout au Canada et en France. <em>English version coming soon.</em></p>
             <button class="btn-action" onclick="switchPage('apropos', null, event, 'section-academie')">En savoir plus sur l'Académie →</button>
         </div>
 
         <div class="pedagogie-section-home">
             <div class="section-header-centered" style="margin-bottom: 20px;">
-                <h2>Notre Pédagogie</h2>
+                <h2>Notre pédagogie</h2>
                 <p>Les piliers de formation et d'accompagnement de l'Académie Sérénaissance.</p>
             </div>
             <div class="values-grid">
                 <div class="value-card">
                     <i class="fa-solid fa-book-open-reader"></i>
-                    <h4>Apprentissage Flexible</h4>
-                    <p>Des modules 100% en ligne pour progresser à votre rythme, en combinant théorie rigoureuse et cas pratiques.</p>
+                    <h4>Apprentissage flexible</h4>
+                    <p>Des modules 100 % en ligne pour progresser à ton rythme, en combinant théorie rigoureuse et cas pratiques.</p>
                 </div>
                 <div class="value-card">
                     <i class="fa-solid fa-shield-halved"></i>
-                    <h4>Éthique & Sécurité</h4>
+                    <h4>Éthique et sécurité</h4>
                     <p>Un encadrement fondé sur les meilleures pratiques cliniques et le principe « Observer et Référer » pour une pratique souveraine.</p>
                 </div>
                 <div class="value-card">
                     <i class="fa-solid fa-certificate"></i>
-                    <h4>Outils Professionnels</h4>
-                    <p>Des outils de gestion professionnelle, des modèles de certificats et des dossiers d'accréditation pour propulser votre pratique.</p>
+                    <h4>Outils professionnels</h4>
+                    <p>Des outils de gestion professionnelle et des modèles de documents (contrat, journal de bord, grilles, rapport) pour structurer ta pratique.</p>
                 </div>
             </div>
         </div>
 
         <div class="contact-home-wrapper">
-            <h3>Une question ou un message ? Écrivez-moi</h3>
-            <p>Je vous réponds personnellement, habituellement en moins de 48 heures. 💕</p>
+            <h3>Une question ou un message ? Écris-moi</h3>
+            <p>Je te réponds personnellement, habituellement en moins de 48 heures. 💕</p>
             <form class="contact-form" id="form-contact" onsubmit="envoyerMessageContact(event)">
                 <div class="form-row">
-                    <input type="text" id="contact-nom" placeholder="Votre nom complet" required>
-                    <input type="email" id="contact-courriel" placeholder="Votre adresse courriel" required>
+                    <input type="text" id="contact-nom" placeholder="Ton nom complet" required>
+                    <input type="email" id="contact-courriel" placeholder="Ton adresse courriel" required>
                 </div>
-                <input type="text" id="contact-sujet" placeholder="Sujet de votre message">
-                <textarea id="contact-message" placeholder="Écrivez votre message ici..." required></textarea>
-                <p style="font-size: 0.78rem; color: #7a685e; text-align: left; margin: 0;">Vos coordonnées servent uniquement à vous répondre. <a href="#" style="color: var(--accent-terracotta); text-decoration: underline; cursor: pointer;" onclick="switchPage('confidentialite', null, event)">Politique de confidentialité</a></p>
+                <input type="text" id="contact-sujet" placeholder="Sujet de ton message">
+                <textarea id="contact-message" placeholder="Écris ton message ici…" required></textarea>
+                <p style="font-size: 0.78rem; color: #7a685e; text-align: left; margin: 0;">Tes coordonnées servent uniquement à te répondre. <a href="#" style="color: var(--accent-terracotta); text-decoration: underline; cursor: pointer;" onclick="switchPage('confidentialite', null, event)">Politique de confidentialité</a></p>
                 <button type="submit" id="contact-bouton" class="btn-action" style="justify-content: center; width: 100%;">Envoyer le message</button>
             </form>
             <div id="contact-merci" style="display: none; text-align: center; padding: 20px;">
-                <p style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--accent-terracotta); margin-bottom: 8px;">Merci, votre message est bien parti ! 🌸</p>
-                <p style="font-size: 0.9rem; color: #666;">Je vous réponds très bientôt à l'adresse que vous m'avez laissée.</p>
+                <p style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--accent-terracotta); margin-bottom: 8px;">Merci, ton message est bien parti ! 🌸</p>
+                <p style="font-size: 0.9rem; color: #666;">Je te réponds très bientôt à l'adresse que tu m'as laissée.</p>
             </div>
         </div>
     </div>
@@ -1695,8 +1668,8 @@
     <!-- ================= 2. PAGE ACCOMPAGNEMENTS ================= -->
     <div id="page-accompagnements" class="page-section">
         <div class="section-header-centered">
-            <h2>Mes Accompagnements de Doula & Relation d'Aide</h2>
-            <p>Des forfaits complets et sur-mesure pour vous entourer avant, pendant et après la naissance.</p>
+            <h2>Mes accompagnements de doula et de relation d'aide</h2>
+            <p>Des forfaits complets et sur mesure pour t'entourer avant, pendant et après la naissance.</p>
         </div>
 
         <div class="forfaits-grid">
@@ -1710,8 +1683,8 @@
                     <ul class="forfait-features">
                         <li><i class="fa-solid fa-check"></i> <strong>3 rencontres prénatales</strong></li>
                         <li><i class="fa-solid fa-check"></i> <strong>Présence complète à l'accouchement</strong></li>
-                        <li><i class="fa-solid fa-check"></i> <strong>2 rencontres post-natales</strong></li>
-                        <li><i class="fa-solid fa-check"></i> Post-partum immédiat & support 24/7</li>
+                        <li><i class="fa-solid fa-check"></i> <strong>2 rencontres postnatales</strong></li>
+                        <li><i class="fa-solid fa-check"></i> Post-partum immédiat et soutien 24/7</li>
                     </ul>
                 </div>
                 <div style="margin-top: 15px;">
@@ -1733,8 +1706,8 @@
                     <ul class="forfait-features">
                         <li><i class="fa-solid fa-check"></i> <strong>1 rencontre prénatale</strong></li>
                         <li><i class="fa-solid fa-check"></i> <strong>Présence complète à l'accouchement</strong></li>
-                        <li><i class="fa-solid fa-check"></i> <strong>1 rencontre post-natale</strong></li>
-                        <li><i class="fa-solid fa-check"></i> Post-partum immédiat & support 24/7</li>
+                        <li><i class="fa-solid fa-check"></i> <strong>1 rencontre postnatale</strong></li>
+                        <li><i class="fa-solid fa-check"></i> Post-partum immédiat et soutien 24/7</li>
                     </ul>
                 </div>
                 <div style="margin-top: 15px;">
@@ -1756,7 +1729,7 @@
                         <li><i class="fa-solid fa-check"></i> <strong>Présence dédiée le jour J à l'accouchement</strong></li>
                         <li><i class="fa-solid fa-check"></i> Rencontre obligatoire de connaissance préalable</li>
                         <li><i class="fa-solid fa-check"></i> Post-partum immédiat inclus</li>
-                        <li><i class="fa-solid fa-check"></i> Support de garde activé dès 38 semaines</li>
+                        <li><i class="fa-solid fa-check"></i> Garde activée dès 38 semaines</li>
                     </ul>
                 </div>
                 <div style="margin-top: 15px;">
@@ -1771,9 +1744,9 @@
 
         <div class="consultation-box">
             <div class="consultation-content">
-                <h3>Consultation Individuelle & Préparation à la Naissance</h3>
-                <p>En tant qu'intervenante en relation d'aide et doula, je vous propose des séances sur-mesure pour aborder vos craintes, préparer votre corps et votre esprit, et vous outiller en toute sérénité.</p>
-                <p><em>Ces rencontres peuvent se faire en visio ou en personne selon vos préférences.</em></p>
+                <h3>Consultation individuelle et préparation à la naissance</h3>
+                <p>En tant qu'intervenante en relation d'aide et doula, je te propose des séances sur mesure pour aborder tes craintes, préparer ton corps et ton esprit, et t'outiller en toute sérénité.</p>
+                <p><em>Ces rencontres peuvent se faire en visio ou en personne, selon tes préférences.</em></p>
             </div>
             <div class="consultation-tarifs">
                 <div class="tarif-item" style="flex-wrap: wrap; gap: 12px;">
@@ -1795,23 +1768,23 @@
         </div>
 
         <div class="global-inclusions">
-            <h3>Ce qui est inclus dans TOUTES mes formules d'accompagnement :</h3>
+            <h3>Ce qui est inclus dans toutes mes formules d'accompagnement</h3>
             <div class="inclusions-grid">
                 <div class="inclusion-item">
                     <i class="fa-solid fa-heart-pulse"></i>
-                    <p><strong>Outils personnalisés :</strong> Plan de naissance, liste d'hôpital, documents et cahier de naissance complets.</p>
+                    <p><strong>Outils personnalisés :</strong> plan de naissance, liste d'hôpital, documents et cahier de naissance complets.</p>
                 </div>
                 <div class="inclusion-item">
                     <i class="fa-solid fa-phone-volume"></i>
-                    <p><strong>Support illimité :</strong> Courriel, textos, Messenger ou appels selon vos besoins.</p>
+                    <p><strong>Soutien illimité :</strong> courriel, textos, Messenger ou appels, selon tes besoins.</p>
                 </div>
                 <div class="inclusion-item">
                     <i class="fa-solid fa-shield-heart"></i>
-                    <p><strong>Disponibilité 24/7 :</strong> À partir de 38 semaines, la cliente est prioritaire 7j/7, 24h/24 et je suis de garde officielle.</p>
+                    <p><strong>Disponibilité 24/7 :</strong> à partir de 38 semaines, tu es prioritaire 7 j/7, 24 h/24, et je suis de garde officielle.</p>
                 </div>
             </div>
         </div>
-        <p style="text-align: center; font-size: 0.82rem; color: #7a685e; margin-top: 25px;">En réservant, vous acceptez les <a href="#" style="color: var(--accent-terracotta); text-decoration: underline; cursor: pointer;" onclick="switchPage('conditions', null, event)">conditions de vente et la politique d'annulation</a>. Annulation sans frais avant la première rencontre.</p>
+        <p style="text-align: center; font-size: 0.82rem; color: #7a685e; margin-top: 25px;">En réservant, tu acceptes les <a href="#" style="color: var(--accent-terracotta); text-decoration: underline; cursor: pointer;" onclick="switchPage('conditions', null, event)">conditions de vente et la politique d'annulation</a>. Annulation sans frais avant la première rencontre.</p>
     </div>
 
     <!-- ================= 3. PAGE FORMATIONS DE L'ACADÉMIE ================= -->
@@ -1826,7 +1799,7 @@
         <div class="choix-formations" role="tablist">
             <a href="#" class="choix-formation actif" id="onglet-4e" role="tab" aria-selected="true" onclick="montrerFormation('4e', event)">
                 <span class="cf-titre">Accompagnement de pointe du 4ᵉ trimestre</span>
-                <span class="cf-info">30 h · pour les doulas diplômées</span>
+                <span class="cf-info">Environ 30 h · pour les doulas diplômées</span>
                 <span class="cf-prix"><s class="offre-elem">550 $</s> <span id="cf-prix-4e">250 $</span></span>
             </a>
             <a href="#" class="choix-formation" id="onglet-marraine" role="tab" aria-selected="false" onclick="montrerFormation('marraine', event)">
@@ -1854,16 +1827,16 @@
                     🎓 Accompagnement de pointe du 4ᵉ trimestre et soutien post-partum profond
                 </h3>
                 <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
-                    <strong>Certification de 30h</strong> — 100 % en ligne et à ton rythme.
+                    <strong>Formation d'environ 30 h</strong> (5 modules, 33 chapitres) — 100 % en ligne et à ton rythme.
                 </p>
 
                 <div class="info-grid info-compacte">
                     <div class="info-bloc">
                         <h4>🌸 À qui s'adresse-t-elle ?</h4>
                         <ul>
-                            <li><i class="fa-solid fa-check"></i> Aux doulas diplômées qui veulent se spécialiser en post-natal</li>
+                            <li><i class="fa-solid fa-check"></i> Aux doulas diplômées qui veulent se spécialiser en postnatal</li>
                             <li><i class="fa-solid fa-check"></i> Aux accompagnantes en périnatalité qui veulent approfondir le 4ᵉ trimestre</li>
-                            <li><i class="fa-solid fa-check"></i> Aux francophones du N.-B., du Québec, du reste du Canada et d'ailleurs</li>
+                            <li><i class="fa-solid fa-check"></i> Aux francophones du N.-B., du Québec, du reste du Canada, de la France et d'ailleurs</li>
                         </ul>
                     </div>
                     <div class="info-bloc">
@@ -1879,7 +1852,7 @@
                     <div class="info-bloc">
                         <h4>📋 Prérequis</h4>
                         <ul>
-                            <li><i class="fa-solid fa-check"></i> Détenir un diplôme ou certificat de doula (à téléverser à l'inscription)</li>
+                            <li><i class="fa-solid fa-check"></i> Détenir un diplôme ou un certificat de doula (à téléverser à l'inscription)</li>
                             <li><i class="fa-solid fa-check"></i> Un ordinateur, une tablette ou un cellulaire avec Internet</li>
                             <li><i class="fa-solid fa-check"></i> Environ 30 heures, réparties à ton rythme</li>
                         </ul>
@@ -1949,10 +1922,10 @@
                         </ul>
                     </details>
                 </div>
-                <p style="font-size: 0.85rem; color: #555; margin-top: 12px;">✔️ 33 chapitres, chacun suivi d'un quiz · ✔️ Un examen final par module · ✔️ Un grand examen final de 58 questions · ✔️ Une trousse de stage complète (réussite à 80 %)</p>
+                <p style="font-size: 0.85rem; color: #555; margin-top: 12px;">✔️ 33 chapitres, chacun suivi d'un quiz (réussite à 80 %) · ✔️ Un examen final par module · ✔️ Un grand examen final de 58 questions · ✔️ Une trousse de stage complète</p>
                 <div class="certificat-bloc">
                     <h4>📜 Évaluation et certificat, livré chez toi</h4>
-                    <p>Des quiz de validation par module, un rapport de cas terrain accompagné et un examen final théorique. À la réussite, tu reçois ton certificat de l'Académie Sérénaissance imprimé, <strong>par la poste</strong>.</p>
+                    <p>Un quiz par chapitre, un examen par module, un rapport de cas terrain accompagné et un grand examen final théorique. À la réussite, tu reçois ton certificat de l'Académie Sérénaissance imprimé, <strong>par la poste</strong>. Ce certificat atteste la réussite de la formation : ce n'est ni un titre professionnel réglementé ni un diplôme reconnu par un ministère de l'Éducation.</p>
                     <details class="apercu-repliable">
                         <summary>Voir un aperçu du certificat</summary>
                         <div class="certificat-apercu" oncontextmenu="return false;">
@@ -1988,9 +1961,9 @@
                 </div>
                 <div id="offre-versements" style="font-size: 0.85rem; color: #555; margin: 15px 0;">Paiement unique de 250 $ · code promo appliqué automatiquement</div>
                 <p style="font-size: 0.85rem; color: #555; margin: 15px 0;">Tu choisis ton mode de versement dans le formulaire d'inscription.</p>
-                <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé via Stripe</div>
+                <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé avec Stripe</div>
                 <button onclick="inscrireA('4e-trimestre', event)" class="btn-action" style="width: 100%; justify-content: center;">S'inscrire en ligne</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Annulation possible en tout temps, selon les règles de l'OPC. <a href="#" style="color: var(--accent-terracotta); text-decoration: underline; cursor: pointer;" onclick="switchPage('conditions', null, event)">Voir la politique de remboursement</a></p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Annulation possible en tout temps, selon les règles de la Loi sur la protection du consommateur du Québec. <a href="#" style="color: var(--accent-terracotta); text-decoration: underline; cursor: pointer;" onclick="switchPage('conditions', null, event)">Voir la politique de remboursement</a></p>
             </div>
         </div>
 
@@ -2003,7 +1976,7 @@
                     🤱 Formation de marraine d'allaitement
                 </h3>
                 <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">
-                    <strong>Environ 8 h 30 à 9 h</strong> — 100 % en ligne et à ton rythme. Apprends à écouter, informer, encourager et orienter les familles qui allaitent, au Nouveau-Brunswick, au Québec et en France.
+                    <strong>Environ 8 h 30</strong> (6 chapitres) — 100 % en ligne et à ton rythme. Apprends à écouter, informer, encourager et orienter les familles qui allaitent, au Nouveau-Brunswick, au Québec et en France.
                 </p>
 
                 <div class="info-grid info-compacte">
@@ -2119,11 +2092,11 @@
             <div class="price-box-sticky">
                 <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Marraine d'allaitement</span>
                 <div class="price-tag">175 $</div>
-                <div class="pastille-offre offre-elem" style="margin: 10px 0 0;">🎁 Offerte en cadeau avec la formation du 4ᵉ trimestre jusqu'au 5 octobre</div>
+                <div class="pastille-offre offre-elem" style="margin: 10px 0 0;">🎁 Offerte en cadeau avec la formation du 4ᵉ trimestre (offre de lancement, 10 places, jusqu'au 5 octobre à midi)</div>
                 <div style="font-size: 0.85rem; color: #555; margin: 15px 0;">Paiement unique · environ 8 h 30 en ligne</div>
-                <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé via Stripe</div>
+                <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé avec Stripe</div>
                 <button onclick="inscrireA('marraine', event)" class="btn-action" style="width: 100%; justify-content: center;">S'inscrire en ligne</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Annulation possible en tout temps, selon les règles de l'OPC. <a href="#" style="color: var(--accent-terracotta); text-decoration: underline; cursor: pointer;" onclick="switchPage('conditions', null, event)">Voir la politique de remboursement</a></p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Annulation possible en tout temps, selon les règles de la Loi sur la protection du consommateur du Québec. <a href="#" style="color: var(--accent-terracotta); text-decoration: underline; cursor: pointer;" onclick="switchPage('conditions', null, event)">Voir la politique de remboursement</a></p>
             </div>
         </div>
 
@@ -2186,10 +2159,10 @@
                 <p style="margin: 0; font-size: 0.95rem;">✅ Ton compte est créé ! 📧 <strong>Vérifie tes courriels</strong> : tu vas recevoir un courriel de bienvenue avec un bouton pour confirmer ton adresse (regarde aussi dans les indésirables). Ensuite, retrouve ton espace dans <a href="espace.html">Mon compte</a>.</p>
             </div>
             <p>
-                Ton paiement a bien été validé et je suis ravie de t'accueillir dans l'Académie. Ton dossier est en cours de validation finale !
+                Ton paiement a bien été reçu et je suis ravie de t'accueillir dans l'Académie. Ton dossier est en cours de validation finale !
             </p>
             <p>
-                Dès que ton diplôme de doula aura été vérifié et ton compte activé, tu recevras un courriel t'en informant. Tu auras alors accès à ta formation dans un délai de <strong>24 à 48 heures</strong>.
+                Dès que ton dossier (et ton diplôme de doula, pour le 4ᵉ trimestre) aura été vérifié, ton accès sera ouvert et tu recevras un courriel t'en informant, habituellement dans un délai de <strong>24 à 48 heures</strong>.
             </p>
             <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin: 25px 0; font-size: 1.1rem;">
                 J'ai tellement hâte de t'accompagner dans cette magnifique aventure ! ✨
@@ -2247,8 +2220,8 @@
     <!-- ======================= PAGE INSCRIPTION ======================= -->
     <div id="page-inscription" class="page-section">
         <div class="account-page-container" style="max-width: 700px;">
-            <h2 style="color: var(--text-dark); text-align: center; margin-bottom: 10px;">🌸 Inscription - Académie Sérénaissance</h2>
-            <p style="text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 25px;">Remplis tes coordonnées et procède au paiement sécurisé. Tu créeras ton mot de passe juste après le paiement. 🌸</p>
+            <h2 style="color: var(--text-dark); text-align: center; margin-bottom: 10px;">🌸 Inscription · Académie Sérénaissance</h2>
+            <p style="text-align: center; color: #666; font-size: 0.9rem; margin-bottom: 25px;">Remplis tes coordonnées, puis procède au paiement sécurisé. Tu créeras ton mot de passe juste après le paiement. 🌸</p>
 
             <form class="contact-form" onsubmit="soumettreInscription(event)">
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
@@ -2305,7 +2278,7 @@
                 </label>
 
                 <div id="bloc-diplome" style="display: flex; flex-direction: column; gap: 5px; margin-top: 15px;">
-                    <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Téléverser ton diplôme de doula (Obligatoire) :</label>
+                    <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Téléverse ton diplôme de doula (obligatoire) :</label>
                     <input type="file" id="diplome" accept=".pdf,.jpg,.jpeg,.png" required style="padding: 10px; background: white; border: 1px solid var(--border-color); border-radius: 10px;">
                 </div>
 
@@ -2485,9 +2458,9 @@
             <div class="bloc-appli" data-toujours hidden style="margin-top:20px; text-align:left;"></div>
             <h3 class="faq-groupe">Les formations</h3>
             <div class="faq-accordeon">
-                <details><summary>Quelles formations offre l'Académie ?</summary><p>Deux formations 100 % en ligne : <strong>l'Accompagnement de pointe du 4ᵉ trimestre</strong> (environ 30 h, 5 modules, 33 chapitres), réservée aux doulas diplômées, et la formation de <strong>marraine d'allaitement</strong> (environ 8 h 30, 6 chapitres), ouverte à toutes, sans prérequis.</p></details>
+                <details><summary>Quelles formations offre l'Académie ?</summary><p>Deux formations 100 % en ligne : la formation <strong>Accompagnement de pointe du 4ᵉ trimestre</strong> (environ 30 h, 5 modules, 33 chapitres), réservée aux doulas diplômées, et la formation de <strong>marraine d'allaitement</strong> (environ 8 h 30, 6 chapitres), ouverte à toutes, sans prérequis.</p></details>
                 <details><summary>Pour qui sont-elles conçues, et où puis-je les suivre ?</summary><p>Pour les francophones du <strong>Nouveau-Brunswick, du Québec, du reste du Canada et de la France</strong>, et d'ailleurs dans le monde. Le contenu présente les parcours de soins, les démarches, les aides et le cadre légal de chacun de ces endroits, et les documents de la trousse de stage ont été conçus pour y être utilisés. Une version anglaise est en préparation.</p></details>
-                <details><summary>Quel est le format ?</summary><p>Des chapitres à lire à ton rythme, sur ordinateur, tablette ou cellulaire, avec des figures, des études de cas, des outils à imprimer et des vidéos à écouter. Chaque chapitre se termine par un quiz, et chaque module par un examen.</p></details>
+                <details><summary>Quel est le format ?</summary><p>Des chapitres à lire à ton rythme, sur ordinateur, tablette ou cellulaire, avec des figures, des études de cas, des outils à imprimer et des vidéos à écouter. Chaque chapitre se termine par un quiz ; pour le 4ᵉ trimestre, chaque module se termine par un examen, et la formation de marraine, par un examen final.</p></details>
                 <details><summary>Comment fonctionne la progression ?</summary><p>Le chapitre suivant s'ouvre quand tu as réussi le quiz du chapitre (80 %). L'examen du module s'ouvre quand tous les quiz sont réussis, et le module suivant s'ouvre quand l'examen est réussi. Ta progression est sauvegardée dans ton compte : tu la retrouves sur tous tes appareils.</p></details>
                 <details><summary>Et si j'échoue un examen ?</summary><p>Pas de panique ! Tu relis d'abord les chapitres où tu as fait des erreurs, puis tu repasses l'examen. Les questions changent d'une tentative à l'autre : tu dois vraiment maîtriser la matière, pas mémoriser des réponses.</p></details>
                 <details><summary>Est-ce que je serai accompagnée ?</summary><p>Oui ! Un mentorat personnalisé est offert au besoin tout au long de ta formation, par courriel ou en visio. Tu peux réserver un moment directement depuis ton compte.</p></details>
@@ -2499,14 +2472,14 @@
                 <details><summary>Qu'est-ce que j'apprends ?</summary><p>Le rôle de la marraine et l'éthique du soutien entre pairs, le fonctionnement de la lactation, la mise au sein et les positions, les difficultés courantes et quand orienter, l'écoute et la relation d'aide, et des situations particulières comme l'expression du lait ou le retour au travail.</p></details>
                 <details><summary>Est-ce une certification officielle ?</summary><p>Ce n'est pas une formation de Santé publique Nouveau-Brunswick ni d'un autre programme officiel, et elle ne donne ni titre professionnel ni accréditation d'un organisme public. Elle mène au certificat de marraine d'allaitement de Sérénaissance, valide 2 ans, qui te permet de faire partie de son réseau de marraines bénévoles. Elle te prépare aussi à rejoindre, si tu le souhaites, un programme officiel.</p></details>
                 <details><summary>Qu'arrive-t-il après la formation ?</summary><p>Une fois l'examen final réussi, tu télécharges ton certificat de participation, puis ton compte te demande si tu veux faire partie de l'équipe de marraines de Sérénaissance. Si oui, tu remplis et signes électroniquement ton formulaire officiel (photo, courte bio, secteurs desservis, modes d'accompagnement) : tu en gardes une copie PDF. Sabrina vérifie tes résultats et ta fiche, puis la publie sur la page « Nos marraines d'allaitement ». Les jumelages sont gérés par Sabrina et sont toujours gratuits et bénévoles pour les mamans.</p></details>
-                <details><summary>Combien de temps la certification de marraine est-elle valide ?</summary><p>2 ans. Pour renouveler ton statut, tu fais une mise à jour de la formation : à 50 % de rabais si tu as été formée chez Sérénaissance, ou au plein prix si tu as été formée ailleurs.</p></details>
+                <details><summary>Combien de temps le certificat de marraine est-il valide ?</summary><p>2 ans. Pour renouveler ton statut, tu fais une mise à jour de la formation : à 50 % de rabais si tu as été formée chez Sérénaissance, ou au plein prix si tu as été formée ailleurs.</p></details>
                 <details><summary>Comment est-elle offerte en cadeau ?</summary><p>Pendant l'offre de lancement (jusqu'au 5 octobre 2026 à midi, pour les 10 prochaines inscrites), la formation de marraine est offerte avec l'inscription au 4ᵉ trimestre. Dès que ton accès est ouvert, tu reçois un courriel « cadeau » et elle apparaît dans « Mes cours ».</p></details>
             </div>
             <h3 class="faq-groupe">Inscription, paiement et accès</h3>
             <div class="faq-accordeon">
                 <details><summary>Comment fonctionne l'inscription ?</summary><p>Tu remplis le formulaire (avec ton diplôme de doula pour le 4ᵉ trimestre), tu paies de façon sécurisée avec Stripe, puis tu crées ton mot de passe. Tu reçois ensuite un courriel de bienvenue avec un bouton pour confirmer ton adresse.</p></details>
                 <details><summary>Quand ai-je accès à ma formation ?</summary><p>Après la vérification de ton dossier (et de ton diplôme pour le 4ᵉ trimestre), habituellement en 24 à 48 heures. Tu reçois alors un courriel, et tes cours apparaissent dans <strong>Mon compte</strong>.</p></details>
-                <details><summary>Puis-je payer en plusieurs versements ?</summary><p>Oui : la formation du 4ᵉ trimestre au prix régulier (550 $) se paie en 1, 2 ou 4 versements, et le combo des deux formations (725 $) aussi. Le prix de l'offre de lancement (250 $) se paie en un seul versement.</p></details>
+                <details><summary>Puis-je payer en plusieurs versements ?</summary><p>Oui : la formation du 4ᵉ trimestre au prix régulier (550 $) se paie en 1, 2 ou 4 versements (275 $ ou 137,50 $), et le combo des deux formations (725 $) aussi (362,50 $, ou 181,25 $ aux 2 semaines). Le prix de l'offre de lancement (250 $) et la formation de marraine (175 $) se paient en un seul versement.</p></details>
                 <details><summary>Mon paiement est passé, mais l'inscription a bogué. Que faire ?</summary><p>Écris-moi à serenaissance.doula@gmail.com ou appelle-moi au 506-759-2044 : je t'envoie un lien personnel pour créer ton compte et téléverser ton diplôme.</p></details>
                 <details><summary>Quelle est la politique de remboursement ?</summary><p>Tu peux annuler en tout temps par un simple courriel. Avant le début de la formation, tu es remboursée au complet ; après, tu paies seulement les modules commencés, plus une petite pénalité plafonnée à 50 $, selon les règles de l'Office de la protection du consommateur. Les détails sont dans les <a href="#" onclick="switchPage('conditions', null, event)">conditions de vente</a>.</p></details>
             </div>
@@ -2525,7 +2498,7 @@
     <div id="page-nos-marraines" class="page-section">
         <div class="section-header-centered">
             <h2>Nos marraines d'allaitement</h2>
-            <p>Des mamans et des accompagnantes formées et certifiées par l'Académie Sérénaissance pour écouter, encourager et orienter les familles qui allaitent.</p>
+            <p>Des mamans et des accompagnantes formées par l'Académie Sérénaissance, titulaires de son certificat de marraine, pour écouter, encourager et orienter les familles qui allaitent.</p>
         </div>
         <div class="marraines-bandeau">
             <div>
@@ -2538,7 +2511,7 @@
             </div>
         </div>
         <div class="marraines-grille" id="marraines-grille"><p class="marraines-vide">Chargement…</p></div>
-        <p class="marraines-note">Chaque marraine affichée a réussi la formation de marraine d'allaitement de l'Académie Sérénaissance et a été validée par Sabrina. Sa certification est valide 2 ans. La marraine offre un soutien entre pairs : elle ne remplace pas une sage-femme, une infirmière, une consultante en lactation (IBCLC) ou un médecin, et elle oriente au besoin.</p>
+        <p class="marraines-note">Chaque marraine affichée a réussi la formation de marraine d'allaitement de l'Académie Sérénaissance et a été validée par Sabrina. Son certificat de marraine est valide 2 ans. La marraine offre un soutien entre pairs : elle ne remplace pas une sage-femme, une infirmière, une consultante en lactation (IBCLC) ou un médecin, et elle oriente au besoin.</p>
         <div style="text-align:center;margin-top:24px;">
             <button class="btn-secondary" onclick="allerA(event, 'formation-marraine')">Devenir marraine d'allaitement →</button>
         </div>
@@ -2610,8 +2583,8 @@
                 <div class="about-carte">
                     <h3>Mon parcours</h3>
                     <ul class="about-parcours">
-                        <li><i class="fa-solid fa-graduation-cap"></i><span><strong>Doula (accompagnante à la naissance)</strong><br>Mère et Monde</span></li>
-                        <li><i class="fa-solid fa-leaf"></i><span><strong>Naturothérapeute</strong><br>Mère et Monde</span></li>
+                        <li><i class="fa-solid fa-graduation-cap"></i><span><strong>Doula (accompagnante à la naissance)</strong></span></li>
+                        <li><i class="fa-solid fa-leaf"></i><span><strong>Naturothérapeute</strong></span></li>
                         <li><i class="fa-solid fa-comments"></i><span><strong>Intervenante en relation d'aide</strong></span></li>
                         <li><i class="fa-solid fa-person-breastfeeding"></i><span><strong>Marraine d'allaitement bénévole</strong><br>Santé publique du Nouveau-Brunswick</span></li>
                         <li><i class="fa-solid fa-seedling"></i><span><strong>Fondatrice</strong><br>Sérénaissance et l'Académie Sérénaissance</span></li>
@@ -2631,34 +2604,13 @@
                 </div>
             </div>
 
-            <!-- Recommandation Mère et Monde -->
-            <div class="about-mem">
-                <div class="badge-offre" style="font-size: 2rem; margin-bottom: 2px;">Tu rêves de devenir doula ?</div>
-                <h3>Là où tout a commencé pour moi</h3>
-                <p>C'est chez <strong>Mère et Monde</strong> que j'ai suivi mes formations de doula et de naturothérapeute. Si tu veux faire tes premiers pas, c'est l'école que je te recommande de tout cœur. Et une fois diplômée, l'Académie Sérénaissance t'attend pour te spécialiser en post-partum. 🌸</p>
-                <div class="mem-cartes">
-                    <a class="mem-carte" href="https://www.mereetmonde.com/ecole-et-formations/accompagnement-naissance-doula/" target="_blank" rel="noopener">
-                        <strong>Formation de doula</strong>
-                        <span>250 h · en ligne</span>
-                        <em class="mem-date" data-date="2026-10-17" data-texte="Prochaine cohorte : 17 octobre 2026">Prochaine cohorte : 17 octobre 2026</em>
-                        <span class="mem-lien">Voir la formation →</span>
-                    </a>
-                    <a class="mem-carte" href="https://www.mereetmonde.com/ecole-et-formations/formations-pour-devenir-naturotherapeute/" target="_blank" rel="noopener">
-                        <strong>Naturothérapeute en périnatalité</strong>
-                        <span>Cours en ligne</span>
-                        <em class="mem-date" data-date="2026-11-14" data-texte="Prochain cours : 14 novembre 2026">Prochain cours : 14 novembre 2026</em>
-                        <span class="mem-lien">Voir la formation →</span>
-                    </a>
-                </div>
-            </div>
-
             <div id="section-academie" class="about-page-box">
                 <div class="about-page-text" style="grid-column: 1 / -1;">
                     <h2>Pourquoi l'Académie Sérénaissance a vu le jour</h2>
                     <p>Une formation de base de doula couvre forcément beaucoup de sujets, et le 4ᵉ trimestre n'y occupe qu'une petite place. Je voulais aller droit au cœur de cette période. L'Académie Sérénaissance est née d'un besoin viscéral de structurer et d'élever la pratique des accompagnantes en périnatalité.</p>
                     <p>J'ai souhaité créer un espace de transmission fondé sur la sécurité, la rigueur, le respect absolu de la physiologie et un soutien post-partum profond. Mon objectif est que chaque intervenante se sente outillée, compétente et pleinement souveraine dans sa pratique auprès des familles.</p>
                     <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
-                        "Guider les doulas vers une pratique souveraine, rigoureuse et bienveillante."
+                        « Guider les doulas vers une pratique souveraine, rigoureuse et bienveillante. »
                     </p>
                 </div>
             </div>
@@ -2683,9 +2635,9 @@
             <li><a href="#" onclick="switchPage('accueil', this, event)">Accueil</a></li>
             <li><a href="#" onclick="switchPage('accompagnements', this, event)">Accompagnements</a></li>
             <li><a href="#" onclick="switchPage('academie', this, event)">Formations</a></li>
-            <li><a href="espace.html">Mon Compte</a></li>
+            <li><a href="espace.html">Mon compte</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)">FAQ</a></li>
-            <li><a href="#" onclick="switchPage('apropos', this, event)">À Propos</a></li>
+            <li><a href="#" onclick="switchPage('apropos', this, event)">À propos</a></li>
         </ul>
         <nav class="footer-legal" aria-label="Pages de l'Académie" style="margin-bottom:6px;">
             <a href="/academie-serenaissance/">Académie Sérénaissance</a> ·
@@ -2901,12 +2853,6 @@
             const piste = document.getElementById('carrousel-piste');
             if (piste) piste.scrollBy({ left: sens * piste.clientWidth * 0.9, behavior: 'smooth' });
         }
-
-        // Dates des prochaines cohortes Mère et Monde : si la date est passée, on invite à consulter le site
-        document.querySelectorAll('.mem-date').forEach(el => {
-            const fin = new Date(el.dataset.date + 'T23:59:59-03:00');
-            if (new Date() > fin) el.textContent = 'Consulte les prochaines dates';
-        });
 
         // ================= NOS MARRAINES D'ALLAITEMENT (page publique) =================
         let marrainesChargees = false;
