@@ -3,5 +3,7 @@ Allow: /
 Disallow: /Formation/
 Allow: /Formation/module-1/apercu.html
 Disallow: /espace.html
+Disallow: /admin.html
+Disallow: /hors-ligne.html
 
 Sitemap: https://academiesere.ca/sitemap.xml
