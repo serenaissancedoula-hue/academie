@@ -108,6 +108,12 @@ th { color: var(--doux); font-weight: 600; }
         <input type="password" id="c-mdp" placeholder="Mot de passe" required autocomplete="current-password">
         <button class="btn" type="submit">Me connecter</button>
       </form>
+      <form id="form-code" hidden style="display:flex;flex-direction:column;gap:10px;">
+        <p style="font-size:.9rem;">🔐 Entre le code à 6 chiffres affiché dans ton application d'authentification (Google Authenticator, Authy, Mots de passe d'Apple…).</p>
+        <input id="c-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="123456" required style="font-size:1.4rem;letter-spacing:.3em;text-align:center;">
+        <button class="btn" type="submit">Valider</button>
+        <button class="btn fantome" type="button" id="code-annuler">Annuler</button>
+      </form>
     </div>
   </section>
 
@@ -172,6 +178,18 @@ th { color: var(--doux); font-weight: 600; }
       <div id="l-resultat" hidden style="margin-top:10px;">
         <input id="l-texte" readonly>
         <div class="actions" style="margin-top:8px;"><button class="btn gris" type="button" id="l-copier">📋 Copier</button><a class="btn" id="l-mail" href="#">✉️ Préparer le courriel</a></div>
+      </div>
+    </div>
+    <div class="carte" id="carte-2fa">
+      <h3 style="margin-bottom:6px;">🔐 Double vérification (recommandée)</h3>
+      <p id="mfa-etat" style="font-size:.86rem;color:var(--doux);margin-bottom:10px;"></p>
+      <div class="actions"><button class="btn" id="mfa-activer" hidden>Activer la double vérification</button><button class="btn gris" id="mfa-retirer" hidden>Désactiver</button></div>
+      <div id="mfa-config" hidden style="margin-top:12px;">
+        <p style="font-size:.86rem;margin-bottom:8px;">1. Ouvre ton application d'authentification (Google Authenticator, Authy, ou les Mots de passe d'Apple) et scanne ce code, <em>ou</em> copie la clé.</p>
+        <div id="mfa-qr" style="background:#fff;padding:10px;border-radius:12px;width:200px;max-width:100%;margin-bottom:8px;"></div>
+        <input id="mfa-secret" readonly style="font-family:monospace;font-size:.8rem;">
+        <p style="font-size:.86rem;margin:10px 0 8px;">2. Entre le code à 6 chiffres qu'elle affiche :</p>
+        <form id="form-mfa" style="display:flex;gap:8px;"><input id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" required><button class="btn" type="submit">Confirmer</button></form>
       </div>
     </div>
     <div class="carte">
@@ -284,16 +302,89 @@ function demarrer() {
       if (s) $('msg-connexion').innerHTML = 'Tu es connectée avec ' + esc(s.user.email) + ', qui n\'est pas le compte administratrice. <a href="espace.html">Aller à Mon compte</a>';
       vue('connexion'); return;
     }
-    $('onglets').hidden = false; vue('bord');
-    charger(); direct();
-    etatNotif(); viderPastille();
+    // Double vérification : si un code est configuré, il faut l'entrer avant d'accéder aux dossiers
+    return sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function (n) {
+      var d = n.data || {};
+      if (d.nextLevel === 'aal2' && d.currentLevel !== 'aal2') { demanderCode(); return; }
+      $('form-code').hidden = true; $('form-connexion').hidden = false;
+      $('onglets').hidden = false; vue('bord');
+      charger(); direct();
+      etatNotif(); viderPastille(); etatMfa();
+    });
   });
 }
+function demanderCode() {
+  vue('connexion'); $('onglets').hidden = true;
+  $('form-connexion').hidden = true; $('form-code').hidden = false;
+  $('msg-connexion').textContent = 'Deuxième étape de sécurité.';
+  $('c-code').value = ''; setTimeout(function () { $('c-code').focus(); }, 50);
+}
+function premierFacteur() {
+  return sb.auth.mfa.listFactors().then(function (r) { return ((r.data && r.data.totp) || []).filter(function (f) { return f.status === 'verified'; })[0]; });
+}
+$('form-code').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var code = $('c-code').value.replace(/\D/g, '');
+  premierFacteur().then(function (f) {
+    if (!f) { demarrer(); return; }
+    return sb.auth.mfa.challengeAndVerify({ factorId: f.id, code: code }).then(function (r) {
+      if (r.error) { $('msg-connexion').textContent = 'Code incorrect ou expiré. Réessaie avec le nouveau code.'; $('c-code').value = ''; return; }
+      demarrer();
+    });
+  });
+});
+$('code-annuler').addEventListener('click', function () { sb.auth.signOut().then(function () { location.reload(); }); });
 $('form-connexion').addEventListener('submit', function (e) {
   e.preventDefault();
   sb.auth.signInWithPassword({ email: $('c-courriel').value.trim(), password: $('c-mdp').value }).then(function (r) {
     if (r.error) { $('msg-connexion').textContent = 'Courriel ou mot de passe incorrect.'; return; }
     demarrer();
+  });
+});
+
+/* ---------- Double vérification (TOTP) ---------- */
+var mfaEnCours = null;
+function etatMfa() {
+  premierFacteur().then(function (f) {
+    $('mfa-config').hidden = true;
+    $('mfa-activer').hidden = !!f; $('mfa-retirer').hidden = !f;
+    $('mfa-etat').innerHTML = f
+      ? '✅ <strong>Activée</strong> : même avec ton mot de passe, personne ne peut ouvrir les dossiers sans le code de ton cellulaire.'
+      : 'Ajoute un code à 6 chiffres (généré sur ton cellulaire) en plus de ton mot de passe. Si quelqu\'un vole ton mot de passe, il ne pourra quand même pas voir les dossiers des étudiantes.';
+  });
+}
+$('mfa-activer').addEventListener('click', function () {
+  // nettoie une configuration commencée mais jamais confirmée
+  sb.auth.mfa.listFactors().then(function (r) {
+    var vieux = ((r.data && r.data.all) || []).filter(function (f) { return f.status !== 'verified'; });
+    return Promise.all(vieux.map(function (f) { return sb.auth.mfa.unenroll({ factorId: f.id }); }));
+  }).then(function () {
+    return sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Admin Sérénaissance ' + Date.now(), issuer: 'Académie Sérénaissance' });
+  }).then(function (r) {
+    if (r.error) { toast('Impossible : ' + r.error.message); return; }
+    mfaEnCours = r.data.id;
+    var img = document.createElement('img'); img.src = r.data.totp.qr_code; img.alt = 'Code QR'; img.style.width = '100%';
+    $('mfa-qr').innerHTML = ''; $('mfa-qr').appendChild(img);
+    $('mfa-secret').value = r.data.totp.secret;
+    $('mfa-config').hidden = false; $('mfa-activer').hidden = true;
+  });
+});
+$('form-mfa').addEventListener('submit', function (e) {
+  e.preventDefault();
+  if (!mfaEnCours) return;
+  sb.auth.mfa.challengeAndVerify({ factorId: mfaEnCours, code: $('mfa-code').value.replace(/\D/g, '') }).then(function (r) {
+    if (r.error) { toast('Code incorrect. Entre le code affiché en ce moment.'); return; }
+    mfaEnCours = null; $('mfa-code').value = '';
+    toast('🔐 Double vérification activée !'); etatMfa();
+  });
+});
+$('mfa-retirer').addEventListener('click', function () {
+  if (!confirm('Désactiver la double vérification ? Ton compte sera protégé seulement par ton mot de passe.')) return;
+  premierFacteur().then(function (f) {
+    if (!f) return;
+    return sb.auth.mfa.unenroll({ factorId: f.id }).then(function (r) {
+      if (r.error) toast('Impossible : ' + r.error.message); else { toast('Double vérification désactivée.'); sb.auth.refreshSession().then(etatMfa); }
+    });
   });
 });
 $('deconnexion').addEventListener('click', function () { sb.auth.signOut().then(function () { location.reload(); }); });

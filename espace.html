@@ -640,7 +640,7 @@ function preparerInscription() {
       return sb.auth.signUp({ email: courriel, password: m1, options: { emailRedirectTo: ICI } });
     }).then(function (r) {
       if (r.error && !/already|registered/i.test(r.error.message || '')) throw new Error('Ton compte n\'a pas pu être créé (' + r.error.message + ').');
-      if (r.data && r.data.user) dossier.user_id = r.data.user.id;
+      if (r.data && r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length) dossier.user_id = r.data.user.id;
       etat.nouvelleSession = r.data && r.data.session;
       return sb.from('etudiantes').insert([dossier]).then(function (x) {
         if (x.error && /date_naissance/.test(x.error.message || '')) { delete dossier.date_naissance; return sb.from('etudiantes').insert([dossier]); }

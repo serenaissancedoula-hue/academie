@@ -50,7 +50,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
        (function(){
-          emailjs.init("HNvKdORRpRy_vT_FI");
+          try { emailjs.init("HNvKdORRpRy_vT_FI"); } catch (e) {}
        })();
     </script>
 
@@ -2895,7 +2895,7 @@
                 if (/^https?:\/\//i.test(c.valeur)) return `<a href="${v}" target="_blank" rel="noopener">${v.replace(/^https?:\/\/(www\.)?/i, '')}</a>`;
                 return v;
             };
-            sbClient.from('marraines_publiques').select('*').order('date_certification', { ascending: true }).then(({ data, error }) => {
+            sbClient.rpc('marraines_publiques').then(({ data, error }) => {
                 if (error || !data || !data.length) {
                     grille.innerHTML = '<p class="marraines-vide">Nos premières marraines terminent leur formation : leurs fiches apparaîtront ici très bientôt. 🌱<br>D\'ici là, Sabrina t\'accompagne personnellement : 506-759-2044.</p>';
                     return;
@@ -3698,7 +3698,8 @@
             }
 
             // 2) Dossier dans la table (SANS le mot de passe) + avis à Sabrina
-            const ok = await enregistrerDossier(d, compte && compte.user ? compte.user.id : null);
+            const nouveauCompte = compte && compte.user && Array.isArray(compte.user.identities) && compte.user.identities.length > 0;
+            const ok = await enregistrerDossier(d, nouveauCompte ? compte.user.id : null);
             if (!ok) {
                 alert("Ton compte est créé, mais ton dossier n'a pas pu être enregistré. Écris-moi à serenaissance.doula@gmail.com et je le complète pour toi.");
             }
