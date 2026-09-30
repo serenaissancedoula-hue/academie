@@ -222,6 +222,7 @@ th { color: var(--doux); font-weight: 600; }
         <input type="email" id="l-courriel" placeholder="Courriel" required>
         <label class="champ">Formation<select id="l-formation"></select></label>
         <label class="champ">Paiement<select id="l-paiement"></select></label>
+        <label class="champ">Langue du courriel et du compte<select id="l-langue"><option value="fr">Français</option><option value="en">English (anglais)</option></select></label>
         <div class="apercu-annonce" id="l-apercu"></div>
         <button class="btn" type="submit" id="l-envoyer">✉️ Envoyer le courriel</button>
       </form>
@@ -329,7 +330,8 @@ th { color: var(--doux); font-weight: 600; }
 'use strict';
 var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co', SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
 var ADMIN = 'serenaissance.doula@gmail.com';
-var EJ = { service: 'service_82vfhfg', bienvenue: 'template_b0thpvn', marraine: 'template_hsrhluk', cle: 'HNvKdORRpRy_vT_FI' };
+var EJ = { service: 'service_82vfhfg', bienvenue: 'template_b0thpvn', marraine: 'template_hsrhluk', anglais: 'template_anglais', cle: 'HNvKdORRpRy_vT_FI' };
+var ESPACE_EN = 'https://academiesere.ca/en/espace.html';
 var ESPACE = 'https://academiesere.ca/espace.html';
 var MODULES = { 1: 9, 2: 6, 3: 8, 4: 6, 5: 4 };
 var sb = window.supabase.createClient(SB_URL, SB_CLE, SereSecurite.options());
@@ -364,6 +366,7 @@ function pastilles(e) {
   }
   if (String(e.option_paiement || '').indexOf('lien-manuel') === 0) p += '<span class="pastille p-lien">lien manuel</span>';
   if (e.formation !== 'marraine' && TarifsSere.inclutMarraine(e.option_paiement) && !e.acces_marraine) p += '<span class="pastille p-marraine">+ marraine à ouvrir</span>';
+  if (e.langue === 'en') p += '<span class="pastille p-lien">🇬🇧 EN</span>';
   return p;
 }
 function enAttente(e) { return e.formation === 'marraine' ? !e.acces_marraine : !valide(e); }
@@ -584,6 +587,7 @@ function ouvrirFiche(id, rafraichir) {
     '<p class="infos-ligne" style="margin-top:8px;"><b>Formation :</b> ' + (f ? "Marraine d'allaitement" : 'Accompagnement de pointe du 4ᵉ trimestre') + '</p>' +
     '<p class="infos-ligne"><b>Paiement :</b> ' + esc(paiement(e.option_paiement)) + '</p>' +
     '<p class="infos-ligne"><b>Inscrite le :</b> ' + jour(e.created_at) + '</p>' +
+    '<p class="infos-ligne"><b>Langue :</b> ' + (e.langue === 'en' ? '🇬🇧 English (courriels et certificat en anglais)' : 'Français') + '</p>' +
     '<p class="infos-ligne"><b>Compte :</b> <span id="f-compte">vérification…</span></p>' +
     '<div class="actions" style="margin-top:12px;">' + acts.join('') + '</div></div>' +
 
@@ -592,6 +596,7 @@ function ouvrirFiche(id, rafraichir) {
     '<div class="rang"><label class="champ">Courriel (contact)<input id="fi-courriel" type="email" value="' + esc(e.courriel) + '"></label><label class="champ">Téléphone<input id="fi-tel" value="' + esc(e.telephone) + '"></label></div>' +
     '<label class="champ">Date de naissance<input id="fi-naissance" type="date" value="' + esc(e.date_naissance || '') + '"></label>' +
     '<label class="champ">Adresse postale<textarea id="fi-adresse" rows="2">' + esc(e.adresse) + '</textarea></label>' +
+    '<label class="champ">Langue (courriels, certificat, compte)<select id="fi-langue"><option value="fr"' + (e.langue !== 'en' ? ' selected' : '') + '>Français</option><option value="en"' + (e.langue === 'en' ? ' selected' : '') + '>English (anglais)</option></select></label>' +
     '<div class="actions"><button class="btn" type="submit">Enregistrer</button>' +
     (e.telephone ? '<a class="btn gris" href="tel:' + esc(e.telephone) + '">📞 Appeler</a>' : '') +
     '<a class="btn gris" href="mailto:' + esc(e.courriel) + '">✉️ Courriel</a>' + (e.user_id ? '<button class="btn" type="button" data-a="chat">💬 Messages</button>' : '') + '</div></form></div>' +
@@ -649,6 +654,10 @@ function chargerDetails(e) {
       });
       var fin = sc('final:score');
       h += '<tr><td>Grand examen final</td><td></td><td>' + (fin ? '<span class="' + (ok(fin) ? 'ok' : 'ko') + '">' + fin.score + '/' + fin.total + '</span>' : '—') + '</td></tr></table>';
+      if (ok(fin)) {
+        h += '<div class="actions" style="margin-top:8px;"><button class="btn" type="button" id="btn-diplome">🖨️ Imprimer son certificat du 4ᵉ trimestre</button></div><p class="infos-ligne" style="font-size:.8rem;color:var(--doux);">À imprimer quand son stage est validé. Il est envoyé par la poste.</p>';
+        setTimeout(function () { var bd = $('btn-diplome'); if (bd) bd.addEventListener('click', function () { imprimerDiplome(((e.prenom || '') + ' ' + (e.nom || '')).trim(), e.langue); }); }, 0);
+      }
     }
     if (e.acces_marraine || e.formation === 'marraine') {
       var qm = 0; for (var j = 1; j <= 6; j++) if (ok(sc('marraine:score:1.' + j))) qm++;
@@ -657,7 +666,7 @@ function chargerDetails(e) {
       if (ok(em)) {
         var dr = dateReussiteMarraine(res);
         h += '<p class="infos-ligne">Réussie le ' + (dr ? jour(dr) : '—') + '</p><div class="actions" style="margin-top:6px;"><button class="btn" type="button" id="btn-cert-marraine">🖨️ Imprimer son certificat de marraine</button></div>';
-        setTimeout(function () { var bt = $('btn-cert-marraine'); if (bt) bt.addEventListener('click', function () { imprimerCertificatMarraine(((e.prenom || '') + ' ' + (e.nom || '')).trim(), dr); }); }, 0);
+        setTimeout(function () { var bt = $('btn-cert-marraine'); if (bt) bt.addEventListener('click', function () { imprimerCertificatMarraine(((e.prenom || '') + ' ' + (e.nom || '')).trim(), dr, e.langue); }); }, 0);
       }
     }
     if (r[0] && r[0].data && r[0].data.updated_at) h += '<p class="infos-ligne" style="color:var(--doux);font-size:.8rem;">Dernière activité : ' + jour(r[0].data.updated_at) + '</p>';
@@ -678,12 +687,28 @@ function maj(e, champs, msg) {
 }
 function enregistrerInfos(e) {
   maj(e, { prenom: $('fi-prenom').value.trim(), nom: $('fi-nom').value.trim(), courriel: $('fi-courriel').value.trim().toLowerCase(),
-    telephone: $('fi-tel').value.trim(), date_naissance: $('fi-naissance').value || null, adresse: $('fi-adresse').value.trim() }, '✅ Coordonnées enregistrées');
+    telephone: $('fi-tel').value.trim(), date_naissance: $('fi-naissance').value || null, adresse: $('fi-adresse').value.trim(), langue: $('fi-langue').value }, '✅ Coordonnées enregistrées');
+}
+/* Courriels en anglais (étudiantes qui ont choisi l'anglais) */
+function courrielAnglais(e, p) {
+  return emailjs.send(EJ.service, EJ.anglais, Object.assign({ prenom: e.prenom || '', nom: e.nom || '', courriel: e.courriel, details: '', etapes: 'If you have any questions, write to me in your Messages or call me at 506-759-2044.' }, p), EJ.cle);
 }
 function courrielBienvenue(e) {
+  if (e.langue === 'en') return courrielAnglais(e, { sujet: 'Welcome to Académie Sérénaissance 🌸', accroche: 'Welcome', titre: 'Your access is open',
+    message: 'Your file has been reviewed and your access to your course is now open in your account. I am so happy to welcome you! 💕',
+    details: 'Log in to your account to start your course at your own pace.', bouton: 'Open my courses →', lien: ESPACE_EN + '#cours' });
   return emailjs.send(EJ.service, EJ.bienvenue, { prenom: e.prenom, nom: e.nom, courriel: e.courriel }, EJ.cle);
 }
 function courrielMarraine(e) {
+  if (e.langue === 'en') {
+    var combo = String(e.option_paiement || '').indexOf('combo') >= 0, cad = !combo && e.formation !== 'marraine';
+    return courrielAnglais(e, combo ? { sujet: 'Your Breastfeeding Peer Supporter course is open 🌸', accroche: 'Your bundle', titre: e.prenom + ', your second course is waiting! 🤱',
+        message: 'As planned in your bundle, the Breastfeeding Peer Supporter course is now open in your account, in addition to the Fourth Trimester course. 💕', bouton: 'Open my courses →', lien: ESPACE_EN + '#cours' }
+      : cad ? { sujet: '🎁 Your gift is waiting: the Breastfeeding Peer Supporter course', accroche: 'A gift for you', titre: e.prenom + ', your Breastfeeding Peer Supporter course is open 🎁',
+        message: 'Thank you from the bottom of my heart for joining Académie Sérénaissance! 💕 As promised, here is your gift: the Breastfeeding Peer Supporter course (a $175 value) is now open in your account.', bouton: 'Open my gift 🎁', lien: ESPACE_EN + '#cours' }
+      : { sujet: 'Your Breastfeeding Peer Supporter course is open 🌸', accroche: 'Welcome', titre: e.prenom + ', your course is waiting! 🤱',
+        message: 'Thank you for signing up for the Académie Sérénaissance Breastfeeding Peer Supporter course! 💕 Your payment has been received and your access is now open in your account.', bouton: 'Start my course →', lien: ESPACE_EN + '#cours' });
+  }
   if (String(e.option_paiement || '').indexOf('combo') >= 0) return emailjs.send(EJ.service, EJ.marraine, { prenom: e.prenom, nom: e.nom, courriel: e.courriel,
     sujet: "Ta formation de marraine d'allaitement est ouverte 🌸", accroche: 'Ton combo', titre: e.prenom + ", ta 2ᵉ formation t'attend ! 🤱",
     message: "Comme prévu dans ton combo, la formation de marraine d'allaitement est maintenant ouverte dans ton compte, en plus de celle du 4ᵉ trimestre. 💕",
@@ -773,26 +798,60 @@ $('fiche-corps').addEventListener('click', function (ev) {
 
 /* ---------- Certificat de marraine (imprimé par Sabrina et envoyé par la poste) ---------- */
 function dateReussiteMarraine(res) {
-  var l = (res || []).filter(function (x) { return x.formation === 'marraine' && x.reussi && /examen/i.test(x.evaluation || ''); })
+  var l = (res || []).filter(function (x) { return x.formation === 'marraine' && x.reussi && /exam/i.test(x.evaluation || ''); })
     .sort(function (a, b) { return new Date(a.created_at) - new Date(b.created_at); });
   return l.length ? l[0].created_at.slice(0, 10) : null;
 }
-function imprimerCertificatMarraine(nom, dateReussite) {
-  var d = dateReussite || aujourdhui();
-  var fin = dans2ans(d);
-  function fmt(x) { return new Date(x + 'T12:00:00').toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }); }
+function imprimerDiplome(nom, langue) { imprimerCertificatMarraine(nom, aujourdhui(), langue, 'diplome'); }
+function imprimerCertificatMarraine(nom, dateReussite, langue, type) {
+  var dip = type === 'diplome';
+  var d = dateReussite || aujourdhui(), fin = dans2ans(d);
+  function fmt(x, l) { return new Date(x + 'T12:00:00').toLocaleDateString(l === 'en' ? 'en-CA' : 'fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }); }
+  var T = {
+    fr: { t1: 'CERTIFICAT DE PARTICIPATION', t2: 'MARRAINE D\'ALLAITEMENT', st: 'Initiation au soutien à l\'allaitement entre pairs', remis: 'CE CERTIFICAT EST REMIS À',
+      par: 'Pour avoir complété l\'initiation « Devenir marraine d\'allaitement » offerte par l\'Académie Sérénaissance (environ 8 h 30 de contenu, d\'exercices pratiques et d\'évaluation) et réussi l\'examen final.',
+      role: 'Directrice, fondatrice et formatrice', date: 'DATE DE RÉUSSITE', valide: 'Valide jusqu\'au ',
+      mention: 'Certificat de participation à une formation d\'initiation offerte à titre personnel. Il ne constitue ni une certification, ni une accréditation, ni une autorisation d\'exercer, et n\'est délivré ni par Santé publique Nouveau-Brunswick, ni par Nourri-Source, ni par un réseau de santé.' },
+    en: { t1: 'CERTIFICATE OF PARTICIPATION', t2: 'BREASTFEEDING PEER SUPPORTER', st: 'Introduction to peer breastfeeding support', remis: 'THIS CERTIFICATE IS PRESENTED TO',
+      par: 'For completing the “Becoming a Breastfeeding Peer Supporter” introductory course offered by Académie Sérénaissance (about 8.5 hours of content, practical exercises and assessment) and passing the final exam.',
+      role: 'Director, founder and instructor', date: 'DATE COMPLETED', valide: 'Valid until ',
+      mention: 'Certificate of participation in an introductory course offered privately. It is not a certification, an accreditation or a licence to practise, and it is not issued by New Brunswick Public Health, Nourri-Source or any health network.' }
+  };
+  if (dip) T = {
+    fr: { t1: 'CERTIFICAT D\'ACCOMPAGNEMENT', t2: 'DE POINTE DU 4<sup style="font-size:.6em">E</sup> TRIMESTRE', st: 'Soutien post-partum profond et maîtrise des protocoles non médicaux', remis: 'CE CERTIFICAT EST REMIS À',
+      par: 'Pour avoir validé avec succès l\'ensemble des exigences et démontré une maîtrise d\'excellence dans le cadre du programme de spécialisation de l\'Académie Sérénaissance.',
+      role: 'Directrice, fondatrice et formatrice', date: 'DATE DE DÉLIVRANCE', valide: 'Académie Sérénaissance', sansDate: true,
+      mention: 'Certificat de formation privée remis par l\'Académie Sérénaissance. Il ne constitue ni un titre professionnel réglementé, ni une autorisation d\'exercer une profession de la santé.' },
+    en: { t1: 'CERTIFICATE IN ADVANCED', t2: 'FOURTH TRIMESTER SUPPORT', st: 'In-depth postpartum support and mastery of non-medical protocols', remis: 'THIS CERTIFICATE IS PRESENTED TO',
+      par: 'For successfully meeting all requirements and demonstrating excellent mastery in the specialization program of Académie Sérénaissance.',
+      role: 'Director, founder and instructor', date: 'DATE OF ISSUE', valide: 'Académie Sérénaissance', sansDate: true,
+      mention: 'Private training certificate issued by Académie Sérénaissance. It is not a regulated professional title or a licence to practise a health profession.' }
+  };
   var w = window.open('', '_blank'); if (!w) { toast('Autorise les fenêtres surgissantes pour imprimer.'); return; }
-  w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Certificat de marraine · ' + esc(nom) + '</title>' +
-    '<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Jost:wght@500&family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">' +
-    '<style>@page{size:letter landscape;margin:0}html,body{margin:0;background:#ddd}.page{position:relative;width:11in;height:8.5in;margin:20px auto;background:#fbf8f3;box-shadow:0 6px 24px rgba(0,0,0,.2)}' +
-    '.page img{position:absolute;inset:0;width:100%;height:100%}.nom{position:absolute;left:24%;right:24%;bottom:51%;text-align:center;font:36pt "Great Vibes",cursive;color:#2c221e;white-space:nowrap}' +
-    '.date{position:absolute;left:63.1%;width:22.7%;bottom:12.8%;text-align:center;font:italic 500 15pt "Cormorant Garamond",Georgia,serif;color:#2c221e}' +
-    '.lib{position:absolute;left:61%;width:27%;top:89.1%;text-align:center;font:500 10.5pt "Jost",Arial,sans-serif;letter-spacing:.14em;color:#2c221e}' +
-    '.fin{position:absolute;left:61%;width:27%;top:91.9%;text-align:center;font:italic 500 12.5pt "Cormorant Garamond",Georgia,serif;color:#5a4a42}' +
-    '.barre{text-align:center;font:14px Arial;padding:12px}@media print{html,body{background:#fff}.page{margin:0;box-shadow:none}.barre{display:none}}</style></head><body>' +
-    '<div class="barre">Aperçu du certificat · <button onclick="print()">🖨️ Imprimer</button> (format Lettre, paysage, sans marges, « graphiques d\'arrière-plan » activés)</div>' +
-    '<div class="page"><img src="' + location.origin + '/modeles/certificat-marraine.jpg" alt=""><div class="nom">' + esc(nom) + '</div>' +
-    '<div class="date">' + fmt(d) + '</div><div class="lib">DATE DE RÉUSSITE</div><div class="fin">Valide jusqu\'au ' + fmt(fin) + '</div></div></body></html>');
+  function couche(l) {
+    var t = T[l];
+    return '<div class="c t1">' + t.t1 + '</div><div class="c t2">' + t.t2 + '</div><div class="c st">' + t.st + '</div><div class="c remis">' + t.remis + '</div>' +
+      '<div class="nom">' + esc(nom) + '</div><div class="c par">' + t.par + '</div><div class="role">' + t.role + '</div><div class="mention">' + t.mention + '</div>' +
+      '<div class="date">' + fmt(d, l) + '</div><div class="lib">' + t.date + '</div><div class="fin">' + t.valide + (t.sansDate ? '' : fmt(fin, l)) + '</div>';
+  }
+  w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>' + (dip ? 'Diplôme' : 'Certificat') + ' · ' + esc(nom) + '</title>' +
+    '<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Jost:wght@500&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Lato:wght@400&display=swap" rel="stylesheet">' +
+    '<style>@page{size:letter landscape;margin:0}html,body{margin:0;background:#ddd}.page{position:relative;width:11in;height:8.5in;margin:20px auto;background:#fbf8f3;box-shadow:0 6px 24px rgba(0,0,0,.2);color:#2c221e;overflow:hidden}' +
+    '.page img{position:absolute;inset:0;width:100%;height:100%}.page div{position:absolute}.page #texte{inset:0}.c{left:12%;right:12%;text-align:center}.t1,.t2{overflow:hidden}' +
+    '.t1,.t2{font:500 33pt/1 "Cormorant Garamond",Georgia,serif;letter-spacing:.11em;white-space:nowrap}.t1{top:18.6%}.t2{top:24.6%}' +
+    '.st{top:31.6%;left:25.8%;right:25.8%;white-space:nowrap;overflow:hidden;font:italic 500 15.5pt "Cormorant Garamond",Georgia,serif;color:#5a4a42}' +
+    '.remis{top:38.3%;font:500 10.5pt "Jost",Arial,sans-serif;letter-spacing:.3em;color:#5a4a42}' +
+    '.nom{left:24%;right:24%;bottom:51%;text-align:center;font:36pt "Great Vibes",cursive;white-space:nowrap}' +
+    '.par{top:52.2%;left:15%;right:15%;font:500 14pt/1.45 "Cormorant Garamond",Georgia,serif;color:#3d312b}' +
+    '.role{left:14%;width:27%;top:91.4%;text-align:center;font:italic 500 13pt "Cormorant Garamond",Georgia,serif;color:#5a4a42}' +
+    '.mention{left:39.6%;width:22%;top:89.6%;text-align:center;font:6.4pt/1.45 "Lato",Arial,sans-serif;color:#8a7a70}' +
+    '.date{left:63.1%;width:22.7%;bottom:12.8%;text-align:center;font:italic 500 15pt "Cormorant Garamond",Georgia,serif}' +
+    '.lib{left:61%;width:27%;top:89.1%;text-align:center;font:500 10.5pt "Jost",Arial,sans-serif;letter-spacing:.14em}' +
+    '.fin{left:61%;width:27%;top:91.9%;text-align:center;font:italic 500 12.5pt "Cormorant Garamond",Georgia,serif;color:#5a4a42}' +
+    '.barre{text-align:center;font:14px Arial;padding:12px}.barre button{margin:0 4px}@media print{html,body{background:#fff}.page{margin:0;box-shadow:none}.barre{display:none}}</style></head><body>' +
+    '<div class="barre">Langue : <button onclick="langue(\'fr\')">Français</button><button onclick="langue(\'en\')">English</button> · <button onclick="print()">🖨️ Imprimer</button> (Lettre, paysage, sans marges, « graphiques d\'arrière-plan » activés)</div>' +
+    '<div class="page"><img src="' + location.origin + '/modeles/' + (dip ? 'diplome-vierge.jpg' : 'certificat-marraine-vierge.jpg') + '" alt=""><div id="texte"></div></div>' +
+    '<script>var C=' + JSON.stringify({ fr: couche('fr'), en: couche('en') }).replace(/</g, '\\u003c') + ';function ajuster(){document.querySelectorAll(".t1,.t2").forEach(function(e){var t=33;e.style.fontSize=t+"pt";while(e.scrollWidth>e.clientWidth&&t>20){t-=.5;e.style.fontSize=t+"pt";}});var st=document.querySelector(".st"),z=15.5;st.style.fontSize=z+"pt";while(st.scrollWidth>st.clientWidth&&z>9){z-=.25;st.style.fontSize=z+"pt";}var p=document.querySelector(".par"),t=14;p.style.fontSize=t+"pt";while(p.offsetHeight>p.clientWidth*0.075&&t>10){t-=.25;p.style.fontSize=t+"pt";}}function langue(l){document.getElementById("texte").innerHTML=C[l];document.documentElement.lang=l;ajuster();if(document.fonts)document.fonts.ready.then(ajuster);}langue(' + JSON.stringify(langue === 'en' ? 'en' : 'fr') + ');<\/script></body></html>');
   w.document.close();
 }
 
@@ -934,7 +993,7 @@ function ouvrirFicheM(id, rafraichir) {
     var bcm = $('btn-cert-m');
     if (bcm) bcm.addEventListener('click', function () {
       var etu = toutes.filter(function (x) { return x.user_id && x.user_id === m.user_id; })[0];
-      imprimerCertificatMarraine(etu ? ((etu.prenom || '') + ' ' + (etu.nom || '')).trim() : m.nom_complet, drM);
+      imprimerCertificatMarraine(etu ? ((etu.prenom || '') + ' ' + (etu.nom || '')).trim() : m.nom_complet, drM, etu && etu.langue);
     });
   });
 }
@@ -957,10 +1016,15 @@ function publierPhoto(m) {
   });
 }
 function courrielMarraineCertifiee(m) {
+  var etu = toutes.filter(function (x) { return m.user_id && x.user_id === m.user_id; })[0];
+  if (etu && etu.langue === 'en') return courrielAnglais({ prenom: (m.nom_complet || '').split(' ')[0], courriel: m.courriel }, {
+    sujet: '🎉 Welcome to the breastfeeding peer supporter team!', accroche: 'Congratulations', titre: 'You are part of the peer supporter team 🤱',
+    message: 'Your profile has been approved and published on the "Our Breastfeeding Peer Supporters" page of Sérénaissance. Your certificate is valid until ' + new Date(m.date_expiration + 'T12:00:00').toLocaleDateString('en-CA', { day: 'numeric', month: 'long', year: 'numeric' }) + '. Thank you for volunteering to support breastfeeding families! 💕',
+    bouton: 'See my profile →', lien: ESPACE_EN + '#marraine' });
   return emailjs.send(EJ.service, EJ.marraine, { prenom: (m.nom_complet || '').split(' ')[0], courriel: m.courriel,
-    sujet: '🎉 Tu es marraine d\'allaitement certifiée !', accroche: 'Félicitations',
-    titre: 'Tu es marraine d\'allaitement certifiée 🤱',
-    message: 'Ta fiche est validée et publiée sur la page « Nos marraines d\'allaitement » de Sérénaissance. Ta certification est valide jusqu\'au ' + jour(m.date_expiration) + '. Merci de t\'engager bénévolement auprès des familles qui allaitent ! 💕',
+    sujet: '🎉 Bienvenue dans l\'équipe des marraines d\'allaitement !', accroche: 'Félicitations',
+    titre: 'Tu fais partie de l\'équipe des marraines 🤱',
+    message: 'Ta fiche est validée et publiée sur la page « Nos marraines d\'allaitement » de Sérénaissance. Ton certificat est valide jusqu\'au ' + jour(m.date_expiration) + '. Merci de t\'engager bénévolement auprès des familles qui allaitent ! 💕',
     bouton: 'Voir ma fiche →' }, EJ.cle);
 }
 $('fiche-corps').addEventListener('click', function (ev) {
@@ -1227,6 +1291,7 @@ var EJ_LIEN = 'template_7frp73b';
   }
   $('l-formation').addEventListener('change', remplirPaiements);
   $('l-paiement').addEventListener('change', apercuLien);
+  $('l-langue').addEventListener('change', apercuLien);
   $('l-prenom').addEventListener('input', apercuLien);
   remplirPaiements();
 })();
@@ -1234,10 +1299,22 @@ function lienInscription() {
   var q = new URLSearchParams({ inscription: $('l-formation').value, courriel: $('l-courriel').value.trim().toLowerCase() });
   if ($('l-prenom').value.trim()) q.set('prenom', $('l-prenom').value.trim());
   if ($('l-nom').value.trim()) q.set('nom', $('l-nom').value.trim());
-  return ESPACE + '?' + q.toString();
+  return ($('l-langue').value === 'en' ? ESPACE_EN : ESPACE) + '?' + q.toString();
 }
 function contenuLien() {
   var cle = $('l-formation').value, f = TarifsSere.formations[cle], pay = $('l-paiement').value, o = f.options[pay];
+  if ($('l-langue').value === 'en') {
+    var T = TarifsSere.t, inscrEn = lienInscription(), dipEn = f.diplome ? ' and upload your doula certificate' : '';
+    var cadEn = cle === '4e-cadeau' ? ' The Breastfeeding Peer Supporter course is included as a gift 🎁.' : (cle === 'combo' ? ' The bundle includes both courses.' : '');
+    var etapesEn = 'As soon as your file is reviewed, I open your access and you receive a welcome email. If you have any questions, write to me or call me at 506-759-2044.';
+    if (pay === 'recu') return { sujet: 'Complete your registration with Académie Sérénaissance 🌸', accroche: 'Welcome', titre: 'Your registration is waiting',
+      message: 'Thank you for registering for the “' + T(f, 'nom', 'en') + '” course! Your payment has been received.' + cadEn,
+      details: 'Click the button to create your student account' + dipEn + '.', etapes: etapesEn, bouton: 'Create my account →', lien: inscrEn };
+    return { sujet: 'Your registration with Académie Sérénaissance 🌸', accroche: 'Welcome', titre: 'Your course: ' + T(f, 'court', 'en'),
+      message: 'Thank you for your interest in the “' + T(f, 'nom', 'en') + '” course!' + cadEn + ' Here is your secure payment link (Stripe): ' + T(o, 'detail', 'en') + ', ' + T(o, 'prix', 'en') + '.',
+      details: 'Step 1: click “Pay for my course” to pay securely with Stripe. Step 2: after your payment, click “Create my account” to create your student account' + dipEn + '.',
+      bouton2: 'Create my account →', lien2: inscrEn, etapes: 'Step 2 (after your payment), create your account here: ' + inscrEn + ' — ' + etapesEn, bouton: 'Pay for my course →', lien: o.lien };
+  }
   var inscr = lienInscription(), diplome = f.diplome ? ' et téléverser ton diplôme de doula' : '';
   var cadeau = cle === '4e-cadeau' ? " La formation de marraine d'allaitement t'est offerte en cadeau 🎁." : (cle === 'combo' ? " Le combo comprend les deux formations." : '');
   if (pay === 'recu') return {
@@ -1274,7 +1351,7 @@ $('form-lien').addEventListener('submit', function (ev) {
   if (!confirm('Envoyer ce courriel à ' + courriel + ' ?\n\n' + c.sujet)) return;
   var b = $('l-envoyer'); b.disabled = true; b.textContent = 'Envoi…';
   $('l-resultat').hidden = false; $('l-texte').value = lienInscription();
-  emailjs.send(EJ.service, EJ_LIEN, c, EJ.cle).then(function () {
+  emailjs.send(EJ.service, $('l-langue').value === 'en' ? EJ.anglais : EJ_LIEN, c, EJ.cle).then(function () {
     b.disabled = false; b.textContent = '✉️ Envoyer le courriel';
     toast('✉️ Courriel envoyé à ' + courriel);
   }, function (e) {

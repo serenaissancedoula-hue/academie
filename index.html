@@ -15,6 +15,9 @@
     <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://academiesere.ca/">
     <link rel="alternate" hreflang="fr" href="https://academiesere.ca/">
+    <link rel="alternate" hreflang="en" href="https://academiesere.ca/en/">
+    <link rel="alternate" hreflang="x-default" href="https://academiesere.ca/">
+    <link rel="alternate" hreflang="fr" href="https://academiesere.ca/">
     <link rel="alternate" hreflang="x-default" href="https://academiesere.ca/">
     <link rel="icon" type="image/jpeg" href="logo.jpg">
     <link rel="manifest" href="/manifest.webmanifest">
@@ -24,6 +27,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Sérénaissance">
     <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
+    <script src="/langue.js"></script>
     <script src="/appli.js" defer></script>
     <script src="/tarifs.js"></script>
     <script src="/securite.js"></script>
@@ -852,6 +856,7 @@
             color: #555;
             margin-bottom: 15px;
         }
+        .langue-entete { margin: 0 6px; flex-shrink: 0; }
         .case-accord {
             display: flex;
             gap: 10px;
@@ -1554,6 +1559,7 @@
             <li><a href="#" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">À propos</a></li>
         </ul>
+        <div class="langue-entete" data-choix-langue></div>
         <button class="btn-appel" onclick="ouvrirContact()" aria-label="Réserve ton appel gratuit"><i class="fa-solid fa-phone"></i><span class="txt-appel"> Réserve ton appel gratuit</span></button>
         <button class="burger" id="burger" onclick="basculerMenu()" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
@@ -3631,7 +3637,8 @@
             const ligne = {
                 prenom: d.prenom, nom: d.nom, courriel: d.courriel, telephone: d.telephone,
                 adresse: d.adresse, date_naissance: d.date_naissance || null, diplome_url: d.diplome_url || null, option_paiement: d.option_paiement,
-                formation: d.formation || '4e-trimestre', statut: 'en_attente'
+                formation: d.formation || '4e-trimestre', statut: 'en_attente',
+                langue: (document.documentElement.lang || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr'
             };
             if (userId) ligne.user_id = userId;
             let { error } = await sbClient.from('etudiantes').insert([ligne]);

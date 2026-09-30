@@ -35,8 +35,9 @@
       bandeau = document.createElement('div');
       bandeau.setAttribute('role', 'alertdialog');
       bandeau.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;background:#2c221e;color:#fff;border-radius:16px;padding:14px 18px;box-shadow:0 10px 30px rgba(0,0,0,.25);font:500 .92rem/1.4 Arial,sans-serif;display:flex;gap:12px;align-items:center;max-width:92vw';
-      bandeau.innerHTML = '<span>🔒 Par sécurité, tu seras déconnectée dans une minute faute d\'activité.</span>';
-      var b = document.createElement('button'); b.type = 'button'; b.textContent = 'Rester connectée';
+      var en = (document.documentElement.lang || '').slice(0, 2) === 'en';
+      bandeau.innerHTML = '<span>' + (en ? '🔒 For your security, you will be logged out in one minute due to inactivity.' : '🔒 Par sécurité, tu seras déconnectée dans une minute faute d\'activité.') + '</span>';
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = en ? 'Stay logged in' : 'Rester connectée';
       b.style.cssText = 'background:#a85743;color:#fff;border:0;border-radius:50px;padding:9px 16px;font:700 .88rem Arial,sans-serif;cursor:pointer;white-space:nowrap';
       b.addEventListener('click', activite);
       bandeau.appendChild(b); document.body.appendChild(bandeau);

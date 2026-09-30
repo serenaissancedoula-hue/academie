@@ -10,43 +10,49 @@
     '4e-trimestre': {
       nom: 'Accompagnement de pointe du 4ᵉ trimestre',
       court: '4ᵉ trimestre',
+      en: { nom: 'Advanced Fourth Trimester Support', court: 'Fourth trimester' },
       diplome: true, marraine: false,
       options: {
-        '1': { prix: '550 $', detail: 'paiement complet', lien: 'https://buy.stripe.com/cNi4gAeppg5Y3j73NA7N601' },
-        '2': { prix: '2 × 275 $', detail: '2 versements', lien: 'https://buy.stripe.com/28E4gA5ST6vo3j71Fs7N604' },
-        '4': { prix: '4 × 137,50 $', detail: '4 versements', lien: 'https://buy.stripe.com/3cI5kE4OPcTM5rf3NA7N603' }
+        '1': { prix: '550 $', detail: 'paiement complet', en: { prix: '$550', detail: 'full payment' }, lien: 'https://buy.stripe.com/cNi4gAeppg5Y3j73NA7N601' },
+        '2': { prix: '2 × 275 $', detail: '2 versements', en: { prix: '2 × $275', detail: '2 instalments' }, lien: 'https://buy.stripe.com/28E4gA5ST6vo3j71Fs7N604' },
+        '4': { prix: '4 × 137,50 $', detail: '4 versements', en: { prix: '4 × $137.50', detail: '4 instalments' }, lien: 'https://buy.stripe.com/3cI5kE4OPcTM5rf3NA7N603' }
       }
     },
     'marraine': {
       nom: "Marraine d'allaitement",
       court: 'Marraine',
+      en: { nom: 'Breastfeeding Peer Supporter', court: 'Peer supporter' },
       diplome: false, marraine: true,
       options: {
-        '1': { prix: '175 $', detail: 'paiement complet', lien: 'https://buy.stripe.com/aFa28s811f1UcTH97U7N60e' }
+        '1': { prix: '175 $', detail: 'paiement complet', en: { prix: '$175', detail: 'full payment' }, lien: 'https://buy.stripe.com/aFa28s811f1UcTH97U7N60e' }
       }
     },
     'combo': {
       nom: "Combo : 4ᵉ trimestre + marraine d'allaitement",
       court: 'Combo (les 2)',
+      en: { nom: 'Bundle: Fourth Trimester + Breastfeeding Peer Supporter', court: 'Bundle (both)' },
       diplome: true, marraine: true,
       options: {
-        '1': { prix: '725 $', detail: 'paiement complet', lien: 'https://buy.stripe.com/14AdRa2GH7zscTH4RE7N60h' },
-        '2': { prix: '2 × 362,50 $', detail: '2 versements', lien: 'https://buy.stripe.com/8x24gA955dXQcTH97U7N60g' },
-        '4': { prix: '4 × 181,25 $', detail: '4 versements aux 2 semaines', lien: 'https://buy.stripe.com/bJe4gAepp5rkdXL3NA7N60f' }
+        '1': { prix: '725 $', detail: 'paiement complet', en: { prix: '$725', detail: 'full payment' }, lien: 'https://buy.stripe.com/14AdRa2GH7zscTH4RE7N60h' },
+        '2': { prix: '2 × 362,50 $', detail: '2 versements', en: { prix: '2 × $362.50', detail: '2 instalments' }, lien: 'https://buy.stripe.com/8x24gA955dXQcTH97U7N60g' },
+        '4': { prix: '4 × 181,25 $', detail: '4 versements aux 2 semaines', en: { prix: '4 × $181.25', detail: '4 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/bJe4gAepp5rkdXL3NA7N60f' }
       }
     },
     '4e-cadeau': {
       nom: "4ᵉ trimestre + marraine d'allaitement en cadeau (offre de lancement)",
       court: '4ᵉ trimestre + cadeau',
+      en: { nom: 'Fourth Trimester + free Breastfeeding Peer Supporter course (launch offer)', court: 'Fourth trimester + gift' },
       diplome: true, marraine: true,
       options: {
-        '1': { prix: '250 $', detail: 'paiement complet · code promo appliqué', lien: 'https://buy.stripe.com/cNi4gAeppg5Y3j73NA7N601?prefilled_promo_code=' + PROMO_OFFRE }
+        '1': { prix: '250 $', detail: 'paiement complet · code promo appliqué', en: { prix: '$250', detail: 'full payment · promo code applied' }, lien: 'https://buy.stripe.com/cNi4gAeppg5Y3j73NA7N601?prefilled_promo_code=' + PROMO_OFFRE }
       }
     }
   };
 
   window.TarifsSere = {
     formations: T,
+    // Texte dans la langue voulue : TarifsSere.t(objet, 'nom', 'en')
+    t: function (o, champ, langue) { return langue === 'en' && o.en && o.en[champ] != null ? o.en[champ] : o[champ]; },
     offreActive: function () { return OFFRE_ACTIVE && new Date() < OFFRE_FIN; },
     // Formation enregistrée dans le dossier (l'accès marraine est ouvert par Sabrina à la validation)
     formationDossier: function (cle) { return cle === 'marraine' ? 'marraine' : '4e-trimestre'; },

@@ -172,7 +172,7 @@
       '<circle cx="70" cy="70" r="60" fill="none" stroke="' + (pass ? '#5f8570' : '#b4654a') + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + (c * pct) + ' ' + c + '"/></svg><span>' + Math.round(pct * 100) + ' %</span></div>' +
       '<h3>' + (pass ? 'Félicitations, formation réussie !' : 'Examen final non réussi pour le moment') + '</h3>' +
       '<p>Votre note : ' + score + ' / ' + total + '. Seuil de réussite : 80 % (' + Math.ceil(total * PASS) + ' / ' + total + ').' +
-      (pass ? ' Vous avez terminé la formation Accompagnement professionnel du 4e trimestre.' : ' Consultez les explications ci-dessous. Pour repasser l\'examen, relisez d\'abord ' + (listeRelire.length ? (listeRelire.length > 1 ? 'les chapitres ' : 'le chapitre ') + listeRelire.join(', ') : 'les modules où vous avez perdu des points') + ' : la prochaine tentative comportera d\'autres questions.') + '</p>' +
+      (pass ? ' Vous avez terminé la formation Accompagnement de pointe du 4e trimestre.' : ' Consultez les explications ci-dessous. Pour repasser l\'examen, relisez d\'abord ' + (listeRelire.length ? (listeRelire.length > 1 ? 'les chapitres ' : 'le chapitre ') + listeRelire.join(', ') : 'les modules où vous avez perdu des points') + ' : la prochaine tentative comportera d\'autres questions.') + '</p>' +
       '<ul class="per-module">' + detail + '</ul>' +
       '<div class="actions">' + (pass ? '<button class="btn-ghost" type="button" onclick="location.reload()">Recommencer l\'examen</button>' : '') + '<a class="btn" href="index.html">Accueil de la formation</a></div>';
     res.classList.add('show');

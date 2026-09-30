@@ -1,8 +1,8 @@
 /* Académie Sérénaissance — appli (service worker).
    Toujours la version la plus récente quand il y a Internet ; les pages déjà ouvertes
    restent disponibles sans connexion. Supabase et Stripe ne passent jamais par le cache. */
-var VERSION = 'sere-v3';
-var DE_BASE = ['/', '/index.html', '/espace.html', '/hors-ligne.html', '/adresse.js', '/logo.jpg',
+var VERSION = 'sere-v4';
+var DE_BASE = ['/', '/index.html', '/espace.html', '/hors-ligne.html', '/en/', '/en/espace.html', '/en/hors-ligne.html', '/langue.js', '/adresse.js', '/logo.jpg',
   '/icones/icone-192.png', '/icones/icone-512.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', function (e) {
@@ -32,7 +32,7 @@ self.addEventListener('fetch', function (e) {
       return rep;
     }).catch(function () {
       return caches.match(req, { ignoreSearch: req.mode === 'navigate' }).then(function (r) {
-        return r || (req.mode === 'navigate' ? caches.match('/hors-ligne.html') : Response.error());
+        return r || (req.mode === 'navigate' ? caches.match(url.pathname.indexOf('/en/') === 0 ? '/en/hors-ligne.html' : '/hors-ligne.html') : Response.error());
       });
     })
   );

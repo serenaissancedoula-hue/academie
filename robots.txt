@@ -2,8 +2,11 @@ User-agent: *
 Allow: /
 Disallow: /Formation/
 Allow: /Formation/module-1/apercu.html
+Allow: /Formation/en/module-1/apercu.html
 Disallow: /espace.html
 Disallow: /admin.html
 Disallow: /hors-ligne.html
+Disallow: /en/espace.html
+Disallow: /en/hors-ligne.html
 
 Sitemap: https://academiesere.ca/sitemap.xml

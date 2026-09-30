@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-langue-auto>
 <head>
 <meta charset="UTF-8">
+<script src="/langue.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mon compte · Académie Sérénaissance</title>
 <meta name="description" content="Espace étudiante de l'Académie Sérénaissance : tes cours, tes informations et tes documents de stage.">
@@ -150,6 +151,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <a href="index.html" id="lien-logo"><img src="logo.jpg" alt="Académie Sérénaissance"></a>
   <div style="display:flex;align-items:center;gap:14px;">
     <a class="retour site-seulement" href="index.html">← Retour au site</a>
+    <span data-choix-langue></span>
     <button class="cloche" id="cloche" type="button" hidden aria-label="Notifications">🔔<i class="compteur" id="nb-avis" hidden></i></button>
   </div>
 </header>
@@ -440,6 +442,14 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
         </div>
       </div>
     </div>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">🌐 Langue · Language</h3>
+      <p class="note" style="margin-bottom:10px;">Langue de ton espace, de tes formations et de tes courriels.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" class="btn" data-langue-choix="fr">Français</button>
+        <button type="button" class="btn fantome" data-langue-choix="en">English</button>
+      </div>
+    </div>
     <div class="carte" id="rg"></div>
     <div class="carte">
       <h3 style="margin-bottom:6px;">📲 L'appli de l'Académie</h3>
@@ -665,6 +675,10 @@ function charger(session, bienvenue) {
         if (!d.user_id) maj.user_id = session.user.id;
         try { var tz = Intl.DateTimeFormat().resolvedOptions().timeZone; if (tz && d.fuseau !== tz) maj.fuseau = tz; } catch (e) {}
         if (d.courriel && d.courriel.toLowerCase() !== courriel) maj.courriel = courriel;
+        // Langue : la préférence de l'appareil a priorité ; sinon on suit celle du dossier
+        var prefL = window.SereLangue && SereLangue.choisie();
+        if (prefL && d.langue !== prefL) sb.rpc('definir_langue', { p_langue: prefL }).then(function () {});
+        else if (!prefL && d.langue && window.SereLangue) { SereLangue.enregistrer(d.langue); if (d.langue !== SereLangue.page()) { SereLangue.aller(d.langue); return; } }
         if (Object.keys(maj).length) sb.from('etudiantes').update(maj).eq('id', d.id).then(function () {});
       }
       $('menu-stage').hidden = !etat.valide;
@@ -843,7 +857,7 @@ function preparerInscription() {
     var courriel = $('i-courriel').value.trim().toLowerCase();
     var dossier = { prenom: $('i-prenom').value.trim(), nom: $('i-nom').value.trim(), courriel: courriel, telephone: $('i-tel').value.trim(),
       adresse: window.AdresseAuto ? AdresseAuto.composer($('i-adresse')) : $('i-adresse').value.trim(), date_naissance: $('i-naissance').value || null,
-      formation: f, option_paiement: 'lien-manuel' + (cle === 'combo' ? '-combo' : cle === '4e-cadeau' ? '-cadeau' : ''), statut: 'en_attente', diplome_url: null };
+      formation: f, option_paiement: 'lien-manuel' + (cle === 'combo' ? '-combo' : cle === '4e-cadeau' ? '-cadeau' : ''), statut: 'en_attente', diplome_url: null, langue: (window.SereLangue ? SereLangue.page() : 'fr') };
     var envoi = fichier ? sb.storage.from('certificats').upload(Date.now() + '_' + nomPropre(fichier.name), fichier, { contentType: fichier.type || 'application/octet-stream' }) : Promise.resolve({ data: null });
     envoi.then(function (r) {
       if (r.error) throw new Error('Ton diplôme n\'a pas pu être téléversé (' + r.error.message + ').');
@@ -1296,6 +1310,18 @@ function ouvrirFichier(seau, chemin) {
     if (w) w.location.href = r.data.signedUrl; else location.href = r.data.signedUrl;
   });
 }
+
+/* Langue de l'espace, des formations et des courriels */
+if (window.SereLangue) SereLangue.surChangement = function (l) { if (etat.session) sb.rpc('definir_langue', { p_langue: l }).then(function () {}, function () {}); };
+document.querySelectorAll('[data-langue-choix]').forEach(function (b) {
+  var l = b.dataset.langueChoix, actuelle = window.SereLangue ? SereLangue.page() : 'fr';
+  b.className = 'btn' + (l === actuelle ? '' : ' fantome');
+  b.addEventListener('click', function () {
+    if (!window.SereLangue) return;
+    var suite = function () { SereLangue.aller(l); };
+    if (etat.session) sb.rpc('definir_langue', { p_langue: l }).then(suite, suite); else suite();
+  });
+});
 
 /* Photo de profil (privée : l'étudiante et Sabrina) */
 function initiales() { var d = etat.dossier || {}; return (((d.prenom || '?')[0] || '') + ((d.nom || '')[0] || '')).toUpperCase(); }
