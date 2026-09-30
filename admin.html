@@ -758,7 +758,7 @@ function dans2ans(d) { var x = new Date(d + 'T12:00:00'); x.setFullYear(x.getFul
 function expireeM(m) { return m.statut === 'validee' && m.date_expiration && m.date_expiration < aujourdhui(); }
 function statutM(m) {
   if (expireeM(m)) return '<span class="pastille p-suspendu">⌛ Expirée le ' + jour(m.date_expiration) + '</span>';
-  return { soumise: '<span class="pastille p-attente">⏳ À vérifier</span>', a_signer: '<span class="pastille p-lien">✍️ En attente de sa signature</span>', signee: '<span class="pastille p-valide">✅ Consentement signé · prête à publier</span>', validee: '<span class="pastille p-valide">✓ Certifiée jusqu\'au ' + jour(m.date_expiration) + '</span>',
+  return { soumise: m.consent_signature_date ? '<span class="pastille p-attente">✍️ Formulaire signé · à valider</span>' : '<span class="pastille p-attente">⏳ À vérifier</span>', a_signer: '<span class="pastille p-lien">✍️ En attente de sa signature</span>', signee: '<span class="pastille p-valide">✅ Consentement signé · prête à publier</span>', validee: '<span class="pastille p-valide">✓ Certifiée jusqu\'au ' + jour(m.date_expiration) + '</span>',
     a_corriger: '<span class="pastille p-marraine">✏️ Correction demandée</span>', retiree: '<span class="pastille p-lien">Retirée de la page</span>' }[m.statut] || esc(m.statut);
 }
 $('filtres-m').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; filtreM = b.dataset.f; document.querySelectorAll('#filtres-m button').forEach(function (x) { x.classList.toggle('actif', x === b); }); afficherMarraines(); });
@@ -780,8 +780,9 @@ function ouvrirFicheM(id, rafraichir) {
   var etu = toutes.filter(function (e) { return (m.user_id && e.user_id === m.user_id) || (e.courriel || '').toLowerCase() === (m.courriel || '').toLowerCase(); })[0];
   $('fiche-nom').textContent = m.nom_complet;
   var acts = [];
-  if (m.statut === 'soumise' || m.statut === 'a_corriger' || m.statut === 'retiree' || expireeM(m)) acts.push('<button class="btn vert" data-am="signature">✓ ' + (expireeM(m) ? 'Renouvellement : demander une nouvelle signature' : 'Résultats vérifiés : demander sa signature') + '</button>');
-  if (m.statut === 'signee') acts.push('<button class="btn vert" data-am="valider">🎉 Publier sa fiche (certification 2 ans)</button>');
+  var signee = !!m.consent_signature_date && (m.statut === 'soumise' || m.statut === 'signee');
+  if (signee) acts.push('<button class="btn vert" data-am="valider">🎉 Valider et publier sa fiche (certification 2 ans)</button>');
+  if ((m.statut === 'soumise' && !m.consent_signature_date) || m.statut === 'retiree' || expireeM(m)) acts.push('<button class="btn gris" data-am="signature">✓ ' + (expireeM(m) ? 'Renouvellement : demander une nouvelle signature' : 'Résultats vérifiés : demander sa signature') + '</button>');
   if (m.statut === 'validee' && !expireeM(m)) acts.push('<button class="btn gris" data-am="signature">🔄 Renouveler : demander une nouvelle signature</button>');
   if (m.statut !== 'a_corriger') acts.push('<button class="btn gris" data-am="corriger">✏️ Demander une correction</button>');
   if (m.statut !== 'retiree') acts.push('<button class="btn gris" data-am="retirer">Retirer de la page publique</button>');
@@ -793,9 +794,9 @@ function ouvrirFicheM(id, rafraichir) {
     '<div class="carte"><h3 style="margin-bottom:8px;">Résultats de la formation (8 h 30)</h3><div id="fm-resultats">Chargement…</div></div>' +
     '<div class="carte"><h3 style="margin-bottom:4px;">Fiche publique</h3><p style="font-size:.8rem;color:var(--doux);margin-bottom:10px;">Une fois sa fiche envoyée, l\'étudiante ne peut plus la modifier elle-même : c\'est toi qui fais les changements ici (ou tu lui demandes une correction).</p><form id="fm-edit" style="display:flex;flex-direction:column;gap:8px;">' +
     '<label class="champ">Nom complet<input id="fe-nom" value="' + esc(m.nom_complet) + '"></label>' +
-    '<label class="champ">Région<input id="fe-region" value="' + esc(m.region || '') + '"></label>' +
+    '<label class="champ">Secteurs desservis<input id="fe-region" value="' + esc(m.region || '') + '"></label>' +
     '<label class="champ">Bio<textarea id="fe-bio" rows="5" maxlength="800">' + esc(m.bio || '') + '</textarea></label>' +
-    '<label class="champ">Contacts affichés (un par ligne : type = valeur)<textarea id="fe-contacts" rows="4">' + esc((m.contacts || []).map(function (c) { return c.type + ' = ' + c.valeur; }).join('\n')) + '</textarea></label>' +
+    '<div class="champ">Modes d\'accompagnement affichés<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">' + [['visio','💻 En visio'],['tel-appel','📞 Au téléphone'],['texto','💬 Messages texte'],['mode-courriel','✉️ Courriel']].map(function (x) { var on = (m.contacts || []).some(function (c) { return c.type === x[0]; }); return '<label style="display:flex;gap:6px;align-items:center;font-weight:500;color:var(--texte);"><input type="checkbox" data-fe-mode="' + x[0] + '"' + (on ? ' checked' : '') + ' style="width:auto;">' + x[1] + '</label>'; }).join('') + '</div></div>' +
     '<div class="actions"><button class="btn gris" type="submit">Enregistrer les modifications</button></div></form></div>' +
     '<div class="carte"><h3 style="margin-bottom:8px;">Consentements</h3>' +
     '<p class="infos-ligne">' + (m.consent_gratuite ? '✅' : '❌') + ' Gratuité et bénévolat des jumelages</p>' +
@@ -804,7 +805,7 @@ function ouvrirFicheM(id, rafraichir) {
     '<p class="infos-ligne" style="color:var(--doux);font-size:.8rem;">Acceptés le ' + (m.consent_date ? new Date(m.consent_date).toLocaleString('fr-CA') : '—') + '</p>' +
     '<h4 style="margin:12px 0 6px;">✍️ Consentement à la publication</h4>' +
     (m.consent_signature_date
-      ? '<p class="infos-ligne ok">✅ Signé électroniquement par « ' + esc(m.consent_signature_nom) + ' » le ' + new Date(m.consent_signature_date).toLocaleString('fr-CA') + ' (' + esc(m.consent_version || '') + ')</p><div class="actions" style="margin-top:6px;"><button class="btn gris" data-am="voir-consentement">Voir le texte signé</button></div>'
+      ? '<p class="infos-ligne ok">✅ Signé électroniquement par « ' + esc(m.consent_signature_nom) + ' » le ' + new Date(m.consent_signature_date).toLocaleString('fr-CA') + ' (' + esc(m.consent_version || '') + ')</p><div class="actions" style="margin-top:6px;">' + (m.consent_pdf ? '<button class="btn" data-am="voir-pdf">📄 Formulaire signé (PDF)</button>' : '') + '<button class="btn gris" data-am="voir-consentement">Voir le texte signé</button></div>'
       : (m.consent_retire_date ? '<p class="infos-ligne ko">🚫 Consentement retiré le ' + new Date(m.consent_retire_date).toLocaleString('fr-CA') + '</p>' : '<p class="infos-ligne">Pas encore signé. ' + (m.statut === 'a_signer' ? 'Elle a été invitée à le signer dans son compte.' : 'Clique sur « Demander sa signature » après avoir vérifié ses résultats.') + '</p>')) +
     '</div>' +
     '<div class="carte"><h3 style="margin-bottom:8px;">Certificat</h3><p class="infos-ligne" style="margin-bottom:8px;">' + (m.certificat_path ? '📜 Certificat téléversé : l\'étudiante peut le télécharger dans son compte.' : 'Téléverse le certificat (PDF ou image) : l\'étudiante pourra le télécharger dans son compte.') + '</p>' +
@@ -817,7 +818,7 @@ function ouvrirFicheM(id, rafraichir) {
   else if (m.photo_publique) $('fm-photo-admin').src = SB_PUBLIC + m.photo_publique;
   $('fm-edit').addEventListener('submit', function (ev) {
     ev.preventDefault();
-    var cs = $('fe-contacts').value.split('\n').map(function (l) { var i = l.indexOf('='); return i > 0 ? { type: l.slice(0, i).trim(), valeur: l.slice(i + 1).trim() } : null; }).filter(function (c) { return c && c.valeur; });
+    var cs = []; document.querySelectorAll('[data-fe-mode]').forEach(function (cb) { if (cb.checked) cs.push({ type: cb.dataset.feMode }); });
     majM(m, { nom_complet: $('fe-nom').value.trim(), region: $('fe-region').value.trim(), bio: $('fe-bio').value.trim(), contacts: cs }, '✅ Fiche enregistrée');
   });
   $('fm-photo-changer').addEventListener('change', function () { var f = this.files && this.files[0]; if (f) changerPhotoMarraine(m, f); });
@@ -882,11 +883,13 @@ $('fiche-corps').addEventListener('click', function (ev) {
     if (!m.consent_gratuite || !m.consent_validite || !m.consent_affichage) { toast('Les 3 cases de sa fiche doivent être acceptées.'); return; }
     if (!confirm('As-tu vérifié les résultats de ' + m.nom_complet + ' ?\n\nElle recevra une notification pour signer son consentement à la publication dans son compte. Tu pourras publier sa fiche dès qu\'elle aura signé.')) return;
     majM(m, { statut: 'a_signer', commentaire_admin: null }, '✍️ Signature demandée');
+  } else if (a === 'voir-pdf') {
+    ouvrirSigne('consentements', m.consent_pdf);
   } else if (a === 'voir-consentement') {
     var w = window.open('', '_blank');
     if (w) { w.document.write('<!doctype html><meta charset="utf-8"><title>Consentement signé · ' + esc(m.nom_complet) + '</title><body style="font-family:Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;line-height:1.55;color:#2c221e"><pre style="white-space:pre-wrap;font:inherit">' + esc(m.consent_texte || '') + '</pre><hr><p><strong>Signé électroniquement par :</strong> ' + esc(m.consent_signature_nom) + '<br><strong>Date et heure :</strong> ' + new Date(m.consent_signature_date).toLocaleString('fr-CA') + '<br><strong>Compte :</strong> ' + esc(m.courriel || '') + '<br><strong>Version :</strong> ' + esc(m.consent_version || '') + '<br><strong>Appareil :</strong> ' + esc(m.consent_appareil || '') + '</p><button onclick="print()">Imprimer ou enregistrer en PDF</button></body>'); w.document.close(); }
   } else if (a === 'valider') {
-    if (!m.consent_signature_date || m.statut !== 'signee') { toast('Elle doit d\'abord signer son consentement.'); return; }
+    if (!m.consent_signature_date || (m.statut !== 'signee' && m.statut !== 'soumise')) { toast('Elle doit d\'abord signer son formulaire.'); return; }
     if (!confirm('Publier la fiche de ' + m.nom_complet + ' ?\n\nCertification valide 2 ans, à partir d\'aujourd\'hui.')) return;
     b.disabled = true;
     publierPhoto(m).then(function (photo) {

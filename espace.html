@@ -15,13 +15,14 @@
 <meta name="apple-mobile-web-app-title" content="Sérénaissance">
 <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
 <script src="/appli.js" defer></script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="adresse.js"></script>
 <script src="/reglages.js"></script>
 <script src="/tarifs.js"></script>
 <script src="/securite.js"></script>
+<script src="/pdf-simple.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -116,6 +117,17 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 .annonce { background: #fff; border: 1px solid var(--bord); border-left: 4px solid var(--terra); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; font-size: .9rem; }
 .annonce small { display: block; color: var(--doux); font-size: .76rem; }
 #fm-carte.verrouillee input, #fm-carte.verrouillee textarea { background: #f3ede6; }
+.fm-question { border: 2px solid var(--terra); }
+.fm-doc { gap: 18px; }
+.fm-entete { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; border-bottom: 2px solid var(--terra); padding-bottom: 14px; }
+.fm-entete img { mix-blend-mode: darken; height: auto; }
+.fm-bloc { border: 1px solid var(--bord); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.fm-bloc legend { font-weight: 800; font-size: .95rem; padding: 0 6px; color: var(--terra); }
+.fm-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+.fm-garde { background: #fbf5ef; border-left: 4px solid var(--terra); border-radius: 10px; padding: 12px 14px; }
+.fm-garde p { margin: 4px 0 8px; font-size: .9rem; }
+.fm-texte { white-space: pre-wrap; background: #fff; border: 1px solid var(--bord); border-radius: 14px; padding: 16px; max-height: 320px; overflow-y: auto; font-size: .88rem; }
+.fm-sig { font-family: 'Great Vibes', 'Brush Script MT', cursive; font-size: 1.6rem !important; }
 @media (display-mode: standalone) { .site-seulement { display: none !important; } }
 @media (max-width: 900px) {
   .cadre { grid-template-columns: 1fr; padding-bottom: 120px; }
@@ -281,28 +293,71 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <!-- Fiche de marraine -->
   <section class="vue" id="vue-marraine" hidden>
     <h1>Ma fiche de marraine d'allaitement</h1>
-    <p class="sous">Une fois ta formation réussie, soumets ta fiche : Sabrina vérifie tes résultats, valide ta certification et publie ta fiche sur la page « Nos marraines d'allaitement ».</p>
+    <p class="sous">Une fois ta formation réussie, tu peux rejoindre l'équipe des marraines de Sérénaissance : Sabrina valide ta fiche, la publie sur la page « Nos marraines d'allaitement » et te jumelle avec des familles de ton secteur.</p>
     <div id="msg-marraine"></div>
     <div id="fm-statut"></div>
+
+    <div class="carte fm-question" id="fm-question" hidden>
+      <h2 style="margin-top:0;">🤱 Veux-tu faire partie de l'équipe ?</h2>
+      <p style="font-size:1.02rem;">Veux-tu faire partie de l'équipe des <strong>marraines d'allaitement de Sérénaissance</strong> et apparaître sur le site, pour que l'Académie te <strong>jumelle avec des familles de ton secteur</strong> ?</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+        <button type="button" class="btn" id="fm-oui">Oui, je veux en faire partie</button>
+        <button type="button" class="btn fantome" id="fm-non">Non, pas pour le moment</button>
+      </div>
+    </div>
+
     <div class="carte" id="fm-carte" hidden>
-      <form id="form-marraine">
-        <label class="champ">Nom complet (tel qu'il apparaîtra sur la page) <input type="text" id="fm-nom" required maxlength="80"></label>
-        <label class="champ">Photo de profil <span class="note">Une photo claire de ton visage (JPG ou PNG). Elle sera affichée publiquement après validation.</span>
-          <input type="file" id="fm-photo" accept="image/jpeg,image/png,image/webp"></label>
-        <div id="fm-apercu" style="display:none;"><img id="fm-apercu-img" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 14px rgba(44,34,30,.15);"></div>
-        <label class="champ">Région ou ville <input type="text" id="fm-region" maxlength="80" placeholder="Ex. : Campbellton et Restigouche, N.-B."></label>
-        <label class="champ">Courte bio / parcours <span class="note"><span id="fm-compte">0</span> / 600 caractères</span>
-          <textarea id="fm-bio" rows="5" maxlength="600" required placeholder="Ex. : Maman de deux enfants allaités, je sais combien un mot d'encouragement peut tout changer…"></textarea></label>
-        <fieldset style="border:1px solid var(--bord);border-radius:14px;padding:14px;">
-          <legend style="font-weight:700;font-size:.9rem;padding:0 6px;">Moyens de contact préférés (affichés sur ta fiche)</legend>
-          <div id="fm-contacts" style="display:flex;flex-direction:column;gap:10px;"></div>
-        </fieldset>
-        <div style="display:flex;flex-direction:column;gap:12px;background:#fbf5ef;border:1px solid var(--bord);border-radius:14px;padding:14px;">
-          <label class="case"><input type="checkbox" id="fm-c1" required> <span><strong>La gratuité :</strong> Je comprends et j'accepte que les jumelages de marrainage d'allaitement attribués et gérés par Sabrina (Sérénaissance) sont strictement bénévoles et gratuits pour les mamans. (Note : si je pratique par ailleurs comme doula en privé hors de ce cadre, mes services de doula peuvent être facturés de façon autonome, mais jamais sous la bannière du marrainage gratuit de Sérénaissance.)</span></label>
-          <label class="case"><input type="checkbox" id="fm-c2" required> <span><strong>La validité et la mise à jour :</strong> Je comprends que mon certificat de marraine d'allaitement est valide 2 ans et que je devrai faire une mise à jour (à 50 % de rabais si formée chez Sérénaissance, ou plein prix si formée à l'externe) pour renouveler mon statut.</span></label>
-          <label class="case"><input type="checkbox" id="fm-c3" required> <span><strong>Le consentement à l'affichage :</strong> J'autorise Sérénaissance à afficher mes informations sur le site si mon statut est validé.</span></label>
+      <form id="form-marraine" class="fm-doc">
+        <div class="fm-entete">
+          <img src="logo.jpg" alt="Académie Sérénaissance" width="170">
+          <div><strong>Formulaire d'adhésion et de consentement</strong><br><span class="note">Équipe des marraines d'allaitement · document officiel · version 2</span></div>
         </div>
-        <button class="btn" type="submit" id="fm-bouton">Soumettre ma fiche à Sabrina</button>
+        <p class="note">Une fois signé, ton formulaire est envoyé à Sabrina. Une copie PDF signée est conservée dans ton compte et dans son dossier.</p>
+
+        <fieldset class="fm-bloc"><legend>1. Ma fiche (affichée sur le site après validation)</legend>
+          <div class="rang">
+            <label class="champ">Prénom <input type="text" id="fm-prenom" required maxlength="40" autocomplete="given-name"></label>
+            <label class="champ">Nom <input type="text" id="fm-nomfam" required maxlength="50" autocomplete="family-name"></label>
+          </div>
+          <label class="champ">Secteurs desservis <span class="note">Villes, villages ou régions où tu peux accompagner des familles</span>
+            <input type="text" id="fm-secteurs" required maxlength="160" placeholder="Ex. : Campbellton, Dalhousie, Atholville et environs"></label>
+          <label class="champ">Ma photo <span class="note">Une photo claire de ton visage (JPG ou PNG). Elle sera affichée sur le site après validation.</span>
+            <input type="file" id="fm-photo" accept="image/jpeg,image/png,image/webp"></label>
+          <div id="fm-apercu" style="display:none;"><img id="fm-apercu-img" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 14px rgba(44,34,30,.15);"></div>
+          <label class="champ">Ma courte bio <span class="note"><span id="fm-compte">0</span> / 600 caractères</span>
+            <textarea id="fm-bio" rows="5" maxlength="600" required placeholder="Ex. : Maman de deux enfants allaités, je sais combien un mot d'encouragement peut tout changer…"></textarea></label>
+        </fieldset>
+
+        <fieldset class="fm-bloc"><legend>2. Comment j'accompagne les familles</legend>
+          <div class="fm-modes">
+            <label class="case"><input type="checkbox" data-mode="visio"> <span>💻 En visio</span></label>
+            <label class="case"><input type="checkbox" data-mode="tel-appel"> <span>📞 Au téléphone</span></label>
+            <label class="case"><input type="checkbox" data-mode="texto"> <span>💬 Par messages texte</span></label>
+            <label class="case"><input type="checkbox" data-mode="mode-courriel"> <span>✉️ Par courriel</span></label>
+          </div>
+          <p class="note">Tes coordonnées ne sont pas publiées : les familles passent par l'Académie, qui fait les jumelages.</p>
+        </fieldset>
+
+        <fieldset class="fm-bloc"><legend>3. Mises en garde importantes</legend>
+          <div class="fm-garde"><strong>🎁 Marrainage gratuit</strong><p>Quand c'est l'Académie qui te jumelle avec une famille, ton accompagnement de marraine est <strong>entièrement gratuit et bénévole</strong> : aucun paiement, don, pourboire ni achat, et tu ne proposes pas tes services payants à ces familles.</p>
+            <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
+          <div class="fm-garde"><strong>💼 Ma pratique professionnelle</strong><p>Dans ta pratique professionnelle (par exemple comme doula), auprès de familles que l'Académie <strong>ne t'a pas jumelées</strong>, tu es libre de facturer ou non tes services, sans jamais les présenter comme du marrainage de Sérénaissance.</p>
+            <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
+          <div class="fm-garde"><strong>🩺 Mon rôle et ses limites</strong><p>Tu offres un soutien entre pairs : pas de diagnostic ni d'avis médical, tu orientes vers une professionnelle de la santé (811, sage-femme, infirmière, médecin, IBCLC) et vers le 911 en cas d'urgence. Tu respectes le Code de l'OMS : aucune promotion de préparations pour nourrissons, de biberons ni de tétines.</p>
+            <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
+          <div class="fm-garde"><strong>🔁 Valide 2 ans</strong><p>Ton certificat de marraine est valide <strong>2 ans</strong>. Pour rester dans l'équipe, tu fais une mise à jour de ta formation : <strong>50 % de rabais</strong> si tu as été formée chez Sérénaissance (plein prix si formée ailleurs).</p>
+            <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
+        </fieldset>
+
+        <fieldset class="fm-bloc"><legend>4. Consentement et signature</legend>
+          <div id="fm-texte" class="fm-texte">Chargement du texte…</div>
+          <p class="note" id="fm-defiler">Fais défiler le texte jusqu'à la fin pour pouvoir signer.</p>
+          <label class="case"><input type="checkbox" id="fm-accord" required disabled> <span>J'ai lu et compris ce formulaire. J'accepte le partage de mes renseignements et de ma photo tel qu'il est décrit, je sais que je peux retirer mon consentement en tout temps, et je déclare avoir 18 ans ou plus.</span></label>
+          <label class="champ">Signature : écris ton prénom et ton nom <span class="note" id="fm-sig-aide"></span>
+            <input type="text" id="fm-signature" required disabled autocomplete="off" class="fm-sig"></label>
+        </fieldset>
+        <div id="msg-fm-envoi"></div>
+        <button class="btn" type="submit" id="fm-bouton" disabled>✍️ Je signe et j'envoie mon formulaire</button>
       </form>
     </div>
   </section>
@@ -915,54 +970,209 @@ $('chat-form').addEventListener('submit', function (e) {
   });
 });
 
-/* ---------------- Fiche de marraine d'allaitement ---------------- */
-var TYPES_CONTACT = [['courriel', 'Courriel', 'email'], ['telephone', 'Téléphone / texto', 'tel'], ['facebook', 'Facebook / Messenger', 'text'], ['instagram', 'Instagram', 'text'], ['autre', 'Autre', 'text']];
-var ficheM = null, photoM = null;
+/* ---------------- Fiche de marraine d'allaitement : formulaire officiel signé ---------------- */
+var VERSION_FORMULAIRE = 'marraine-v2';
+var MODES_LIB = { visio: 'En visio', 'tel-appel': 'Au téléphone', texto: 'Par messages texte', 'mode-courriel': 'Par courriel' };
+var ficheM = null, photoM = null, texteFormulaire = '';
 function aujourdhui() { return new Date().toISOString().slice(0, 10); }
+function examenMarraineReussi() {
+  var r = etat.progression['marraine:score:exam'], ex = null; try { ex = JSON.parse(r); } catch (e) {}
+  return !!(ex && ex.score / ex.total >= 0.8);
+}
 function chargerFicheMarraine() {
   var uid = etat.session.user.id;
-  var r = etat.progression['marraine:score:exam'], ex = null; try { ex = JSON.parse(r); } catch (e) {}
-  var reussi = !!(ex && ex.score / ex.total >= 0.8);
   sb.from('marraines').select('*').eq('user_id', uid).maybeSingle().then(function (x) {
     ficheM = x.data || null;
-    var st = $('fm-statut'), carte = $('fm-carte');
-    carte.hidden = true; st.innerHTML = '';
-    if (!ficheM && !reussi) {
-      st.innerHTML = '<div class="message info">📚 Ta fiche sera disponible dès que tu auras <strong>réussi l\'examen final</strong> de la formation de marraine d\'allaitement (80 % et plus). <a href="Formation/marraine/index.html">Continuer ma formation →</a></div>';
+    var st = $('fm-statut');
+    $('fm-carte').hidden = true; $('fm-question').hidden = true; st.innerHTML = '';
+    if (!ficheM && !examenMarraineReussi()) {
+      st.innerHTML = '<div class="message info">📚 Ton formulaire de marraine sera disponible dès que tu auras <strong>réussi l\'examen final</strong> de la formation de marraine d\'allaitement (80 % et plus). <a href="Formation/marraine/index.html">Continuer ma formation →</a></div>';
       return;
     }
-    if (ficheM) {
-      var exp = ficheM.date_expiration, expiree = ficheM.statut === 'validee' && exp && exp < aujourdhui();
-      var t = {
-        soumise: '<div class="message info">⏳ <strong>Ta fiche est envoyée.</strong> Sabrina vérifie tes résultats et ta fiche. Ensuite, tu recevras une notification pour <strong>signer ton consentement à la publication</strong>.</div>',
-        a_signer: '<div class="message ok">✍️ <strong>Tes résultats sont vérifiés !</strong> Dernière étape avant la publication de ta fiche : lis et signe ton consentement ci-dessous.</div>',
-        signee: '<div class="message ok">✅ <strong>Ton consentement est signé</strong> le ' + (ficheM.consent_signature_date ? new Date(ficheM.consent_signature_date).toLocaleString('fr-CA') : '') + '. Sabrina publie ta fiche très bientôt.<br><a href="#" data-consentement>📄 Voir mon consentement signé</a> · <a href="#" data-retirer>Retirer mon consentement</a></div>',
-        a_corriger: '<div class="message erreur">✏️ <strong>Sabrina te demande une petite correction :</strong><br>' + echapper(ficheM.commentaire_admin || '') + '</div>',
-        retiree: '<div class="message info">' + (ficheM.consent_retire_date ? 'Tu as retiré ton consentement le ' + new Date(ficheM.consent_retire_date).toLocaleString('fr-CA') + ' : ta fiche n\'est plus affichée sur le site.' : 'Ta fiche n\'est plus affichée sur le site.') + ' Pour la réactiver, <a href="#messages">écris à Sabrina</a>.</div>',
-        validee: expiree
-          ? '<div class="message erreur">⌛ <strong>Ta certification est arrivée à échéance le ' + jour(exp) + '.</strong> Pour renouveler ton statut, fais la mise à jour de la formation (50 % de rabais pour les marraines formées chez Sérénaissance). Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a>.</div>'
-          : '<div class="message ok">🎉 <strong>Tu es marraine d\'allaitement certifiée !</strong><br>Certifiée le ' + jour(ficheM.date_certification) + ' · valide jusqu\'au ' + jour(exp) + '.<br>Ta fiche est visible sur la page <a href="index.html#nos-marraines" target="_blank">Nos marraines d\'allaitement</a>.' +
-            (ficheM.certificat_path ? '<br><a href="#" id="fm-certificat">📜 Télécharger mon certificat</a>' : '') +
-            (ficheM.consent_signature_date ? '<br><a href="#" data-consentement>📄 Voir mon consentement signé</a> · <a href="#" data-retirer>Retirer mon consentement</a>' : '') +
-            '</div>'
-      }[ficheM.statut] || '';
-      st.innerHTML = t;
-      var c = $('fm-certificat');
-      if (c) c.addEventListener('click', function (e) { e.preventDefault(); ouvrirFichier('certificats-marraines', ficheM.certificat_path); });
-      st.querySelectorAll('[data-consentement]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); voirConsentementSigne(); }); });
-      st.querySelectorAll('[data-retirer]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); retirerConsentement(); }); });
-      if (ficheM.statut === 'a_signer') afficherSignature(st);
-      if (expiree || ficheM.statut === 'retiree') return;
-    }
-    remplirFormMarraine(); carte.hidden = false;
-    var verrou = !!ficheM && ficheM.statut !== 'a_corriger';
-    carte.classList.toggle('verrouillee', verrou);
-    carte.querySelectorAll('input, textarea, select').forEach(function (x) { x.disabled = verrou; });
-    $('fm-bouton').hidden = verrou;
-    var n = $('fm-verrou'); if (n) n.remove();
-    if (verrou) carte.insertAdjacentHTML('afterbegin', '<div id="fm-verrou" class="message info" style="margin-bottom:18px;">🔒 <strong>Ta fiche est entre les mains de Sabrina.</strong> Pour changer ta photo, ta bio ou tes moyens de contact, <a href="#messages">écris-lui dans Messages</a> : elle fait la modification pour toi.</div>');
+    if (!ficheM) { $('fm-question').hidden = false; return; }
+    var exp = ficheM.date_expiration, expiree = ficheM.statut === 'validee' && exp && exp < aujourdhui();
+    var signe = ficheM.consent_signature_date ? new Date(ficheM.consent_signature_date).toLocaleString('fr-CA', { dateStyle: 'long', timeStyle: 'short' }) : '';
+    var copies = '<br><a href="#" data-copie-pdf>📄 Ma copie signée (PDF)</a> · <a href="#" data-consentement>Voir le texte signé</a> · <a href="#" data-retirer>Retirer mon consentement</a>';
+    var rappel = '<div class="message info" style="margin-top:12px;">🔁 <strong>Rappel :</strong> ton certificat de marraine est valide 2 ans. Pour rester dans l\'équipe, fais la mise à jour de ta formation avant l\'échéance : <strong>50 % de rabais</strong> parce que tu as été formée chez Sérénaissance.</div>';
+    var t = {
+      soumise: '<div class="message ok">✅ <strong>Ton formulaire est signé et envoyé</strong> (' + signe + '). Sabrina vérifie ta fiche : tu recevras une notification dès qu\'elle est publiée.' + copies + '</div>' + rappel,
+      a_signer: '<div class="message info">✍️ <strong>Sabrina te demande de signer ton formulaire.</strong> Vérifie ta fiche ci-dessous, puis signe au bas du formulaire.</div>',
+      signee: '<div class="message ok">✅ <strong>Ton formulaire est signé</strong> (' + signe + '). Sabrina publie ta fiche très bientôt.' + copies + '</div>',
+      a_corriger: '<div class="message erreur">✏️ <strong>Sabrina te demande une petite correction :</strong><br>' + echapper(ficheM.commentaire_admin || '') + '<br>Corrige ta fiche ci-dessous, puis signe de nouveau.</div>',
+      retiree: '<div class="message info">' + (ficheM.consent_retire_date ? 'Tu as retiré ton consentement le ' + new Date(ficheM.consent_retire_date).toLocaleString('fr-CA') + ' : ta fiche n\'est plus affichée sur le site.' : 'Ta fiche n\'est plus affichée sur le site.') + ' Tu peux rejoindre l\'équipe de nouveau en remplissant ton formulaire.</div>',
+      validee: expiree
+        ? '<div class="message erreur">⌛ <strong>Ta certification est arrivée à échéance le ' + jour(exp) + '.</strong> Pour renouveler ton statut, fais la mise à jour de la formation (<strong>50 % de rabais</strong> pour les marraines formées chez Sérénaissance), puis signe de nouveau ton formulaire.</div>'
+        : '<div class="message ok">🎉 <strong>Tu fais partie de l\'équipe des marraines de Sérénaissance !</strong><br>Validée le ' + jour(ficheM.date_certification) + ' · valide jusqu\'au <strong>' + jour(exp) + '</strong>.<br>Ta fiche est visible sur la page <a href="index.html#nos-marraines" target="_blank">Nos marraines d\'allaitement</a>.' +
+          (ficheM.certificat_path ? '<br><a href="#" id="fm-certificat">📜 Télécharger mon certificat</a>' : '') + copies + '</div>' + rappel
+    }[ficheM.statut] || '';
+    st.innerHTML = t;
+    var c = $('fm-certificat');
+    if (c) c.addEventListener('click', function (e) { e.preventDefault(); ouvrirFichier('certificats-marraines', ficheM.certificat_path); });
+    st.querySelectorAll('[data-consentement]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); voirConsentementSigne(); }); });
+    st.querySelectorAll('[data-retirer]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); retirerConsentement(); }); });
+    st.querySelectorAll('[data-copie-pdf]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); telechargerCopie(); }); });
+    var modifiable = ficheM.statut === 'a_corriger' || ficheM.statut === 'a_signer' || ficheM.statut === 'retiree' || expiree;
+    if (modifiable) ouvrirFormulaire();
   });
 }
+$('fm-oui').addEventListener('click', function () { $('fm-question').hidden = true; ouvrirFormulaire(); });
+$('fm-non').addEventListener('click', function () {
+  $('fm-question').hidden = true;
+  $('fm-statut').innerHTML = '<div class="message info">Merci de ta réponse ! 🌸 Si tu changes d\'idée plus tard, reviens ici : tu pourras rejoindre l\'équipe en tout temps pendant la validité de ta formation. <a href="#" id="fm-rechanger">Finalement, je veux en faire partie</a></div>';
+  $('fm-rechanger').addEventListener('click', function (e) { e.preventDefault(); $('fm-statut').innerHTML = ''; ouvrirFormulaire(); });
+});
+function ouvrirFormulaire() {
+  var d = etat.dossier || {}, f = ficheM || {};
+  var parties = (f.nom_complet || '').split(' ');
+  $('fm-prenom').value = f.nom_complet ? parties[0] : (d.prenom || '');
+  $('fm-nomfam').value = f.nom_complet ? parties.slice(1).join(' ') : (d.nom || '');
+  $('fm-secteurs').value = f.region || '';
+  $('fm-bio').value = f.bio || ''; $('fm-compte').textContent = $('fm-bio').value.length;
+  var modes = (f.contacts || []).map(function (c) { return c.type; });
+  document.querySelectorAll('[data-mode]').forEach(function (cb) { cb.checked = modes.indexOf(cb.dataset.mode) >= 0; });
+  document.querySelectorAll('.fm-lu').forEach(function (cb) { cb.checked = false; });
+  $('fm-accord').checked = false; $('fm-signature').value = '';
+  photoM = null;
+  if (f.photo_path) sb.storage.from('marraines').createSignedUrl(f.photo_path, 600).then(function (r) { if (r.data) { $('fm-apercu-img').src = r.data.signedUrl; $('fm-apercu').style.display = 'block'; } });
+  $('fm-photo').required = !f.photo_path;
+  majAideSignature();
+  $('fm-carte').hidden = false;
+  sb.from('textes_consentement').select('texte').eq('version', VERSION_FORMULAIRE).maybeSingle().then(function (r) {
+    texteFormulaire = (r && r.data && r.data.texte) || '';
+    $('fm-texte').textContent = texteFormulaire || 'Le texte n\'a pas pu être chargé. Réessaie dans un instant.';
+    verifierFinTexte();
+  });
+  $('fm-carte').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function nomSaisi() { return ($('fm-prenom').value.trim() + ' ' + $('fm-nomfam').value.trim()).trim(); }
+function majAideSignature() { $('fm-sig-aide').textContent = nomSaisi() ? '(exactement : ' + nomSaisi() + ')' : ''; }
+['fm-prenom', 'fm-nomfam'].forEach(function (id) { $(id).addEventListener('input', majAideSignature); });
+function verifierFinTexte() {
+  var b = $('fm-texte');
+  if (texteFormulaire && b.scrollTop + b.clientHeight >= b.scrollHeight - 12) {
+    $('fm-accord').disabled = false; $('fm-signature').disabled = false; $('fm-bouton').disabled = false;
+    $('fm-defiler').textContent = '✓ Texte lu jusqu\'à la fin.';
+  }
+}
+$('fm-texte').addEventListener('scroll', verifierFinTexte);
+$('fm-bio').addEventListener('input', function () { $('fm-compte').textContent = this.value.length; });
+$('fm-photo').addEventListener('change', function () {
+  var f = this.files && this.files[0]; photoM = null; if (!f) return;
+  var img = new Image(), url = URL.createObjectURL(f);
+  img.onload = function () {
+    var max = 800, k = Math.min(1, max / Math.max(img.width, img.height));
+    var c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    c.toBlob(function (b) { photoM = b; $('fm-apercu-img').src = URL.createObjectURL(b); $('fm-apercu').style.display = 'block'; }, 'image/jpeg', 0.86);
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = function () { alert('Cette image ne peut pas être lue. Essaie une photo JPG ou PNG.'); };
+  img.src = url;
+});
+// Copie PDF du formulaire signé (conservée dans le dossier de l'étudiante et de Sabrina)
+function photoPourPdf() {
+  var source = photoM ? Promise.resolve(photoM) : (ficheM && ficheM.photo_path
+    ? sb.storage.from('marraines').createSignedUrl(ficheM.photo_path, 120).then(function (r) { return r.data ? fetch(r.data.signedUrl).then(function (x) { return x.blob(); }) : null; })
+    : Promise.resolve(null));
+  return source.then(function (b) {
+    if (!b) return null;
+    return Promise.all([b.arrayBuffer(), createImageBitmap(b)]).then(function (r) {
+      var u = new Uint8Array(r[0]); if (u[0] !== 0xFF || u[1] !== 0xD8) return null;   // JPEG seulement
+      return { octets: u, l: r[1].width, h: r[1].height };
+    });
+  }).catch(function () { return null; });
+}
+function construirePdf(o) {
+  var pdf = PdfSimple.creer(), ac = '#a85743', doux = '#7a685e';
+  pdf.texte('Académie Sérénaissance', { taille: 16, gras: true, couleur: ac });
+  pdf.texte("Formulaire d'adhésion et de consentement · Équipe des marraines d'allaitement", { taille: 11, gras: true });
+  pdf.texte('Version : ' + o.version + ' · Document signé électroniquement', { taille: 9, couleur: doux }).espace(8);
+  pdf.texte('MA FICHE', { taille: 11, gras: true, couleur: ac });
+  var y0 = pdf.y();
+  if (o.photo) { var w = 96, h = Math.round(96 * o.photo.h / o.photo.l); pdf.image(o.photo.octets, o.photo.l, o.photo.h, w, h); }
+  pdf.texte('Nom : ' + o.nom, { marge: 110 }).texte('Secteurs desservis : ' + o.secteurs, { marge: 110 })
+     .texte("Modes d'accompagnement : " + o.modes.map(function (m) { return MODES_LIB[m] || m; }).join(', '), { marge: 110 })
+     .texte('Courriel du compte : ' + o.courriel, { marge: 110 });
+  if (o.photo) pdf.setY(Math.min(pdf.y(), y0 - 116));
+  pdf.texte('Bio : ' + o.bio).espace(8);
+  pdf.texte('MISES EN GARDE LUES ET COMPRISES', { taille: 11, gras: true, couleur: ac });
+  ["Marrainage gratuit et bénévole pour les familles jumelées par l'Académie.",
+   "Pratique professionnelle : libre de facturer hors des jumelages de l'Académie, sans jamais le présenter comme du marrainage de Sérénaissance.",
+   "Rôle et limites : aucun avis médical, orientation vers les professionnelles de la santé, respect du Code de l'OMS.",
+   'Certificat valide 2 ans ; mise à jour à 50 % de rabais si formée chez Sérénaissance.'].forEach(function (t) { pdf.texte('[x] ' + t, { taille: 9.5 }); });
+  pdf.espace(8).texte('TEXTE SIGNÉ', { taille: 11, gras: true, couleur: ac });
+  o.texte.split('\n').forEach(function (l) { if (!l.trim()) pdf.espace(5); else pdf.texte(l, { taille: 9 }); });
+  pdf.espace(10).trait();
+  pdf.texte('SIGNATURE ÉLECTRONIQUE', { taille: 11, gras: true, couleur: ac });
+  pdf.texte('Signé par : ' + o.signature).texte('Date et heure : ' + o.date);
+  pdf.texte("J'ai lu et compris ce formulaire, j'accepte le partage de mes renseignements et de ma photo tel qu'il est décrit, je sais que je peux retirer mon consentement en tout temps et je déclare avoir 18 ans ou plus.", { taille: 9, couleur: '#5a4a42' });
+  pdf.texte("Copie conservée dans le compte de la marraine et dans le dossier de l'Académie Sérénaissance.", { taille: 8, couleur: doux });
+  return pdf.blob();
+}
+$('form-marraine').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var modes = []; document.querySelectorAll('[data-mode]').forEach(function (cb) { if (cb.checked) modes.push(cb.dataset.mode); });
+  var nom = nomSaisi();
+  if (!modes.length) return message('msg-fm-envoi', 'erreur', 'Choisis au moins un mode d\'accompagnement.');
+  if (!photoM && !(ficheM && ficheM.photo_path)) return message('msg-fm-envoi', 'erreur', 'Ajoute ta photo.');
+  var norm = function (t) { return t.toLowerCase().replace(/\s+/g, ' ').trim(); };
+  if (norm($('fm-signature').value) !== norm(nom)) return message('msg-fm-envoi', 'erreur', 'Pour signer, écris ton prénom et ton nom exactement ainsi : ' + echapper(nom));
+  var b = $('fm-bouton'); b.disabled = true; b.textContent = 'Signature et envoi…';
+  var uid = etat.session.user.id, maintenant = new Date(), cheminPhoto = ficheM && ficheM.photo_path, cheminPdf = null;
+  var envoiPhoto = photoM ? sb.storage.from('marraines').upload(uid + '/photo-' + Date.now() + '.jpg', photoM, { contentType: 'image/jpeg' }) : Promise.resolve({ data: null });
+  envoiPhoto.then(function (r) {
+    if (r.error) throw new Error('La photo n\'a pas pu être envoyée (' + r.error.message + ').');
+    if (r.data) cheminPhoto = r.data.path;
+    return photoPourPdf().then(function (photo) {
+      return construirePdf({ version: VERSION_FORMULAIRE, nom: nom, secteurs: $('fm-secteurs').value.trim(), modes: modes, bio: $('fm-bio').value.trim(),
+        courriel: etat.session.user.email, texte: texteFormulaire, signature: $('fm-signature').value.trim(), photo: photo,
+        date: maintenant.toLocaleString('fr-CA', { dateStyle: 'long', timeStyle: 'medium' }) + ' (' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '') + ')' });
+    }).then(function (pdf) {
+      var chemin = uid + '/formulaire-marraine-' + maintenant.toISOString().slice(0, 19).replace(/[:T]/g, '-') + '.pdf';
+      return sb.storage.from('consentements').upload(chemin, pdf, { contentType: 'application/pdf' }).then(function (u) { if (!u.error) cheminPdf = chemin; });
+    }).catch(function () { /* le PDF est une copie : l'envoi du formulaire continue même s'il échoue */ });
+  }).then(function () {
+    return sb.rpc('soumettre_fiche_marraine', { p_nom: nom, p_secteurs: $('fm-secteurs').value.trim(), p_bio: $('fm-bio').value.trim(),
+      p_modes: modes.map(function (m) { return { type: m }; }), p_photo: cheminPhoto, p_signature: $('fm-signature').value.trim(),
+      p_version: VERSION_FORMULAIRE, p_appareil: navigator.userAgent, p_pdf: cheminPdf });
+  }).then(function (r) {
+    b.disabled = false; b.textContent = '✍️ Je signe et j\'envoie mon formulaire';
+    if (r.error) throw new Error((r.error.message || '').replace(/^.*?:\s*/, ''));
+    photoM = null; $('fm-carte').hidden = true;
+    message('msg-marraine', 'ok', '🌸 <strong>Merci ! Ton formulaire est signé et envoyé à Sabrina.</strong> Tu en gardes une copie PDF ici, et Sabrina en garde une dans ton dossier. Elle vérifie ta fiche et te prévient dès qu\'elle est publiée.');
+    window.scrollTo(0, 0); chargerFicheMarraine();
+  }).catch(function (err) {
+    b.disabled = false; b.textContent = '✍️ Je signe et j\'envoie mon formulaire';
+    message('msg-fm-envoi', 'erreur', echapper(err.message || 'L\'envoi n\'a pas fonctionné.') + ' Réessaie ou écris à Sabrina dans tes Messages.');
+  });
+});
+function telechargerCopie() {
+  if (ficheM && ficheM.consent_pdf) return ouvrirFichier('consentements', ficheM.consent_pdf);
+  voirConsentementSigne();
+}
+function voirConsentementSigne() {
+  var w = window.open('', '_blank'); if (!w) return;
+  w.document.write('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mon formulaire signé</title><body style="font-family:Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;line-height:1.55;color:#2c221e"><pre style="white-space:pre-wrap;font:inherit">' +
+    echapper(ficheM.consent_texte || '') + '</pre><hr><p><strong>Signé électroniquement par :</strong> ' + echapper(ficheM.consent_signature_nom || '') + '<br><strong>Date et heure :</strong> ' +
+    (ficheM.consent_signature_date ? new Date(ficheM.consent_signature_date).toLocaleString('fr-CA') : '') + '</p><button onclick="print()">Imprimer ou enregistrer en PDF</button></body>');
+  w.document.close();
+}
+function retirerConsentement() {
+  if (!confirm('Retirer ton consentement ?\n\nTa fiche disparaîtra tout de suite de la page « Nos marraines d\'allaitement ». Ta certification reste valide. Tu pourras rejoindre l\'équipe de nouveau en signant un nouveau formulaire.')) return;
+  sb.rpc('retirer_consentement_marraine').then(function (r) {
+    if (r.error) { alert('Le retrait n\'a pas fonctionné. Écris à serenaissance.doula@gmail.com.'); return; }
+    message('msg-marraine', 'ok', 'Ton consentement est retiré : ta fiche n\'est plus affichée sur le site. Sabrina en est avisée.');
+    chargerFicheMarraine();
+  });
+}
+function ouvrirFichier(seau, chemin) {
+  var w = window.open('', '_blank');
+  sb.storage.from(seau).createSignedUrl(chemin, 300).then(function (r) {
+    if (r.error || !r.data) { if (w) w.close(); alert('Fichier introuvable.'); return; }
+    if (w) w.location.href = r.data.signedUrl; else location.href = r.data.signedUrl;
+  });
+}
+
 /* Photo de profil (privée : l'étudiante et Sabrina) */
 function initiales() { var d = etat.dossier || {}; return (((d.prenom || '?')[0] || '') + ((d.nom || '')[0] || '')).toUpperCase(); }
 function afficherPhoto(url) {
@@ -1010,119 +1220,6 @@ $('pp-retirer').addEventListener('click', function () {
   });
 });
 
-/* Consentement à la publication : lecture, signature électronique, retrait */
-var VERSION_CONSENTEMENT = 'marraine-v1';
-function afficherSignature(st) {
-  var bloc = document.createElement('div'); bloc.className = 'carte'; bloc.id = 'fm-signature';
-  bloc.innerHTML = '<h2 style="margin-top:0;">✍️ Mon consentement à la publication</h2>' +
-    '<p class="note" style="margin-bottom:10px;">Lis attentivement le texte au complet. Tu peux le retirer en tout temps après l\'avoir signé.</p>' +
-    '<div id="cs-texte" style="white-space:pre-wrap;background:#fff;border:1px solid var(--bord);border-radius:14px;padding:16px;max-height:340px;overflow-y:auto;font-size:.9rem;">Chargement du texte…</div>' +
-    '<p class="note" style="margin:8px 0 14px;">Tu dois faire défiler le texte jusqu\'à la fin pour pouvoir signer.</p>' +
-    '<form id="form-signature"><label class="case"><input type="checkbox" id="cs-lu" disabled required> <span>J\'ai lu et compris ce consentement, j\'ai 18 ans ou plus, et j\'accepte que ma fiche soit publiée aux conditions ci-dessus.</span></label>' +
-    '<label class="champ">Écris ton nom complet pour signer <span class="note">(tel qu\'il apparaît sur ta fiche : ' + echapper(ficheM.nom_complet) + ')</span><input type="text" id="cs-nom" autocomplete="name" required disabled></label>' +
-    '<div id="msg-signature"></div><button class="btn" type="submit" id="cs-bouton" disabled>Je signe ✍️</button></form>';
-  st.appendChild(bloc);
-  sb.from('textes_consentement').select('texte').eq('version', VERSION_CONSENTEMENT).maybeSingle().then(function (r) {
-    var t = r && r.data && r.data.texte;
-    if (!t) { $('cs-texte').textContent = 'Le texte n\'a pas pu être chargé. Réessaie dans un instant.'; return; }
-    $('cs-texte').textContent = t;
-    function verifierFin() { var b = $('cs-texte'); if (b.scrollTop + b.clientHeight >= b.scrollHeight - 12) { $('cs-lu').disabled = false; $('cs-nom').disabled = false; $('cs-bouton').disabled = false; } }
-    $('cs-texte').addEventListener('scroll', verifierFin); setTimeout(verifierFin, 50);
-  });
-  $('form-signature').addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (!$('cs-lu').checked) return message('msg-signature', 'erreur', 'Coche la case pour confirmer que tu as lu et compris le consentement.');
-    var b = $('cs-bouton'); b.disabled = true; b.textContent = 'Signature…';
-    sb.rpc('signer_consentement_marraine', { p_nom: $('cs-nom').value, p_version: VERSION_CONSENTEMENT, p_appareil: navigator.userAgent }).then(function (r) {
-      b.disabled = false; b.textContent = 'Je signe ✍️';
-      if (r.error) return message('msg-signature', 'erreur', echapper((r.error.message || '').replace(/^.*?:\s*/, '')) || 'La signature n\'a pas fonctionné. Réessaie.');
-      message('msg-marraine', 'ok', '✅ Merci ! Ton consentement est signé. Sabrina publie ta fiche très bientôt et tu recevras une notification.');
-      chargerFicheMarraine(); window.scrollTo(0, 0);
-    });
-  });
-}
-function voirConsentementSigne() {
-  var w = window.open('', '_blank'); if (!w) return;
-  w.document.write('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mon consentement signé</title><body style="font-family:Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;line-height:1.55;color:#2c221e"><pre style="white-space:pre-wrap;font:inherit">' +
-    echapper(ficheM.consent_texte || '') + '</pre><hr><p><strong>Signé électroniquement par :</strong> ' + echapper(ficheM.consent_signature_nom || '') + '<br><strong>Date et heure :</strong> ' +
-    (ficheM.consent_signature_date ? new Date(ficheM.consent_signature_date).toLocaleString('fr-CA') : '') + '</p><button onclick="print()">Imprimer ou enregistrer en PDF</button></body>');
-  w.document.close();
-}
-function retirerConsentement() {
-  if (!confirm('Retirer ton consentement ?\n\nTa fiche disparaîtra tout de suite de la page « Nos marraines d\'allaitement ». Ta certification reste valide. Pour être publiée de nouveau, tu devras écrire à Sabrina et signer un nouveau consentement.')) return;
-  sb.rpc('retirer_consentement_marraine').then(function (r) {
-    if (r.error) { alert('Le retrait n\'a pas fonctionné. Écris à serenaissance.doula@gmail.com.'); return; }
-    message('msg-marraine', 'ok', 'Ton consentement est retiré : ta fiche n\'est plus affichée sur le site. Sabrina en est avisée.');
-    chargerFicheMarraine();
-  });
-}
-
-function ouvrirFichier(seau, chemin) {
-  var w = window.open('', '_blank');
-  sb.storage.from(seau).createSignedUrl(chemin, 300).then(function (r) {
-    if (r.error || !r.data) { if (w) w.close(); alert('Fichier introuvable.'); return; }
-    if (w) w.location.href = r.data.signedUrl; else location.href = r.data.signedUrl;
-  });
-}
-function remplirFormMarraine() {
-  var d = etat.dossier || {}, f = ficheM || {};
-  $('fm-nom').value = f.nom_complet || ((d.prenom || '') + ' ' + (d.nom || '')).trim();
-  $('fm-region').value = f.region || '';
-  $('fm-bio').value = f.bio || ''; $('fm-compte').textContent = $('fm-bio').value.length;
-  var cs = f.contacts || [];
-  $('fm-contacts').innerHTML = TYPES_CONTACT.map(function (t) {
-    var v = (cs.filter(function (c) { return c.type === t[0]; })[0] || {}).valeur || '';
-    if (!f.id && t[0] === 'courriel') v = etat.session.user.email || '';
-    return '<label class="case" style="align-items:center;"><input type="checkbox" data-contact="' + t[0] + '"' + (v && (f.id ? true : t[0] === 'courriel') ? ' checked' : '') + '> <span style="min-width:150px;">' + t[1] + '</span>' +
-      '<input type="' + t[2] + '" data-valeur="' + t[0] + '" value="' + echapper(v) + '" style="flex:1;"></label>';
-  }).join('');
-  ['fm-c1', 'fm-c2', 'fm-c3'].forEach(function (id) { $(id).checked = !!(f.id && f.consent_gratuite); });
-  if (f.photo_path) sb.storage.from('marraines').createSignedUrl(f.photo_path, 600).then(function (r) { if (r.data) { $('fm-apercu-img').src = r.data.signedUrl; $('fm-apercu').style.display = 'block'; } });
-  $('fm-photo').required = !f.photo_path;
-}
-$('fm-bio').addEventListener('input', function () { $('fm-compte').textContent = this.value.length; });
-$('fm-photo').addEventListener('change', function () {
-  var f = this.files && this.files[0]; photoM = null; if (!f) return;
-  var img = new Image(), url = URL.createObjectURL(f);
-  img.onload = function () {
-    var max = 800, k = Math.min(1, max / Math.max(img.width, img.height));
-    var c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-    c.toBlob(function (b) { photoM = b; $('fm-apercu-img').src = URL.createObjectURL(b); $('fm-apercu').style.display = 'block'; }, 'image/jpeg', 0.86);
-    URL.revokeObjectURL(url);
-  };
-  img.onerror = function () { alert('Cette image ne peut pas être lue. Essaie une photo JPG ou PNG.'); };
-  img.src = url;
-});
-$('form-marraine').addEventListener('submit', function (e) {
-  e.preventDefault();
-  var contacts = [];
-  document.querySelectorAll('#fm-contacts [data-contact]').forEach(function (cb) {
-    var v = document.querySelector('[data-valeur="' + cb.dataset.contact + '"]').value.trim();
-    if (cb.checked && v) contacts.push({ type: cb.dataset.contact, valeur: v });
-  });
-  if (!contacts.length) return message('msg-marraine', 'erreur', 'Coche et remplis au moins un moyen de contact.');
-  if (!photoM && !(ficheM && ficheM.photo_path)) return message('msg-marraine', 'erreur', 'Ajoute une photo de profil.');
-  var b = $('fm-bouton'); b.disabled = true; b.textContent = 'Envoi…';
-  var uid = etat.session.user.id;
-  var envoi = photoM ? sb.storage.from('marraines').upload(uid + '/photo-' + Date.now() + '.jpg', photoM, { contentType: 'image/jpeg' }) : Promise.resolve({ data: null });
-  envoi.then(function (r) {
-    if (r.error) throw new Error('La photo n\'a pas pu être envoyée (' + r.error.message + ').');
-    var ligne = { nom_complet: $('fm-nom').value.trim(), region: $('fm-region').value.trim(), bio: $('fm-bio').value.trim(), contacts: contacts,
-      consent_gratuite: $('fm-c1').checked, consent_validite: $('fm-c2').checked, consent_affichage: $('fm-c3').checked };
-    if (r.data) ligne.photo_path = r.data.path;
-    return ficheM ? sb.from('marraines').update(ligne).eq('id', ficheM.id) : sb.from('marraines').insert([ligne]);
-  }).then(function (r) {
-    b.disabled = false; b.textContent = 'Soumettre ma fiche à Sabrina';
-    if (r.error) throw new Error(r.error.message);
-    photoM = null;
-    message('msg-marraine', 'ok', '🌸 Ta fiche est envoyée à Sabrina ! Elle vérifie tes résultats et te revient rapidement.');
-    chargerFicheMarraine();
-  }).catch(function (err) {
-    b.disabled = false; b.textContent = 'Soumettre ma fiche à Sabrina';
-    message('msg-marraine', 'erreur', echapper(err.message) + ' Réessaie ou écris à serenaissance.doula@gmail.com.');
-  });
-});
 
 demarrer();
 })();

@@ -67,14 +67,17 @@
   function envoyerProgression(keepalive) {
     if (!brouillon || !session) return;
     brouillon = false;
-    try { setOrig.call(localStorage, 'progression-a-envoyer', ''); } catch (e) {}
     var corps = JSON.stringify({ user_id: session.user.id, donnees: instantane(), updated_at: new Date().toISOString() });
     fetch(SB_URL + '/rest/v1/progression?on_conflict=user_id', {
       method: 'POST', keepalive: !!keepalive,
       headers: { 'apikey': SB_CLE, 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json',
                  'Prefer': 'resolution=merge-duplicates,return=minimal' },
       body: corps
-    }).then(function (r) { if (!r.ok) marquer(); }).catch(marquer);
+    }).then(function (r) {
+      if (!r.ok) return marquer();
+      // le drapeau n'est retiré qu'une fois l'envoi confirmé (sinon la page suivante garderait la version locale)
+      if (!brouillon) try { setOrig.call(localStorage, 'progression-a-envoyer', ''); } catch (e) {}
+    }).catch(marquer);
   }
   function marquer() {
     brouillon = true;
@@ -99,10 +102,24 @@
     var enAttente = false; try { enAttente = localStorage.getItem('progression-a-envoyer') === '1'; } catch (e) {}
     return sb.from('progression').select('donnees').eq('user_id', uid).maybeSingle().then(function (r) {
       if (r.error) return;                       // table absente : on garde la progression locale
-      if (enAttente || !r.data) { brouillon = true; return; }   // local plus récent : on l'enverra
-      clesProgression().forEach(function (k) { try { removeOrig.call(localStorage, k); } catch (e) {} });
-      var d = r.data.donnees || {};
-      Object.keys(d).forEach(function (k) { if (PREFIXES.test(k)) try { setOrig.call(localStorage, k, d[k]); } catch (e) {} });
+      if (!r.data) { brouillon = true; return; }   // rien dans le compte : on enverra la version locale
+      // Fusion : on ne perd jamais une lecture validée ni un meilleur résultat (autre appareil ou envoi en cours)
+      var serveur = r.data.donnees || {}, local = instantane(), fusion = {}, change = false;
+      function ratio(v) { try { var o = JSON.parse(v); return o && o.total ? o.score / o.total : -1; } catch (e) { return -1; } }
+      Object.keys(serveur).concat(Object.keys(local)).forEach(function (k) {
+        if (!PREFIXES.test(k) || k in fusion) return;
+        var sv = serveur[k], lv = local[k], v;
+        if (sv == null) v = lv;
+        else if (lv == null) v = sv;
+        else if (/:read:/.test(k)) v = (sv === 'true' || lv === 'true') ? 'true' : sv;
+        else if (/:score:/.test(k)) v = ratio(lv) > ratio(sv) ? lv : sv;
+        else v = enAttente ? lv : sv;
+        fusion[k] = v;
+        if (v !== sv) change = true;
+      });
+      Object.keys(local).forEach(function (k) { if (!(k in fusion)) try { removeOrig.call(localStorage, k); } catch (e) {} });
+      Object.keys(fusion).forEach(function (k) { try { if (fusion[k] == null) removeOrig.call(localStorage, k); else setOrig.call(localStorage, k, fusion[k]); } catch (e) {} });
+      if (change || enAttente) brouillon = true;
     }).catch(function () {});
   }
 
@@ -231,6 +248,7 @@
       }).then(function () {
         return dechiffrer(b64(bloc.textContent.trim()));
       }).then(function (buf) {
+        window.SereCompte = { sb: sb, session: session };   // pour les pages qui ont besoin du dossier (ex. certificat)
         document.body.innerHTML = texte(buf);
         surveiller();
         if (location.hash) { var c = document.getElementById(location.hash.slice(1)); if (c) c.scrollIntoView(); }
