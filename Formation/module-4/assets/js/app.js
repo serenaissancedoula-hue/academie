@@ -125,7 +125,7 @@
     if (k.type === 'exam') {
       var miss = CH.filter(function (id) { return !passed(id); });
       var relire = aRelire();
-      if (!miss.length && relire.length) return { msg: 'Avant de repasser l\'examen, relis le' + (relire.length > 1 ? 's chapitres ' : ' chapitre ') + relire.join(', ') + ' jusqu\'au bout et clique sur « J\'ai terminé ma lecture ».', href: url('chapitre', relire[0]), label: 'Relire le chapitre ' + relire[0] };
+      if (!miss.length && relire.length) return { msg: 'Avant de repasser l\'examen, relisez le' + (relire.length > 1 ? 's chapitres ' : ' chapitre ') + relire.join(', ') + ' jusqu\'au bout et cliquez sur « J\'ai terminé ma lecture ».', href: url('chapitre', relire[0]), label: 'Relire le chapitre ' + relire[0] };
       if (!miss.length) return null;
       return { msg: 'Réussissez d\'abord les ' + NCH + ' quiz pour débloquer l\'examen final. Il vous reste : quiz ' + miss.join(', ') + '.', href: url('quiz', miss[0]), label: 'Continuer le parcours' };
     }
@@ -212,7 +212,7 @@
     if (doitRelire(cid)) {
       var ban = document.createElement('div');
       ban.className = 'callout caution';
-      ban.innerHTML = '<p><strong>📖 Relecture demandée.</strong> Relis ce chapitre jusqu\'au bout et clique sur « J\'ai terminé ma lecture » en bas de page pour pouvoir repasser l\'examen.</p>';
+      ban.innerHTML = '<p><strong>📖 Relecture demandée.</strong> Relisez ce chapitre jusqu\'au bout et cliquez sur « J\'ai terminé ma lecture » en bas de page pour pouvoir repasser l\'examen.</p>';
       var art = document.querySelector('.content'); if (art) art.insertBefore(ban, art.firstChild);
     }
     if (isRead(cid) && !doitRelire(cid)) setRead();

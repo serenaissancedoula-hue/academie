@@ -79,8 +79,8 @@
   [1, 2, 3, 4, 5].forEach(function (n) { (get('m' + n + ':arelire') || []).forEach(function (c) { relire.push({ m: n, c: c }); }); });
   if (relire.length) {
     box.innerHTML = '<section class="lock-page"><img src="assets/img/cadenas.svg" alt="" width="96" height="96"><h1>Relecture avant la reprise</h1>' +
-      '<p>Avant de repasser le grand examen final, relis jusqu\'au bout ' + (relire.length > 1 ? 'les chapitres ' : 'le chapitre ') +
-      relire.map(function (x) { return x.c; }).join(', ') + ' et clique sur « J\'ai terminé ma lecture » à la fin de chacun. La prochaine tentative comportera d\'autres questions.</p>' +
+      '<p>Avant de repasser le grand examen final, relisez jusqu\'au bout ' + (relire.length > 1 ? 'les chapitres ' : 'le chapitre ') +
+      relire.map(function (x) { return x.c; }).join(', ') + ' et cliquez sur « J\'ai terminé ma lecture » à la fin de chacun. La prochaine tentative comportera d\'autres questions.</p>' +
       '<div class="actions"><a class="btn" href="module-' + relire[0].m + '/chapitre-' + relire[0].c.replace('.', '-') + '.html">Relire le chapitre ' + relire[0].c + ' →</a><a class="btn-ghost" href="index.html">Accueil de la formation</a></div></section>';
     return;
   }
