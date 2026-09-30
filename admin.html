@@ -196,6 +196,11 @@ th { color: var(--doux); font-weight: 600; }
       <button data-f="toutes">Toutes</button>
     </div>
     <div class="liste" id="liste-m"></div>
+    <div class="carte" id="carte-suivis" style="margin-top:16px;">
+      <h3 style="margin-bottom:6px;">📋 Feuilles de suivi mensuelles</h3>
+      <div class="rang" style="align-items:center;gap:8px;margin-bottom:8px;"><label class="champ" style="flex:1;">Mois<select id="sv-mois-admin"></select></label></div>
+      <div id="suivis-resume">Chargement…</div>
+    </div>
   </section>
 
   <!-- Outils -->
@@ -479,6 +484,7 @@ function charger() {
     toutes = r.data || [];
     return sb.from('marraines').select('*').order('updated_at', { ascending: false }).then(function (m) {
       marraines = (m && m.data) || [];
+      setTimeout(chargerSuivisAdmin, 0);
       afficherMarraines(); if (ficheMId) ouvrirFicheM(ficheMId, true);
     });
   }).then(function () {
@@ -813,6 +819,41 @@ function afficherMarraines() {
     return '<div class="ligne" data-m="' + m.id + '"><div class="avatar">🤱</div><div class="qui"><strong>' + esc(m.nom_complet) + '</strong><small>' + esc(m.region || m.courriel || '') + ' · mise à jour ' + jour(m.updated_at) + '</small><div>' + statutM(m) + '</div></div><span>›</span></div>';
   }).join('') : '<div class="vide">Aucune fiche ici.</div>';
 }
+/* Feuilles de suivi mensuelles des marraines */
+var MOIS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+function moisTexte(iso) { var p = iso.split('-'); return MOIS_FR[+p[1] - 1] + ' ' + p[0]; }
+function premierDuMois(dec) { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + dec); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-01'; }
+var SV_LIB = { visio: 'Visio', telephone: 'Téléphone', texto: 'Texto', courriel: 'Courriel', personne: 'En personne', 'mise-au-sein': 'Mise au sein', production: 'Production de lait', inconforts: 'Inconforts', expression: 'Expression / tire-lait', 'retour-travail': 'Retour au travail', sevrage: 'Sevrage', emotionnel: 'Soutien émotionnel', info: 'Information', autre: 'Autre', ibclc: 'IBCLC', infirmiere: 'Infirmière / 811', medecin: 'Médecin', 'sage-femme': 'Sage-femme', groupe: 'Groupe d\'entraide', urgence: 'Urgence 911' };
+function libs(a) { return (a || []).map(function (k) { return SV_LIB[k] || k; }).join(', ') || '—'; }
+function ligneSuivi(x, avecNom) {
+  return '<div class="infos-ligne" style="border-top:1px solid var(--bord);padding-top:8px;margin-top:8px;">' + (x.besoin_soutien ? '<span class="ko">🆘 Demande à être contactée</span><br>' : '') +
+    (avecNom ? '<strong>' + esc(avecNom) + '</strong> · ' : '<strong>' + moisTexte(x.mois) + '</strong> · ') + x.nb_familles + ' famille(s), ' + x.nb_contacts + ' contact(s), ' + x.nb_orientations + ' orientation(s)<br>' +
+    '<small>Modes : ' + esc(libs(x.modes)) + ' · Soutien : ' + esc(libs(x.types_soutien)) + ' · Orientations : ' + esc(libs(x.orientations)) + '</small>' +
+    (x.situations ? '<br><small><b>Situations :</b> ' + esc(x.situations) + '</small>' : '') + (x.commentaire ? '<br><small><b>Commentaire :</b> ' + esc(x.commentaire) + '</small>' : '') + '</div>';
+}
+function chargerSuivisAdmin() {
+  var sel = $('sv-mois-admin');
+  if (!sel.options.length) { sel.innerHTML = [-1, 0, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12].map(function (d) { var m = premierDuMois(d); return '<option value="' + m + '">' + moisTexte(m) + '</option>'; }).join(''); }
+  var mois = sel.value;
+  sb.from('suivis_marraine').select('*').eq('mois', mois).then(function (r) {
+    var l = (r && r.data) || [];
+    var fin = new Date(mois + 'T12:00:00'); fin.setMonth(fin.getMonth() + 1); var finIso = fin.toISOString().slice(0, 10);
+    var attendues = marraines.filter(function (m) { return m.statut === 'validee' && m.user_id && m.date_certification && m.date_certification < finIso && m.date_expiration >= mois; });
+    var nom = function (uid) { var m = marraines.find(function (x) { return x.user_id === uid; }); return m ? m.nom_complet : 'Marraine'; };
+    var manquantes = attendues.filter(function (m) { return !l.some(function (x) { return x.user_id === m.user_id; }); });
+    var tot = l.reduce(function (a, x) { a.f += x.nb_familles; a.c += x.nb_contacts; a.o += x.nb_orientations; return a; }, { f: 0, c: 0, o: 0 });
+    $('suivis-resume').innerHTML = '<p class="infos-ligne"><b>' + l.length + '</b> feuille(s) reçue(s) sur ' + attendues.length + ' attendue(s) · <b>' + tot.f + '</b> famille(s), <b>' + tot.c + '</b> contact(s), <b>' + tot.o + '</b> orientation(s)</p>' +
+      (manquantes.length ? '<p class="infos-ligne ko">⏳ En attente : ' + manquantes.map(function (m) { return esc(m.nom_complet); }).join(', ') + ' (rappel automatique le 1er, le 5 et le 10 du mois)</p>' : '') +
+      l.map(function (x) { return ligneSuivi(x, nom(x.user_id)); }).join('') +
+      (l.length ? '<div class="actions" style="margin-top:10px;"><button class="btn gris" type="button" id="sv-csv">⬇️ Exporter (CSV anonyme)</button></div>' : '');
+    var b = $('sv-csv'); if (b) b.addEventListener('click', function () {
+      var lignes = [['Mois', 'Familles', 'Contacts', 'Orientations', 'Modes', 'Types de soutien', 'Orientations vers']].concat(l.map(function (x) { return [mois, x.nb_familles, x.nb_contacts, x.nb_orientations, libs(x.modes), libs(x.types_soutien), libs(x.orientations)]; }));
+      var csv = '\ufeff' + lignes.map(function (r) { return r.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'); }).join('\n');
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); a.download = 'suivis-marraines-' + mois.slice(0, 7) + '.csv'; a.click();
+    });
+  });
+}
+$('sv-mois-admin').addEventListener('change', chargerSuivisAdmin);
 $('liste-m').addEventListener('click', function (e) { var l = e.target.closest('.ligne'); if (l) { e.stopPropagation(); ouvrirFicheM(+l.dataset.m); } });
 function ouvrirFicheM(id, rafraichir) {
   var m = marraines.find(function (x) { return x.id === id; }); if (!m) return;
@@ -821,7 +862,7 @@ function ouvrirFicheM(id, rafraichir) {
   $('fiche-nom').textContent = m.nom_complet;
   var acts = [];
   var signee = !!m.consent_signature_date && (m.statut === 'soumise' || m.statut === 'signee');
-  if (signee) acts.push('<button class="btn vert" data-am="valider">🎉 Valider et publier sa fiche (certification 2 ans)</button>');
+  if (signee) acts.push('<button class="btn vert" data-am="valider">🎉 Valider et publier sa fiche (certificat valide 2 ans)</button>');
   if ((m.statut === 'soumise' && !m.consent_signature_date) || m.statut === 'retiree' || expireeM(m)) acts.push('<button class="btn gris" data-am="signature">✓ ' + (expireeM(m) ? 'Renouvellement : demander une nouvelle signature' : 'Résultats vérifiés : demander sa signature') + '</button>');
   if (m.statut === 'validee' && !expireeM(m)) acts.push('<button class="btn gris" data-am="signature">🔄 Renouveler : demander une nouvelle signature</button>');
   if (m.statut !== 'a_corriger') acts.push('<button class="btn gris" data-am="corriger">✏️ Demander une correction</button>');
@@ -836,8 +877,14 @@ function ouvrirFicheM(id, rafraichir) {
     '<label class="champ">Nom complet<input id="fe-nom" value="' + esc(m.nom_complet) + '"></label>' +
     '<label class="champ">Secteurs desservis<input id="fe-region" value="' + esc(m.region || '') + '"></label>' +
     '<label class="champ">Bio<textarea id="fe-bio" rows="5" maxlength="800">' + esc(m.bio || '') + '</textarea></label>' +
+    '<label class="champ">Langues parlées<input id="fe-langues" maxlength="80" value="' + esc(m.langues || '') + '"></label>' +
     '<div class="champ">Modes d\'accompagnement affichés<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">' + [['visio','💻 En visio'],['tel-appel','📞 Au téléphone'],['texto','💬 Messages texte'],['mode-courriel','✉️ Courriel']].map(function (x) { var on = (m.contacts || []).some(function (c) { return c.type === x[0]; }); return '<label style="display:flex;gap:6px;align-items:center;font-weight:500;color:var(--texte);"><input type="checkbox" data-fe-mode="' + x[0] + '"' + (on ? ' checked' : '') + ' style="width:auto;">' + x[1] + '</label>'; }).join('') + '</div></div>' +
     '<div class="actions"><button class="btn gris" type="submit">Enregistrer les modifications</button></div></form></div>' +
+    '<div class="carte"><h3 style="margin-bottom:8px;">🔒 Coordonnées et déclarations (privé)</h3>' +
+    '<p class="infos-ligne"><b>Téléphone pour les jumelages :</b> ' + (m.telephone ? '<a href="tel:' + esc(m.telephone.replace(/[^0-9+]/g, '')) + '">' + esc(m.telephone) + '</a>' : '—') + '</p>' +
+    '<p class="infos-ligne"><b>Conflit d\'intérêts :</b> ' + (m.conflit_interets ? (m.conflit_interets === 'Aucun' ? '✅ Aucun' : '<span class="ko">⚠️ ' + esc(m.conflit_interets) + '</span>') : '—') + '</p>' +
+    '<p class="infos-ligne"><b>Antécédents judiciaires :</b> ' + (m.antecedents_declaration ? '✅ Déclaration signée (aucun antécédent incompatible, vérification acceptée sur demande)' : '—') + '</p></div>' +
+    '<div class="carte"><h3 style="margin-bottom:8px;">📋 Ses feuilles de suivi</h3><div id="fm-suivis">Chargement…</div></div>' +
     '<div class="carte"><h3 style="margin-bottom:8px;">Consentements</h3>' +
     '<p class="infos-ligne">' + (m.consent_gratuite ? '✅' : '❌') + ' Gratuité et bénévolat des jumelages</p>' +
     '<p class="infos-ligne">' + (m.consent_validite ? '✅' : '❌') + ' Validité de 2 ans et mise à jour</p>' +
@@ -848,8 +895,11 @@ function ouvrirFicheM(id, rafraichir) {
       ? '<p class="infos-ligne ok">✅ Signé électroniquement par « ' + esc(m.consent_signature_nom) + ' » le ' + new Date(m.consent_signature_date).toLocaleString('fr-CA') + ' (' + esc(m.consent_version || '') + ')</p><div class="actions" style="margin-top:6px;">' + (m.consent_pdf ? '<button class="btn" data-am="voir-pdf">📄 Formulaire signé (PDF)</button>' : '') + '<button class="btn gris" data-am="voir-consentement">Voir le texte signé</button></div>'
       : (m.consent_retire_date ? '<p class="infos-ligne ko">🚫 Consentement retiré le ' + new Date(m.consent_retire_date).toLocaleString('fr-CA') + '</p>' : '<p class="infos-ligne">Pas encore signé. ' + (m.statut === 'a_signer' ? 'Elle a été invitée à le signer dans son compte.' : 'Clique sur « Demander sa signature » après avoir vérifié ses résultats.') + '</p>')) +
     '</div>' +
-    '<div class="carte"><h3 style="margin-bottom:8px;">Certificat</h3><p class="infos-ligne" style="margin-bottom:8px;">' + (m.certificat_path ? '📜 Certificat téléversé : l\'étudiante peut le télécharger dans son compte.' : 'Téléverse le certificat (PDF ou image) : l\'étudiante pourra le télécharger dans son compte.') + '</p>' +
-    '<div class="actions"><label class="btn gris" style="cursor:pointer;">📤 Téléverser le certificat<input type="file" id="fm-certif" accept=".pdf,image/*" hidden></label>' + (m.certificat_path ? '<button class="btn gris" data-am="voir-certif">Voir</button>' : '') + '</div></div>' +
+    (function () {
+      var etu = toutes.filter(function (e) { return (m.user_id && e.user_id === m.user_id) || (e.courriel || '').toLowerCase() === (m.courriel || '').toLowerCase(); })[0];
+      return '<div class="carte"><h3 style="margin-bottom:8px;">📮 Certificat papier</h3><p class="infos-ligne" style="margin-bottom:6px;">Le certificat est imprimé et posté : l\'étudiante ne peut pas le télécharger. Le bouton d\'impression apparaît dans « Résultats » quand l\'examen est réussi.</p>' +
+        '<p class="infos-ligne"><b>Adresse postale :</b> ' + (etu && etu.adresse ? esc(etu.adresse).replace(/\n/g, '<br>') : '<span class="ko">aucune adresse dans son dossier</span>') + '</p></div>';
+    })() +
     (m.commentaire_admin ? '<div class="carte"><h3 style="margin-bottom:6px;">Dernier message envoyé</h3><p class="infos-ligne">' + esc(m.commentaire_admin) + '</p></div>' : '') +
     '<div class="carte"><div class="actions">' + acts.join('') + '<a class="btn gris" href="index.html#nos-marraines" target="_blank">Voir la page publique</a></div></div>' +
     '<div class="carte" style="border-color:#e3b5a8;"><button class="btn danger" data-am="supprimer">🗑️ Supprimer cette fiche</button></div>';
@@ -859,18 +909,13 @@ function ouvrirFicheM(id, rafraichir) {
   $('fm-edit').addEventListener('submit', function (ev) {
     ev.preventDefault();
     var cs = []; document.querySelectorAll('[data-fe-mode]').forEach(function (cb) { if (cb.checked) cs.push({ type: cb.dataset.feMode }); });
-    majM(m, { nom_complet: $('fe-nom').value.trim(), region: $('fe-region').value.trim(), bio: $('fe-bio').value.trim(), contacts: cs }, '✅ Fiche enregistrée');
+    majM(m, { nom_complet: $('fe-nom').value.trim(), region: $('fe-region').value.trim(), bio: $('fe-bio').value.trim(), langues: $('fe-langues').value.trim() || null, contacts: cs }, '✅ Fiche enregistrée');
   });
   $('fm-photo-changer').addEventListener('change', function () { var f = this.files && this.files[0]; if (f) changerPhotoMarraine(m, f); });
-  $('fm-certif').addEventListener('change', function () {
-    var f = this.files && this.files[0]; if (!f || !m.user_id) return;
-    var chemin = m.user_id + '/certificat-marraine-' + Date.now() + (/\.pdf$/i.test(f.name) ? '.pdf' : '.jpg');
-    sb.storage.from('certificats-marraines').upload(chemin, f, { contentType: f.type || 'application/pdf' }).then(function (r) {
-      if (r.error) { toast('Téléversement impossible : ' + r.error.message); return; }
-      majM(m, { certificat_path: chemin }, '📜 Certificat téléversé');
-    });
-  });
-  // Résultats de la formation marraine
+  if (m.user_id) sb.from('suivis_marraine').select('*').eq('user_id', m.user_id).order('mois', { ascending: false }).limit(24).then(function (r) {
+    var l = (r && r.data) || [], el = $('fm-suivis'); if (!el) return;
+    el.innerHTML = l.length ? l.map(function (x) { return ligneSuivi(x); }).join('') : '<p class="infos-ligne">Aucune feuille reçue pour le moment.</p>';
+  }); else $('fm-suivis').innerHTML = '<p class="infos-ligne">—</p>';
   var p1 = m.user_id ? sb.from('progression').select('donnees').eq('user_id', m.user_id).maybeSingle() : Promise.resolve({});
   var p2 = sb.from('resultats').select('*').eq('formation', 'marraine').or((m.user_id ? 'user_id.eq.' + m.user_id + ',' : '') + 'courriel.ilike.' + (m.courriel || 'x')).order('created_at', { ascending: false });
   Promise.all([p1, p2]).then(function (r) {
@@ -882,7 +927,7 @@ function ouvrirFicheM(id, rafraichir) {
     var ex = sc('marraine:score:exam');
     lignes += '<tr><td><strong>Examen final</strong></td><td>' + (ex ? '<span class="' + (ok(ex) ? 'ok' : 'ko') + '">' + ex.score + '/' + ex.total + ' (' + Math.round(ex.score / ex.total * 100) + ' %)</span>' : '—') + '</td></tr>';
     var global = nq === 6 && ok(ex);
-    var drM = dateReussiteMarraine(res);
+    var drM = dateReussiteMarraine(res); m._reussite = drM;
     $('fm-resultats').innerHTML = '<p class="infos-ligne" style="margin-bottom:8px;">' + (global ? '<span class="ok">✅ Formation réussie : 6 quiz et examen final à 80 % et plus.</span>' : '<span class="ko">⚠️ Formation pas encore réussie au complet (' + nq + '/6 quiz, examen ' + (ok(ex) ? 'réussi' : 'non réussi') + ').</span>') + '</p>' +
       '<table>' + lignes + '</table>' + (res.length ? '<p class="infos-ligne" style="margin-top:8px;color:var(--doux);font-size:.8rem;">' + res.length + ' tentative(s) enregistrée(s) · dernière le ' + jour(res[0].created_at) + '</p>' : '') +
       (ok(ex) ? '<div class="actions" style="margin-top:8px;"><button class="btn" type="button" id="btn-cert-m">🖨️ Imprimer son certificat de marraine</button></div>' : '');
@@ -937,10 +982,12 @@ $('fiche-corps').addEventListener('click', function (ev) {
     if (w) { w.document.write('<!doctype html><meta charset="utf-8"><title>Consentement signé · ' + esc(m.nom_complet) + '</title><body style="font-family:Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;line-height:1.55;color:#2c221e"><pre style="white-space:pre-wrap;font:inherit">' + esc(m.consent_texte || '') + '</pre><hr><p><strong>Signé électroniquement par :</strong> ' + esc(m.consent_signature_nom) + '<br><strong>Date et heure :</strong> ' + new Date(m.consent_signature_date).toLocaleString('fr-CA') + '<br><strong>Compte :</strong> ' + esc(m.courriel || '') + '<br><strong>Version :</strong> ' + esc(m.consent_version || '') + '<br><strong>Appareil :</strong> ' + esc(m.consent_appareil || '') + '</p><button onclick="print()">Imprimer ou enregistrer en PDF</button></body>'); w.document.close(); }
   } else if (a === 'valider') {
     if (!m.consent_signature_date || (m.statut !== 'signee' && m.statut !== 'soumise')) { toast('Elle doit d\'abord signer son formulaire.'); return; }
-    if (!confirm('Publier la fiche de ' + m.nom_complet + ' ?\n\nCertification valide 2 ans, à partir d\'aujourd\'hui.')) return;
+    var dCert = m._reussite || aujourdhui();
+    if (dans2ans(dCert) < aujourdhui()) { toast('Sa formation date de plus de 2 ans : une mise à jour est requise avant de publier.'); return; }
+    if (!confirm('Publier la fiche de ' + m.nom_complet + ' ?\n\nCertificat valide 2 ans à partir de sa date de réussite (' + jour(dCert) + '), soit jusqu\'au ' + jour(dans2ans(dCert)) + '.')) return;
     b.disabled = true;
     publierPhoto(m).then(function (photo) {
-      var d = aujourdhui();
+      var d = dCert;
       return majM(m, { statut: 'validee', date_certification: d, date_expiration: dans2ans(d), photo_publique: photo, commentaire_admin: null }, '🎉 ' + m.nom_complet + ' est certifiée et publiée');
     }).then(function (ok) {
       if (ok && m.courriel && confirm('Envoyer le courriel de félicitations à ' + m.courriel + ' ?')) courrielMarraineCertifiee(m).then(function () { toast('✉️ Courriel envoyé'); }, function () { toast('Le courriel n\'a pas pu partir'); });
@@ -972,7 +1019,7 @@ function viderPastille() {
   if (navigator.clearAppBadge) navigator.clearAppBadge().catch(function () {});
   if (navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage('badge-zero');
 }
-document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { viderPastille(); if (/^#([em]\d|c[0-9a-f])/.test(location.hash)) ouvrirDepuisLien(); chargerAvis(); chargerMessages(); } });
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { viderPastille(); if (/^#([em]\d|c[0-9a-f]|suivis)/.test(location.hash)) ouvrirDepuisLien(); chargerAvis(); chargerMessages(); } });
 function ouvrirDepuisLien() {
   var m = (location.hash || '').match(/^#e(\d+)/);
   if (m && toutes.length) { history.replaceState(null, '', 'admin.html'); ouvrirFiche(+m[1]); }
@@ -980,6 +1027,7 @@ function ouvrirDepuisLien() {
   if (c) { history.replaceState(null, '', 'admin.html'); vue('messages'); ouvrirChat(c[1]); }
   var k = (location.hash || '').match(/^#m(\d+)/);
   if (k && marraines.length) { history.replaceState(null, '', 'admin.html'); vue('marraines'); ouvrirFicheM(+k[1]); }
+  if (location.hash === '#suivis') { history.replaceState(null, '', 'admin.html'); vue('marraines'); chargerSuivisAdmin(); setTimeout(function () { $('carte-suivis').scrollIntoView({ behavior: 'smooth' }); }, 200); }
 }
 window.addEventListener('hashchange', ouvrirDepuisLien);
 

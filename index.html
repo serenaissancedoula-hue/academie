@@ -2404,7 +2404,7 @@
                 <li><strong>Photo de profil (facultative)</strong> : visible seulement par toi et par moi, dans ton compte et dans nos messages. Elle n'est jamais publiée.</li>
                 <li><strong>Messages</strong> : ta conversation privée avec moi dans ton compte. Les autres étudiantes n'y ont jamais accès.</li>
                 <li><strong>Notifications (facultatives)</strong> : si tu les actives, ton appareil est enregistré pour recevoir mes messages et mes annonces ; tu peux les désactiver en tout temps dans tes Paramètres.</li>
-                <li><strong>Fiche de marraine d'allaitement</strong> : ton nom, ta photo, ta région, ta bio et les moyens de contact que tu choisis sont publiés sur la page « Nos marraines d'allaitement » <strong>seulement après ta signature électronique d'un consentement écrit</strong>, pendant la durée de ta certification (2 ans). Tu peux retirer ce consentement en tout temps dans ton compte : ta fiche disparaît alors immédiatement du site.</li>
+                <li><strong>Fiche de marraine d'allaitement</strong> : ton nom, ta photo, tes secteurs desservis, les langues que tu parles, ta bio et tes modes d'accompagnement sont publiés sur la page « Nos marraines d'allaitement » <strong>seulement après ta signature électronique du formulaire d'adhésion et de consentement</strong>, pendant la durée de ton certificat (2 ans). Ton numéro de téléphone, tes déclarations (conflit d'intérêts, antécédents judiciaires) et tes feuilles de suivi mensuelles (anonymes, sans aucun nom de famille) restent privés : seule Sabrina y a accès. Tu peux retirer ce consentement en tout temps dans ton compte : ta fiche disparaît alors immédiatement du site.</li>
                 <li><strong>Paiements</strong> : traités par Stripe. Je reçois une confirmation de paiement, mais jamais ton numéro de carte.</li>
                 <li><strong>Accompagnements de doula</strong> : les informations que tu choisis de me confier sur ta grossesse, ta santé et ta famille servent uniquement à t'accompagner. Elles sont traitées avec la plus grande confidentialité.</li>
             </ul>
@@ -2879,6 +2879,7 @@
                         <img src="${m.photo_publique ? supabaseUrl + '/storage/v1/object/public/marraines-publiques/' + encodeURIComponent(m.photo_publique) : 'icones/icone-192.png'}" alt="${echapper(m.nom_complet)}" loading="lazy">
                         <h4>${echapper(m.nom_complet)}</h4>
                         ${m.region ? `<div class="region">📍 ${echapper(m.region)}</div>` : ''}
+                        ${m.langues ? `<div class="region">🗣️ ${echapper(m.langues)}</div>` : ''}
                         <p class="bio">${echapper(m.bio || '')}</p>
                         ${(m.contacts || []).length ? `<ul class="contacts">${m.contacts.map(c => MODES[c.type] ? `<li>${MODES[c.type]}</li>` : (c.valeur ? `<li>${LIB[c.type] || '🔗'} ${lien(c)}</li>` : '')).join('')}</ul>` : ''}
                         <span class="certif">✓ Marraine certifiée · jusqu'au ${new Date(m.date_expiration + 'T12:00:00').toLocaleDateString('fr-CA', { month: 'long', year: 'numeric' })}</span>

@@ -310,7 +310,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
       <form id="form-marraine" class="fm-doc">
         <div class="fm-entete">
           <img src="logo.jpg" alt="Académie Sérénaissance" width="170">
-          <div><strong>Formulaire d'adhésion et de consentement</strong><br><span class="note">Équipe des marraines d'allaitement · document officiel · version 2</span></div>
+          <div><strong>Formulaire d'adhésion et de consentement</strong><br><span class="note">Équipe des marraines d'allaitement · document officiel · version 3</span></div>
         </div>
         <p class="note">Une fois signé, ton formulaire est envoyé à Sabrina. Une copie PDF signée est conservée dans ton compte et dans son dossier.</p>
 
@@ -326,6 +326,10 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
           <div id="fm-apercu" style="display:none;"><img id="fm-apercu-img" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 14px rgba(44,34,30,.15);"></div>
           <label class="champ">Ma courte bio <span class="note"><span id="fm-compte">0</span> / 600 caractères</span>
             <textarea id="fm-bio" rows="5" maxlength="600" required placeholder="Ex. : Maman de deux enfants allaités, je sais combien un mot d'encouragement peut tout changer…"></textarea></label>
+          <label class="champ">Langues que je parle <span class="note">Affichées sur le site</span>
+            <input type="text" id="fm-langues" required maxlength="80" placeholder="Ex. : Français, anglais"></label>
+          <label class="champ">Mon numéro de téléphone <span class="note">🔒 Jamais publié : seulement pour que l'Académie organise tes jumelages</span>
+            <input type="tel" id="fm-tel" required maxlength="30" autocomplete="tel" placeholder="Ex. : 506 555-1234"></label>
         </fieldset>
 
         <fieldset class="fm-bloc"><legend>2. Comment j'accompagne les familles</legend>
@@ -345,11 +349,28 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
             <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
           <div class="fm-garde"><strong>🩺 Mon rôle et ses limites</strong><p>Tu offres un soutien entre pairs : pas de diagnostic ni d'avis médical, tu orientes vers une professionnelle de la santé (811, sage-femme, infirmière, médecin, IBCLC) et vers le 911 en cas d'urgence. Tu respectes le Code de l'OMS : aucune promotion de préparations pour nourrissons, de biberons ni de tétines.</p>
             <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
-          <div class="fm-garde"><strong>🔁 Valide 2 ans</strong><p>Ton certificat de marraine est valide <strong>2 ans</strong>. Pour rester dans l'équipe, tu fais une mise à jour de ta formation : <strong>50 % de rabais</strong> si tu as été formée chez Sérénaissance (plein prix si formée ailleurs).</p>
+          <div class="fm-garde"><strong>🌿 Suggestions de produits</strong><p>Tu ne suggères un produit (supplément, tisane, tire-lait…) <strong>que si une formation reconnue te qualifie pour le faire</strong>, dans les limites de cette formation. Ces suggestions relèvent de <strong>ta seule responsabilité</strong> : l'Académie n'en est pas responsable. Tu ne vends rien aux familles jumelées et tu ne touches aucune commission.</p>
+            <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
+          <div class="fm-garde"><strong>🛡️ Protection de l'enfance</strong><p>La loi t'oblige à <strong>signaler toi-même</strong> tout enfant que tu crois maltraité, négligé ou en danger : Développement social au N.-B. (<strong>1-833-733-7835</strong>), DPJ de ta région au Québec, 119 en France. Danger immédiat : <strong>911</strong> (17 ou 112 en France). Tu en avises ensuite l'Académie.</p>
+            <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
+          <div class="fm-garde"><strong>🔒 Confidentialité et communications</strong><p>Rien de ce que les familles te confient n'est partagé ni publié, et tu ne donnes pas de conseils sur leur situation dans des groupes publics. Les photos qu'elles t'envoient servent seulement à les soutenir et sont supprimées dès qu'elles ne sont plus utiles.</p>
+            <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
+          <div class="fm-garde"><strong>📋 Feuille de suivi mensuelle</strong><p>Chaque mois, tu remplis dans ton compte une courte feuille de suivi <strong>anonyme</strong> (nombre de familles et de contacts, types de soutien, orientations). Tu reçois un rappel dans ton compte, dans l'appli et par courriel. Et si tu vis une situation difficile, Sabrina est là pour toi dans tes Messages.</p>
+            <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
+          <div class="fm-garde"><strong>🔁 Valide 2 ans</strong><p>Ton certificat de marraine est valide <strong>2 ans</strong> à partir de ta date de réussite. Pour rester dans l'équipe, tu fais une mise à jour de ta formation : <strong>50 % de rabais</strong> si tu as été formée chez Sérénaissance (plein prix si formée ailleurs).</p>
             <label class="case"><input type="checkbox" class="fm-lu" required> <span>J'ai compris.</span></label></div>
         </fieldset>
 
-        <fieldset class="fm-bloc"><legend>4. Consentement et signature</legend>
+        <fieldset class="fm-bloc"><legend>4. Mes déclarations</legend>
+          <div class="fm-garde"><strong>Conflit d'intérêts</strong><p>As-tu un lien (emploi, commandite, commission, représentation) avec une entreprise qui fabrique ou vend des préparations pour nourrissons, des biberons, des tétines, des tire-lait ou d'autres produits liés à l'alimentation des bébés ?</p>
+            <label class="case"><input type="radio" name="fm-conflit" value="non" required> <span>Non, aucun lien</span></label>
+            <label class="case"><input type="radio" name="fm-conflit" value="oui"> <span>Oui</span></label>
+            <label class="champ" id="fm-conflit-bloc" hidden>Précise l'entreprise et la nature du lien<input type="text" id="fm-conflit-detail" maxlength="300"></label></div>
+          <div class="fm-garde"><strong>Antécédents judiciaires</strong><p>Tu déclares ne pas avoir d'antécédents judiciaires incompatibles avec un rôle de soutien auprès de familles et de jeunes enfants, et tu acceptes de fournir une vérification de tes antécédents si l'Académie te la demande.</p>
+            <label class="case"><input type="checkbox" id="fm-antecedents" required> <span>Je le déclare et je l'accepte.</span></label></div>
+        </fieldset>
+
+        <fieldset class="fm-bloc"><legend>5. Consentement et signature</legend>
           <div id="fm-texte" class="fm-texte">Chargement du texte…</div>
           <p class="note" id="fm-defiler">Fais défiler le texte jusqu'à la fin pour pouvoir signer.</p>
           <label class="case"><input type="checkbox" id="fm-accord" required disabled> <span>J'ai lu et compris ce formulaire. J'accepte le partage de mes renseignements et de ma photo tel qu'il est décrit, je sais que je peux retirer mon consentement en tout temps, et je déclare avoir 18 ans ou plus.</span></label>
@@ -359,6 +380,30 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
         <div id="msg-fm-envoi"></div>
         <button class="btn" type="submit" id="fm-bouton" disabled>✍️ Je signe et j'envoie mon formulaire</button>
       </form>
+    </div>
+
+    <div class="carte" id="sv-carte" hidden>
+      <h3 style="margin-bottom:4px;">📋 Ma feuille de suivi mensuelle</h3>
+      <p class="note" style="margin-bottom:10px;">Anonyme : n'écris jamais de nom, d'adresse ni de détail qui permettrait de reconnaître une famille. Si tu n'as accompagné personne ce mois-ci, indique 0.</p>
+      <div id="sv-rappel"></div>
+      <form id="form-suivi" class="fm-doc" style="gap:12px;">
+        <label class="champ">Mois <select id="sv-mois" required></select></label>
+        <div class="rang">
+          <label class="champ">Familles soutenues <input type="number" id="sv-familles" min="0" max="200" step="1" required inputmode="numeric"></label>
+          <label class="champ">Contacts (appels, messages, rencontres) <input type="number" id="sv-contacts" min="0" max="2000" step="1" required inputmode="numeric"></label>
+        </div>
+        <fieldset class="fm-bloc"><legend>Modes utilisés</legend><div class="fm-modes" id="sv-modes"></div></fieldset>
+        <fieldset class="fm-bloc"><legend>Types de soutien offerts</legend><div class="fm-modes" id="sv-types"></div></fieldset>
+        <fieldset class="fm-bloc"><legend>Orientations vers une professionnelle ou une ressource</legend>
+          <label class="champ">Nombre d'orientations <input type="number" id="sv-nb-or" min="0" max="500" step="1" value="0" inputmode="numeric"></label>
+          <div class="fm-modes" id="sv-or"></div></fieldset>
+        <label class="champ">Situations particulières (sans aucun nom) <span class="note">Facultatif · 1500 caractères</span><textarea id="sv-situations" rows="3" maxlength="1500"></textarea></label>
+        <label class="case"><input type="checkbox" id="sv-besoin"> <span>J'aimerais que Sabrina me contacte : j'ai besoin de soutien ou j'ai un doute sur une situation.</span></label>
+        <label class="champ">Commentaire pour Sabrina <span class="note">Facultatif</span><textarea id="sv-commentaire" rows="2" maxlength="1500"></textarea></label>
+        <div id="msg-suivi"></div>
+        <button class="btn" type="submit" id="sv-bouton">📤 Envoyer ma feuille de suivi</button>
+      </form>
+      <div id="sv-historique" style="margin-top:14px;"></div>
     </div>
   </section>
 
@@ -970,8 +1015,63 @@ $('chat-form').addEventListener('submit', function (e) {
   });
 });
 
+/* ---------------- Feuille de suivi mensuelle des marraines (anonyme) ---------------- */
+var SV_MODES = { visio: '💻 Visio', telephone: '📞 Téléphone', texto: '💬 Messages texte', courriel: '✉️ Courriel', personne: '🤝 En personne' };
+var SV_TYPES = { 'mise-au-sein': 'Mise au sein et positions', 'production': 'Production de lait (perception d\'insuffisance)', 'inconforts': 'Inconforts (douleur, engorgement) · orientation', 'expression': 'Expression du lait et tire-lait', 'retour-travail': 'Retour au travail ou aux études', 'sevrage': 'Sevrage', 'emotionnel': 'Soutien émotionnel et confiance', 'info': 'Information générale et ressources', 'autre': 'Autre' };
+var SV_OR = { ibclc: 'Consultante IBCLC', infirmiere: 'Infirmière ou 811', medecin: 'Médecin', 'sage-femme': 'Sage-femme', groupe: 'Groupe d\'entraide', urgence: 'Urgence (911)', autre: 'Autre ressource' };
+var MOIS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+function moisTexte(iso) { var p = iso.split('-'); return MOIS_FR[+p[1] - 1] + ' ' + p[0]; }
+function premierDuMois(decalage) { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + decalage); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-01'; }
+function cases(id, liste) { $(id).innerHTML = Object.keys(liste).map(function (k) { return '<label class="case"><input type="checkbox" value="' + k + '"> <span>' + liste[k] + '</span></label>'; }).join(''); }
+function coches(id) { return Array.prototype.map.call($(id).querySelectorAll('input:checked'), function (c) { return c.value; }); }
+cases('sv-modes', SV_MODES); cases('sv-types', SV_TYPES); cases('sv-or', SV_OR);
+var suivis = [];
+function chargerSuivis() {
+  var actif = ficheM && ficheM.statut === 'validee' && ficheM.date_expiration >= aujourdhui();
+  $('sv-carte').hidden = !actif; if (!actif) return;
+  var debut = ficheM.date_certification ? ficheM.date_certification.slice(0, 7) + '-01' : premierDuMois(-3);
+  var mois = [0, -1, -2, -3].map(premierDuMois).filter(function (m) { return m >= debut; });
+  sb.from('suivis_marraine').select('*').order('mois', { ascending: false }).limit(24).then(function (r) {
+    suivis = (r && r.data) || [];
+    var recus = suivis.map(function (x) { return x.mois; }), prec = premierDuMois(-1);
+    $('sv-mois').innerHTML = mois.map(function (m) { return '<option value="' + m + '">' + moisTexte(m) + (recus.indexOf(m) >= 0 ? ' (déjà envoyée : la corriger)' : '') + '</option>'; }).join('');
+    if (mois.indexOf(prec) >= 0 && recus.indexOf(prec) < 0) {
+      $('sv-mois').value = prec;
+      $('sv-rappel').innerHTML = '<div class="message info">⏰ Ta feuille de suivi de <strong>' + moisTexte(prec) + '</strong> est attendue. Merci de la remplir !</div>';
+    } else $('sv-rappel').innerHTML = '';
+    remplirSuivi();
+    $('sv-historique').innerHTML = suivis.length ? '<p class="note" style="margin-bottom:6px;"><strong>Feuilles envoyées</strong></p>' + suivis.map(function (x) {
+      return '<div class="infos-ligne">✅ ' + moisTexte(x.mois) + ' · ' + x.nb_familles + ' famille(s), ' + x.nb_contacts + ' contact(s), ' + x.nb_orientations + ' orientation(s)</div>';
+    }).join('') : '';
+  });
+}
+function remplirSuivi() {
+  var x = suivis.filter(function (s) { return s.mois === $('sv-mois').value; })[0] || {};
+  $('sv-familles').value = x.nb_familles != null ? x.nb_familles : ''; $('sv-contacts').value = x.nb_contacts != null ? x.nb_contacts : '';
+  $('sv-nb-or').value = x.nb_orientations || 0; $('sv-situations').value = x.situations || ''; $('sv-commentaire').value = x.commentaire || '';
+  $('sv-besoin').checked = !!x.besoin_soutien;
+  [['sv-modes', x.modes], ['sv-types', x.types_soutien], ['sv-or', x.orientations]].forEach(function (p) {
+    $(p[0]).querySelectorAll('input').forEach(function (c) { c.checked = (p[1] || []).indexOf(c.value) >= 0; });
+  });
+}
+$('sv-mois').addEventListener('change', function () { remplirSuivi(); message('msg-suivi', '', ''); });
+$('form-suivi').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var f = parseInt($('sv-familles').value, 10), c = parseInt($('sv-contacts').value, 10), o = parseInt($('sv-nb-or').value, 10) || 0;
+  if (isNaN(f) || isNaN(c)) return message('msg-suivi', 'erreur', 'Indique le nombre de familles et de contacts (0 si aucun).');
+  if (c < f) return message('msg-suivi', 'erreur', 'Le nombre de contacts devrait être au moins égal au nombre de familles.');
+  var b = $('sv-bouton'); b.disabled = true;
+  sb.rpc('envoyer_suivi_marraine', { p_mois: $('sv-mois').value, p_familles: f, p_contacts: c, p_modes: coches('sv-modes'), p_types: coches('sv-types'),
+    p_nb_orientations: o, p_orientations: coches('sv-or'), p_situations: $('sv-situations').value, p_besoin: $('sv-besoin').checked, p_commentaire: $('sv-commentaire').value }).then(function (r) {
+    b.disabled = false;
+    if (r.error) return message('msg-suivi', 'erreur', echapper((r.error.message || '').replace(/^.*?:\s*/, '')));
+    message('msg-suivi', 'ok', '✅ Merci ! Ta feuille de suivi de ' + moisTexte($('sv-mois').value) + ' est envoyée à Sabrina.' + ($('sv-besoin').checked ? ' Elle te contactera très bientôt. 💕' : ''));
+    chargerSuivis();
+  });
+});
+
 /* ---------------- Fiche de marraine d'allaitement : formulaire officiel signé ---------------- */
-var VERSION_FORMULAIRE = 'marraine-v2';
+var VERSION_FORMULAIRE = 'marraine-v3';
 var MODES_LIB = { visio: 'En visio', 'tel-appel': 'Au téléphone', texto: 'Par messages texte', 'mode-courriel': 'Par courriel' };
 var ficheM = null, photoM = null, texteFormulaire = '';
 function aujourdhui() { return new Date().toISOString().slice(0, 10); }
@@ -984,7 +1084,7 @@ function chargerFicheMarraine() {
   sb.from('marraines').select('*').eq('user_id', uid).maybeSingle().then(function (x) {
     ficheM = x.data || null;
     var st = $('fm-statut');
-    $('fm-carte').hidden = true; $('fm-question').hidden = true; st.innerHTML = '';
+    $('fm-carte').hidden = true; $('fm-question').hidden = true; st.innerHTML = ''; $('sv-carte').hidden = true;
     if (!ficheM && !examenMarraineReussi()) {
       st.innerHTML = '<div class="message info">📚 Ton formulaire de marraine sera disponible dès que tu auras <strong>réussi l\'examen final</strong> de la formation de marraine d\'allaitement (80 % et plus). <a href="Formation/marraine/index.html">Continuer ma formation →</a></div>';
       return;
@@ -1002,12 +1102,11 @@ function chargerFicheMarraine() {
       retiree: '<div class="message info">' + (ficheM.consent_retire_date ? 'Tu as retiré ton consentement le ' + new Date(ficheM.consent_retire_date).toLocaleString('fr-CA') + ' : ta fiche n\'est plus affichée sur le site.' : 'Ta fiche n\'est plus affichée sur le site.') + ' Tu peux rejoindre l\'équipe de nouveau en remplissant ton formulaire.</div>',
       validee: expiree
         ? '<div class="message erreur">⌛ <strong>Ta certification est arrivée à échéance le ' + jour(exp) + '.</strong> Pour renouveler ton statut, fais la mise à jour de la formation (<strong>50 % de rabais</strong> pour les marraines formées chez Sérénaissance), puis signe de nouveau ton formulaire.</div>'
-        : '<div class="message ok">🎉 <strong>Tu fais partie de l\'équipe des marraines de Sérénaissance !</strong><br>Validée le ' + jour(ficheM.date_certification) + ' · valide jusqu\'au <strong>' + jour(exp) + '</strong>.<br>Ta fiche est visible sur la page <a href="index.html#nos-marraines" target="_blank">Nos marraines d\'allaitement</a>.' +
-          (ficheM.certificat_path ? '<br><a href="#" id="fm-certificat">📜 Télécharger mon certificat</a>' : '') + copies + '</div>' + rappel
+        : '<div class="message ok">🎉 <strong>Tu fais partie de l\'équipe des marraines de Sérénaissance !</strong><br>Certificat obtenu le ' + jour(ficheM.date_certification) + ' · valide jusqu\'au <strong>' + jour(exp) + '</strong>.<br>Ta fiche est visible sur la page <a href="index.html#nos-marraines" target="_blank">Nos marraines d\'allaitement</a>.' +
+          '<br>📮 Ton certificat t\'est envoyé par la poste.' + copies + '</div>' + rappel
     }[ficheM.statut] || '';
     st.innerHTML = t;
-    var c = $('fm-certificat');
-    if (c) c.addEventListener('click', function (e) { e.preventDefault(); ouvrirFichier('certificats-marraines', ficheM.certificat_path); });
+    chargerSuivis();
     st.querySelectorAll('[data-consentement]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); voirConsentementSigne(); }); });
     st.querySelectorAll('[data-retirer]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); retirerConsentement(); }); });
     st.querySelectorAll('[data-copie-pdf]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); telechargerCopie(); }); });
@@ -1028,6 +1127,9 @@ function ouvrirFormulaire() {
   $('fm-nomfam').value = f.nom_complet ? parties.slice(1).join(' ') : (d.nom || '');
   $('fm-secteurs').value = f.region || '';
   $('fm-bio').value = f.bio || ''; $('fm-compte').textContent = $('fm-bio').value.length;
+  $('fm-langues').value = f.langues || 'Français'; $('fm-tel').value = f.telephone || d.telephone || '';
+  document.querySelectorAll('[name="fm-conflit"]').forEach(function (r) { r.checked = false; });
+  $('fm-conflit-detail').value = ''; $('fm-conflit-bloc').hidden = true; $('fm-antecedents').checked = false;
   var modes = (f.contacts || []).map(function (c) { return c.type; });
   document.querySelectorAll('[data-mode]').forEach(function (cb) { cb.checked = modes.indexOf(cb.dataset.mode) >= 0; });
   document.querySelectorAll('.fm-lu').forEach(function (cb) { cb.checked = false; });
@@ -1055,6 +1157,13 @@ function verifierFinTexte() {
   }
 }
 $('fm-texte').addEventListener('scroll', verifierFinTexte);
+document.querySelectorAll('[name="fm-conflit"]').forEach(function (r) { r.addEventListener('change', function () {
+  var oui = this.value === 'oui' && this.checked; $('fm-conflit-bloc').hidden = !oui; $('fm-conflit-detail').required = oui;
+}); });
+function conflitSaisi() {
+  var r = document.querySelector('[name="fm-conflit"]:checked');
+  return !r ? null : r.value === 'non' ? 'Aucun' : 'Oui : ' + $('fm-conflit-detail').value.trim();
+}
 $('fm-bio').addEventListener('input', function () { $('fm-compte').textContent = this.value.length; });
 $('fm-photo').addEventListener('change', function () {
   var f = this.files && this.files[0]; photoM = null; if (!f) return;
@@ -1092,6 +1201,8 @@ function construirePdf(o) {
   if (o.photo) { var w = 96, h = Math.round(96 * o.photo.h / o.photo.l); pdf.image(o.photo.octets, o.photo.l, o.photo.h, w, h); }
   pdf.texte('Nom : ' + o.nom, { marge: 110 }).texte('Secteurs desservis : ' + o.secteurs, { marge: 110 })
      .texte("Modes d'accompagnement : " + o.modes.map(function (m) { return MODES_LIB[m] || m; }).join(', '), { marge: 110 })
+     .texte('Langues : ' + o.langues, { marge: 110 })
+     .texte('Téléphone (privé, jamais publié) : ' + o.telephone, { marge: 110 })
      .texte('Courriel du compte : ' + o.courriel, { marge: 110 });
   if (o.photo) pdf.setY(Math.min(pdf.y(), y0 - 116));
   pdf.texte('Bio : ' + o.bio).espace(8);
@@ -1099,7 +1210,14 @@ function construirePdf(o) {
   ["Marrainage gratuit et bénévole pour les familles jumelées par l'Académie.",
    "Pratique professionnelle : libre de facturer hors des jumelages de l'Académie, sans jamais le présenter comme du marrainage de Sérénaissance.",
    "Rôle et limites : aucun avis médical, orientation vers les professionnelles de la santé, respect du Code de l'OMS.",
-   'Certificat valide 2 ans ; mise à jour à 50 % de rabais si formée chez Sérénaissance.'].forEach(function (t) { pdf.texte('[x] ' + t, { taille: 9.5 }); });
+   "Suggestions de produits : seulement si une formation reconnue la qualifie, sous sa seule responsabilité ; aucune vente ni commission auprès des familles jumelées.",
+   "Protection de l'enfance : obligation de signaler elle-même (1-833-733-7835 au N.-B., DPJ au Québec, 119 en France ; 911 en cas de danger immédiat).",
+   'Confidentialité et communications sécuritaires avec les familles.',
+   'Feuille de suivi mensuelle anonyme transmise par son compte.',
+   'Certificat valide 2 ans à partir de la date de réussite ; mise à jour à 50 % de rabais si formée chez Sérénaissance.'].forEach(function (t) { pdf.texte('[x] ' + t, { taille: 9.5 }); });
+  pdf.espace(8).texte('DÉCLARATIONS', { taille: 11, gras: true, couleur: ac });
+  pdf.texte("Conflit d'intérêts : " + o.conflit, { taille: 9.5 });
+  pdf.texte("[x] Aucun antécédent judiciaire incompatible avec un rôle auprès de familles et de jeunes enfants ; accepte de fournir une vérification sur demande.", { taille: 9.5 });
   pdf.espace(8).texte('TEXTE SIGNÉ', { taille: 11, gras: true, couleur: ac });
   o.texte.split('\n').forEach(function (l) { if (!l.trim()) pdf.espace(5); else pdf.texte(l, { taille: 9 }); });
   pdf.espace(10).trait();
@@ -1114,6 +1232,9 @@ $('form-marraine').addEventListener('submit', function (e) {
   var modes = []; document.querySelectorAll('[data-mode]').forEach(function (cb) { if (cb.checked) modes.push(cb.dataset.mode); });
   var nom = nomSaisi();
   if (!modes.length) return message('msg-fm-envoi', 'erreur', 'Choisis au moins un mode d\'accompagnement.');
+  var conflit = conflitSaisi();
+  if (!conflit || conflit === 'Oui : ') return message('msg-fm-envoi', 'erreur', 'Réponds à la question sur les conflits d\'intérêts (et précise le lien si tu as répondu oui).');
+  if (!$('fm-antecedents').checked) return message('msg-fm-envoi', 'erreur', 'Coche la déclaration sur les antécédents judiciaires.');
   if (!photoM && !(ficheM && ficheM.photo_path)) return message('msg-fm-envoi', 'erreur', 'Ajoute ta photo.');
   var norm = function (t) { return t.toLowerCase().replace(/\s+/g, ' ').trim(); };
   if (norm($('fm-signature').value) !== norm(nom)) return message('msg-fm-envoi', 'erreur', 'Pour signer, écris ton prénom et ton nom exactement ainsi : ' + echapper(nom));
@@ -1125,6 +1246,7 @@ $('form-marraine').addEventListener('submit', function (e) {
     if (r.data) cheminPhoto = r.data.path;
     return photoPourPdf().then(function (photo) {
       return construirePdf({ version: VERSION_FORMULAIRE, nom: nom, secteurs: $('fm-secteurs').value.trim(), modes: modes, bio: $('fm-bio').value.trim(),
+        langues: $('fm-langues').value.trim(), telephone: $('fm-tel').value.trim(), conflit: conflit,
         courriel: etat.session.user.email, texte: texteFormulaire, signature: $('fm-signature').value.trim(), photo: photo,
         date: maintenant.toLocaleString('fr-CA', { dateStyle: 'long', timeStyle: 'medium' }) + ' (' + (Intl.DateTimeFormat().resolvedOptions().timeZone || '') + ')' });
     }).then(function (pdf) {
@@ -1134,7 +1256,8 @@ $('form-marraine').addEventListener('submit', function (e) {
   }).then(function () {
     return sb.rpc('soumettre_fiche_marraine', { p_nom: nom, p_secteurs: $('fm-secteurs').value.trim(), p_bio: $('fm-bio').value.trim(),
       p_modes: modes.map(function (m) { return { type: m }; }), p_photo: cheminPhoto, p_signature: $('fm-signature').value.trim(),
-      p_version: VERSION_FORMULAIRE, p_appareil: navigator.userAgent, p_pdf: cheminPdf });
+      p_version: VERSION_FORMULAIRE, p_appareil: navigator.userAgent, p_pdf: cheminPdf,
+      p_langues: $('fm-langues').value.trim(), p_telephone: $('fm-tel').value.trim(), p_conflit: conflit, p_antecedents: true });
   }).then(function (r) {
     b.disabled = false; b.textContent = '✍️ Je signe et j\'envoie mon formulaire';
     if (r.error) throw new Error((r.error.message || '').replace(/^.*?:\s*/, ''));
