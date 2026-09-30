@@ -216,7 +216,8 @@
   }
 
   chargerScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2').then(function () {
-    sb = window.supabase.createClient(SB_URL, SB_CLE);
+    sb = window.supabase.createClient(SB_URL, SB_CLE, { auth: { storage: window.sessionStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
+    try { localStorage.removeItem('sb-zeptirfcwstufcpgvkzx-auth-token'); } catch (e) {}
     return sb.auth.getSession();
   }).then(function (r) {
     session = r && r.data && r.data.session;
@@ -237,6 +238,10 @@
       }).then(function () {
         menu();
         bandeauMiseAJour();
+        // Déconnexion automatique après 5 minutes sans activité
+        chargerScript('/securite.js').then(function () {
+          if (window.SereSecurite) SereSecurite.surveiller({ sb: sb, minutes: 5, avant: function () { envoyerProgression(true); ss('cle:4e-trimestre', null); ss('cle:marraine', null); }, apres: ESPACE });
+        }).catch(function () {});
         if (brouillon) marquer();
       });
     });

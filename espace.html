@@ -21,6 +21,7 @@
 <script src="adresse.js"></script>
 <script src="/reglages.js"></script>
 <script src="/tarifs.js"></script>
+<script src="/securite.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -100,6 +101,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 .bulle.moi { align-self: flex-end; background: var(--terra); color: #fff; border-bottom-right-radius: 4px; }
 .bulle.elle { align-self: flex-start; background: #fff; border: 1px solid var(--bord); border-bottom-left-radius: 4px; }
 .bulle.elle b { display: block; font-size: .74rem; color: var(--terra); }
+.bulle.auto { background: #f3ede6; border-style: dashed; font-size: .88rem; }
 .jour-sep { align-self: center; font-size: .74rem; color: var(--doux); margin: 6px 0; }
 .chat-saisie { flex-direction: row; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--bord); background: var(--carte); }
 .chat-saisie textarea { resize: none; max-height: 140px; border-radius: 20px; }
@@ -309,6 +311,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <section class="vue" id="vue-messages" hidden>
     <h1>Messages</h1>
     <p class="sous">Ta conversation privée avec Sabrina. Elle te répond dès que possible (habituellement en moins de 48 h).</p>
+    <div id="rappel-notif" class="message info" hidden>🔔 Pour être avertie sur ton cellulaire dès que Sabrina te répond, <a href="#parametres">active les notifications dans tes Paramètres</a>.</div>
     <div id="annonces-liste"></div>
     <div class="carte chat-carte">
       <div class="chat-haut"><span id="chat-moi" class="pp-petit"></span><span>Toi et <strong>Sabrina</strong></span><img src="/logo.jpg" alt="" class="chat-logo"></div>
@@ -401,7 +404,8 @@ var SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
 var ADMIN = 'serenaissance.doula@gmail.com';
 var EMAILJS = { service: 'service_82vfhfg', avis: 'template_gy588ot', cle: 'HNvKdORRpRy_vT_FI' };
 var ICI = 'https://academiesere.ca/espace.html';
-var sb = window.supabase.createClient(SB_URL, SB_CLE);
+var sb = window.supabase.createClient(SB_URL, SB_CLE, SereSecurite.options());
+var gardien = null;
 var APPLI = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 if (APPLI) document.getElementById('lien-logo').setAttribute('href', 'espace.html#cours');
 try { emailjs.init(EMAILJS.cle); } catch (e) {}
@@ -438,6 +442,7 @@ function routeConnectee() {
   if (['cours', 'infos', 'stage', 'marraine', 'messages', 'parametres'].indexOf(h) < 0) h = 'cours';
   avecMenu(true); vue(h);
   if (h === 'messages') { $('chat-bulles').dataset.vu = ''; afficherChat(); marquerAnnoncesVues(); majCloche(); }
+  if (h === 'messages') { var rn = $('rappel-notif'); if (rn) rn.hidden = ('Notification' in window) && Notification.permission === 'granted'; }
   if (h === 'stage') listerStage();
   if (h === 'marraine') chargerFicheMarraine();
 }
@@ -460,7 +465,11 @@ function demarrer() {
   sb.auth.getSession().then(function (r) {
     if (enRecuperation) return;
     var s = r.data && r.data.session;
-    if (!s) { avecMenu(false); vue('connexion'); if (params.get('deconnectee')) message('msg-connexion', 'ok', 'Tu es bien déconnectée. À bientôt ! 🌸'); return; }
+    if (!s) { avecMenu(false); vue('connexion');
+      if (params.get('inactivite')) message('msg-connexion', 'info', '🔒 Par sécurité, tu as été déconnectée après 5 minutes sans activité. Reconnecte-toi pour continuer : ta progression est sauvegardée.');
+      else if (params.get('deconnectee')) message('msg-connexion', 'ok', 'Tu es bien déconnectée. À bientôt ! 🌸');
+      if (params.get('deconnectee')) history.replaceState(null, '', 'espace.html');
+      return; }
     charger(s);
   });
 }
@@ -536,6 +545,7 @@ function charger(session, bienvenue) {
   etat.session = session;
   var courriel = (session.user.email || '').toLowerCase();
   if (courriel === ADMIN) { location.href = 'admin.html'; return; }
+  if (!gardien) gardien = SereSecurite.surveiller({ sb: sb, minutes: 5, apres: 'espace.html' });
   $('menu-courriel').textContent = courriel;
   sb.from('etudiantes').select('*').or('user_id.eq.' + session.user.id + ',courriel.ilike.' + courriel)
     .order('created_at', { ascending: false }).then(function (r) {
@@ -552,6 +562,7 @@ function charger(session, bienvenue) {
         $('bonjour').textContent = 'Bonjour ' + (d.prenom || '') + ' 🌸';
         var maj = {};
         if (!d.user_id) maj.user_id = session.user.id;
+        try { var tz = Intl.DateTimeFormat().resolvedOptions().timeZone; if (tz && d.fuseau !== tz) maj.fuseau = tz; } catch (e) {}
         if (d.courriel && d.courriel.toLowerCase() !== courriel) maj.courriel = courriel;
         if (Object.keys(maj).length) sb.from('etudiantes').update(maj).eq('id', d.id).then(function () {});
       }
@@ -706,6 +717,8 @@ function preparerInscription() {
   var cle = params.get('inscription'), T = window.TarifsSere ? TarifsSere.formations : {};
   if (!T[cle]) cle = cle === 'marraine' ? 'marraine' : '4e-trimestre';
   var f = cle === 'marraine' ? 'marraine' : '4e-trimestre';
+  // Sécurité : si un autre compte était resté ouvert sur cet appareil, on le ferme avant l'inscription
+  sb.auth.signOut().catch(function () {});
   var nomF = (T[cle] && T[cle].nom) || (f === 'marraine' ? "Marraine d'allaitement" : 'Accompagnement de pointe du 4ᵉ trimestre');
   avecMenu(false); vue('inscription');
   $('i-intro').textContent = "Sabrina t'a envoyé ce lien pour compléter ton inscription à la formation « " + nomF + " »." +
@@ -748,9 +761,15 @@ function preparerInscription() {
       try { emailjs.send(EMAILJS.service, EMAILJS.avis, { prenom: dossier.prenom, nom: dossier.nom, courriel: courriel, telephone: dossier.telephone, adresse: dossier.adresse,
         option_paiement: '🔗 Inscription par lien manuel — ' + nomF }, EMAILJS.cle); } catch (err) {}
       history.replaceState(null, '', 'espace.html');
-      if (etat.nouvelleSession) return charger(etat.nouvelleSession, '✅ Ton compte est créé ! Sabrina vérifie ton dossier et t\'écrit dès que ton accès est ouvert.');
       $('form-inscription').hidden = true;
-      message('msg-inscription', 'ok', '✅ Ton compte est créé et ton dossier est bien reçu ! 📧 <strong>Vérifie tes courriels</strong> : clique sur le bouton du courriel de bienvenue pour confirmer ton adresse (regarde aussi dans les indésirables). Sabrina t\'écrit dès que ton accès est ouvert.');
+      sb.auth.signOut().catch(function () {});
+      message('msg-inscription', 'ok', '<strong>🌸 Bienvenue à l\'Académie Sérénaissance, ' + echapper(dossier.prenom || '') + ' !</strong><br><br>' +
+        'Ton compte est créé et ton dossier est bien reçu. 📧 <strong>Vérifie tes courriels</strong> : clique sur le bouton du courriel de bienvenue pour confirmer ton adresse (regarde aussi dans les indésirables).<br><br>' +
+        (f === 'marraine' ? 'Sabrina vérifie ton inscription' : 'Sabrina vérifie ton inscription et ton <strong>diplôme de doula</strong>') +
+        ' : ton accès est ouvert habituellement en <strong>24 à 48 heures</strong>, et tu reçois un courriel à ce moment-là. En attendant, tu peux déjà te connecter à ton compte pour ajouter ta photo et écrire à Sabrina.<br><br>' +
+        '<a class="btn" href="index.html" style="margin-top:4px;">Retour à l\'accueil du site</a> <span class="note" id="retour-auto">Retour automatique dans 20 secondes…</span>');
+      var n = 20; var t = setInterval(function () { n--; var el = $('retour-auto'); if (el) el.textContent = 'Retour automatique dans ' + n + ' secondes…'; if (n <= 0) { clearInterval(t); location.href = 'index.html'; } }, 1000);
+      window.scrollTo(0, 0);
     }).catch(function (err) {
       b.disabled = false; b.textContent = 'Créer mon compte';
       message('msg-inscription', 'erreur', echapper(err.message) + ' Réessaie ou écris à serenaissance.doula@gmail.com.');
@@ -868,7 +887,7 @@ function afficherChat() {
   msgs.forEach(function (m) {
     var d = new Date(m.created_at).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' });
     if (d !== j) { h += '<div class="jour-sep">' + d + '</div>'; j = d; }
-    h += '<div class="bulle ' + (m.de_admin ? 'elle' : 'moi') + '">' + (m.de_admin ? '<b>Sabrina</b>' : '') + echapper(m.texte) +
+    h += '<div class="bulle ' + (m.de_admin ? 'elle' : 'moi') + (m.auto ? ' auto' : '') + '">' + (m.de_admin ? '<b>' + (m.auto ? 'Réponse automatique · Académie' : 'Sabrina') + '</b>' : '') + echapper(m.texte) +
       '<small>' + heure(m.created_at) + (!m.de_admin ? (m.lu ? ' · lu ✓✓' : ' · envoyé ✓') : '') + '</small></div>';
   });
   var enBas = b.scrollHeight - b.scrollTop - b.clientHeight < 80;

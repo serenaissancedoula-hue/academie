@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   var PROMO_OFFRE = 'SERENAISSANCE300';
-  var OFFRE_FIN = new Date('2026-10-06T00:00:00-03:00');   // fin de l'offre de lancement (5 oct. 23 h 59, heure de l'Atlantique)
+  var OFFRE_FIN = new Date('2026-10-05T12:00:00-03:00');   // fin de l'offre de lancement (5 oct. à midi, heure de l'Atlantique)
   var OFFRE_ACTIVE = true;                                   // mettre false pour l'arrêter avant la date
 
   var T = {

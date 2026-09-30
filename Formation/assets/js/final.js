@@ -10,7 +10,7 @@
   var FORMATION = PREFIX === 'marraine:' ? 'marraine' : '4e-trimestre';
 
   function lireSession() {
-    try { return JSON.parse(localStorage.getItem(SB_JETON)); } catch (e) { return null; }
+    try { return JSON.parse(sessionStorage.getItem(SB_JETON)); } catch (e) { return null; }
   }
   function rafraichirSession(s) {
     if (!s || !s.refresh_token) return Promise.resolve(null);
@@ -21,7 +21,7 @@
     }).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (n) {
         if (!n || !n.access_token) return null;
-        try { localStorage.setItem(SB_JETON, JSON.stringify(n)); } catch (e) {}
+        try { sessionStorage.setItem(SB_JETON, JSON.stringify(n)); } catch (e) {}
         return n;
       }).catch(function () { return null; });
   }
