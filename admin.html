@@ -17,6 +17,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="/reglages.js"></script>
+<script src="/tarifs.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; --rouge: #9b3a2a; --jaune: #8a6d1d; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -198,17 +199,20 @@ th { color: var(--doux); font-weight: 600; }
   <!-- Outils -->
   <section class="vue" id="vue-outils" hidden>
     <div class="carte">
-      <h3 style="margin-bottom:6px;">✉️ Lien d'inscription à envoyer</h3>
-      <p style="font-size:.86rem;color:var(--doux);margin-bottom:10px;">Pour une étudiante qui a payé mais dont l'inscription a bogué : elle crée son compte et téléverse son diplôme avec ce lien.</p>
+      <h3 style="margin-bottom:6px;">✉️ Envoyer un lien d'inscription</h3>
+      <p style="font-size:.86rem;color:var(--doux);margin-bottom:10px;">Le courriel part tout seul à l'étudiante. Choisis la formation et le paiement : lien de paiement Stripe (1, 2 ou 4 versements), ou paiement déjà reçu autrement (virement, comptant…).</p>
       <form id="form-lien" style="display:flex;flex-direction:column;gap:8px;">
-        <div class="rang"><input id="l-prenom" placeholder="Prénom"><input id="l-nom" placeholder="Nom"></div>
+        <div class="rang"><input id="l-prenom" placeholder="Prénom" required><input id="l-nom" placeholder="Nom"></div>
         <input type="email" id="l-courriel" placeholder="Courriel" required>
-        <select id="l-formation"><option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option><option value="marraine">Marraine d'allaitement</option></select>
-        <button class="btn" type="submit">Créer le lien</button>
+        <label class="champ">Formation<select id="l-formation"></select></label>
+        <label class="champ">Paiement<select id="l-paiement"></select></label>
+        <div class="apercu-annonce" id="l-apercu"></div>
+        <button class="btn" type="submit" id="l-envoyer">✉️ Envoyer le courriel</button>
       </form>
       <div id="l-resultat" hidden style="margin-top:10px;">
+        <p style="font-size:.84rem;color:var(--doux);margin-bottom:6px;">Lien d'inscription de l'étudiante (au besoin, pour texto ou Messenger) :</p>
         <input id="l-texte" readonly>
-        <div class="actions" style="margin-top:8px;"><button class="btn gris" type="button" id="l-copier">📋 Copier</button><a class="btn" id="l-mail" href="#">✉️ Préparer le courriel</a></div>
+        <div class="actions" style="margin-top:8px;"><button class="btn gris" type="button" id="l-copier">📋 Copier</button></div>
       </div>
     </div>
     <div class="carte">
@@ -328,7 +332,8 @@ function valide(e) { return (e.statut || '').trim().toLowerCase() === 'valide'; 
 function paiement(v) {
   var s = String(v || '');
   if (s === 'marraine') return "Marraine · 175 $";
-  if (s === 'lien-manuel') return '🔗 Lien manuel (vérifier le paiement dans Stripe)';
+  if (s.indexOf('lien-manuel') === 0) return '🔗 Lien manuel' + (s.indexOf('combo') >= 0 ? ' · combo (les 2)' : s.indexOf('cadeau') >= 0 ? ' · 4ᵉ + marraine en cadeau' : '') + ' (vérifier le paiement)';
+  if (s.indexOf('combo') === 0) return 'Combo (4ᵉ + marraine) · ' + ({ '1': 'paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[1]] || '');
   var base = { '1': 'Paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[0]] || s;
   return base + (s.indexOf('offre') >= 0 ? ' · offre 250 $ 🎁' : '');
 }
@@ -340,7 +345,8 @@ function pastilles(e) {
     p += valide(e) ? '<span class="pastille p-valide">4ᵉ trimestre · validée</span>' : '<span class="pastille p-attente">4ᵉ trimestre · en attente</span>';
     if (e.acces_marraine) p += '<span class="pastille p-marraine">🎁 marraine</span>';
   }
-  if (e.option_paiement === 'lien-manuel') p += '<span class="pastille p-lien">lien manuel</span>';
+  if (String(e.option_paiement || '').indexOf('lien-manuel') === 0) p += '<span class="pastille p-lien">lien manuel</span>';
+  if (e.formation !== 'marraine' && TarifsSere.inclutMarraine(e.option_paiement) && !e.acces_marraine) p += '<span class="pastille p-marraine">+ marraine à ouvrir</span>';
   return p;
 }
 function enAttente(e) { return e.formation === 'marraine' ? !e.acces_marraine : !valide(e); }
@@ -652,6 +658,10 @@ function courrielBienvenue(e) {
   return emailjs.send(EJ.service, EJ.bienvenue, { prenom: e.prenom, nom: e.nom, courriel: e.courriel }, EJ.cle);
 }
 function courrielMarraine(e) {
+  if (String(e.option_paiement || '').indexOf('combo') >= 0) return emailjs.send(EJ.service, EJ.marraine, { prenom: e.prenom, nom: e.nom, courriel: e.courriel,
+    sujet: "Ta formation de marraine d'allaitement est ouverte 🌸", accroche: 'Ton combo', titre: e.prenom + ", ta 2ᵉ formation t'attend ! 🤱",
+    message: "Comme prévu dans ton combo, la formation de marraine d'allaitement est maintenant ouverte dans ton compte, en plus de celle du 4ᵉ trimestre. 💕",
+    bouton: 'Ouvrir mes cours →' }, EJ.cle);
   var cadeau = e.formation !== 'marraine';
   return emailjs.send(EJ.service, EJ.marraine, Object.assign({ prenom: e.prenom, nom: e.nom, courriel: e.courriel }, cadeau ? {
     sujet: "🎁 Ton cadeau t'attend : la formation de marraine d'allaitement", accroche: 'Un cadeau pour toi',
@@ -679,7 +689,12 @@ $('fiche-corps').addEventListener('click', function (ev) {
   if (a === 'chat') { ouvrirChat(e.user_id); return; }
   if (a === 'valider') {
     if (!confirm('Valider ' + e.prenom + ' ' + e.nom + ' ?\n\nVérifie d\'abord dans Stripe que son paiement est reçu.\nElle recevra le courriel de bienvenue à ' + e.courriel + '.')) return;
-    maj(e, { statut: 'valide' }).then(function (ok) { if (ok) courrielBienvenue(e).then(function () { toast('💕 ' + e.prenom + ' est validée et le courriel est parti'); }, function () { toast('Validée, mais le courriel n\'a pas pu partir'); }); });
+    var avecMarraine = TarifsSere.inclutMarraine(e.option_paiement) && !e.acces_marraine;
+    maj(e, avecMarraine ? { statut: 'valide', acces_marraine: true } : { statut: 'valide' }).then(function (ok) {
+      if (!ok) return;
+      courrielBienvenue(e).then(function () { toast('💕 ' + e.prenom + ' est validée et le courriel est parti'); }, function () { toast('Validée, mais le courriel n\'a pas pu partir'); });
+      if (avecMarraine) setTimeout(function () { courrielMarraine(e).then(function () { toast('🤱 Accès marraine ouvert aussi (combo / cadeau)'); }, function () {}); }, 1500);
+    });
   } else if (a === 'renvoyer') {
     courrielBienvenue(e).then(function () { toast('✉️ Courriel de bienvenue renvoyé'); }, function () { toast('Le courriel n\'a pas pu partir'); });
   } else if (a === 'retirer4e') {
@@ -1080,14 +1095,64 @@ function changerPhotoMarraine(m, fichier) {
 }
 
 /* ---------- Outils ---------- */
+/* Lien d'inscription (courriel envoyé automatiquement) */
+var EJ_LIEN = 'template_7frp73b';
+(function () {
+  var F = TarifsSere.formations;
+  $('l-formation').innerHTML = Object.keys(F).map(function (k) { return '<option value="' + k + '">' + esc(F[k].nom) + '</option>'; }).join('');
+  function remplirPaiements() {
+    var f = F[$('l-formation').value], o = f.options;
+    $('l-paiement').innerHTML = '<option value="recu">✅ Paiement déjà reçu (virement, comptant, Stripe…)</option>' +
+      Object.keys(o).map(function (k) { return '<option value="' + k + '">💳 Lien Stripe : ' + esc(o[k].detail) + (o[k].prix ? ' — ' + esc(o[k].prix) : '') + '</option>'; }).join('');
+    apercuLien();
+  }
+  $('l-formation').addEventListener('change', remplirPaiements);
+  $('l-paiement').addEventListener('change', apercuLien);
+  $('l-prenom').addEventListener('input', apercuLien);
+  remplirPaiements();
+})();
+function lienInscription() {
+  var q = new URLSearchParams({ inscription: $('l-formation').value, courriel: $('l-courriel').value.trim().toLowerCase() });
+  if ($('l-prenom').value.trim()) q.set('prenom', $('l-prenom').value.trim());
+  if ($('l-nom').value.trim()) q.set('nom', $('l-nom').value.trim());
+  return ESPACE + '?' + q.toString();
+}
+function contenuLien() {
+  var cle = $('l-formation').value, f = TarifsSere.formations[cle], pay = $('l-paiement').value, o = f.options[pay];
+  var inscr = lienInscription(), diplome = f.diplome ? ' et téléverse ton diplôme de doula' : '';
+  var cadeau = cle === '4e-cadeau' ? " La formation de marraine d'allaitement t'est offerte en cadeau 🎁." : (cle === 'combo' ? " Le combo comprend les deux formations." : '');
+  if (pay === 'recu') return {
+    sujet: 'Complète ton inscription à l\'Académie Sérénaissance 🌸', accroche: 'Bienvenue', titre: 'Ton inscription t\'attend',
+    message: 'Merci pour ton inscription à la formation « ' + f.nom + ' » ! Ton paiement est bien reçu.' + cadeau,
+    details: 'Clique sur le bouton pour créer ton compte étudiante' + diplome + '.',
+    etapes: 'Dès que ton dossier est vérifié, j\'ouvre ton accès et tu reçois un courriel de bienvenue. Au besoin, écris-moi ou appelle-moi au 506-759-2044.',
+    bouton: 'Créer mon compte →', lien: inscr };
+  return {
+    sujet: 'Ton inscription à l\'Académie Sérénaissance 🌸', accroche: 'Bienvenue', titre: 'Ta formation : ' + f.court,
+    message: 'Merci de ton intérêt pour la formation « ' + f.nom + ' » !' + cadeau + ' Voici ton lien de paiement sécurisé (Stripe) : ' + o.detail + (o.prix ? ', ' + o.prix : '') + '.',
+    details: 'Étape 1 : clique sur le bouton pour payer en toute sécurité. Étape 2 : après ton paiement, crée ton compte étudiante' + diplome + ' avec ce lien personnel : ' + inscr,
+    etapes: 'Dès que ton dossier est vérifié, j\'ouvre ton accès et tu reçois un courriel de bienvenue. Au besoin, écris-moi ou appelle-moi au 506-759-2044.',
+    bouton: 'Payer ma formation →', lien: o.lien };
+}
+function apercuLien() {
+  var c = contenuLien();
+  $('l-apercu').innerHTML = '<strong>' + esc(c.sujet) + '</strong><br>' + esc(c.message) + '<br><small>' + esc(c.details) + '</small><br>Bouton : <strong>' + esc(c.bouton) + '</strong>';
+}
 $('form-lien').addEventListener('submit', function (ev) {
   ev.preventDefault();
-  var c = $('l-courriel').value.trim().toLowerCase(), p = $('l-prenom').value.trim(), n = $('l-nom').value.trim(), f = $('l-formation').value;
-  var q = new URLSearchParams({ inscription: f, courriel: c }); if (p) q.set('prenom', p); if (n) q.set('nom', n);
-  var lien = ESPACE + '?' + q.toString();
-  $('l-resultat').hidden = false; $('l-texte').value = lien;
-  var corps = 'Bonjour ' + (p || '') + ',\n\nMerci pour ton inscription ! Voici ton lien personnel pour créer ton compte étudiante' + (f === 'marraine' ? '' : ' et téléverser ton diplôme de doula') + ' :\n\n' + lien + '\n\nDès que ton dossier sera vérifié, j\'ouvre ton accès et tu reçois un courriel de bienvenue.\n\nAvec douceur,\nSabrina\nAcadémie Sérénaissance · 506-759-2044';
-  $('l-mail').href = 'mailto:' + c + '?subject=' + encodeURIComponent('Complète ton inscription à l\'Académie Sérénaissance 🌸') + '&body=' + encodeURIComponent(corps);
+  var courriel = $('l-courriel').value.trim().toLowerCase(), prenom = $('l-prenom').value.trim();
+  if (!courriel) return;
+  var c = contenuLien(); c.courriel = courriel; c.prenom = prenom;
+  if (!confirm('Envoyer ce courriel à ' + courriel + ' ?\n\n' + c.sujet)) return;
+  var b = $('l-envoyer'); b.disabled = true; b.textContent = 'Envoi…';
+  $('l-resultat').hidden = false; $('l-texte').value = lienInscription();
+  emailjs.send(EJ.service, EJ_LIEN, c, EJ.cle).then(function () {
+    b.disabled = false; b.textContent = '✉️ Envoyer le courriel';
+    toast('✉️ Courriel envoyé à ' + courriel);
+  }, function (e) {
+    b.disabled = false; b.textContent = '✉️ Envoyer le courriel';
+    toast('Le courriel n\'a pas pu partir' + (e && e.text ? ' : ' + e.text : '') + '. Copie le lien ci-dessous et envoie-le autrement.');
+  });
 });
 $('l-copier').addEventListener('click', function () {
   var t = $('l-texte'); t.select();

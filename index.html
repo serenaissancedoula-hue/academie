@@ -25,6 +25,7 @@
     <meta name="apple-mobile-web-app-title" content="Sérénaissance">
     <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
     <script src="/appli.js" defer></script>
+    <script src="/tarifs.js"></script>
 
     <!-- Aperçu quand on partage le lien (Facebook, Messenger, etc.) -->
     <meta property="og:type" content="website">
@@ -1280,6 +1281,13 @@
         .liste-fichiers li a { color: var(--accent-terracotta); font-weight: 700; white-space: nowrap; }
         .liste-fichiers li.vide { justify-content: center; color: #7a685e; font-style: italic; }
         /* Choix des formations */
+        .carte-combo { max-width: 820px; margin: -22px auto 40px; display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+            background: linear-gradient(135deg, #f3e5dc 0%, #fbf5ef 100%); border: 1px dashed var(--accent-terracotta); border-radius: 18px; padding: 18px 22px; }
+        .carte-combo > div { flex: 1 1 360px; }
+        .carte-combo h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; margin: 4px 0 6px; color: var(--text-dark); }
+        .carte-combo p { font-size: 0.9rem; color: #5a4a42; margin: 0; }
+        .cc-etiquette { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent-terracotta); }
+        @media (max-width: 768px) { .carte-combo { margin-top: -12px; } .carte-combo .btn-action { width: 100%; justify-content: center; } }
         .choix-formations { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; max-width: 820px; margin: 0 auto 40px; }
         .choix-formation {
             display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: var(--text-dark);
@@ -1827,6 +1835,15 @@
             </a>
         </div>
 
+        <div class="carte-combo">
+            <div>
+                <span class="cc-etiquette">Combo · les 2 formations</span>
+                <h3>4ᵉ trimestre + Marraine d'allaitement</h3>
+                <p>Les deux formations dans une seule inscription, au prix total de <strong>725 $</strong> : en 1 paiement, en 2 versements de 362,50 $ ou en 4 versements de 181,25 $ aux 2 semaines. Le diplôme de doula est requis (pour la formation du 4ᵉ trimestre).</p>
+            </div>
+            <a href="#" class="btn-action" onclick="inscrireA('combo', event)">S'inscrire au combo →</a>
+        </div>
+
         <div id="formation-4e" class="ancre-formation"></div>
 
         <div class="academie-page-layout panneau-formation" id="panneau-4e">
@@ -2238,6 +2255,7 @@
                     <select id="choix-formation" onchange="ajusterFormulaireInscription()" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;">
                         <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                         <option value="marraine">Marraine d'allaitement — 175 $</option>
+                        <option value="combo">Combo : 4ᵉ trimestre + marraine d'allaitement — 725 $</option>
                     </select>
                 </div>
                 <div class="form-row">
@@ -2847,23 +2865,7 @@
                 ? 'Paiement unique de 250 $ · code promo appliqué automatiquement'
                 : 'Options de paiement flexibles : 1, 2 ou 4 versements';
             if (etiquette) etiquette.textContent = active ? "🔥 Offre de lancement · jusqu'au 5 octobre" : 'Formation complète · 30 h';
-            const select = document.getElementById('option-paiement');
-            if (select) {
-                const o = select.options;
-                if (active) {
-                    o[1].text = 'Paiement complet — 250 $ (au lieu de 550 $) · code promo déjà appliqué';
-                    o[2].text = '2 versements — non offert pendant l\'offre de lancement';
-                    o[3].text = '4 versements — non offert pendant l\'offre de lancement';
-                    o[2].disabled = !LIENS_STRIPE_OFFRE['2'];
-                    o[3].disabled = !LIENS_STRIPE_OFFRE['4'];
-                } else {
-                    o[1].text = 'Paiement complet — 550 $';
-                    o[2].text = '2 versements — 275 $ chacun';
-                    o[3].text = '4 versements — 137,50 $ chacun';
-                    o[2].disabled = false;
-                    o[3].disabled = false;
-                }
-            }
+            if (document.getElementById('choix-formation')) ajusterFormulaireInscription();
         }
         appliquerOffre();
 
@@ -2977,12 +2979,34 @@
             });
         });
         function ajusterFormulaireInscription() {
-            const marraine = document.getElementById('choix-formation').value === 'marraine';
+            const choix = document.getElementById('choix-formation').value;
+            const marraine = choix === 'marraine', combo = choix === 'combo';
             document.getElementById('bloc-diplome').style.display = marraine ? 'none' : 'flex';
             document.getElementById('diplome').required = !marraine;
             document.getElementById('bloc-paiement').style.display = marraine ? 'none' : 'flex';
             document.getElementById('option-paiement').required = !marraine;
             document.getElementById('note-marraine').hidden = !marraine;
+            const select = document.getElementById('option-paiement');
+            if (!select) return;
+            const o = select.options;
+            if (combo) {
+                const c = TarifsSere.formations.combo.options;
+                o[1].text = 'Paiement complet — 725 $';
+                o[2].text = '2 versements — 362,50 $ chacun';
+                o[3].text = '4 versements aux 2 semaines — 181,25 $ chacun';
+                o[1].disabled = !c['1'].lien; o[2].disabled = !c['2'].lien; o[3].disabled = !c['4'].lien;
+            } else if (offreEstActive()) {
+                o[1].text = 'Paiement complet — 250 $ (au lieu de 550 $) · code promo déjà appliqué';
+                o[2].text = '2 versements — non offert pendant l\'offre de lancement';
+                o[3].text = '4 versements — non offert pendant l\'offre de lancement';
+                o[1].disabled = false; o[2].disabled = !LIENS_STRIPE_OFFRE['2']; o[3].disabled = !LIENS_STRIPE_OFFRE['4'];
+            } else {
+                o[1].text = 'Paiement complet — 550 $';
+                o[2].text = '2 versements — 275 $ chacun';
+                o[3].text = '4 versements — 137,50 $ chacun';
+                o[1].disabled = false; o[2].disabled = false; o[3].disabled = false;
+            }
+            if (select.selectedOptions[0] && select.selectedOptions[0].disabled) select.value = '';
         }
 
         // ================= EXTRAIT GRATUIT =================
@@ -3742,6 +3766,7 @@
             const diplomeInput = document.getElementById('diplome');
             const formation = document.getElementById('choix-formation').value;
             const estMarraine = formation === 'marraine';
+            const estCombo = formation === 'combo';
             const optionPaiement = estMarraine ? '1' : document.getElementById('option-paiement').value;
 
             if (!estMarraine && (!diplomeInput.files || diplomeInput.files.length === 0)) {
@@ -3751,7 +3776,9 @@
 
             // Liens de paiement Stripe (voir OFFRE DE LANCEMENT plus bas)
             const liens = offreEstActive() ? LIENS_STRIPE_OFFRE : LIENS_STRIPE_REGULIER;
-            let lienStripe = estMarraine ? LIEN_STRIPE_MARRAINE : (liens[optionPaiement] || "");
+            let lienStripe = estMarraine ? LIEN_STRIPE_MARRAINE
+                : estCombo ? ((TarifsSere.formations.combo.options[optionPaiement] || {}).lien || "")
+                : (liens[optionPaiement] || "");
             if (estMarraine && !lienStripe) {
                 alert("L'inscription en ligne à la formation de marraine d'allaitement ouvre très bientôt ! D'ici là, écris-moi à serenaissance.doula@gmail.com ou appelle-moi au 506-759-2044, et je t'inscris personnellement. 💕");
                 return;
@@ -3812,8 +3839,8 @@
                     adresse: adresse.trim(),
                     date_naissance: dateNaissance,
                     diplome_url: uploadData ? uploadData.path : null,
-                    formation: formation,
-                    option_paiement: estMarraine ? 'marraine' : optionPaiement + (offreEstActive() ? '-offre' : ''),
+                    formation: estCombo ? '4e-trimestre' : formation,
+                    option_paiement: estMarraine ? 'marraine' : estCombo ? 'combo-' + optionPaiement : optionPaiement + (offreEstActive() ? '-offre' : ''),
                     date: Date.now()
                 };
                 let dossierGarde = false;

@@ -20,6 +20,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="adresse.js"></script>
 <script src="/reglages.js"></script>
+<script src="/tarifs.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -702,11 +703,13 @@ $('form-stage').addEventListener('submit', function (e) {
 
 /* ---------------- Inscription par lien (paiement déjà fait, souci technique…) ---------------- */
 function preparerInscription() {
-  var f = params.get('inscription') === 'marraine' ? 'marraine' : '4e-trimestre';
+  var cle = params.get('inscription'), T = window.TarifsSere ? TarifsSere.formations : {};
+  if (!T[cle]) cle = cle === 'marraine' ? 'marraine' : '4e-trimestre';
+  var f = cle === 'marraine' ? 'marraine' : '4e-trimestre';
+  var nomF = (T[cle] && T[cle].nom) || (f === 'marraine' ? "Marraine d'allaitement" : 'Accompagnement de pointe du 4ᵉ trimestre');
   avecMenu(false); vue('inscription');
-  $('i-intro').textContent = f === 'marraine'
-    ? "Sabrina t'a envoyé ce lien pour compléter ton inscription à la formation de marraine d'allaitement."
-    : "Sabrina t'a envoyé ce lien pour compléter ton inscription à l'Accompagnement de pointe du 4ᵉ trimestre. Téléverse ton diplôme de doula : ton accès sera ouvert après sa vérification.";
+  $('i-intro').textContent = "Sabrina t'a envoyé ce lien pour compléter ton inscription à la formation « " + nomF + " »." +
+    (f === 'marraine' ? '' : ' Téléverse ton diplôme de doula : ton accès sera ouvert après sa vérification.');
   $('i-bloc-diplome').hidden = f === 'marraine';
   $('i-diplome').required = f !== 'marraine';
   if (params.get('courriel')) $('i-courriel').value = params.get('courriel');
@@ -726,7 +729,7 @@ function preparerInscription() {
     var courriel = $('i-courriel').value.trim().toLowerCase();
     var dossier = { prenom: $('i-prenom').value.trim(), nom: $('i-nom').value.trim(), courriel: courriel, telephone: $('i-tel').value.trim(),
       adresse: window.AdresseAuto ? AdresseAuto.composer($('i-adresse')) : $('i-adresse').value.trim(), date_naissance: $('i-naissance').value || null,
-      formation: f, option_paiement: 'lien-manuel', statut: 'en_attente', diplome_url: null };
+      formation: f, option_paiement: 'lien-manuel' + (cle === 'combo' ? '-combo' : cle === '4e-cadeau' ? '-cadeau' : ''), statut: 'en_attente', diplome_url: null };
     var envoi = fichier ? sb.storage.from('certificats').upload(Date.now() + '_' + nomPropre(fichier.name), fichier, { contentType: fichier.type || 'application/octet-stream' }) : Promise.resolve({ data: null });
     envoi.then(function (r) {
       if (r.error) throw new Error('Ton diplôme n\'a pas pu être téléversé (' + r.error.message + ').');
@@ -743,7 +746,7 @@ function preparerInscription() {
     }).then(function (x) {
       if (x.error) throw new Error('Ton dossier n\'a pas pu être enregistré (' + x.error.message + ').');
       try { emailjs.send(EMAILJS.service, EMAILJS.avis, { prenom: dossier.prenom, nom: dossier.nom, courriel: courriel, telephone: dossier.telephone, adresse: dossier.adresse,
-        option_paiement: '🔗 Inscription par lien manuel — ' + (f === 'marraine' ? "marraine d'allaitement" : '4e trimestre') }, EMAILJS.cle); } catch (err) {}
+        option_paiement: '🔗 Inscription par lien manuel — ' + nomF }, EMAILJS.cle); } catch (err) {}
       history.replaceState(null, '', 'espace.html');
       if (etat.nouvelleSession) return charger(etat.nouvelleSession, '✅ Ton compte est créé ! Sabrina vérifie ton dossier et t\'écrit dès que ton accès est ouvert.');
       $('form-inscription').hidden = true;
