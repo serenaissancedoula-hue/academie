@@ -1,7 +1,7 @@
 /* Académie Sérénaissance — appli (service worker).
    Toujours la version la plus récente quand il y a Internet ; les pages déjà ouvertes
    restent disponibles sans connexion. Supabase et Stripe ne passent jamais par le cache. */
-var VERSION = 'sere-v4';
+var VERSION = 'sere-v5';
 var DE_BASE = ['/', '/index.html', '/espace.html', '/hors-ligne.html', '/en/', '/en/espace.html', '/en/hors-ligne.html', '/langue.js', '/adresse.js', '/logo.jpg',
   '/icones/icone-192.png', '/icones/icone-512.png', '/manifest.webmanifest'];
 

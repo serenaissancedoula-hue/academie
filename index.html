@@ -28,6 +28,8 @@
     <meta name="apple-mobile-web-app-title" content="Sérénaissance">
     <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
     <script src="/langue.js"></script>
+<script src="/stats.js" defer></script>
+<script src="/infolettre.js" defer></script>
     <script src="/appli.js" defer></script>
     <script src="/tarifs.js"></script>
     <script src="/securite.js"></script>
@@ -856,7 +858,9 @@
             color: #555;
             margin-bottom: 15px;
         }
-        .langue-entete { margin: 0 6px; flex-shrink: 0; }
+        .appel-langue { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; }
+        .langue-entete { line-height: 1; }
+        .langue-entete .choix-langue button { padding: 2px 5px; font-size: .74rem; }
         .case-accord {
             display: flex;
             gap: 10px;
@@ -1559,8 +1563,10 @@
             <li><a href="#" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">À propos</a></li>
         </ul>
-        <div class="langue-entete" data-choix-langue></div>
-        <button class="btn-appel" onclick="ouvrirContact()" aria-label="Réserve ton appel gratuit"><i class="fa-solid fa-phone"></i><span class="txt-appel"> Réserve ton appel gratuit</span></button>
+        <div class="appel-langue">
+            <button class="btn-appel" onclick="ouvrirContact()" aria-label="Réserve ton appel gratuit"><i class="fa-solid fa-phone"></i><span class="txt-appel"> Réserve ton appel gratuit</span></button>
+            <div class="langue-entete" data-choix-langue></div>
+        </div>
         <button class="burger" id="burger" onclick="basculerMenu()" aria-label="Ouvrir le menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
 
@@ -2300,6 +2306,15 @@
                 </div>
                 <p id="note-marraine" hidden style="font-size: 0.88rem; color: #555; margin-top: 15px; background: #efe6dc; border-radius: 10px; padding: 12px 14px;">💳 Paiement unique de <strong>175 $</strong>. Aucun diplôme n'est requis pour cette formation.</p>
 
+                <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 15px;">
+                    <label for="langue-formation" style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Langue de ta formation</label>
+                    <select id="langue-formation" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: white; font-family: inherit; font-size: 0.95rem;">
+                        <option value="fr" selected>Français</option>
+                        <option value="en">English</option>
+                    </select>
+                    <small style="display:block;color:#7a685e;margin-top:4px;">Ta formation, ton compte et tes courriels seront dans cette langue. Tu pourras la changer plus tard dans tes Paramètres.</small>
+                </div>
+
                 <label class="case-accord">
                     <input type="checkbox" id="accord-conditions" required>
                     <span>J'ai lu et j'accepte les <a href="#" onclick="switchPage('conditions', null, event)">conditions de vente et la politique de remboursement</a> ainsi que la <a href="#" onclick="switchPage('confidentialite', null, event)">politique de confidentialité</a>.</span>
@@ -2421,6 +2436,8 @@
                 <li><strong>Messages</strong> : ta conversation privée avec moi dans ton compte. Les autres étudiantes n'y ont jamais accès.</li>
                 <li><strong>Notifications (facultatives)</strong> : si tu les actives, ton appareil est enregistré pour recevoir mes messages et mes annonces ; tu peux les désactiver en tout temps dans tes Paramètres.</li>
                 <li><strong>Fiche de marraine d'allaitement</strong> : ton nom, ta photo, tes secteurs desservis, les langues que tu parles, ta bio et tes modes d'accompagnement sont publiés sur la page « Nos marraines d'allaitement » <strong>seulement après ta signature électronique du formulaire d'adhésion et de consentement</strong>, pendant la durée de ton certificat (2 ans). Ton numéro de téléphone, tes déclarations (conflit d'intérêts, antécédents judiciaires) et tes feuilles de suivi mensuelles (anonymes, sans aucun nom de famille) restent privés : seule Sabrina y a accès. Tu peux retirer ce consentement en tout temps dans ton compte : ta fiche disparaît alors immédiatement du site.</li>
+                <li><strong>Infolettre (facultative)</strong> : ton courriel, ton prénom (facultatif), ta langue, la date et le texte de ton consentement — pour t'envoyer l'infolettre de l'Académie (nouvelles, promotions, conseils), environ 2 fois par mois. Tu peux te désabonner en tout temps avec le lien au bas de chaque courriel : ta demande est traitée immédiatement. Cet envoi respecte la <em>Loi canadienne anti-pourriel</em>.</li>
+                <li><strong>Statistiques de visites (anonymes)</strong> : la page consultée, le site d'où tu arrives (par exemple Google ou Facebook), une région approximative déduite du fuseau horaire de ton appareil, le type d'appareil et la langue du site, associés à un identifiant aléatoire conservé dans ton navigateur. <strong>Aucune adresse IP, aucun nom ni aucun courriel n'est enregistré</strong>, et ces données ne permettent pas de t'identifier. Elles servent seulement à savoir combien de personnes visitent le site. Si ton navigateur envoie le signal « Ne pas me pister » (Do Not Track ou Global Privacy Control), aucune statistique n'est recueillie.</li>
                 <li><strong>Paiements</strong> : traités par Stripe. Je reçois une confirmation de paiement, mais jamais ton numéro de carte.</li>
                 <li><strong>Accompagnements de doula</strong> : les informations que tu choisis de me confier sur ta grossesse, ta santé et ta famille servent uniquement à t'accompagner. Elles sont traitées avec la plus grande confidentialité.</li>
             </ul>
@@ -2436,18 +2453,21 @@
                 <li><strong>Stripe</strong> : paiements ;</li>
                 <li><strong>Cal.com</strong> : prise de rendez-vous (appel découverte, consultations) ;</li>
                 <li><strong>Photon (Komoot)</strong> : suggestions d'adresses postales (ce que tu tapes dans le champ d'adresse lui est transmis) ;</li>
-                <li><strong>EmailJS</strong> et <strong>Brevo</strong> : envoi de courriels ;</li>
+                <li><strong>EmailJS</strong> et <strong>Brevo</strong> : envoi de courriels, dont l'infolettre ;</li>
+                <li><strong>MyMemory</strong> : traduction automatique du texte de l'infolettre (seul le texte que j'écris lui est envoyé, jamais tes renseignements) ;</li>
                 <li><strong>GitHub Pages</strong> : hébergement du site ;</li>
                 <li><strong>Google Fonts</strong>, <strong>Font Awesome</strong> et <strong>jsDelivr</strong> : polices et outils d'affichage (ils peuvent recevoir ton adresse IP lors du chargement de la page).</li>
             </ul>
             <p>Certains de ces fournisseurs conservent des données <strong>à l'extérieur du Canada</strong> (notamment aux États-Unis ou en Europe). Tes renseignements y bénéficient de mesures de protection, mais peuvent être soumis aux lois de ces pays. Pour les personnes qui résident en France ou dans l'Union européenne, ces transferts reposent sur les garanties prévues par le RGPD lorsque ces fournisseurs les offrent (par exemple les clauses contractuelles types).</p>
 
             <h3>5. Témoins (cookies) et stockage</h3>
-            <p>Le site n'utilise <strong>aucun témoin publicitaire ni outil de suivi</strong>. Seuls de petits éléments sont enregistrés dans ton navigateur pour garder ta session ouverte lorsque tu te connectes à ton compte, retenir ta progression et tes préférences (par exemple le son des notifications).</p>
+            <p>Le site n'utilise <strong>aucun témoin publicitaire ni outil de suivi publicitaire</strong>. Seuls de petits éléments sont enregistrés dans ton navigateur pour garder ta session ouverte lorsque tu te connectes à ton compte, retenir ta progression et tes préférences (par exemple la langue ou le son des notifications), te montrer la fenêtre d'infolettre une seule fois, et compter les visites de façon anonyme (identifiant aléatoire, voir la section 2). Tu peux les effacer en tout temps dans les réglages de ton navigateur.</p>
 
             <h3>6. Conservation</h3>
             <ul>
                 <li>Messages du formulaire de contact : le temps de traiter ta demande, puis au plus 2 ans.</li>
+                <li>Infolettre : ton courriel est conservé tant que tu es abonnée ; si tu te désabonnes, il est gardé seulement comme preuve de ton désabonnement (pour ne plus jamais t'écrire), et tu peux demander qu'il soit effacé complètement.</li>
+                <li>Statistiques de visites anonymes : 13 mois au maximum, puis effacées automatiquement.</li>
                 <li>Diplôme de doula : jusqu'à la fin de ton accès à la formation, puis supprimé.</li>
                 <li>Dossier d'inscription et documents de paiement : 6 ans, comme l'exigent les règles fiscales canadiennes.</li>
                 <li>Informations confiées lors d'un accompagnement : le temps de l'accompagnement, puis détruites de façon sécuritaire, sauf si la loi exige de les conserver.</li>
@@ -2477,7 +2497,6 @@
         <div class="faq-page-container">
             <h2>Foire aux questions</h2>
             <p>Tout ce qu'il faut savoir sur les formations de l'Académie Sérénaissance. Une autre question ? <a href="#" onclick="ouvrirContact(); return false;">Écris-moi</a> 💕</p>
-            <div class="bloc-appli" data-toujours hidden style="margin-top:20px; text-align:left;"></div>
             <h3 class="faq-groupe">Les formations</h3>
             <div class="faq-accordeon">
                 <details><summary>Quelles formations offre l'Académie ?</summary><p>Deux formations 100 % en ligne : la formation <strong>Accompagnement de pointe du 4ᵉ trimestre</strong> (environ 30 h, 5 modules, 33 chapitres), réservée aux doulas diplômées, et la formation de <strong>marraine d'allaitement</strong> (environ 8 h 30, 6 chapitres), ouverte à toutes, sans prérequis.</p></details>
@@ -2665,7 +2684,8 @@
             <a href="/academie-serenaissance/">Académie Sérénaissance</a> ·
             <a href="/formation-doula-post-partum/">Formation doula post-partum</a> ·
             <a href="/formation-marraine-allaitement/">Formation marraine d'allaitement</a> ·
-            <a href="/doula-campbellton/">Doula à Campbellton</a>
+            <a href="/doula-campbellton/">Doula à Campbellton</a> ·
+            <a href="#" onclick="event.preventDefault(); window.SereInfolettre && SereInfolettre.ouvrir();">📩 Infolettre</a>
         </nav>
         <div class="footer-legal">
             © <span id="annee-courante">2026</span> Sérénaissance · Sabrina Chavanel ·
@@ -3638,7 +3658,7 @@
                 prenom: d.prenom, nom: d.nom, courriel: d.courriel, telephone: d.telephone,
                 adresse: d.adresse, date_naissance: d.date_naissance || null, diplome_url: d.diplome_url || null, option_paiement: d.option_paiement,
                 formation: d.formation || '4e-trimestre', statut: 'en_attente',
-                langue: (document.documentElement.lang || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr'
+                langue: (document.getElementById('langue-formation') || {}).value === 'en' ? 'en' : ((document.getElementById('langue-formation') || {}).value === 'fr' ? 'fr' : ((document.documentElement.lang || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr'))
             };
             if (userId) ligne.user_id = userId;
             let { error } = await sbClient.from('etudiantes').insert([ligne]);
@@ -3702,7 +3722,7 @@
             const { data: compte, error: signUpError } = await sbClient.auth.signUp({
                 email: d.courriel,
                 password: mdp,
-                options: { emailRedirectTo: 'https://academiesere.ca/espace.html' }
+                options: { emailRedirectTo: 'https://academiesere.ca/' + ((document.getElementById('langue-formation') || {}).value === 'en' ? 'en/' : '') + 'espace.html', data: { langue: (document.getElementById('langue-formation') || {}).value === 'en' ? 'en' : 'fr' } }
             });
             const dejaInscrite = signUpError && /already|registered/i.test(signUpError.message || '');
             if (signUpError && !dejaInscrite) {

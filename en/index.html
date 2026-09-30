@@ -26,6 +26,8 @@
     <meta name="apple-mobile-web-app-title" content="Sérénaissance">
     <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png">
     <script src="/langue.js"></script>
+<script src="/stats.js" defer></script>
+<script src="/infolettre.js" defer></script>
     <script src="/appli.js" defer></script>
     <script src="/tarifs.js"></script>
     <script src="/securite.js"></script>
@@ -854,7 +856,9 @@
             color: #555;
             margin-bottom: 15px;
         }
-        .langue-entete { margin: 0 6px; flex-shrink: 0; }
+        .appel-langue { display: flex; flex-direction: column; align-items: center; gap: 2px; flex-shrink: 0; }
+        .langue-entete { line-height: 1; }
+        .langue-entete .choix-langue button { padding: 2px 5px; font-size: .74rem; }
         .case-accord {
             display: flex;
             gap: 10px;
@@ -1557,8 +1561,10 @@
             <li><a href="#" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">About</a></li>
         </ul>
-        <div class="langue-entete" data-choix-langue></div>
-        <button class="btn-appel" onclick="ouvrirContact()" aria-label="Book your free call"><i class="fa-solid fa-phone"></i><span class="txt-appel"> Book your free call</span></button>
+        <div class="appel-langue">
+            <button class="btn-appel" onclick="ouvrirContact()" aria-label="Book your free call"><i class="fa-solid fa-phone"></i><span class="txt-appel"> Book your free call</span></button>
+            <div class="langue-entete" data-choix-langue></div>
+        </div>
         <button class="burger" id="burger" onclick="basculerMenu()" aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </header>
 
@@ -2298,6 +2304,15 @@
                 </div>
                 <p id="note-marraine" hidden style="font-size: 0.88rem; color: #555; margin-top: 15px; background: #efe6dc; border-radius: 10px; padding: 12px 14px;">💳 One-time payment of <strong>$175</strong>. No diploma is required for this course.</p>
 
+                <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 15px;">
+                    <label for="langue-formation" style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Language of your course</label>
+                    <select id="langue-formation" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: white; font-family: inherit; font-size: 0.95rem;">
+                        <option value="fr">Français</option>
+                        <option value="en" selected>English</option>
+                    </select>
+                    <small style="display:block;color:#7a685e;margin-top:4px;">Your course, your account and your emails will be in this language. You can change it later in your Settings.</small>
+                </div>
+
                 <label class="case-accord">
                     <input type="checkbox" id="accord-conditions" required>
                     <span>I have read and accept the <a href="#" onclick="switchPage('conditions', null, event)">terms of sale and refund policy</a> as well as the <a href="#" onclick="switchPage('confidentialite', null, event)">privacy policy</a>.</span>
@@ -2419,6 +2434,8 @@
                 <li><strong>Messages</strong>: your private conversation with me in your account. Other students never have access to it.</li>
                 <li><strong>Notifications (optional)</strong>: if you turn them on, your device is registered to receive my messages and announcements; you can turn them off at any time in your Settings.</li>
                 <li><strong>Breastfeeding peer supporter profile</strong>: your name, photo, service areas, the languages you speak, your bio and your support methods are published on the "Our Breastfeeding Peer Supporters" page <strong>only after you electronically sign the membership and consent form</strong>, for the duration of your certificate (2 years). Your phone number, your declarations (conflict of interest, criminal record) and your monthly follow-up sheets (anonymous, with no family names) remain private: only Sabrina has access to them. You can withdraw this consent at any time in your account: your profile then immediately disappears from the site.</li>
+                <li><strong>Newsletter (optional)</strong>: your email address, your first name (optional), your language, and the date and wording of your consent — to send you the Académie newsletter (news, promotions, tips), about twice a month. You can unsubscribe at any time using the link at the bottom of each email; your request is processed immediately. These emails comply with <em>Canada's Anti-Spam Legislation</em> (CASL).</li>
+                <li><strong>Visit statistics (anonymous)</strong>: the page viewed, the site you came from (for example Google or Facebook), an approximate region based on your device's time zone, the type of device and the site language, linked to a random identifier stored in your browser. <strong>No IP address, name or email is recorded</strong>, and this data cannot identify you. It is used only to know how many people visit the site. If your browser sends a "Do Not Track" or "Global Privacy Control" signal, no statistics are collected.</li>
                 <li><strong>Payments</strong>: processed by Stripe. I receive a payment confirmation, but never your card number.</li>
                 <li><strong>Doula support</strong>: the information you choose to entrust to me about your pregnancy, your health and your family is used solely to support you. It is treated with the utmost confidentiality.</li>
             </ul>
@@ -2434,18 +2451,21 @@
                 <li><strong>Stripe</strong>: payments;</li>
                 <li><strong>Cal.com</strong>: appointment booking (discovery call, consultations);</li>
                 <li><strong>Photon (Komoot)</strong>: mailing address suggestions (what you type in the address field is sent to it);</li>
-                <li><strong>EmailJS</strong> and <strong>Brevo</strong>: sending emails;</li>
+                <li><strong>EmailJS</strong> and <strong>Brevo</strong>: sending emails, including the newsletter;</li>
+                <li><strong>MyMemory</strong>: automatic translation of the newsletter text (only the text I write is sent to it, never your information);</li>
                 <li><strong>GitHub Pages</strong>: website hosting;</li>
                 <li><strong>Google Fonts</strong>, <strong>Font Awesome</strong> and <strong>jsDelivr</strong>: fonts and display tools (they may receive your IP address when the page loads).</li>
             </ul>
             <p>Some of these providers store data <strong>outside Canada</strong> (notably in the United States or Europe). Your information benefits from protective measures there, but may be subject to the laws of those countries. For people who live in France or the European Union, these transfers rely on the safeguards provided by the GDPR when these providers offer them (for example, standard contractual clauses).</p>
 
             <h3>5. Cookies and storage</h3>
-            <p>The site uses <strong>no advertising cookies or tracking tools</strong>. Only small items are saved in your browser to keep you logged in when you sign in to your account, and to remember your progress and preferences (for example, the notification sound).</p>
+            <p>The site uses <strong>no advertising cookies or advertising tracking tools</strong>. Only small items are saved in your browser to keep you logged in when you sign in to your account, to remember your progress and preferences (for example the language or the notification sound), to show the newsletter window only once, and to count visits anonymously (random identifier, see section 2). You can delete them at any time in your browser settings.</p>
 
             <h3>6. Retention</h3>
             <ul>
                 <li>Contact form messages: for as long as it takes to handle your request, then at most 2 years.</li>
+                <li>Newsletter: your email address is kept as long as you are subscribed; if you unsubscribe, it is kept only as proof of your unsubscription (so you are never emailed again), and you can ask for it to be deleted completely.</li>
+                <li>Anonymous visit statistics: 13 months at most, then deleted automatically.</li>
                 <li>Doula diploma: until your access to the course ends, then deleted.</li>
                 <li>Registration file and payment documents: 6 years, as required by Canadian tax rules.</li>
                 <li>Information entrusted during doula support: for the duration of the support, then securely destroyed, unless the law requires it to be kept.</li>
@@ -2475,7 +2495,6 @@
         <div class="faq-page-container">
             <h2>Frequently Asked Questions</h2>
             <p>Everything you need to know about the Académie Sérénaissance courses. Another question? <a href="#" onclick="ouvrirContact(); return false;">Write to me</a> 💕</p>
-            <div class="bloc-appli" data-toujours hidden style="margin-top:20px; text-align:left;"></div>
             <h3 class="faq-groupe">The courses</h3>
             <div class="faq-accordeon">
                 <details><summary>Which courses does the Academy offer?</summary><p>Two 100% online courses: the <strong>Advanced Fourth Trimester Support</strong> course (about 30 hours, 5 modules, 33 chapters), reserved for certified doulas, and the <strong>Breastfeeding Peer Supporter</strong> course (about 8.5 hours, 6 chapters), open to everyone, with no prerequisites.</p></details>
@@ -2663,7 +2682,8 @@
             <a href="/en/academie-serenaissance/">Académie Sérénaissance</a> ·
             <a href="/en/postpartum-doula-training/">Postpartum doula training</a> ·
             <a href="/en/breastfeeding-peer-supporter-training/">Breastfeeding peer supporter training</a> ·
-            <a href="/en/doula-campbellton/">Doula in Campbellton</a>
+            <a href="/en/doula-campbellton/">Doula in Campbellton</a> ·
+            <a href="#" onclick="event.preventDefault(); window.SereInfolettre && SereInfolettre.ouvrir();">📩 Newsletter</a>
         </nav>
         <div class="footer-legal">
             © <span id="annee-courante">2026</span> Sérénaissance · Sabrina Chavanel ·
@@ -3636,7 +3656,7 @@
                 prenom: d.prenom, nom: d.nom, courriel: d.courriel, telephone: d.telephone,
                 adresse: d.adresse, date_naissance: d.date_naissance || null, diplome_url: d.diplome_url || null, option_paiement: d.option_paiement,
                 formation: d.formation || '4e-trimestre', statut: 'en_attente',
-                langue: (document.documentElement.lang || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr'
+                langue: (document.getElementById('langue-formation') || {}).value === 'en' ? 'en' : ((document.getElementById('langue-formation') || {}).value === 'fr' ? 'fr' : ((document.documentElement.lang || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr'))
             };
             if (userId) ligne.user_id = userId;
             let { error } = await sbClient.from('etudiantes').insert([ligne]);
@@ -3700,7 +3720,7 @@
             const { data: compte, error: signUpError } = await sbClient.auth.signUp({
                 email: d.courriel,
                 password: mdp,
-                options: { emailRedirectTo: 'https://academiesere.ca/espace.html' }
+                options: { emailRedirectTo: 'https://academiesere.ca/' + ((document.getElementById('langue-formation') || {}).value === 'en' ? 'en/' : '') + 'espace.html', data: { langue: (document.getElementById('langue-formation') || {}).value === 'en' ? 'en' : 'fr' } }
             });
             const dejaInscrite = signUpError && /already|registered/i.test(signUpError.message || '');
             if (signUpError && !dejaInscrite) {

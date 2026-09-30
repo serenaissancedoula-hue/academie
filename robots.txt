@@ -6,6 +6,7 @@ Allow: /Formation/en/module-1/apercu.html
 Disallow: /espace.html
 Disallow: /admin.html
 Disallow: /hors-ligne.html
+Disallow: /desabonnement.html
 Disallow: /en/espace.html
 Disallow: /en/hors-ligne.html
 

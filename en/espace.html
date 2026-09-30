@@ -234,6 +234,8 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
           <label class="champ">Repeat your password <input type="password" id="i-mdp2" required autocomplete="new-password"></label>
         </div>
         <p class="note">At least 8 characters, with an uppercase letter, a lowercase letter and a number.</p>
+        <label class="champ">Language of your course <span class="note">Your course, your account and your emails will be in this language.</span>
+          <select id="i-langue" required><option value="fr">Français</option><option value="en" selected>English</option></select></label>
         <label class="case"><input type="checkbox" id="i-accord" required> I have read and accept the <a href="/en/#conditions" target="_blank">terms of sale</a> and the <a href="/en/#confidentialite" target="_blank">privacy policy</a>.</label>
         <label class="case"><input type="checkbox" id="i-acces" required> I ask that my access to the course be opened as soon as my file has been verified. If I live in France or the European Union, I acknowledge that I lose my 14-day right of withdrawal as soon as I start accessing the content (section 6 of the <a href="/en/#conditions" target="_blank">terms of sale</a>).</label>
         <button class="btn" type="submit" id="i-bouton">Create my account</button>
@@ -413,7 +415,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <!-- Messages avec Sabrina -->
   <section class="vue" id="vue-messages" hidden>
     <h1>Messages</h1>
-    <p class="sous">Your private conversation with Sabrina. She replies as soon as possible (usually within 48 hours).</p>
+    <p class="sous">Your private conversation with Sabrina. She replies as soon as possible (usually within 48 hours). 🇫🇷 Sabrina is French-speaking: you can write to her in English, and she will reply in English with the help of a translation tool (her French message may appear below).</p>
     <div id="rappel-notif" class="message info" hidden>🔔 To be notified on your phone as soon as Sabrina replies, <a href="#parametres">turn on notifications in your Settings</a>.</div>
     <div id="annonces-liste"></div>
     <div class="carte chat-carte">
@@ -842,6 +844,7 @@ function preparerInscription() {
   $('i-diplome').required = f !== 'marraine';
   if (params.get('courriel')) $('i-courriel').value = params.get('courriel');
   if (params.get('prenom')) $('i-prenom').value = params.get('prenom');
+  if (params.get('langue') === 'en' || params.get('langue') === 'fr') $('i-langue').value = params.get('langue');
   if (params.get('nom')) $('i-nom').value = params.get('nom');
   if (window.AdresseAuto) AdresseAuto.brancher($('i-adresse'), { codePostal: $('i-cp'), appartement: $('i-app'), confirmation: $('i-adresse-ok') });
   $('form-inscription').addEventListener('submit', function (e) {
@@ -857,12 +860,13 @@ function preparerInscription() {
     var courriel = $('i-courriel').value.trim().toLowerCase();
     var dossier = { prenom: $('i-prenom').value.trim(), nom: $('i-nom').value.trim(), courriel: courriel, telephone: $('i-tel').value.trim(),
       adresse: window.AdresseAuto ? AdresseAuto.composer($('i-adresse')) : $('i-adresse').value.trim(), date_naissance: $('i-naissance').value || null,
-      formation: f, option_paiement: 'lien-manuel' + (cle === 'combo' ? '-combo' : cle === '4e-cadeau' ? '-cadeau' : ''), statut: 'en_attente', diplome_url: null, langue: (window.SereLangue ? SereLangue.page() : 'fr') };
+      formation: f, option_paiement: 'lien-manuel' + (cle === 'combo' ? '-combo' : cle === '4e-cadeau' ? '-cadeau' : ''), statut: 'en_attente', diplome_url: null, langue: $('i-langue').value === 'en' ? 'en' : 'fr' };
     var envoi = fichier ? sb.storage.from('certificats').upload(Date.now() + '_' + nomPropre(fichier.name), fichier, { contentType: fichier.type || 'application/octet-stream' }) : Promise.resolve({ data: null });
     envoi.then(function (r) {
       if (r.error) throw new Error('Your diploma could not be uploaded (' + r.error.message + ').');
       if (r.data) dossier.diplome_url = r.data.path;
-      return sb.auth.signUp({ email: courriel, password: m1, options: { emailRedirectTo: ICI } });
+      if (window.SereLangue) SereLangue.enregistrer(dossier.langue);
+      return sb.auth.signUp({ email: courriel, password: m1, options: { emailRedirectTo: ICI, data: { langue: dossier.langue } } });
     }).then(function (r) {
       if (r.error && !/already|registered/i.test(r.error.message || '')) throw new Error('Your account could not be created (' + r.error.message + ').');
       if (r.data && r.data.user && Array.isArray(r.data.user.identities) && r.data.user.identities.length) dossier.user_id = r.data.user.id;
