@@ -103,6 +103,13 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 .chat-saisie { flex-direction: row; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--bord); background: var(--carte); }
 .chat-saisie textarea { resize: none; max-height: 140px; border-radius: 20px; }
 .chat-saisie .btn { border-radius: 50%; width: 48px; height: 48px; padding: 0; flex-shrink: 0; }
+.pp-grand, .pp-petit { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #efe6dc; color: var(--terra); font-weight: 800; overflow: hidden; flex-shrink: 0; }
+.pp-grand { width: 96px; height: 96px; font-size: 2rem; }
+.pp-petit { width: 40px; height: 40px; font-size: .95rem; }
+.pp-grand img, .pp-petit img { width: 100%; height: 100%; object-fit: cover; }
+.menu .qui .pp-petit { margin-bottom: 6px; }
+.chat-haut { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--bord); font-size: .9rem; }
+.chat-logo { height: 30px; margin-left: auto; mix-blend-mode: darken; }
 .annonce { background: #fff; border: 1px solid var(--bord); border-left: 4px solid var(--terra); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; font-size: .9rem; }
 .annonce small { display: block; color: var(--doux); font-size: .76rem; }
 #fm-carte.verrouillee input, #fm-carte.verrouillee textarea { background: #f3ede6; }
@@ -303,6 +310,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     <p class="sous">Ta conversation privée avec Sabrina. Elle te répond dès que possible (habituellement en moins de 48 h).</p>
     <div id="annonces-liste"></div>
     <div class="carte chat-carte">
+      <div class="chat-haut"><span id="chat-moi" class="pp-petit"></span><span>Toi et <strong>Sabrina</strong></span><img src="/logo.jpg" alt="" class="chat-logo"></div>
       <div class="bulles" id="chat-bulles"><div class="vide">Chargement…</div></div>
       <form class="chat-saisie" id="chat-form"><textarea id="chat-texte" rows="1" maxlength="2000" placeholder="Écris ton message à Sabrina…" required></textarea><button class="btn" type="submit" aria-label="Envoyer">➤</button></form>
     </div>
@@ -313,6 +321,20 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <section class="vue" id="vue-parametres" hidden>
     <h1>Paramètres</h1>
     <p class="sous">Choisis comment l'Académie te prévient : messages de Sabrina, annonces et mises à jour des formations.</p>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">📷 Ma photo de profil</h3>
+      <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;">
+        <div id="pp-apercu" class="pp-grand"></div>
+        <div style="flex:1;min-width:200px;">
+          <p class="note" style="margin-bottom:10px;">Visible seulement par toi et par Sabrina (dans ton compte et dans vos messages). Elle n'est jamais affichée sur le site.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <label class="btn fantome" style="cursor:pointer;">Choisir une photo<input type="file" id="pp-fichier" accept="image/jpeg,image/png,image/webp,image/heic" hidden></label>
+            <button type="button" class="btn fantome" id="pp-retirer" hidden>Retirer</button>
+          </div>
+          <div id="msg-photo" style="margin-top:10px;"></div>
+        </div>
+      </div>
+    </div>
     <div class="carte" id="rg"></div>
     <div class="carte">
       <h3 style="margin-bottom:6px;">📲 L'appli de l'Académie</h3>
@@ -358,7 +380,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 </main>
 
 <nav class="menu" id="menu" aria-label="Mon compte">
-  <div class="qui"><strong id="menu-nom">Mon compte</strong><span id="menu-courriel"></span></div>
+  <div class="qui"><span id="menu-photo" class="pp-petit"></span><strong id="menu-nom">Mon compte</strong><span id="menu-courriel"></span></div>
   <a href="#cours" data-vue="cours"><span class="i">📚</span><span>Mes cours</span></a>
   <a href="#infos" data-vue="infos"><span class="i">👤</span><span>Mes informations</span></a>
   <a href="#marraine" data-vue="marraine" id="menu-marraine" hidden><span class="i">🤱</span><span>Ma fiche de marraine</span></a>
@@ -755,6 +777,7 @@ function quand(d) { return new Date(d).toLocaleString('fr-CA', { weekday: 'long'
 function icone(g) { return { maintenance: '🛠️ ', nouveaute: '✨ ', info: '📣 ' }[g] || '📣 '; }
 function demarrerCommunication() {
   $('cloche').hidden = false;
+  chargerPhoto();
   $('appli-installee').hidden = !APPLI;
   if (!reglagesMontes && window.Reglages) { reglagesMontes = true; Reglages.monter($('rg'), { sb: sb, vapid: VAPID, admin: false, surPush: function () { chargerAvis(); chargerMessages(); chargerAnnonces(); } }); }
   chargerAvis(); chargerMessages(); chargerAnnonces();
@@ -889,18 +912,24 @@ function chargerFicheMarraine() {
     if (ficheM) {
       var exp = ficheM.date_expiration, expiree = ficheM.statut === 'validee' && exp && exp < aujourdhui();
       var t = {
-        soumise: '<div class="message info">⏳ <strong>Ta fiche est envoyée.</strong> Sabrina vérifie tes résultats et ta fiche ; tu recevras un courriel dès qu\'elle est validée.</div>',
+        soumise: '<div class="message info">⏳ <strong>Ta fiche est envoyée.</strong> Sabrina vérifie tes résultats et ta fiche. Ensuite, tu recevras une notification pour <strong>signer ton consentement à la publication</strong>.</div>',
+        a_signer: '<div class="message ok">✍️ <strong>Tes résultats sont vérifiés !</strong> Dernière étape avant la publication de ta fiche : lis et signe ton consentement ci-dessous.</div>',
+        signee: '<div class="message ok">✅ <strong>Ton consentement est signé</strong> le ' + (ficheM.consent_signature_date ? new Date(ficheM.consent_signature_date).toLocaleString('fr-CA') : '') + '. Sabrina publie ta fiche très bientôt.<br><a href="#" data-consentement>📄 Voir mon consentement signé</a> · <a href="#" data-retirer>Retirer mon consentement</a></div>',
         a_corriger: '<div class="message erreur">✏️ <strong>Sabrina te demande une petite correction :</strong><br>' + echapper(ficheM.commentaire_admin || '') + '</div>',
-        retiree: '<div class="message info">Ta fiche n\'est plus affichée sur le site. Écris à Sabrina pour la réactiver.</div>',
+        retiree: '<div class="message info">' + (ficheM.consent_retire_date ? 'Tu as retiré ton consentement le ' + new Date(ficheM.consent_retire_date).toLocaleString('fr-CA') + ' : ta fiche n\'est plus affichée sur le site.' : 'Ta fiche n\'est plus affichée sur le site.') + ' Pour la réactiver, <a href="#messages">écris à Sabrina</a>.</div>',
         validee: expiree
           ? '<div class="message erreur">⌛ <strong>Ta certification est arrivée à échéance le ' + jour(exp) + '.</strong> Pour renouveler ton statut, fais la mise à jour de la formation (50 % de rabais pour les marraines formées chez Sérénaissance). Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a>.</div>'
           : '<div class="message ok">🎉 <strong>Tu es marraine d\'allaitement certifiée !</strong><br>Certifiée le ' + jour(ficheM.date_certification) + ' · valide jusqu\'au ' + jour(exp) + '.<br>Ta fiche est visible sur la page <a href="index.html#nos-marraines" target="_blank">Nos marraines d\'allaitement</a>.' +
             (ficheM.certificat_path ? '<br><a href="#" id="fm-certificat">📜 Télécharger mon certificat</a>' : '') +
+            (ficheM.consent_signature_date ? '<br><a href="#" data-consentement>📄 Voir mon consentement signé</a> · <a href="#" data-retirer>Retirer mon consentement</a>' : '') +
             '</div>'
       }[ficheM.statut] || '';
       st.innerHTML = t;
       var c = $('fm-certificat');
       if (c) c.addEventListener('click', function (e) { e.preventDefault(); ouvrirFichier('certificats-marraines', ficheM.certificat_path); });
+      st.querySelectorAll('[data-consentement]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); voirConsentementSigne(); }); });
+      st.querySelectorAll('[data-retirer]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); retirerConsentement(); }); });
+      if (ficheM.statut === 'a_signer') afficherSignature(st);
       if (expiree || ficheM.statut === 'retiree') return;
     }
     remplirFormMarraine(); carte.hidden = false;
@@ -912,6 +941,100 @@ function chargerFicheMarraine() {
     if (verrou) carte.insertAdjacentHTML('afterbegin', '<div id="fm-verrou" class="message info" style="margin-bottom:18px;">🔒 <strong>Ta fiche est entre les mains de Sabrina.</strong> Pour changer ta photo, ta bio ou tes moyens de contact, <a href="#messages">écris-lui dans Messages</a> : elle fait la modification pour toi.</div>');
   });
 }
+/* Photo de profil (privée : l'étudiante et Sabrina) */
+function initiales() { var d = etat.dossier || {}; return (((d.prenom || '?')[0] || '') + ((d.nom || '')[0] || '')).toUpperCase(); }
+function afficherPhoto(url) {
+  ['pp-apercu', 'menu-photo', 'chat-moi'].forEach(function (id) {
+    var el = $(id); if (!el) return;
+    el.innerHTML = url ? '<img src="' + echapper(url) + '" alt="Ma photo">' : echapper(initiales());
+  });
+  $('pp-retirer').hidden = !url;
+}
+function chargerPhoto() {
+  var d = etat.dossier;
+  if (!d || !d.photo_profil) { afficherPhoto(null); return; }
+  sb.storage.from('avatars').createSignedUrl(d.photo_profil, 3600).then(function (r) { afficherPhoto(r && r.data ? r.data.signedUrl : null); });
+}
+$('pp-fichier').addEventListener('change', function () {
+  var f = this.files && this.files[0]; this.value = ''; if (!f || !etat.dossier) return;
+  var img = new Image(), url = URL.createObjectURL(f);
+  img.onerror = function () { message('msg-photo', 'erreur', 'Cette image ne peut pas être lue. Essaie une photo JPG ou PNG.'); };
+  img.onload = function () {
+    var c = document.createElement('canvas'), t = 400, k = Math.max(t / img.width, t / img.height);
+    c.width = t; c.height = t;
+    c.getContext('2d').drawImage(img, (t - img.width * k) / 2, (t - img.height * k) / 2, img.width * k, img.height * k);
+    URL.revokeObjectURL(url);
+    c.toBlob(function (b) {
+      var uid = etat.session.user.id, chemin = uid + '/photo-' + Date.now() + '.jpg', ancienne = etat.dossier.photo_profil;
+      message('msg-photo', 'info', 'Envoi…');
+      sb.storage.from('avatars').upload(chemin, b, { contentType: 'image/jpeg' }).then(function (r) {
+        if (r.error) throw new Error(r.error.message);
+        return sb.from('etudiantes').update({ photo_profil: chemin }).eq('id', etat.dossier.id);
+      }).then(function (r) {
+        if (r && r.error) throw new Error(r.error.message);
+        etat.dossier.photo_profil = chemin;
+        if (ancienne && ancienne !== chemin) sb.storage.from('avatars').remove([ancienne]);
+        message('msg-photo', 'ok', '✅ Ta photo est enregistrée.'); chargerPhoto();
+      }).catch(function () { message('msg-photo', 'erreur', 'La photo n\'a pas pu être enregistrée. Réessaie.'); });
+    }, 'image/jpeg', 0.86);
+  };
+  img.src = url;
+});
+$('pp-retirer').addEventListener('click', function () {
+  var d = etat.dossier; if (!d || !d.photo_profil) return;
+  var ancienne = d.photo_profil;
+  sb.from('etudiantes').update({ photo_profil: null }).eq('id', d.id).then(function () {
+    sb.storage.from('avatars').remove([ancienne]); d.photo_profil = null; chargerPhoto(); message('msg-photo', 'ok', 'Photo retirée.');
+  });
+});
+
+/* Consentement à la publication : lecture, signature électronique, retrait */
+var VERSION_CONSENTEMENT = 'marraine-v1';
+function afficherSignature(st) {
+  var bloc = document.createElement('div'); bloc.className = 'carte'; bloc.id = 'fm-signature';
+  bloc.innerHTML = '<h2 style="margin-top:0;">✍️ Mon consentement à la publication</h2>' +
+    '<p class="note" style="margin-bottom:10px;">Lis attentivement le texte au complet. Tu peux le retirer en tout temps après l\'avoir signé.</p>' +
+    '<div id="cs-texte" style="white-space:pre-wrap;background:#fff;border:1px solid var(--bord);border-radius:14px;padding:16px;max-height:340px;overflow-y:auto;font-size:.9rem;">Chargement du texte…</div>' +
+    '<p class="note" style="margin:8px 0 14px;">Tu dois faire défiler le texte jusqu\'à la fin pour pouvoir signer.</p>' +
+    '<form id="form-signature"><label class="case"><input type="checkbox" id="cs-lu" disabled required> <span>J\'ai lu et compris ce consentement, j\'ai 18 ans ou plus, et j\'accepte que ma fiche soit publiée aux conditions ci-dessus.</span></label>' +
+    '<label class="champ">Écris ton nom complet pour signer <span class="note">(tel qu\'il apparaît sur ta fiche : ' + echapper(ficheM.nom_complet) + ')</span><input type="text" id="cs-nom" autocomplete="name" required disabled></label>' +
+    '<div id="msg-signature"></div><button class="btn" type="submit" id="cs-bouton" disabled>Je signe ✍️</button></form>';
+  st.appendChild(bloc);
+  sb.from('textes_consentement').select('texte').eq('version', VERSION_CONSENTEMENT).maybeSingle().then(function (r) {
+    var t = r && r.data && r.data.texte;
+    if (!t) { $('cs-texte').textContent = 'Le texte n\'a pas pu être chargé. Réessaie dans un instant.'; return; }
+    $('cs-texte').textContent = t;
+    function verifierFin() { var b = $('cs-texte'); if (b.scrollTop + b.clientHeight >= b.scrollHeight - 12) { $('cs-lu').disabled = false; $('cs-nom').disabled = false; $('cs-bouton').disabled = false; } }
+    $('cs-texte').addEventListener('scroll', verifierFin); setTimeout(verifierFin, 50);
+  });
+  $('form-signature').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!$('cs-lu').checked) return message('msg-signature', 'erreur', 'Coche la case pour confirmer que tu as lu et compris le consentement.');
+    var b = $('cs-bouton'); b.disabled = true; b.textContent = 'Signature…';
+    sb.rpc('signer_consentement_marraine', { p_nom: $('cs-nom').value, p_version: VERSION_CONSENTEMENT, p_appareil: navigator.userAgent }).then(function (r) {
+      b.disabled = false; b.textContent = 'Je signe ✍️';
+      if (r.error) return message('msg-signature', 'erreur', echapper((r.error.message || '').replace(/^.*?:\s*/, '')) || 'La signature n\'a pas fonctionné. Réessaie.');
+      message('msg-marraine', 'ok', '✅ Merci ! Ton consentement est signé. Sabrina publie ta fiche très bientôt et tu recevras une notification.');
+      chargerFicheMarraine(); window.scrollTo(0, 0);
+    });
+  });
+}
+function voirConsentementSigne() {
+  var w = window.open('', '_blank'); if (!w) return;
+  w.document.write('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mon consentement signé</title><body style="font-family:Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;line-height:1.55;color:#2c221e"><pre style="white-space:pre-wrap;font:inherit">' +
+    echapper(ficheM.consent_texte || '') + '</pre><hr><p><strong>Signé électroniquement par :</strong> ' + echapper(ficheM.consent_signature_nom || '') + '<br><strong>Date et heure :</strong> ' +
+    (ficheM.consent_signature_date ? new Date(ficheM.consent_signature_date).toLocaleString('fr-CA') : '') + '</p><button onclick="print()">Imprimer ou enregistrer en PDF</button></body>');
+  w.document.close();
+}
+function retirerConsentement() {
+  if (!confirm('Retirer ton consentement ?\n\nTa fiche disparaîtra tout de suite de la page « Nos marraines d\'allaitement ». Ta certification reste valide. Pour être publiée de nouveau, tu devras écrire à Sabrina et signer un nouveau consentement.')) return;
+  sb.rpc('retirer_consentement_marraine').then(function (r) {
+    if (r.error) { alert('Le retrait n\'a pas fonctionné. Écris à serenaissance.doula@gmail.com.'); return; }
+    message('msg-marraine', 'ok', 'Ton consentement est retiré : ta fiche n\'est plus affichée sur le site. Sabrina en est avisée.');
+    chargerFicheMarraine();
+  });
+}
+
 function ouvrirFichier(seau, chemin) {
   var w = window.open('', '_blank');
   sb.storage.from(seau).createSignedUrl(chemin, 300).then(function (r) {

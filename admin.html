@@ -183,7 +183,9 @@ th { color: var(--doux); font-weight: 600; }
     <h2 style="margin-bottom:6px;">Marraines d'allaitement</h2>
     <p style="font-size:.86rem;color:var(--doux);margin-bottom:6px;">Fiches soumises par les étudiantes. Tu vérifies leurs résultats, tu valides, et la fiche apparaît sur la page publique <a href="index.html#nos-marraines" target="_blank">Nos marraines</a> pour 2 ans.</p>
     <div class="filtres" id="filtres-m">
-      <button data-f="soumise" class="actif">À valider</button>
+      <button data-f="soumise" class="actif">À vérifier</button>
+      <button data-f="a_signer">Attente de signature</button>
+      <button data-f="signee">Signées · à publier</button>
       <button data-f="validee">Certifiées</button>
       <button data-f="expire">À renouveler (≤ 60 jours)</button>
       <button data-f="a_corriger">À corriger</button>
@@ -459,6 +461,8 @@ function charger() {
       afficherMarraines(); if (ficheMId) ouvrirFicheM(ficheMId, true);
     });
   }).then(function () {
+    return chargerAvatars();
+  }).then(function () {
     afficherBord(); afficherListe();
     ouvrirDepuisLien();
     if (ficheId) ouvrirFiche(ficheId, true);
@@ -469,7 +473,8 @@ function direct() {
     if (p.eventType === 'INSERT') toast('🌸 Nouvelle inscription : ' + (p.new.prenom || '') + ' ' + (p.new.nom || ''));
     charger();
   }).on('postgres_changes', { event: '*', schema: 'public', table: 'marraines' }, function (p) {
-    if (p.eventType !== 'DELETE' && p.new && p.new.statut === 'soumise') toast('🤱 Fiche de marraine à valider : ' + (p.new.nom_complet || ''));
+    if (p.eventType !== 'DELETE' && p.new && p.new.statut === 'soumise') toast('🤱 Fiche de marraine à vérifier : ' + (p.new.nom_complet || ''));
+    if (p.eventType !== 'DELETE' && p.new && p.new.statut === 'signee' && (!p.old || p.old.statut !== 'signee')) toast('✍️ ' + (p.new.nom_complet || '') + ' a signé son consentement');
     charger();
   }).on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, function (p) {
     if (p.eventType === 'INSERT' && p.new && !p.new.de_admin) { var e = etuParUid(p.new.etudiante); toast('💬 ' + (e ? e.prenom : 'Message') + ' : ' + p.new.texte.slice(0, 60)); if (!chatUid || chatUid !== p.new.etudiante || document.visibilityState !== 'visible') Reglages.sonner(); }
@@ -483,9 +488,23 @@ function direct() {
   });
 }
 
+/* Photos de profil (privées : l'étudiante et toi seulement) */
+var avatars = {};
+function chargerAvatars() {
+  var l = toutes.filter(function (e) { return e.photo_profil && !avatars[e.photo_profil]; }).map(function (e) { return e.photo_profil; });
+  if (!l.length || !sb.storage.from('avatars').createSignedUrls) return Promise.resolve();
+  return sb.storage.from('avatars').createSignedUrls(l, 3600).then(function (r) {
+    ((r && r.data) || []).forEach(function (x) { if (x.signedUrl) avatars[x.path] = x.signedUrl; });
+  }).catch(function () {});
+}
+function avatarHtml(e, taille) {
+  var t = taille || 42, init = e ? (((e.prenom || '?')[0] || '') + ((e.nom || '')[0] || '')).toUpperCase() : '?';
+  var url = e && e.photo_profil && avatars[e.photo_profil];
+  return url ? '<img class="avatar" src="' + esc(url) + '" alt="" style="width:' + t + 'px;height:' + t + 'px;object-fit:cover;padding:0;">'
+             : '<div class="avatar" style="width:' + t + 'px;height:' + t + 'px;">' + esc(init) + '</div>';
+}
 function carteLigne(e) {
-  var init = ((e.prenom || '?')[0] + (e.nom || '')[0] || '').toUpperCase();
-  return '<div class="ligne" data-id="' + e.id + '"><div class="avatar">' + esc(init) + '</div><div class="qui"><strong>' + esc(e.prenom) + ' ' + esc(e.nom) + '</strong>' +
+  return '<div class="ligne" data-id="' + e.id + '">' + avatarHtml(e) + '<div class="qui"><strong>' + esc(e.prenom) + ' ' + esc(e.nom) + '</strong>' +
     '<small>' + esc(e.courriel) + ' · ' + jour(e.created_at) + '</small><div>' + pastilles(e) + '</div></div><span>›</span></div>';
 }
 function afficherBord() {
@@ -497,7 +516,7 @@ function afficherBord() {
     '<div class="stat" data-f="marraine"><b>' + n.marraine + '</b><span>Accès marraine</span></div>' +
     '<div class="stat' + (n.suspendu ? ' alerte' : '') + '" data-f="suspendu"><b>' + n.suspendu + '</b><span>Suspendues</span></div>' +
     '<div class="stat" data-f="toutes"><b>' + n.total + '</b><span>Dossiers au total</span></div>' +
-    '<div class="stat' + (marraines.filter(function (m) { return m.statut === 'soumise'; }).length ? ' alerte' : '') + '" data-m="1"><b>' + marraines.filter(function (m) { return m.statut === 'soumise'; }).length + '</b><span>Fiches de marraine à valider</span></div>';
+    '<div class="stat' + (marraines.filter(function (m) { return m.statut === 'soumise' || m.statut === 'signee'; }).length ? ' alerte' : '') + '" data-m="1"><b>' + marraines.filter(function (m) { return m.statut === 'soumise' || m.statut === 'signee'; }).length + '</b><span>Fiches de marraine à vérifier ou publier</span></div>';
   var af = toutes.filter(function (e) { return enAttente(e) && !e.suspendu; });
   $('a-faire').innerHTML = af.length ? af.map(carteLigne).join('') : '<div class="vide">Rien à valider pour le moment ✨</div>';
   $('recentes').innerHTML = toutes.slice(0, 5).map(carteLigne).join('') || '<div class="vide">Aucune inscription pour l\'instant.</div>';
@@ -525,7 +544,7 @@ function ouvrirFiche(id, rafraichir) {
   var e = toutes.find(function (x) { return x.id === id; });
   if (!e) { if (rafraichir) fermerFiche(); return; }
   ficheId = id;
-  $('fiche-nom').textContent = (e.prenom || '') + ' ' + (e.nom || '');
+  $('fiche-nom').innerHTML = '<span style="display:flex;align-items:center;gap:10px;">' + avatarHtml(e, 38) + esc((e.prenom || '') + ' ' + (e.nom || '')) + '</span>';
   var f = e.formation === 'marraine';
   var acts = [];
   if (!f) acts.push(valide(e) ? '<button class="btn gris" data-a="renvoyer">✉️ Renvoyer le courriel de bienvenue</button>' : '<button class="btn vert" data-a="valider">✓ Valider et envoyer le courriel</button>');
@@ -719,7 +738,7 @@ function dans2ans(d) { var x = new Date(d + 'T12:00:00'); x.setFullYear(x.getFul
 function expireeM(m) { return m.statut === 'validee' && m.date_expiration && m.date_expiration < aujourdhui(); }
 function statutM(m) {
   if (expireeM(m)) return '<span class="pastille p-suspendu">⌛ Expirée le ' + jour(m.date_expiration) + '</span>';
-  return { soumise: '<span class="pastille p-attente">⏳ À valider</span>', validee: '<span class="pastille p-valide">✓ Certifiée jusqu\'au ' + jour(m.date_expiration) + '</span>',
+  return { soumise: '<span class="pastille p-attente">⏳ À vérifier</span>', a_signer: '<span class="pastille p-lien">✍️ En attente de sa signature</span>', signee: '<span class="pastille p-valide">✅ Consentement signé · prête à publier</span>', validee: '<span class="pastille p-valide">✓ Certifiée jusqu\'au ' + jour(m.date_expiration) + '</span>',
     a_corriger: '<span class="pastille p-marraine">✏️ Correction demandée</span>', retiree: '<span class="pastille p-lien">Retirée de la page</span>' }[m.statut] || esc(m.statut);
 }
 $('filtres-m').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; filtreM = b.dataset.f; document.querySelectorAll('#filtres-m button').forEach(function (x) { x.classList.toggle('actif', x === b); }); afficherMarraines(); });
@@ -741,8 +760,9 @@ function ouvrirFicheM(id, rafraichir) {
   var etu = toutes.filter(function (e) { return (m.user_id && e.user_id === m.user_id) || (e.courriel || '').toLowerCase() === (m.courriel || '').toLowerCase(); })[0];
   $('fiche-nom').textContent = m.nom_complet;
   var acts = [];
-  if (m.statut !== 'validee' || expireeM(m)) acts.push('<button class="btn vert" data-am="valider">✓ ' + (expireeM(m) ? 'Renouveler (2 ans) et publier' : 'Valider, certifier et publier') + '</button>');
-  if (m.statut === 'validee' && !expireeM(m)) acts.push('<button class="btn gris" data-am="renouveler">🔄 Renouveler 2 ans à partir d\'aujourd\'hui</button>');
+  if (m.statut === 'soumise' || m.statut === 'a_corriger' || m.statut === 'retiree' || expireeM(m)) acts.push('<button class="btn vert" data-am="signature">✓ ' + (expireeM(m) ? 'Renouvellement : demander une nouvelle signature' : 'Résultats vérifiés : demander sa signature') + '</button>');
+  if (m.statut === 'signee') acts.push('<button class="btn vert" data-am="valider">🎉 Publier sa fiche (certification 2 ans)</button>');
+  if (m.statut === 'validee' && !expireeM(m)) acts.push('<button class="btn gris" data-am="signature">🔄 Renouveler : demander une nouvelle signature</button>');
   if (m.statut !== 'a_corriger') acts.push('<button class="btn gris" data-am="corriger">✏️ Demander une correction</button>');
   if (m.statut !== 'retiree') acts.push('<button class="btn gris" data-am="retirer">Retirer de la page publique</button>');
   var h = '<div class="carte" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;"><div style="text-align:center;"><img id="fm-photo-admin" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;background:#efe6dc;display:block;margin:0 auto 6px;"><label class="btn gris" style="cursor:pointer;font-size:.76rem;padding:6px 10px;">📷 Changer la photo<input type="file" id="fm-photo-changer" accept="image/*" hidden></label></div>' +
@@ -761,7 +781,12 @@ function ouvrirFicheM(id, rafraichir) {
     '<p class="infos-ligne">' + (m.consent_gratuite ? '✅' : '❌') + ' Gratuité et bénévolat des jumelages</p>' +
     '<p class="infos-ligne">' + (m.consent_validite ? '✅' : '❌') + ' Validité de 2 ans et mise à jour</p>' +
     '<p class="infos-ligne">' + (m.consent_affichage ? '✅' : '❌') + ' Affichage sur le site</p>' +
-    '<p class="infos-ligne" style="color:var(--doux);font-size:.8rem;">Acceptés le ' + (m.consent_date ? new Date(m.consent_date).toLocaleString('fr-CA') : '—') + '</p></div>' +
+    '<p class="infos-ligne" style="color:var(--doux);font-size:.8rem;">Acceptés le ' + (m.consent_date ? new Date(m.consent_date).toLocaleString('fr-CA') : '—') + '</p>' +
+    '<h4 style="margin:12px 0 6px;">✍️ Consentement à la publication</h4>' +
+    (m.consent_signature_date
+      ? '<p class="infos-ligne ok">✅ Signé électroniquement par « ' + esc(m.consent_signature_nom) + ' » le ' + new Date(m.consent_signature_date).toLocaleString('fr-CA') + ' (' + esc(m.consent_version || '') + ')</p><div class="actions" style="margin-top:6px;"><button class="btn gris" data-am="voir-consentement">Voir le texte signé</button></div>'
+      : (m.consent_retire_date ? '<p class="infos-ligne ko">🚫 Consentement retiré le ' + new Date(m.consent_retire_date).toLocaleString('fr-CA') + '</p>' : '<p class="infos-ligne">Pas encore signé. ' + (m.statut === 'a_signer' ? 'Elle a été invitée à le signer dans son compte.' : 'Clique sur « Demander sa signature » après avoir vérifié ses résultats.') + '</p>')) +
+    '</div>' +
     '<div class="carte"><h3 style="margin-bottom:8px;">Certificat</h3><p class="infos-ligne" style="margin-bottom:8px;">' + (m.certificat_path ? '📜 Certificat téléversé : l\'étudiante peut le télécharger dans son compte.' : 'Téléverse le certificat (PDF ou image) : l\'étudiante pourra le télécharger dans son compte.') + '</p>' +
     '<div class="actions"><label class="btn gris" style="cursor:pointer;">📤 Téléverser le certificat<input type="file" id="fm-certif" accept=".pdf,image/*" hidden></label>' + (m.certificat_path ? '<button class="btn gris" data-am="voir-certif">Voir</button>' : '') + '</div></div>' +
     (m.commentaire_admin ? '<div class="carte"><h3 style="margin-bottom:6px;">Dernier message envoyé</h3><p class="infos-ligne">' + esc(m.commentaire_admin) + '</p></div>' : '') +
@@ -833,9 +858,16 @@ $('fiche-corps').addEventListener('click', function (ev) {
   if (a === 'dossier') {
     var etu = toutes.filter(function (e) { return (m.user_id && e.user_id === m.user_id) || (e.courriel || '').toLowerCase() === (m.courriel || '').toLowerCase(); })[0];
     if (etu) { ficheMId = null; vue('etudiantes'); ouvrirFiche(etu.id); }
-  } else if (a === 'valider' || a === 'renouveler') {
-    if (!m.consent_gratuite || !m.consent_validite || !m.consent_affichage) { toast('Les 3 consentements doivent être acceptés.'); return; }
-    if (!confirm((a === 'valider' ? 'Valider et publier' : 'Renouveler') + ' la fiche de ' + m.nom_complet + ' ?\n\nCertification valide 2 ans, à partir d\'aujourd\'hui.')) return;
+  } else if (a === 'signature') {
+    if (!m.consent_gratuite || !m.consent_validite || !m.consent_affichage) { toast('Les 3 cases de sa fiche doivent être acceptées.'); return; }
+    if (!confirm('As-tu vérifié les résultats de ' + m.nom_complet + ' ?\n\nElle recevra une notification pour signer son consentement à la publication dans son compte. Tu pourras publier sa fiche dès qu\'elle aura signé.')) return;
+    majM(m, { statut: 'a_signer', commentaire_admin: null }, '✍️ Signature demandée');
+  } else if (a === 'voir-consentement') {
+    var w = window.open('', '_blank');
+    if (w) { w.document.write('<!doctype html><meta charset="utf-8"><title>Consentement signé · ' + esc(m.nom_complet) + '</title><body style="font-family:Arial,sans-serif;max-width:720px;margin:30px auto;padding:0 16px;line-height:1.55;color:#2c221e"><pre style="white-space:pre-wrap;font:inherit">' + esc(m.consent_texte || '') + '</pre><hr><p><strong>Signé électroniquement par :</strong> ' + esc(m.consent_signature_nom) + '<br><strong>Date et heure :</strong> ' + new Date(m.consent_signature_date).toLocaleString('fr-CA') + '<br><strong>Compte :</strong> ' + esc(m.courriel || '') + '<br><strong>Version :</strong> ' + esc(m.consent_version || '') + '<br><strong>Appareil :</strong> ' + esc(m.consent_appareil || '') + '</p><button onclick="print()">Imprimer ou enregistrer en PDF</button></body>'); w.document.close(); }
+  } else if (a === 'valider') {
+    if (!m.consent_signature_date || m.statut !== 'signee') { toast('Elle doit d\'abord signer son consentement.'); return; }
+    if (!confirm('Publier la fiche de ' + m.nom_complet + ' ?\n\nCertification valide 2 ans, à partir d\'aujourd\'hui.')) return;
     b.disabled = true;
     publierPhoto(m).then(function (photo) {
       var d = aujourdhui();
@@ -927,8 +959,8 @@ function chargerMessages() {
     var total = l.reduce(function (s, c) { return s + c.nonlus; }, 0);
     $('nb-messages').hidden = !total; $('nb-messages').textContent = total;
     $('liste-conv').innerHTML = l.length ? l.map(function (c) {
-      var n = nomUid(c.uid), init = n.split(' ').map(function (x) { return x[0] || ''; }).join('').slice(0, 2).toUpperCase();
-      return '<div class="ligne conv" data-conv="' + c.uid + '"><div class="avatar">' + esc(init) + '</div><div class="qui"><strong>' + esc(n) + '</strong><small>' + (c.dernier.de_admin ? 'Toi : ' : '') + esc(c.dernier.texte) + '</small></div>' +
+      var n = nomUid(c.uid);
+      return '<div class="ligne conv" data-conv="' + c.uid + '">' + avatarHtml(etuParUid(c.uid) || { prenom: n }) + '<div class="qui"><strong>' + esc(n) + '</strong><small>' + (c.dernier.de_admin ? 'Toi : ' : '') + esc(c.dernier.texte) + '</small></div>' +
         (c.nonlus ? '<span class="nonlus">' + c.nonlus + '</span>' : '<small style="color:var(--doux);font-size:.74rem;">' + depuis(c.dernier.created_at) + '</small>') + '</div>';
     }).join('') : '<div class="vide">Aucun message pour l\'instant. Tu peux écrire à une étudiante depuis son dossier (bouton 💬 Messages).</div>';
     if (chatUid) afficherChat();
@@ -950,7 +982,7 @@ function afficherChat() {
     sb.from('messages').update({ lu: true }).eq('etudiante', chatUid).eq('de_admin', false).eq('lu', false).then(function () { l.forEach(function (m) { if (!m.de_admin) m.lu = true; }); chargerMessages(); });
 }
 function ouvrirChat(uid) {
-  chatUid = uid; $('chat-nom').textContent = nomUid(uid);
+  chatUid = uid; $('chat-nom').innerHTML = '<span style="display:flex;align-items:center;gap:10px;">' + avatarHtml(etuParUid(uid) || { prenom: nomUid(uid) }, 36) + esc(nomUid(uid)) + '</span>';
   $('chat-bulles').dataset.vu = ''; $('chat').hidden = false; afficherChat();
   setTimeout(function () { $('chat-texte').focus(); }, 60);
 }
