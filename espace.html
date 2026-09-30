@@ -19,6 +19,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="adresse.js"></script>
+<script src="/reglages.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -74,6 +75,37 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 .fichiers li { display: flex; justify-content: space-between; gap: 12px; align-items: center; background: #fff; border: 1px solid var(--bord); border-radius: 12px; padding: 11px 14px; font-size: .9rem; }
 .fichiers small { display: block; color: var(--doux); font-size: .78rem; }
 .fichiers .vide { justify-content: center; color: var(--doux); font-style: italic; }
+.btn[hidden], button[hidden] { display: none !important; }
+.cloche { position: relative; background: none; border: 0; font-size: 1.4rem; cursor: pointer; padding: 2px 6px; }
+.compteur { position: absolute; top: -4px; right: -8px; min-width: 18px; height: 18px; border-radius: 50px; background: #d64545; color: #fff; font-size: .68rem; font-style: normal; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px; line-height: 1; }
+.compteur[hidden] { display: none; }
+.menu span.i { position: relative; }
+.panneau-avis { position: fixed; top: 84px; right: 12px; width: min(380px, calc(100vw - 24px)); max-height: 70vh; overflow-y: auto; background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; box-shadow: 0 12px 34px rgba(44,34,30,.18); z-index: 60; }
+.panneau-avis[hidden] { display: none; }
+.pa-haut { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--bord); position: sticky; top: 0; background: var(--carte); }
+.pa-haut button { background: none; border: 0; color: var(--terra); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.avis { display: block; padding: 11px 14px; border-bottom: 1px solid #efe6dc; text-decoration: none; color: var(--texte); font-size: .88rem; cursor: pointer; }
+.avis.nonlu { background: #fbf3ee; }
+.avis.nonlu strong::before { content: "● "; color: var(--terra); }
+.avis small { display: block; color: var(--doux); font-size: .76rem; margin-top: 2px; }
+.panneau-avis .vide { text-align: center; color: var(--doux); padding: 24px 10px; font-style: italic; font-size: .9rem; }
+.bandeau-maj { background: #fff4e0; border: 1px solid #e8c98f; color: #6b4d12; border-radius: 14px; padding: 12px 16px; margin-bottom: 18px; font-size: .92rem; }
+.bandeau-maj.en-cours { background: #fbeeea; border-color: #e3b5a8; color: #8c4434; }
+.chat-carte { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.bulles { min-height: 280px; max-height: 58vh; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+.bulles .vide { text-align: center; color: var(--doux); font-style: italic; margin: auto; }
+.bulle { max-width: 80%; padding: 9px 13px; border-radius: 16px; font-size: .94rem; white-space: pre-wrap; word-wrap: break-word; }
+.bulle small { display: block; font-size: .68rem; opacity: .7; margin-top: 3px; }
+.bulle.moi { align-self: flex-end; background: var(--terra); color: #fff; border-bottom-right-radius: 4px; }
+.bulle.elle { align-self: flex-start; background: #fff; border: 1px solid var(--bord); border-bottom-left-radius: 4px; }
+.bulle.elle b { display: block; font-size: .74rem; color: var(--terra); }
+.jour-sep { align-self: center; font-size: .74rem; color: var(--doux); margin: 6px 0; }
+.chat-saisie { flex-direction: row; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--bord); background: var(--carte); }
+.chat-saisie textarea { resize: none; max-height: 140px; border-radius: 20px; }
+.chat-saisie .btn { border-radius: 50%; width: 48px; height: 48px; padding: 0; flex-shrink: 0; }
+.annonce { background: #fff; border: 1px solid var(--bord); border-left: 4px solid var(--terra); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; font-size: .9rem; }
+.annonce small { display: block; color: var(--doux); font-size: .76rem; }
+#fm-carte.verrouillee input, #fm-carte.verrouillee textarea { background: #f3ede6; }
 @media (display-mode: standalone) { .site-seulement { display: none !important; } }
 @media (max-width: 900px) {
   .cadre { grid-template-columns: 1fr; padding-bottom: 120px; }
@@ -81,7 +113,9 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   .menu .qui { display: none; }
   .menu a, .menu button { flex: 1; flex-direction: column; gap: 2px; padding: 6px 2px; font-size: .68rem; border: 0; border-radius: 10px; text-align: center; background: transparent; }
   .menu a span.i, .menu button span.i { font-size: 1.25rem; }
-  .menu .sortir { margin-top: 0; color: var(--terra); background: transparent; }
+  .menu .sortir { display: none; }
+  .panneau-avis { top: 70px; }
+  .bulles { max-height: calc(100vh - 360px); }
   .menu .externe { display: none; }
   .rang { grid-template-columns: 1fr; }
   .cours li { flex-direction: column; align-items: flex-start; }
@@ -92,11 +126,19 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 <body>
 <header class="entete">
   <a href="index.html" id="lien-logo"><img src="logo.jpg" alt="Académie Sérénaissance"></a>
-  <a class="retour site-seulement" href="index.html">← Retour au site</a>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <a class="retour site-seulement" href="index.html">← Retour au site</a>
+    <button class="cloche" id="cloche" type="button" hidden aria-label="Notifications">🔔<i class="compteur" id="nb-avis" hidden></i></button>
+  </div>
 </header>
+<div class="panneau-avis" id="panneau-avis" hidden>
+  <div class="pa-haut"><strong>Notifications</strong><button type="button" id="avis-tout-lu">Tout marquer comme lu</button></div>
+  <div id="liste-avis"></div>
+</div>
 
 <div class="cadre sans-menu" id="cadre">
 <main>
+  <div id="bandeau-maj" class="bandeau-maj" hidden></div>
   <!-- Chargement -->
   <section class="vue" id="vue-chargement"><p class="sous">Chargement de ton espace… 🌸</p></section>
 
@@ -224,14 +266,9 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
         <button class="btn" type="submit" id="f-bouton">Enregistrer mes changements</button>
       </form>
     </div>
-    <div class="carte">
-      <h3 style="margin-bottom:6px;">🔑 Mot de passe</h3>
-      <p style="margin-bottom:14px;">Tu peux changer ton mot de passe en tout temps.</p>
-      <a class="btn fantome" href="#motdepasse">Changer mon mot de passe</a>
-    </div>
   </section>
 
-  <!-- Documents de stage -->
+  <!-- Fiche de marraine -->
   <section class="vue" id="vue-marraine" hidden>
     <h1>Ma fiche de marraine d'allaitement</h1>
     <p class="sous">Une fois ta formation réussie, soumets ta fiche : Sabrina vérifie tes résultats, valide ta certification et publie ta fiche sur la page « Nos marraines d'allaitement ».</p>
@@ -258,6 +295,36 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
         <button class="btn" type="submit" id="fm-bouton">Soumettre ma fiche à Sabrina</button>
       </form>
     </div>
+  </section>
+
+  <!-- Messages avec Sabrina -->
+  <section class="vue" id="vue-messages" hidden>
+    <h1>Messages</h1>
+    <p class="sous">Ta conversation privée avec Sabrina. Elle te répond dès que possible (habituellement en moins de 48 h).</p>
+    <div id="annonces-liste"></div>
+    <div class="carte chat-carte">
+      <div class="bulles" id="chat-bulles"><div class="vide">Chargement…</div></div>
+      <form class="chat-saisie" id="chat-form"><textarea id="chat-texte" rows="1" maxlength="2000" placeholder="Écris ton message à Sabrina…" required></textarea><button class="btn" type="submit" aria-label="Envoyer">➤</button></form>
+    </div>
+    <p class="note">Pour une urgence, appelle Sabrina au <a href="tel:5067592044">506-759-2044</a>.</p>
+  </section>
+
+  <!-- Paramètres -->
+  <section class="vue" id="vue-parametres" hidden>
+    <h1>Paramètres</h1>
+    <p class="sous">Choisis comment l'Académie te prévient : messages de Sabrina, annonces et mises à jour des formations.</p>
+    <div class="carte" id="rg"></div>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">📲 L'appli de l'Académie</h3>
+      <p id="appli-installee" hidden>✅ Tu utilises l'appli installée sur cet appareil. Pour l'ajouter sur un autre appareil, ouvre <strong>academiesere.ca/espace.html</strong> sur celui-ci et reviens dans Paramètres.</p>
+      <div class="bloc-appli" data-toujours hidden></div>
+    </div>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">🔑 Mot de passe</h3>
+      <p style="margin-bottom:14px;">Tu peux changer ton mot de passe en tout temps.</p>
+      <a class="btn fantome" href="#motdepasse">Changer mon mot de passe</a>
+    </div>
+    <button type="button" class="btn fantome" id="param-sortir" style="width:100%;">🚪 Me déconnecter</button>
   </section>
 
   <section class="vue" id="vue-stage" hidden>
@@ -296,7 +363,9 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <a href="#infos" data-vue="infos"><span class="i">👤</span><span>Mes informations</span></a>
   <a href="#marraine" data-vue="marraine" id="menu-marraine" hidden><span class="i">🤱</span><span>Ma fiche de marraine</span></a>
   <a href="#stage" data-vue="stage" id="menu-stage" hidden><span class="i">📝</span><span>Documents de stage</span></a>
-  <a href="https://cal.com/sabrina-chavanel-zs5clq/mentorat" target="_blank" rel="noopener" class="externe"><span class="i">💬</span><span>Mentorat</span></a>
+  <a href="#messages" data-vue="messages"><span class="i">💬<i class="compteur" id="nb-messages" hidden></i></span><span>Messages</span></a>
+  <a href="#parametres" data-vue="parametres"><span class="i">⚙️</span><span>Paramètres</span></a>
+  <a href="https://cal.com/sabrina-chavanel-zs5clq/mentorat" target="_blank" rel="noopener" class="externe"><span class="i">📅</span><span>Mentorat</span></a>
   <button type="button" class="sortir" id="menu-sortir"><span class="i">🚪</span><span>Me déconnecter</span></button>
 </nav>
 </div>
@@ -342,8 +411,10 @@ function routeConnectee() {
   if (h === 'motdepasse') { avecMenu(true); vue('mdp'); return; }
   if (h === 'stage' && !etat.valide) h = 'cours';
   if (h === 'marraine' && !etat.marraine) h = 'cours';
-  if (['cours', 'infos', 'stage', 'marraine'].indexOf(h) < 0) h = 'cours';
+  if (h === 'avis') h = 'messages';
+  if (['cours', 'infos', 'stage', 'marraine', 'messages', 'parametres'].indexOf(h) < 0) h = 'cours';
   avecMenu(true); vue(h);
+  if (h === 'messages') { $('chat-bulles').dataset.vu = ''; afficherChat(); marquerAnnoncesVues(); majCloche(); }
   if (h === 'stage') listerStage();
   if (h === 'marraine') chargerFicheMarraine();
 }
@@ -469,6 +540,7 @@ function charger(session, bienvenue) {
       etat.progression = (r && r.data && r.data.donnees) || {};
       afficherCours();
       routeConnectee();
+      demarrerCommunication();
       if (bienvenue) { var m = document.createElement('div'); m.className = 'message ok'; m.innerHTML = bienvenue; var v = document.querySelector('.vue:not([hidden])'); v.insertBefore(m, v.children[1] || null); }
     });
 }
@@ -662,9 +734,140 @@ function preparerInscription() {
 }
 
 /* ---------------- Déconnexion ---------------- */
+$('param-sortir').addEventListener('click', function () { $('menu-sortir').click(); });
 $('menu-sortir').addEventListener('click', function () {
   try { sessionStorage.removeItem('cle:4e-trimestre'); sessionStorage.removeItem('cle:marraine'); } catch (e) {}
   sb.auth.signOut().finally(function () { location.href = 'espace.html?deconnectee=1'; });
+});
+
+/* ---------------- Notifications, messages et annonces ---------------- */
+var VAPID = 'BA1eSxrp55R_nk6-rHpCI0Pi6OjPh-0MIOmlG2XZOLEptXG0xFUS4eB9aKAl3qQelLJqfouEq3FXWkYf02YhKMc';
+var avisListe = [], annonces = [], msgs = [], canal = null, reglagesMontes = false;
+function cleVues() { return 'annonces-vues:' + (etat.session ? etat.session.user.id : ''); }
+function annoncesVues() { try { return +localStorage.getItem(cleVues()) || 0; } catch (e) { return 0; } }
+function depuis(d) {
+  var s = (Date.now() - new Date(d).getTime()) / 1000;
+  if (s < 60) return 'à l\'instant'; if (s < 3600) return 'il y a ' + Math.floor(s / 60) + ' min';
+  if (s < 86400) return 'il y a ' + Math.floor(s / 3600) + ' h';
+  return new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' }) + ' à ' + new Date(d).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+}
+function quand(d) { return new Date(d).toLocaleString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).replace(':', ' h '); }
+function icone(g) { return { maintenance: '🛠️ ', nouveaute: '✨ ', info: '📣 ' }[g] || '📣 '; }
+function demarrerCommunication() {
+  $('cloche').hidden = false;
+  $('appli-installee').hidden = !APPLI;
+  if (!reglagesMontes && window.Reglages) { reglagesMontes = true; Reglages.monter($('rg'), { sb: sb, vapid: VAPID, admin: false, surPush: function () { chargerAvis(); chargerMessages(); chargerAnnonces(); } }); }
+  chargerAvis(); chargerMessages(); chargerAnnonces();
+  if (canal || !sb.channel) return;
+  var uid = etat.session.user.id;
+  canal = sb.channel('etudiante-' + uid)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: 'etudiante=eq.' + uid }, function (p) {
+      if (p.eventType === 'INSERT' && p.new && p.new.de_admin && window.Reglages && !(location.hash === '#messages' && document.visibilityState === 'visible')) Reglages.sonner();
+      chargerMessages();
+    })
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'avis', filter: 'pour=eq.' + uid }, chargerAvis)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'annonces' }, chargerAnnonces)
+    .subscribe();
+}
+function majCloche() {
+  var vues = annoncesVues();
+  var items = avisListe.map(function (a) { return { cle: 'a' + a.id, titre: a.titre, message: a.message, url: a.url, date: a.created_at, nonlu: !a.lu }; })
+    .concat(annonces.map(function (a) { return { cle: 'n' + a.id, titre: icone(a.genre) + a.titre, message: a.message, url: '#messages', date: a.created_at, nonlu: a.id > vues }; }))
+    .sort(function (x, y) { return new Date(y.date) - new Date(x.date); }).slice(0, 60);
+  var n = items.filter(function (i) { return i.nonlu; }).length;
+  $('nb-avis').hidden = !n; $('nb-avis').textContent = n > 99 ? '99+' : n;
+  if (navigator.setAppBadge && APPLI) (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(function () {});
+  $('liste-avis').innerHTML = items.length ? items.map(function (i) {
+    return '<a class="avis' + (i.nonlu ? ' nonlu' : '') + '" data-cle="' + i.cle + '" href="' + echapper(i.url || '#messages') + '"><strong>' + echapper(i.titre) + '</strong>' +
+      (i.message ? '<div>' + echapper(i.message) + '</div>' : '') + '<small>' + depuis(i.date) + '</small></a>';
+  }).join('') : '<div class="vide">Aucune notification pour le moment. 🌸</div>';
+}
+function chargerAvis() {
+  return sb.from('avis').select('*').order('created_at', { ascending: false }).limit(40).then(function (r) { avisListe = (r && r.data) || []; majCloche(); });
+}
+function marquerAnnoncesVues() {
+  var max = annonces.reduce(function (m, a) { return Math.max(m, a.id); }, 0);
+  try { localStorage.setItem(cleVues(), String(max)); } catch (e) {}
+}
+$('cloche').addEventListener('click', function (e) { e.stopPropagation(); $('panneau-avis').hidden = !$('panneau-avis').hidden; });
+document.addEventListener('click', function (e) { if (!e.target.closest('#panneau-avis') && !e.target.closest('#cloche')) $('panneau-avis').hidden = true; });
+$('liste-avis').addEventListener('click', function (e) {
+  var a = e.target.closest('[data-cle]'); if (!a) return;
+  e.preventDefault(); $('panneau-avis').hidden = true;
+  var cle = a.dataset.cle;
+  if (cle.charAt(0) === 'a') sb.from('avis').update({ lu: true }).eq('id', +cle.slice(1)).then(chargerAvis);
+  else { marquerAnnoncesVues(); majCloche(); }
+  var url = a.getAttribute('href') || '#messages', h = url.indexOf('#');
+  location.hash = h >= 0 ? url.slice(h) : '#messages';
+});
+$('avis-tout-lu').addEventListener('click', function () { marquerAnnoncesVues(); sb.from('avis').update({ lu: true }).eq('lu', false).then(chargerAvis); });
+
+/* Annonces de Sabrina + bandeau de mise à jour prévue */
+function chargerAnnonces() {
+  return sb.from('annonces').select('*').order('created_at', { ascending: false }).limit(20).then(function (r) {
+    annonces = (r && r.data) || [];
+    majCloche();
+    var maint = annonces.filter(function (a) { return a.genre === 'maintenance' && a.fin && new Date(a.fin) > new Date() && (!a.debut || new Date(a.debut) - Date.now() < 14 * 864e5); })
+      .sort(function (x, y) { return new Date(x.debut) - new Date(y.debut); })[0];
+    var b = $('bandeau-maj');
+    if (maint) {
+      var enCours = maint.debut && new Date(maint.debut) <= new Date();
+      b.className = 'bandeau-maj' + (enCours ? ' en-cours' : '');
+      b.innerHTML = '🛠️ <strong>' + (enCours ? 'Mise à jour des formations en cours' : 'Mise à jour prévue des formations') + '</strong> : ' +
+        (maint.debut ? 'du ' + quand(maint.debut) + ' ' : '') + 'jusqu\'au ' + quand(maint.fin) + ' (heure de ton appareil). ' +
+        (enCours ? 'Certaines pages peuvent être indisponibles quelques instants ; ta progression est conservée.' : 'Ta progression sera conservée.');
+      b.hidden = false;
+    } else b.hidden = true;
+    var recentes = annonces.filter(function (a) { return Date.now() - new Date(a.created_at) < 60 * 864e5; }).slice(0, 3);
+    $('annonces-liste').innerHTML = recentes.length ? '<h2 style="margin-top:0;">📣 Annonces de Sabrina</h2>' + recentes.map(function (a) {
+      return '<div class="annonce"><strong>' + icone(a.genre) + echapper(a.titre) + '</strong>' + (a.message ? '<div>' + echapper(a.message) + '</div>' : '') + '<small>' + depuis(a.created_at) + '</small></div>';
+    }).join('') + '<h2>💬 Ma conversation avec Sabrina</h2>' : '';
+    if (location.hash === '#messages') { marquerAnnoncesVues(); majCloche(); }
+  });
+}
+
+/* Conversation privée avec Sabrina */
+function heure(d) { return new Date(d).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' }); }
+function chargerMessages() {
+  return sb.from('messages').select('*').order('created_at', { ascending: true }).limit(1000).then(function (r) {
+    msgs = (r && r.data) || [];
+    var nonlus = msgs.filter(function (m) { return m.de_admin && !m.lu; }).length;
+    $('nb-messages').hidden = !nonlus; $('nb-messages').textContent = nonlus;
+    afficherChat();
+  });
+}
+function afficherChat() {
+  var b = $('chat-bulles'); if (!b) return;
+  var h = '', j = '';
+  msgs.forEach(function (m) {
+    var d = new Date(m.created_at).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (d !== j) { h += '<div class="jour-sep">' + d + '</div>'; j = d; }
+    h += '<div class="bulle ' + (m.de_admin ? 'elle' : 'moi') + '">' + (m.de_admin ? '<b>Sabrina</b>' : '') + echapper(m.texte) +
+      '<small>' + heure(m.created_at) + (!m.de_admin ? (m.lu ? ' · lu ✓✓' : ' · envoyé ✓') : '') + '</small></div>';
+  });
+  var enBas = b.scrollHeight - b.scrollTop - b.clientHeight < 80;
+  b.innerHTML = h || '<div class="vide">Écris ton premier message à Sabrina : une question sur un chapitre, ton stage, ton inscription… 🌸</div>';
+  if (enBas || !b.dataset.vu) { b.scrollTop = b.scrollHeight; b.dataset.vu = '1'; }
+  if (location.hash === '#messages' && document.visibilityState === 'visible' && msgs.some(function (m) { return m.de_admin && !m.lu; }))
+    sb.from('messages').update({ lu: true }).eq('de_admin', true).eq('lu', false).then(function () {
+      msgs.forEach(function (m) { if (m.de_admin) m.lu = true; }); $('nb-messages').hidden = true;
+      avisListe.filter(function (a) { return !a.lu && /messages/.test(a.url || ''); }).forEach(function (a) { sb.from('avis').update({ lu: true }).eq('id', a.id).then(function () {}); a.lu = true; });
+      majCloche();
+    });
+}
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && etat.session) { chargerMessages(); chargerAvis(); chargerAnnonces(); } });
+$('chat-texte').addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 140) + 'px'; });
+$('chat-texte').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && window.matchMedia('(min-width: 901px)').matches) { e.preventDefault(); $('chat-form').requestSubmit(); } });
+$('chat-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var t = $('chat-texte').value.trim(); if (!t) return;
+  if (etat.suspendu) { alert('Ton accès est suspendu pour le moment. Écris à serenaissance.doula@gmail.com ou appelle au 506-759-2044.'); return; }
+  var bouton = this.querySelector('button'); bouton.disabled = true;
+  sb.from('messages').insert({ etudiante: etat.session.user.id, texte: t }).then(function (r) {
+    bouton.disabled = false;
+    if (r.error) { alert(/Trop de messages/.test(r.error.message) ? 'Tu as envoyé beaucoup de messages en peu de temps. Réessaie un peu plus tard.' : 'Ton message n\'a pas pu partir. Vérifie ta connexion et réessaie.'); return; }
+    $('chat-texte').value = ''; $('chat-texte').style.height = 'auto'; $('chat-bulles').dataset.vu = ''; chargerMessages();
+  });
 });
 
 /* ---------------- Fiche de marraine d'allaitement ---------------- */
@@ -686,14 +889,14 @@ function chargerFicheMarraine() {
     if (ficheM) {
       var exp = ficheM.date_expiration, expiree = ficheM.statut === 'validee' && exp && exp < aujourdhui();
       var t = {
-        soumise: '<div class="message info">⏳ <strong>Ta fiche est envoyée.</strong> Sabrina vérifie tes résultats et ta fiche ; tu recevras un courriel dès qu\'elle est validée. Tu peux encore la modifier ci-dessous.</div>',
+        soumise: '<div class="message info">⏳ <strong>Ta fiche est envoyée.</strong> Sabrina vérifie tes résultats et ta fiche ; tu recevras un courriel dès qu\'elle est validée.</div>',
         a_corriger: '<div class="message erreur">✏️ <strong>Sabrina te demande une petite correction :</strong><br>' + echapper(ficheM.commentaire_admin || '') + '</div>',
         retiree: '<div class="message info">Ta fiche n\'est plus affichée sur le site. Écris à Sabrina pour la réactiver.</div>',
         validee: expiree
           ? '<div class="message erreur">⌛ <strong>Ta certification est arrivée à échéance le ' + jour(exp) + '.</strong> Pour renouveler ton statut, fais la mise à jour de la formation (50 % de rabais pour les marraines formées chez Sérénaissance). Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a>.</div>'
           : '<div class="message ok">🎉 <strong>Tu es marraine d\'allaitement certifiée !</strong><br>Certifiée le ' + jour(ficheM.date_certification) + ' · valide jusqu\'au ' + jour(exp) + '.<br>Ta fiche est visible sur la page <a href="index.html#nos-marraines" target="_blank">Nos marraines d\'allaitement</a>.' +
             (ficheM.certificat_path ? '<br><a href="#" id="fm-certificat">📜 Télécharger mon certificat</a>' : '') +
-            '<br><span class="note">Une modification de ta fiche la retire de la page jusqu\'à la nouvelle validation de Sabrina.</span></div>'
+            '</div>'
       }[ficheM.statut] || '';
       st.innerHTML = t;
       var c = $('fm-certificat');
@@ -701,6 +904,12 @@ function chargerFicheMarraine() {
       if (expiree || ficheM.statut === 'retiree') return;
     }
     remplirFormMarraine(); carte.hidden = false;
+    var verrou = !!ficheM && ficheM.statut !== 'a_corriger';
+    carte.classList.toggle('verrouillee', verrou);
+    carte.querySelectorAll('input, textarea, select').forEach(function (x) { x.disabled = verrou; });
+    $('fm-bouton').hidden = verrou;
+    var n = $('fm-verrou'); if (n) n.remove();
+    if (verrou) carte.insertAdjacentHTML('afterbegin', '<div id="fm-verrou" class="message info" style="margin-bottom:18px;">🔒 <strong>Ta fiche est entre les mains de Sabrina.</strong> Pour changer ta photo, ta bio ou tes moyens de contact, <a href="#messages">écris-lui dans Messages</a> : elle fait la modification pour toi.</div>');
   });
 }
 function ouvrirFichier(seau, chemin) {

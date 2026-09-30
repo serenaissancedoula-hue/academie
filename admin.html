@@ -16,6 +16,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="/reglages.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; --rouge: #9b3a2a; --jaune: #8a6d1d; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,6 +41,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 110px; }
 .btn.danger { background: var(--rouge); }
 .btn.vert { background: var(--vert); }
 .btn.gris { background: #efe6dc; color: var(--texte); }
+.btn[hidden], button[hidden] { display: none !important; }
 .btn:disabled { opacity: .5; cursor: wait; }
 input, select, textarea { font: inherit; padding: 11px 13px; border: 1px solid var(--bord); border-radius: 12px; background: #fff; color: var(--texte); width: 100%; }
 label.champ { display: flex; flex-direction: column; gap: 4px; font-size: .82rem; font-weight: 600; color: var(--doux); }
@@ -86,6 +88,33 @@ th { color: var(--doux); font-weight: 600; }
 .toast.voir { opacity: 1; }
 .connexion { max-width: 420px; margin: 40px auto; }
 .installer-admin { font-size: .82rem; color: var(--doux); margin-top: 12px; }
+.cloche { position: relative; background: none; border: 0; font-size: 1.35rem; cursor: pointer; padding: 2px 6px; color: #fff; }
+.compteur { position: absolute; top: -4px; right: -6px; min-width: 18px; height: 18px; border-radius: 50px; background: #d64545; color: #fff; font-size: .68rem; font-style: normal; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+.compteur[hidden] { display: none; }
+.onglets-bas button span { position: relative; }
+.panneau-avis { position: fixed; top: calc(62px + env(safe-area-inset-top)); right: 10px; width: min(380px, calc(100vw - 20px)); max-height: 70vh; overflow-y: auto; background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; box-shadow: 0 12px 34px rgba(44,34,30,.18); z-index: 60; }
+.panneau-avis[hidden] { display: none; }
+.pa-haut { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--bord); position: sticky; top: 0; background: var(--carte); }
+.pa-haut button { background: none; border: 0; color: var(--terra); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.avis { display: block; padding: 11px 14px; border-bottom: 1px solid #efe6dc; text-decoration: none; color: var(--texte); font-size: .88rem; cursor: pointer; }
+.avis.nonlu { background: #fbf3ee; }
+.avis.nonlu strong::before { content: "● "; color: var(--terra); }
+.avis small { display: block; color: var(--doux); font-size: .76rem; margin-top: 2px; }
+.chat { display: flex; flex-direction: column; padding: 0; }
+.chat:not([hidden]) { display: flex; }
+.chat[hidden] { display: none; }
+.bulles { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; max-width: 820px; width: 100%; margin: 0 auto; }
+.bulle { max-width: 80%; padding: 9px 13px; border-radius: 16px; font-size: .92rem; white-space: pre-wrap; word-wrap: break-word; }
+.bulle small { display: block; font-size: .68rem; opacity: .7; margin-top: 3px; }
+.bulle.moi { align-self: flex-end; background: var(--terra); color: #fff; border-bottom-right-radius: 4px; }
+.bulle.elle { align-self: flex-start; background: #fff; border: 1px solid var(--bord); border-bottom-left-radius: 4px; }
+.jour-sep { align-self: center; font-size: .74rem; color: var(--doux); margin: 6px 0; }
+.chat-saisie { display: flex; gap: 8px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--bord); background: var(--carte); max-width: 820px; width: 100%; margin: 0 auto; }
+.chat-saisie textarea { resize: none; max-height: 140px; border-radius: 20px; }
+.chat-saisie .btn { border-radius: 50%; width: 46px; height: 46px; padding: 0; flex-shrink: 0; }
+.ligne .nonlus { background: #d64545; color: #fff; border-radius: 50px; font-size: .74rem; font-weight: 800; padding: 2px 8px; }
+.apercu-annonce { background: #fbf3ee; border: 1px dashed var(--terra); border-radius: 12px; padding: 10px 12px; font-size: .86rem; }
+.apercu-annonce:empty { display: none; }
 @media (min-width: 900px) { .onglets-bas { top: 64px; bottom: auto; left: auto; right: 24px; flex-direction: column; width: 170px; border: 1px solid var(--bord); border-radius: 16px; gap: 4px; padding: 8px; } .onglets-bas button { flex-direction: row; justify-content: flex-start; font-size: .9rem; padding: 10px; gap: 10px; } main { padding-right: 220px; } }
 @media (max-width: 560px) { .rang { grid-template-columns: 1fr; } }
 </style>
@@ -95,7 +124,12 @@ th { color: var(--doux); font-weight: 600; }
   <img src="/icones/admin-192.png" alt="">
   <h1>Admin · Académie</h1>
   <span class="direct hors" id="etat-direct" hidden>● en direct</span>
+  <button class="cloche" id="cloche" type="button" hidden aria-label="Notifications">🔔<i class="compteur" id="nb-avis" hidden></i></button>
 </header>
+<div class="panneau-avis" id="panneau-avis" hidden>
+  <div class="pa-haut"><strong>Notifications</strong><button type="button" id="avis-tout-lu">Tout marquer comme lu</button></div>
+  <div id="liste-avis"></div>
+</div>
 
 <main>
   <!-- Connexion -->
@@ -120,11 +154,6 @@ th { color: var(--doux); font-weight: 600; }
   <!-- Tableau de bord -->
   <section class="vue" id="vue-bord" hidden>
     <h2 style="margin-bottom:12px;">Bonjour Sabrina 🌸</h2>
-    <div class="carte" id="carte-notif">
-      <h3 style="margin-bottom:6px;">🔔 Notifications sur ce cellulaire</h3>
-      <p id="notif-etat" style="font-size:.88rem;color:var(--doux);margin-bottom:10px;"></p>
-      <div class="actions"><button class="btn" id="notif-activer" hidden>Activer les notifications</button><button class="btn gris" id="notif-test" hidden>Envoyer une notification test</button></div>
-    </div>
     <div class="stats" id="stats"></div>
     <div class="carte">
       <h3 style="margin-bottom:10px;">À faire</h3>
@@ -180,18 +209,6 @@ th { color: var(--doux); font-weight: 600; }
         <div class="actions" style="margin-top:8px;"><button class="btn gris" type="button" id="l-copier">📋 Copier</button><a class="btn" id="l-mail" href="#">✉️ Préparer le courriel</a></div>
       </div>
     </div>
-    <div class="carte" id="carte-2fa">
-      <h3 style="margin-bottom:6px;">🔐 Double vérification (recommandée)</h3>
-      <p id="mfa-etat" style="font-size:.86rem;color:var(--doux);margin-bottom:10px;"></p>
-      <div class="actions"><button class="btn" id="mfa-activer" hidden>Activer la double vérification</button><button class="btn gris" id="mfa-retirer" hidden>Désactiver</button></div>
-      <div id="mfa-config" hidden style="margin-top:12px;">
-        <p style="font-size:.86rem;margin-bottom:8px;">1. Ouvre ton application d'authentification (Google Authenticator, Authy, ou les Mots de passe d'Apple) et scanne ce code, <em>ou</em> copie la clé.</p>
-        <div id="mfa-qr" style="background:#fff;padding:10px;border-radius:12px;width:200px;max-width:100%;margin-bottom:8px;"></div>
-        <input id="mfa-secret" readonly style="font-family:monospace;font-size:.8rem;">
-        <p style="font-size:.86rem;margin:10px 0 8px;">2. Entre le code à 6 chiffres qu'elle affiche :</p>
-        <form id="form-mfa" style="display:flex;gap:8px;"><input id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" required><button class="btn" type="submit">Confirmer</button></form>
-      </div>
-    </div>
     <div class="carte">
       <h3 style="margin-bottom:6px;">⬇️ Copies de sauvegarde</h3>
       <div class="actions"><button class="btn gris" id="export-dossiers">Dossiers (Excel)</button><button class="btn gris" id="export-resultats">Résultats (Excel)</button></div>
@@ -206,8 +223,55 @@ th { color: var(--doux); font-weight: 600; }
         <a class="btn gris" href="index.html">Voir le site</a>
       </div>
     </div>
+  </section>
+
+  <!-- Messages -->
+  <section class="vue" id="vue-messages" hidden>
+    <h2 style="margin-bottom:10px;">Messages</h2>
+    <div class="carte">
+      <details id="annonce-bloc">
+        <summary style="cursor:pointer;font-weight:700;">📣 Envoyer une annonce à toutes les étudiantes</summary>
+        <form id="form-annonce" style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+          <label class="champ">Type d'annonce
+            <select id="an-genre">
+              <option value="maintenance">🛠️ Mise à jour prévue des formations</option>
+              <option value="nouveaute">✨ Nouveauté du site ou de l'appli</option>
+              <option value="info">📣 Information</option>
+            </select></label>
+          <div class="rang" id="an-dates"><label class="champ">Début<input type="datetime-local" id="an-debut"></label><label class="champ">Fin<input type="datetime-local" id="an-fin"></label></div>
+          <label class="champ">Titre<input id="an-titre" maxlength="120"></label>
+          <label class="champ">Message<textarea id="an-message" rows="3" maxlength="1500"></textarea></label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:.86rem;"><input type="checkbox" id="an-notifier" checked style="width:auto;"> Envoyer une notification sur leurs appareils</label>
+          <div class="apercu-annonce" id="an-apercu"></div>
+          <button class="btn" type="submit">Publier l'annonce</button>
+        </form>
+        <h4 style="margin:14px 0 6px;">Annonces publiées</h4>
+        <div class="liste" id="liste-annonces"></div>
+      </details>
+    </div>
+    <p style="font-size:.84rem;color:var(--doux);margin-bottom:10px;">Chaque étudiante a une conversation privée avec toi. Elles ne peuvent pas s'écrire entre elles.</p>
+    <div class="liste" id="liste-conv"></div>
+  </section>
+
+  <!-- Paramètres -->
+  <section class="vue" id="vue-parametres" hidden>
+    <h2 style="margin-bottom:12px;">Paramètres</h2>
+    <div class="carte" id="rg"></div>
+    <div class="carte" id="carte-2fa">
+      <h3 style="margin-bottom:6px;">🔐 Double vérification (recommandée)</h3>
+      <p id="mfa-etat" style="font-size:.86rem;color:var(--doux);margin-bottom:10px;"></p>
+      <div class="actions"><button class="btn" id="mfa-activer" hidden>Activer la double vérification</button><button class="btn gris" id="mfa-retirer" hidden>Désactiver</button></div>
+      <div id="mfa-config" hidden style="margin-top:12px;">
+        <p style="font-size:.86rem;margin-bottom:8px;">1. Ouvre ton application d'authentification (Google Authenticator, Authy, ou les Mots de passe d'Apple) et scanne ce code, <em>ou</em> copie la clé.</p>
+        <div id="mfa-qr" style="background:#fff;padding:10px;border-radius:12px;width:200px;max-width:100%;margin-bottom:8px;"></div>
+        <input id="mfa-secret" readonly style="font-family:monospace;font-size:.8rem;">
+        <p style="font-size:.86rem;margin:10px 0 8px;">2. Entre le code à 6 chiffres qu'elle affiche :</p>
+        <form id="form-mfa" style="display:flex;gap:8px;"><input id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" required><button class="btn" type="submit">Confirmer</button></form>
+      </div>
+    </div>
     <div class="carte">
       <h3 style="margin-bottom:6px;">📲 L'appli Admin sur ton cellulaire</h3>
+      <p id="appli-installee" hidden style="font-size:.86rem;margin-bottom:8px;">✅ Tu utilises l'appli Admin installée. Pour la réinstaller sur un autre appareil :</p>
       <p style="font-size:.86rem;color:var(--doux);">Sur iPhone : dans Safari ou Chrome, touche <strong>Partager</strong> puis <strong>« Sur l'écran d'accueil »</strong>. Sur Android : menu <strong>⋮</strong> de Chrome, puis <strong>« Installer l'application »</strong>. Elle s'ouvre directement ici, séparée de l'appli des étudiantes.</p>
       <button class="btn" id="installer-admin" hidden style="margin-top:10px;">Installer l'appli Admin</button>
     </div>
@@ -221,11 +285,20 @@ th { color: var(--doux); font-weight: 600; }
   <div class="corps" id="fiche-corps"></div>
 </div>
 
+<!-- Conversation -->
+<div class="fiche chat" id="chat" hidden>
+  <div class="haut"><button class="btn gris" id="chat-fermer" type="button">←</button><h2 id="chat-nom"></h2><button class="btn gris" id="chat-dossier" type="button">Dossier</button></div>
+  <div class="bulles" id="chat-bulles"></div>
+  <form class="chat-saisie" id="chat-form"><textarea id="chat-texte" rows="1" maxlength="2000" placeholder="Écris ton message…" required></textarea><button class="btn" type="submit" aria-label="Envoyer">➤</button></form>
+</div>
+
 <nav class="onglets-bas" id="onglets" hidden>
-  <button data-v="bord" class="actif"><span>🏠</span>Tableau de bord</button>
+  <button data-v="bord" class="actif"><span>🏠</span>Accueil</button>
   <button data-v="etudiantes"><span>👩‍🎓</span>Étudiantes</button>
   <button data-v="marraines"><span>🤱</span>Marraines</button>
+  <button data-v="messages"><span>💬<i class="compteur" id="nb-messages" hidden></i></span>Messages</button>
   <button data-v="outils"><span>🧰</span>Outils</button>
+  <button data-v="parametres"><span>⚙️</span>Paramètres</button>
 </nav>
 <div class="toast" id="toast"></div>
 
@@ -244,22 +317,6 @@ var toutes = [], filtre = 'toutes', ficheId = null, marraines = [], filtreM = 's
 var VAPID = 'BA1eSxrp55R_nk6-rHpCI0Pi6OjPh-0MIOmlG2XZOLEptXG0xFUS4eB9aKAl3qQelLJqfouEq3FXWkYf02YhKMc';
 var APPLI = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-function cleVapid(b) { var p = '='.repeat((4 - b.length % 4) % 4), s = atob((b + p).replace(/-/g, '+').replace(/_/g, '/')), u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
-function etatNotif() {
-  var etat = $('notif-etat'), act = $('notif-activer'), test = $('notif-test');
-  act.hidden = true; test.hidden = true;
-  if (IOS && !APPLI) { etat.innerHTML = 'Sur iPhone, les notifications fonctionnent seulement dans l\'<strong>appli Admin installée</strong> : touche <strong>Partager</strong> puis <strong>« Sur l\'écran d\'accueil »</strong>, ouvre l\'appli Admin depuis ton écran d\'accueil et reviens ici pour activer.'; return; }
-  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) { etat.textContent = 'Cet appareil ou ce navigateur ne permet pas les notifications.'; return; }
-  if (Notification.permission === 'denied') { etat.innerHTML = 'Les notifications sont <strong>bloquées</strong>. Sur iPhone : Réglages → Notifications → Admin Séré → Autoriser. Sur Android : paramètres du site ou de l\'appli.'; return; }
-  navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); }).then(function (ab) {
-    if (ab && Notification.permission === 'granted') { etat.innerHTML = '✅ <strong>Activées</strong> : tu es avertie des inscriptions, comptes créés et confirmés, accès ouverts, documents de stage, examens et fiches de marraine.'; test.hidden = false; enregistrerAbonnement(ab); }
-    else { etat.textContent = 'Reçois une alerte (son, vibration et pastille sur l\'icône) à chaque inscription, document de stage, examen ou demande de fiche de marraine.'; act.hidden = false; }
-  });
-}
-function enregistrerAbonnement(ab) {
-  return sb.from('push_abonnements').upsert({ endpoint: ab.endpoint, abonnement: ab.toJSON(), appareil: navigator.userAgent.slice(0, 180) });
-}
-
 
 function $(id) { return document.getElementById(id); }
 function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
@@ -309,7 +366,10 @@ function demarrer() {
       $('form-code').hidden = true; $('form-connexion').hidden = false;
       $('onglets').hidden = false; vue('bord');
       charger(); direct();
-      etatNotif(); viderPastille(); etatMfa();
+      Reglages.monter($('rg'), { sb: sb, vapid: VAPID, admin: true, surPush: function () { chargerAvis(); chargerMessages(); } });
+      $('cloche').hidden = false; $('appli-installee').hidden = !APPLI;
+      chargerAvis(); chargerMessages(); chargerAnnonces();
+      viderPastille(); etatMfa();
     });
   });
 }
@@ -411,6 +471,11 @@ function direct() {
   }).on('postgres_changes', { event: '*', schema: 'public', table: 'marraines' }, function (p) {
     if (p.eventType !== 'DELETE' && p.new && p.new.statut === 'soumise') toast('🤱 Fiche de marraine à valider : ' + (p.new.nom_complet || ''));
     charger();
+  }).on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, function (p) {
+    if (p.eventType === 'INSERT' && p.new && !p.new.de_admin) { var e = etuParUid(p.new.etudiante); toast('💬 ' + (e ? e.prenom : 'Message') + ' : ' + p.new.texte.slice(0, 60)); if (!chatUid || chatUid !== p.new.etudiante || document.visibilityState !== 'visible') Reglages.sonner(); }
+    chargerMessages();
+  }).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'avis' }, function () {
+    chargerAvis();
   }).subscribe(function (etat) {
     var el = $('etat-direct'); el.hidden = false;
     el.classList.toggle('hors', etat !== 'SUBSCRIBED');
@@ -437,7 +502,7 @@ function afficherBord() {
   $('a-faire').innerHTML = af.length ? af.map(carteLigne).join('') : '<div class="vide">Rien à valider pour le moment ✨</div>';
   $('recentes').innerHTML = toutes.slice(0, 5).map(carteLigne).join('') || '<div class="vide">Aucune inscription pour l\'instant.</div>';
 }
-$('stats').addEventListener('click', function (e) { var s = e.target.closest('.stat'); if (!s) return; if (s.dataset.m) { vue('marraines'); return; } choisirFiltre(s.dataset.f); vue('etudiantes'); });
+$('stats').addEventListener('click', function (e) { var s = e.target.closest('.stat'); if (!s) return; if (s.dataset.m) { vue('marraines'); return; } if (s.dataset.v) { vue(s.dataset.v); return; } choisirFiltre(s.dataset.f); vue('etudiantes'); });
 function choisirFiltre(f) { filtre = f; document.querySelectorAll('#filtres button').forEach(function (b) { b.classList.toggle('actif', b.dataset.f === f); }); afficherListe(); }
 $('filtres').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) choisirFiltre(b.dataset.f); });
 $('recherche').addEventListener('input', afficherListe);
@@ -483,7 +548,7 @@ function ouvrirFiche(id, rafraichir) {
     '<label class="champ">Adresse postale<textarea id="fi-adresse" rows="2">' + esc(e.adresse) + '</textarea></label>' +
     '<div class="actions"><button class="btn" type="submit">Enregistrer</button>' +
     (e.telephone ? '<a class="btn gris" href="tel:' + esc(e.telephone) + '">📞 Appeler</a>' : '') +
-    '<a class="btn gris" href="mailto:' + esc(e.courriel) + '">✉️ Écrire</a></div></form></div>' +
+    '<a class="btn gris" href="mailto:' + esc(e.courriel) + '">✉️ Courriel</a>' + (e.user_id ? '<button class="btn" type="button" data-a="chat">💬 Messages</button>' : '') + '</div></form></div>' +
 
     '<div class="carte"><h3 style="margin-bottom:10px;">Documents</h3>' +
     (e.diplome_url ? '<div class="actions" style="margin-bottom:10px;"><button class="btn gris" data-a="diplome">🎓 Voir le diplôme</button></div>' : '<p class="infos-ligne" style="margin-bottom:8px;">' + (f ? 'Aucun diplôme requis.' : 'Aucun diplôme téléversé.') + '</p>') +
@@ -592,6 +657,7 @@ $('fiche-corps').addEventListener('click', function (ev) {
   var e = toutes.find(function (x) { return x.id === ficheId; }); if (!e) return;
   var a = b.dataset.a;
   if (a === 'voir-marraine') { fermerFiche(); vue('marraines'); ouvrirFicheM(+b.dataset.m); return; }
+  if (a === 'chat') { ouvrirChat(e.user_id); return; }
   if (a === 'valider') {
     if (!confirm('Valider ' + e.prenom + ' ' + e.nom + ' ?\n\nVérifie d\'abord dans Stripe que son paiement est reçu.\nElle recevra le courriel de bienvenue à ' + e.courriel + '.')) return;
     maj(e, { statut: 'valide' }).then(function (ok) { if (ok) courrielBienvenue(e).then(function () { toast('💕 ' + e.prenom + ' est validée et le courriel est parti'); }, function () { toast('Validée, mais le courriel n\'a pas pu partir'); }); });
@@ -679,13 +745,13 @@ function ouvrirFicheM(id, rafraichir) {
   if (m.statut === 'validee' && !expireeM(m)) acts.push('<button class="btn gris" data-am="renouveler">🔄 Renouveler 2 ans à partir d\'aujourd\'hui</button>');
   if (m.statut !== 'a_corriger') acts.push('<button class="btn gris" data-am="corriger">✏️ Demander une correction</button>');
   if (m.statut !== 'retiree') acts.push('<button class="btn gris" data-am="retirer">Retirer de la page publique</button>');
-  var h = '<div class="carte" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;"><img id="fm-photo-admin" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;background:#efe6dc;">' +
+  var h = '<div class="carte" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;"><div style="text-align:center;"><img id="fm-photo-admin" alt="" style="width:110px;height:110px;border-radius:50%;object-fit:cover;background:#efe6dc;display:block;margin:0 auto 6px;"><label class="btn gris" style="cursor:pointer;font-size:.76rem;padding:6px 10px;">📷 Changer la photo<input type="file" id="fm-photo-changer" accept="image/*" hidden></label></div>' +
     '<div style="flex:1;min-width:200px;"><div>' + statutM(m) + '</div>' +
     (m.date_certification ? '<p class="infos-ligne"><b>Certifiée le :</b> ' + jour(m.date_certification) + ' · <b>jusqu\'au :</b> ' + jour(m.date_expiration) + '</p>' : '') +
     '<p class="infos-ligne"><b>Compte :</b> ' + esc(m.courriel || '') + '</p>' +
     (etu ? '<p class="infos-ligne"><a href="#" data-am="dossier">Ouvrir son dossier étudiante →</a></p>' : '') + '</div></div>' +
     '<div class="carte"><h3 style="margin-bottom:8px;">Résultats de la formation (8 h 30)</h3><div id="fm-resultats">Chargement…</div></div>' +
-    '<div class="carte"><h3 style="margin-bottom:10px;">Fiche publique</h3><form id="fm-edit" style="display:flex;flex-direction:column;gap:8px;">' +
+    '<div class="carte"><h3 style="margin-bottom:4px;">Fiche publique</h3><p style="font-size:.8rem;color:var(--doux);margin-bottom:10px;">Une fois sa fiche envoyée, l\'étudiante ne peut plus la modifier elle-même : c\'est toi qui fais les changements ici (ou tu lui demandes une correction).</p><form id="fm-edit" style="display:flex;flex-direction:column;gap:8px;">' +
     '<label class="champ">Nom complet<input id="fe-nom" value="' + esc(m.nom_complet) + '"></label>' +
     '<label class="champ">Région<input id="fe-region" value="' + esc(m.region || '') + '"></label>' +
     '<label class="champ">Bio<textarea id="fe-bio" rows="5" maxlength="800">' + esc(m.bio || '') + '</textarea></label>' +
@@ -709,6 +775,7 @@ function ouvrirFicheM(id, rafraichir) {
     var cs = $('fe-contacts').value.split('\n').map(function (l) { var i = l.indexOf('='); return i > 0 ? { type: l.slice(0, i).trim(), valeur: l.slice(i + 1).trim() } : null; }).filter(function (c) { return c && c.valeur; });
     majM(m, { nom_complet: $('fe-nom').value.trim(), region: $('fe-region').value.trim(), bio: $('fe-bio').value.trim(), contacts: cs }, '✅ Fiche enregistrée');
   });
+  $('fm-photo-changer').addEventListener('change', function () { var f = this.files && this.files[0]; if (f) changerPhotoMarraine(m, f); });
   $('fm-certif').addEventListener('change', function () {
     var f = this.files && this.files[0]; if (!f || !m.user_id) return;
     var chemin = m.user_id + '/certificat-marraine-' + Date.now() + (/\.pdf$/i.test(f.name) ? '.pdf' : '.jpg');
@@ -799,34 +866,186 @@ $('fiche-corps').addEventListener('click', function (ev) {
 }, true);
 
 /* ---------- Notifications ---------- */
-$('notif-activer').addEventListener('click', function () {
-  Notification.requestPermission().then(function (p) {
-    if (p !== 'granted') { etatNotif(); return; }
-    return navigator.serviceWorker.ready.then(function (reg) {
-      return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: cleVapid(VAPID) });
-    }).then(function (ab) { return enregistrerAbonnement(ab); }).then(function (r) {
-      toast(r && r.error ? 'Abonnement non enregistré : ' + r.error.message : '🔔 Notifications activées !'); etatNotif();
-    });
-  }).catch(function (e) { toast('Impossible d\'activer : ' + e.message); });
-});
-$('notif-test').addEventListener('click', function () {
-  navigator.serviceWorker.ready.then(function (reg) {
-    return reg.showNotification('🌸 Test', { body: 'Les notifications de ton appli Admin fonctionnent !', icon: '/icones/admin-192.png', vibrate: [120, 60, 120] });
-  });
-  if (navigator.setAppBadge) navigator.setAppBadge(1).catch(function () {});
-});
 function viderPastille() {
   if (navigator.clearAppBadge) navigator.clearAppBadge().catch(function () {});
   if (navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage('badge-zero');
 }
-document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { viderPastille(); if (/^#[em]\d/.test(location.hash)) ouvrirDepuisLien(); } });
+document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { viderPastille(); if (/^#([em]\d|c[0-9a-f])/.test(location.hash)) ouvrirDepuisLien(); chargerAvis(); chargerMessages(); } });
 function ouvrirDepuisLien() {
   var m = (location.hash || '').match(/^#e(\d+)/);
   if (m && toutes.length) { history.replaceState(null, '', 'admin.html'); ouvrirFiche(+m[1]); }
+  var c = (location.hash || '').match(/^#c([0-9a-f-]{36})/);
+  if (c) { history.replaceState(null, '', 'admin.html'); vue('messages'); ouvrirChat(c[1]); }
   var k = (location.hash || '').match(/^#m(\d+)/);
   if (k && marraines.length) { history.replaceState(null, '', 'admin.html'); vue('marraines'); ouvrirFicheM(+k[1]); }
 }
 window.addEventListener('hashchange', ouvrirDepuisLien);
+
+/* ---------- Centre de notifications (cloche) ---------- */
+var avis = [];
+function depuis(d) {
+  var s = (Date.now() - new Date(d).getTime()) / 1000;
+  if (s < 60) return 'à l\'instant'; if (s < 3600) return 'il y a ' + Math.floor(s / 60) + ' min';
+  if (s < 86400) return 'il y a ' + Math.floor(s / 3600) + ' h';
+  return new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short' }) + ' à ' + new Date(d).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' });
+}
+function chargerAvis() {
+  return sb.from('avis').select('*').order('created_at', { ascending: false }).limit(60).then(function (r) {
+    avis = (r && r.data) || [];
+    var n = avis.filter(function (a) { return !a.lu; }).length;
+    $('nb-avis').hidden = !n; $('nb-avis').textContent = n > 99 ? '99+' : n;
+    if (navigator.setAppBadge) { (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(function () {}); }
+    $('liste-avis').innerHTML = avis.length ? avis.map(function (a) {
+      return '<a class="avis' + (a.lu ? '' : ' nonlu') + '" data-avis="' + a.id + '" href="' + esc(a.url || '#') + '"><strong>' + esc(a.titre) + '</strong>' +
+        (a.message ? '<div>' + esc(a.message) + '</div>' : '') + '<small>' + depuis(a.created_at) + '</small></a>';
+    }).join('') : '<div class="vide">Aucune notification pour le moment.</div>';
+  });
+}
+$('cloche').addEventListener('click', function (e) { e.stopPropagation(); $('panneau-avis').hidden = !$('panneau-avis').hidden; });
+document.addEventListener('click', function (e) { if (!e.target.closest('#panneau-avis') && !e.target.closest('#cloche')) $('panneau-avis').hidden = true; });
+$('liste-avis').addEventListener('click', function (e) {
+  var a = e.target.closest('[data-avis]'); if (!a) return;
+  e.preventDefault();
+  sb.from('avis').update({ lu: true }).eq('id', +a.dataset.avis).then(chargerAvis);
+  $('panneau-avis').hidden = true;
+  var url = a.getAttribute('href') || '';
+  var h = url.indexOf('#'); if (h >= 0) { location.hash = url.slice(h); ouvrirDepuisLien(); }
+});
+$('avis-tout-lu').addEventListener('click', function () { sb.from('avis').update({ lu: true }).eq('lu', false).then(chargerAvis); });
+
+/* ---------- Messages (une conversation privée par étudiante) ---------- */
+var msgs = [], chatUid = null;
+function etuParUid(uid) { return toutes.filter(function (e) { return e.user_id === uid; })[0]; }
+function nomUid(uid) { var e = etuParUid(uid); return e ? ((e.prenom || '') + ' ' + (e.nom || '')).trim() : 'Étudiante'; }
+function heure(d) { return new Date(d).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' }); }
+function chargerMessages() {
+  return sb.from('messages').select('*').order('created_at', { ascending: true }).limit(2000).then(function (r) {
+    msgs = (r && r.data) || [];
+    var convs = {};
+    msgs.forEach(function (m) { var c = convs[m.etudiante] = convs[m.etudiante] || { uid: m.etudiante, dernier: null, nonlus: 0 }; c.dernier = m; if (!m.de_admin && !m.lu) c.nonlus++; });
+    var l = Object.keys(convs).map(function (k) { return convs[k]; }).sort(function (a, b) { return new Date(b.dernier.created_at) - new Date(a.dernier.created_at); });
+    var total = l.reduce(function (s, c) { return s + c.nonlus; }, 0);
+    $('nb-messages').hidden = !total; $('nb-messages').textContent = total;
+    $('liste-conv').innerHTML = l.length ? l.map(function (c) {
+      var n = nomUid(c.uid), init = n.split(' ').map(function (x) { return x[0] || ''; }).join('').slice(0, 2).toUpperCase();
+      return '<div class="ligne conv" data-conv="' + c.uid + '"><div class="avatar">' + esc(init) + '</div><div class="qui"><strong>' + esc(n) + '</strong><small>' + (c.dernier.de_admin ? 'Toi : ' : '') + esc(c.dernier.texte) + '</small></div>' +
+        (c.nonlus ? '<span class="nonlus">' + c.nonlus + '</span>' : '<small style="color:var(--doux);font-size:.74rem;">' + depuis(c.dernier.created_at) + '</small>') + '</div>';
+    }).join('') : '<div class="vide">Aucun message pour l\'instant. Tu peux écrire à une étudiante depuis son dossier (bouton 💬 Messages).</div>';
+    if (chatUid) afficherChat();
+    if (toutes.length) afficherBord();
+  });
+}
+$('liste-conv').addEventListener('click', function (e) { var l = e.target.closest('[data-conv]'); if (l) { e.stopPropagation(); ouvrirChat(l.dataset.conv); } });
+function afficherChat() {
+  var l = msgs.filter(function (m) { return m.etudiante === chatUid; }), h = '', j = '';
+  l.forEach(function (m) {
+    var d = new Date(m.created_at).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (d !== j) { h += '<div class="jour-sep">' + d + '</div>'; j = d; }
+    h += '<div class="bulle ' + (m.de_admin ? 'moi' : 'elle') + '">' + esc(m.texte) + '<small>' + heure(m.created_at) + (m.de_admin ? (m.lu ? ' · lu ✓✓' : ' · envoyé ✓') : '') + '</small></div>';
+  });
+  var b = $('chat-bulles'), enBas = b.scrollHeight - b.scrollTop - b.clientHeight < 80;
+  b.innerHTML = h || '<div class="vide">Écris le premier message à ' + esc(nomUid(chatUid).split(' ')[0]) + ' 🌸</div>';
+  if (enBas || !b.dataset.vu) { b.scrollTop = b.scrollHeight; b.dataset.vu = '1'; }
+  if (l.some(function (m) { return !m.de_admin && !m.lu; }) && document.visibilityState === 'visible')
+    sb.from('messages').update({ lu: true }).eq('etudiante', chatUid).eq('de_admin', false).eq('lu', false).then(function () { l.forEach(function (m) { if (!m.de_admin) m.lu = true; }); chargerMessages(); });
+}
+function ouvrirChat(uid) {
+  chatUid = uid; $('chat-nom').textContent = nomUid(uid);
+  $('chat-bulles').dataset.vu = ''; $('chat').hidden = false; afficherChat();
+  setTimeout(function () { $('chat-texte').focus(); }, 60);
+}
+$('chat-fermer').addEventListener('click', function () { $('chat').hidden = true; chatUid = null; });
+$('chat-dossier').addEventListener('click', function () { var e = etuParUid(chatUid); if (e) { $('chat').hidden = true; chatUid = null; vue('etudiantes'); ouvrirFiche(e.id); } });
+$('chat-texte').addEventListener('input', function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 140) + 'px'; });
+$('chat-texte').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && window.matchMedia('(min-width: 900px)').matches) { e.preventDefault(); $('chat-form').requestSubmit(); } });
+$('chat-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var t = $('chat-texte').value.trim(); if (!t || !chatUid) return;
+  var bouton = this.querySelector('button'); bouton.disabled = true;
+  sb.from('messages').insert({ etudiante: chatUid, texte: t }).then(function (r) {
+    bouton.disabled = false;
+    if (r.error) { toast('Message non envoyé : ' + r.error.message); return; }
+    $('chat-texte').value = ''; $('chat-texte').style.height = 'auto'; $('chat-bulles').dataset.vu = ''; chargerMessages();
+  });
+});
+
+/* ---------- Annonces à toutes les étudiantes ---------- */
+function dateHeure(d) { return new Date(d).toLocaleString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).replace(':', ' h '); }
+function texteAnnonce() {
+  var g = $('an-genre').value, d = $('an-debut').value, f = $('an-fin').value, m = $('an-message').value.trim();
+  if (g === 'maintenance' && d && f) return 'Mise à jour prévue du ' + dateHeure(d) + ' jusqu\'au ' + dateHeure(f) + ' (heure du Nouveau-Brunswick). Les formations pourraient être indisponibles pendant ce temps.' + (m ? ' ' + m : '');
+  return m;
+}
+function apercuAnnonce() {
+  var g = $('an-genre').value;
+  $('an-dates').hidden = g !== 'maintenance';
+  $('an-titre').placeholder = g === 'maintenance' ? 'Mise à jour des formations' : (g === 'nouveaute' ? 'Ex. : Nouvelle vidéo dans le module 3' : 'Ex. : Congé de Sabrina du 20 au 27 décembre');
+  var t = $('an-titre').value.trim() || $('an-titre').placeholder || '';
+  $('an-apercu').innerHTML = t ? '<strong>' + ({ maintenance: '🛠️ ', nouveaute: '✨ ', info: '📣 ' }[g]) + esc(t) + '</strong><br>' + esc(texteAnnonce()) : '';
+}
+['an-genre', 'an-debut', 'an-fin', 'an-titre', 'an-message'].forEach(function (id) { $(id).addEventListener('input', apercuAnnonce); });
+function chargerAnnonces() {
+  apercuAnnonce();
+  return sb.from('annonces').select('*').order('created_at', { ascending: false }).limit(30).then(function (r) {
+    var l = (r && r.data) || [];
+    $('liste-annonces').innerHTML = l.length ? l.map(function (a) {
+      var actif = a.genre === 'maintenance' && a.fin && new Date(a.fin) > new Date();
+      return '<div class="fichiers"><li><span><strong>' + ({ maintenance: '🛠️ ', nouveaute: '✨ ', info: '📣 ' }[a.genre]) + esc(a.titre) + '</strong>' +
+        '<small>' + esc(a.message || '') + '</small><small>Publiée ' + depuis(a.created_at) + (actif ? ' · <b style="color:var(--terra)">bannière affichée jusqu\'à la fin</b>' : '') + '</small></span>' +
+        '<a href="#" data-suppr-annonce="' + a.id + '">Retirer</a></li></div>';
+    }).join('') : '<div class="vide" style="padding:10px;">Aucune annonce.</div>';
+  });
+}
+$('liste-annonces').addEventListener('click', function (e) {
+  var a = e.target.closest('[data-suppr-annonce]'); if (!a) return; e.preventDefault(); e.stopPropagation();
+  if (!confirm('Retirer cette annonce ? Elle disparaîtra du compte des étudiantes.')) return;
+  sb.from('annonces').delete().eq('id', +a.dataset.supprAnnonce).then(function (r) { toast(r.error ? 'Impossible : ' + r.error.message : 'Annonce retirée'); chargerAnnonces(); });
+});
+$('form-annonce').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var g = $('an-genre').value, d = $('an-debut').value, f = $('an-fin').value;
+  if (g === 'maintenance') {
+    if (!d || !f) { toast('Indique le début et la fin de la mise à jour.'); return; }
+    if (new Date(f) <= new Date(d)) { toast('La fin doit être après le début.'); return; }
+  }
+  var titre = $('an-titre').value.trim() || (g === 'maintenance' ? 'Mise à jour des formations' : '');
+  if (!titre) { toast('Écris un titre pour ton annonce.'); return; }
+  if (!confirm('Publier cette annonce pour toutes les étudiantes' + ($('an-notifier').checked ? ' et leur envoyer une notification' : '') + ' ?')) return;
+  sb.from('annonces').insert({ genre: g, titre: titre, message: texteAnnonce() || null, debut: g === 'maintenance' ? new Date(d).toISOString() : null,
+    fin: g === 'maintenance' ? new Date(f).toISOString() : null, notifier: $('an-notifier').checked }).then(function (r) {
+    if (r.error) { toast('Annonce non publiée : ' + r.error.message); return; }
+    toast('📣 Annonce publiée'); $('form-annonce').reset(); chargerAnnonces();
+  });
+});
+
+/* ---------- Photo de marraine (modifiée par Sabrina) ---------- */
+function reduirePhoto(fichier) {
+  return new Promise(function (ok, ko) {
+    var img = new Image(), url = URL.createObjectURL(fichier);
+    img.onload = function () {
+      var t = Math.min(1, 800 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * t); c.height = Math.round(img.height * t);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      c.toBlob(function (b) { b ? ok(b) : ko(new Error('photo illisible')); }, 'image/jpeg', 0.86);
+    };
+    img.onerror = function () { ko(new Error('Format de photo non reconnu (essaie JPG ou PNG)')); };
+    img.src = url;
+  });
+}
+function changerPhotoMarraine(m, fichier) {
+  if (!m.user_id) { toast('Cette fiche n\'est reliée à aucun compte.'); return; }
+  toast('Envoi de la photo…');
+  reduirePhoto(fichier).then(function (b) {
+    var chemin = m.user_id + '/photo-' + Date.now() + '.jpg';
+    return sb.storage.from('marraines').upload(chemin, b, { contentType: 'image/jpeg' }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      var ancienne = m.photo_path; m.photo_path = chemin;
+      return (m.statut === 'validee' ? publierPhoto(m) : Promise.resolve(m.photo_publique)).then(function (pub) {
+        return majM(m, { photo_path: chemin, photo_publique: pub }, '📷 Photo mise à jour' + (m.statut === 'validee' ? ' et publiée' : ''));
+      }).then(function () { if (ancienne && ancienne !== chemin) sb.storage.from('marraines').remove([ancienne]); });
+    });
+  }).catch(function (e) { toast('Photo non enregistrée : ' + e.message); });
+}
 
 /* ---------- Outils ---------- */
 $('form-lien').addEventListener('submit', function (ev) {

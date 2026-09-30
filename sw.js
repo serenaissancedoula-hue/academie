@@ -1,7 +1,7 @@
 /* Académie Sérénaissance — appli (service worker).
    Toujours la version la plus récente quand il y a Internet ; les pages déjà ouvertes
    restent disponibles sans connexion. Supabase et Stripe ne passent jamais par le cache. */
-var VERSION = 'sere-v2';
+var VERSION = 'sere-v3';
 var DE_BASE = ['/', '/index.html', '/espace.html', '/hors-ligne.html', '/adresse.js', '/logo.jpg',
   '/icones/icone-192.png', '/icones/icone-512.png', '/manifest.webmanifest'];
 
@@ -52,17 +52,27 @@ self.addEventListener('push', function (e) {
   try { d = e.data ? e.data.json() : {}; } catch (x) { d = { titre: 'Académie Sérénaissance', message: e.data ? e.data.text() : '' }; }
   e.waitUntil(compteur(1).then(function (n) {
     var badge = self.navigator && self.navigator.setAppBadge ? self.navigator.setAppBadge(n).catch(function () {}) : Promise.resolve();
-    return Promise.all([badge, self.registration.showNotification(d.titre || 'Académie Sérénaissance', {
-      body: d.message || '', icon: '/icones/admin-192.png', badge: '/icones/admin-192.png',
-      data: { url: d.url || '/admin.html' }, tag: d.tag || undefined, renotify: !!d.tag, vibrate: [120, 60, 120]
-    })]);
+    var admin = !d.url || d.url.indexOf('/admin') === 0;
+    var icone = admin ? '/icones/admin-192.png' : '/icones/icone-192.png';
+    var options = {
+      body: d.message || '', icon: icone, badge: icone,
+      data: { url: d.url || '/admin.html' }, tag: d.tag || undefined, renotify: !!d.tag,
+      silent: d.son === false                               // réglage « son » de cet appareil
+    };
+    if (d.vibration !== false) options.vibrate = [120, 60, 120]; // réglage « vibration »
+    // prévient l'appli ouverte (pour jouer le son au volume choisi et rafraîchir le chat)
+    var avis = self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (l) {
+      l.forEach(function (c) { c.postMessage({ type: 'push', donnees: d }); });
+    });
+    return Promise.all([badge, avis, self.registration.showNotification(d.titre || 'Académie Sérénaissance', options)]);
   }));
 });
 self.addEventListener('notificationclick', function (e) {
   e.notification.close();
   var url = (e.notification.data && e.notification.data.url) || '/admin.html';
+  var page = url.split('#')[0];
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function (l) {
-    for (var i = 0; i < l.length; i++) { if (l[i].url.indexOf('/admin.html') >= 0 && 'focus' in l[i]) { l[i].navigate(url); return l[i].focus(); } }
+    for (var i = 0; i < l.length; i++) { if (l[i].url.indexOf(page) >= 0 && 'focus' in l[i]) { l[i].navigate(url); return l[i].focus(); } }
     return self.clients.openWindow(url);
   }));
 });

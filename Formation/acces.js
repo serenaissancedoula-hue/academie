@@ -3,7 +3,8 @@
      dont l'accès est validé (clé remise par Supabase selon ses droits).
    - La progression (lectures, quiz, examens) est propre à chaque étudiante et sauvegardée
      dans son compte : elle la retrouve sur n'importe quel appareil.
-   - Un menu « Mon compte » (Mes cours, Mes informations, Documents de stage, Déconnexion)
+   - Un menu « Mon compte » (Mes cours, Mes informations, Documents de stage, Messages, Paramètres, Déconnexion)
+   - Un bandeau quand Sabrina annonce une mise à jour prévue des formations
      est visible sur toutes les pages de cours. */
 (function () {
   'use strict';
@@ -126,7 +127,9 @@
       ['📚', 'Mes cours', ESPACE + '#cours'],
       ['👤', 'Mes informations', ESPACE + '#infos'],
       ['📝', 'Documents de stage', ESPACE + '#stage'],
-      ['💬', 'Mentorat', 'https://cal.com/sabrina-chavanel-zs5clq/mentorat']
+      ['💬', 'Messages', ESPACE + '#messages'],
+      ['⚙️', 'Paramètres', ESPACE + '#parametres'],
+      ['📅', 'Mentorat', 'https://cal.com/sabrina-chavanel-zs5clq/mentorat']
     ];
     if (FORMATION === 'marraine') liens.splice(2, 1);
     liens.forEach(function (l) {
@@ -146,6 +149,24 @@
     var b = document.createElement('button'); b.type = 'button'; b.className = 'sere-menu-bouton'; b.setAttribute('aria-label', 'Mon compte'); b.textContent = '👤';
     b.addEventListener('click', function () { m.classList.toggle('ouvert'); b.textContent = m.classList.contains('ouvert') ? '✕' : '👤'; });
     document.body.appendChild(m); document.body.appendChild(b);
+  }
+
+  /* ---------------- Mise à jour prévue des formations (annonce de Sabrina) ---------------- */
+  function bandeauMiseAJour() {
+    sb.from('annonces').select('titre,debut,fin').eq('genre', 'maintenance').order('debut', { ascending: true }).then(function (r) {
+      var maint = ((r && r.data) || []).filter(function (a) { return a.fin && new Date(a.fin) > new Date() && (!a.debut || new Date(a.debut) - Date.now() < 7 * 864e5); })[0];
+      if (!maint) return;
+      function q(d) { return new Date(d).toLocaleString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }).replace(':', ' h '); }
+      var enCours = maint.debut && new Date(maint.debut) <= new Date();
+      var b = document.createElement('div');
+      b.setAttribute('role', 'status');
+      b.style.cssText = 'position:sticky;top:0;z-index:8999;background:' + (enCours ? '#fbeeea' : '#fff4e0') + ';color:' + (enCours ? '#8c4434' : '#6b4d12') + ';border-bottom:1px solid ' + (enCours ? '#e3b5a8' : '#e8c98f') + ';padding:10px 44px 10px 16px;font:500 .9rem/1.45 Inter,Arial,sans-serif;text-align:center';
+      b.textContent = '🛠️ ' + (enCours ? 'Mise à jour des formations en cours' : 'Mise à jour prévue des formations') + ' : ' + (maint.debut ? 'du ' + q(maint.debut) + ' ' : '') + 'jusqu\'au ' + q(maint.fin) + '. Ta progression est conservée.';
+      var x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label', 'Masquer');
+      x.style.cssText = 'position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:0;font-size:1rem;cursor:pointer;color:inherit';
+      x.addEventListener('click', function () { b.remove(); });
+      b.appendChild(x); document.body.insertBefore(b, document.body.firstChild);
+    }).catch(function () {});
   }
 
   /* ---------------- Déchiffrement et exécution ---------------- */
@@ -215,6 +236,7 @@
         return executerScripts();
       }).then(function () {
         menu();
+        bandeauMiseAJour();
         if (brouillon) marquer();
       });
     });

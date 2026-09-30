@@ -19,7 +19,7 @@
     '.bloc-appli{background:linear-gradient(135deg,#efe6dc 0%,#f7f1ea 100%);border:1px solid #e3d5c8;border-radius:18px;padding:18px 20px;margin:0 0 20px;display:flex;gap:16px;align-items:center}' +
     '.bloc-appli[hidden]{display:none!important}' +
     '.bloc-appli img{width:58px;height:58px;border-radius:14px;flex-shrink:0;box-shadow:0 4px 12px rgba(44,34,30,.12)}' +
-    '.bloc-appli strong{display:block;font-size:1rem;margin-bottom:2px;color:#2c221e}' +
+    '.bloc-appli > div > strong{display:block;font-size:1rem;margin-bottom:2px;color:#2c221e}.bloc-appli .etapes strong{display:inline}' +
     '.bloc-appli p{margin:0;font-size:.86rem;color:#5a4a42;line-height:1.5}' +
     '.bloc-appli .etapes{margin:6px 0 0;padding-left:18px;font-size:.86rem;color:#5a4a42;line-height:1.55}' +
     '.bloc-appli button.installer{margin-top:10px;background:#a85743;color:#fff;border:0;border-radius:50px;padding:10px 20px;font:inherit;font-weight:700;cursor:pointer}' +
