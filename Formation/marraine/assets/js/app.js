@@ -442,7 +442,7 @@
       if (!prev || score >= prev.score) store.set('score:exam', { score: score, total: total });
       enregistrerResultat('Examen final', score, total, PASS_EXAM);
       var best = store.get('score:exam'), unlocked = best && best.score / best.total >= PASS_EXAM;
-      var nextBtn = unlocked ? '<a class="btn" href="attestation.html">Mon certificat →</a>' : '<a class="btn" href="index.html">Revoir la formation</a>';
+      var nextBtn = unlocked ? '<a class="btn" href="attestation.html">Mon certificat et la suite →</a>' : '<a class="btn" href="index.html">Revoir la formation</a>';
       ebar.style.display = 'none';
       eresult.innerHTML = ring(score, total) +
         '<h3>' + (ok ? 'Félicitations, formation réussie !' : 'Examen non réussi pour le moment') + '</h3>' +

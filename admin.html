@@ -200,6 +200,15 @@ th { color: var(--doux); font-weight: 600; }
 
   <!-- Outils -->
   <section class="vue" id="vue-outils" hidden>
+    <div class="carte" id="carte-offre">
+      <h3 style="margin-bottom:6px;">🎁 Offre de lancement — places</h3>
+      <p style="font-size:.86rem;color:var(--doux);margin-bottom:10px;">10 places (code promo <strong>SERENAISSANCE300</strong> dans Stripe). Inscris ici le nombre de fois où le code a été utilisé : le site affiche les places restantes.</p>
+      <form id="form-offre" class="rang" style="align-items:center;gap:8px;">
+        <label class="champ" style="flex:1;">Places prises<input type="number" id="o-prises" min="0" max="10" step="1" required></label>
+        <button class="btn" type="submit">Enregistrer</button>
+      </form>
+      <p id="o-restantes" style="font-size:.86rem;margin-top:8px;"></p>
+    </div>
     <div class="carte">
       <h3 style="margin-bottom:6px;">✉️ Envoyer un lien d'inscription</h3>
       <p style="font-size:.86rem;color:var(--doux);margin-bottom:10px;">Le courriel part tout seul à l'étudiante. Choisis la formation et le paiement : lien de paiement Stripe (1, 2 ou 4 versements), ou paiement déjà reçu autrement (virement, comptant…).</p>
@@ -359,6 +368,7 @@ function vue(v) {
   document.querySelectorAll('.vue').forEach(function (x) { x.hidden = x.id !== 'vue-' + v; });
   document.querySelectorAll('.onglets-bas button').forEach(function (b) { b.classList.toggle('actif', b.dataset.v === v); });
   window.scrollTo(0, 0);
+  if (v === 'outils' && typeof chargerPlacesOffre === 'function') chargerPlacesOffre();
 }
 $('onglets').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) vue(b.dataset.v); });
 
@@ -638,6 +648,11 @@ function chargerDetails(e) {
       var qm = 0; for (var j = 1; j <= 6; j++) if (ok(sc('marraine:score:1.' + j))) qm++;
       var em = sc('marraine:score:exam');
       h += '<p class="infos-ligne" style="margin-top:10px;"><b>Marraine :</b> ' + qm + ' / 6 quiz réussis · examen ' + (em ? '<span class="' + (ok(em) ? 'ok' : 'ko') + '">' + em.score + '/' + em.total + '</span>' : '—') + '</p>';
+      if (ok(em)) {
+        var dr = dateReussiteMarraine(res);
+        h += '<p class="infos-ligne">Réussie le ' + (dr ? jour(dr) : '—') + '</p><div class="actions" style="margin-top:6px;"><button class="btn" type="button" id="btn-cert-marraine">🖨️ Imprimer son certificat de marraine</button></div>';
+        setTimeout(function () { var bt = $('btn-cert-marraine'); if (bt) bt.addEventListener('click', function () { imprimerCertificatMarraine(((e.prenom || '') + ' ' + (e.nom || '')).trim(), dr); }); }, 0);
+      }
     }
     if (r[0] && r[0].data && r[0].data.updated_at) h += '<p class="infos-ligne" style="color:var(--doux);font-size:.8rem;">Dernière activité : ' + jour(r[0].data.updated_at) + '</p>';
     if (res.length) {
@@ -750,6 +765,31 @@ $('fiche-corps').addEventListener('click', function (ev) {
   }
 });
 
+/* ---------- Certificat de marraine (imprimé par Sabrina et envoyé par la poste) ---------- */
+function dateReussiteMarraine(res) {
+  var l = (res || []).filter(function (x) { return x.formation === 'marraine' && x.reussi && /examen/i.test(x.evaluation || ''); })
+    .sort(function (a, b) { return new Date(a.created_at) - new Date(b.created_at); });
+  return l.length ? l[0].created_at.slice(0, 10) : null;
+}
+function imprimerCertificatMarraine(nom, dateReussite) {
+  var d = dateReussite || aujourdhui();
+  var fin = dans2ans(d);
+  function fmt(x) { return new Date(x + 'T12:00:00').toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }); }
+  var w = window.open('', '_blank'); if (!w) { toast('Autorise les fenêtres surgissantes pour imprimer.'); return; }
+  w.document.write('<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Certificat de marraine · ' + esc(nom) + '</title>' +
+    '<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Jost:wght@500&family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">' +
+    '<style>@page{size:letter landscape;margin:0}html,body{margin:0;background:#ddd}.page{position:relative;width:11in;height:8.5in;margin:20px auto;background:#fbf8f3;box-shadow:0 6px 24px rgba(0,0,0,.2)}' +
+    '.page img{position:absolute;inset:0;width:100%;height:100%}.nom{position:absolute;left:24%;right:24%;bottom:51%;text-align:center;font:36pt "Great Vibes",cursive;color:#2c221e;white-space:nowrap}' +
+    '.date{position:absolute;left:63.1%;width:22.7%;bottom:12.8%;text-align:center;font:italic 500 15pt "Cormorant Garamond",Georgia,serif;color:#2c221e}' +
+    '.lib{position:absolute;left:61%;width:27%;top:89.1%;text-align:center;font:500 10.5pt "Jost",Arial,sans-serif;letter-spacing:.14em;color:#2c221e}' +
+    '.fin{position:absolute;left:61%;width:27%;top:91.9%;text-align:center;font:italic 500 12.5pt "Cormorant Garamond",Georgia,serif;color:#5a4a42}' +
+    '.barre{text-align:center;font:14px Arial;padding:12px}@media print{html,body{background:#fff}.page{margin:0;box-shadow:none}.barre{display:none}}</style></head><body>' +
+    '<div class="barre">Aperçu du certificat · <button onclick="print()">🖨️ Imprimer</button> (format Lettre, paysage, sans marges, « graphiques d\'arrière-plan » activés)</div>' +
+    '<div class="page"><img src="' + location.origin + '/modeles/certificat-marraine.jpg" alt=""><div class="nom">' + esc(nom) + '</div>' +
+    '<div class="date">' + fmt(d) + '</div><div class="lib">DATE DE RÉUSSITE</div><div class="fin">Valide jusqu\'au ' + fmt(fin) + '</div></div></body></html>');
+  w.document.close();
+}
+
 /* ---------- Marraines certifiées ---------- */
 var SB_PUBLIC = SB_URL + '/storage/v1/object/public/marraines-publiques/';
 var LIBELLES_CONTACT = { courriel: 'Courriel', telephone: 'Téléphone / texto', facebook: 'Facebook / Messenger', instagram: 'Instagram', autre: 'Autre' };
@@ -842,8 +882,15 @@ function ouvrirFicheM(id, rafraichir) {
     var ex = sc('marraine:score:exam');
     lignes += '<tr><td><strong>Examen final</strong></td><td>' + (ex ? '<span class="' + (ok(ex) ? 'ok' : 'ko') + '">' + ex.score + '/' + ex.total + ' (' + Math.round(ex.score / ex.total * 100) + ' %)</span>' : '—') + '</td></tr>';
     var global = nq === 6 && ok(ex);
+    var drM = dateReussiteMarraine(res);
     $('fm-resultats').innerHTML = '<p class="infos-ligne" style="margin-bottom:8px;">' + (global ? '<span class="ok">✅ Formation réussie : 6 quiz et examen final à 80 % et plus.</span>' : '<span class="ko">⚠️ Formation pas encore réussie au complet (' + nq + '/6 quiz, examen ' + (ok(ex) ? 'réussi' : 'non réussi') + ').</span>') + '</p>' +
-      '<table>' + lignes + '</table>' + (res.length ? '<p class="infos-ligne" style="margin-top:8px;color:var(--doux);font-size:.8rem;">' + res.length + ' tentative(s) enregistrée(s) · dernière le ' + jour(res[0].created_at) + '</p>' : '');
+      '<table>' + lignes + '</table>' + (res.length ? '<p class="infos-ligne" style="margin-top:8px;color:var(--doux);font-size:.8rem;">' + res.length + ' tentative(s) enregistrée(s) · dernière le ' + jour(res[0].created_at) + '</p>' : '') +
+      (ok(ex) ? '<div class="actions" style="margin-top:8px;"><button class="btn" type="button" id="btn-cert-m">🖨️ Imprimer son certificat de marraine</button></div>' : '');
+    var bcm = $('btn-cert-m');
+    if (bcm) bcm.addEventListener('click', function () {
+      var etu = toutes.filter(function (x) { return x.user_id && x.user_id === m.user_id; })[0];
+      imprimerCertificatMarraine(etu ? ((etu.prenom || '') + ' ' + (etu.nom || '')).trim() : m.nom_complet, drM);
+    });
   });
 }
 function majM(m, champs, msg) {
@@ -1103,6 +1150,22 @@ function changerPhotoMarraine(m, fichier) {
 }
 
 /* ---------- Outils ---------- */
+/* Places de l'offre de lancement */
+function chargerPlacesOffre() {
+  sb.rpc('places_offre_restantes').then(function (r) {
+    if (r.error) return;
+    $('o-restantes').innerHTML = '<strong>' + r.data + '</strong> place(s) restante(s) affichée(s) sur le site.';
+    if (!$('o-prises').value) $('o-prises').value = 10 - r.data;
+  });
+}
+$('form-offre').addEventListener('submit', function (ev) {
+  ev.preventDefault();
+  var n = Math.max(0, Math.min(10, parseInt($('o-prises').value, 10) || 0));
+  sb.from('parametres').upsert({ cle: 'offre_places_prises', valeur: String(n), updated_at: new Date().toISOString() }).then(function (r) {
+    if (r.error) return toast('Erreur : ' + r.error.message);
+    toast('Places enregistrées ✔'); chargerPlacesOffre();
+  });
+});
 /* Lien d'inscription (courriel envoyé automatiquement) */
 var EJ_LIEN = 'template_7frp73b';
 (function () {
