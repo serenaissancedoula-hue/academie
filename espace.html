@@ -116,6 +116,8 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 .menu .qui .pp-petit { margin-bottom: 6px; }
 .chat-haut { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--bord); font-size: .9rem; }
 .chat-logo { height: 30px; margin-left: auto; mix-blend-mode: darken; }
+.chat-logo.photo { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; mix-blend-mode: normal; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.bulle.elle b img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; vertical-align: -4px; margin-right: 5px; }
 .annonce { background: #fff; border: 1px solid var(--bord); border-left: 4px solid var(--terra); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; font-size: .9rem; }
 .annonce small { display: block; color: var(--doux); font-size: .76rem; }
 #fm-carte.verrouillee input, #fm-carte.verrouillee textarea { background: #f3ede6; }
@@ -269,33 +271,6 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     </div>
   </section>
 
-  <!-- Mes informations -->
-  <section class="vue" id="vue-infos" hidden>
-    <h1>Mes informations</h1>
-    <p class="sous">Garde tes coordonnées à jour : c'est à cette adresse que ton certificat sera posté.</p>
-    <div id="msg-infos"></div>
-    <div class="carte">
-      <form id="form-infos">
-        <div class="rang">
-          <label class="champ">Prénom <input type="text" id="f-prenom" readonly></label>
-          <label class="champ">Nom <input type="text" id="f-nom" readonly></label>
-        </div>
-        <p class="note" style="margin-top:-6px;">Ton nom et ton prénom figurent sur ton certificat. Pour les corriger, écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a>.</p>
-        <div class="rang">
-          <label class="champ">Courriel <input type="email" id="f-courriel" required></label>
-          <label class="champ">Téléphone <input type="tel" id="f-tel"></label>
-        </div>
-        <label class="champ">Date de naissance <input type="date" id="f-naissance"></label>
-        <label class="champ">Adresse postale <input type="text" id="f-adresse" placeholder="Commence à écrire ton adresse…"></label>
-        <div class="rang">
-          <label class="champ">App. / unité <span class="note">(facultatif)</span><input type="text" id="f-app"></label>
-          <label class="champ">Code postal <input type="text" id="f-cp"></label>
-        </div>
-        <label class="case"><input type="checkbox" id="f-adresse-ok"> Mon adresse n'apparaît pas dans la liste : je confirme qu'elle est complète et exacte.</label>
-        <button class="btn" type="submit" id="f-bouton">Enregistrer mes changements</button>
-      </form>
-    </div>
-  </section>
 
   <!-- Fiche de marraine -->
   <section class="vue" id="vue-marraine" hidden>
@@ -421,7 +396,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     <div id="rappel-notif" class="message info" hidden>🔔 Pour être avertie sur ton cellulaire dès que Sabrina te répond, <a href="#parametres">active les notifications dans tes Paramètres</a>.</div>
     <div id="annonces-liste"></div>
     <div class="carte chat-carte">
-      <div class="chat-haut"><span id="chat-moi" class="pp-petit"></span><span>Toi et <strong>Sabrina</strong></span><img src="/logo.jpg" alt="" class="chat-logo"></div>
+      <div class="chat-haut"><span id="chat-moi" class="pp-petit"></span><span>Toi et <strong>Sabrina</strong></span><img src="/logo.jpg" alt="" class="chat-logo" id="chat-sabrina"></div>
       <div class="bulles" id="chat-bulles"><div class="vide">Chargement…</div></div>
       <form class="chat-saisie" id="chat-form"><textarea id="chat-texte" rows="1" maxlength="2000" placeholder="Écris ton message à Sabrina…" required></textarea><button class="btn" type="submit" aria-label="Envoyer">➤</button></form>
     </div>
@@ -431,8 +406,32 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <!-- Paramètres -->
   <section class="vue" id="vue-parametres" hidden>
     <h1>Paramètres</h1>
-    <p class="sous">Choisis comment l'Académie te prévient : messages de Sabrina, annonces et mises à jour des formations.</p>
-    <div class="carte">
+    <p class="sous">Tes informations, ta photo, la langue et la façon dont l'Académie te prévient.</p>
+    <div id="msg-infos"></div>
+    <div class="carte" id="carte-infos">
+      <h3 style="margin-bottom:6px;">👤 Mes informations</h3>
+      <p class="note" style="margin-bottom:10px;">Garde tes coordonnées à jour : c'est à cette adresse que ton certificat sera posté.</p>
+      <form id="form-infos">
+        <div class="rang">
+          <label class="champ">Prénom <input type="text" id="f-prenom" readonly></label>
+          <label class="champ">Nom <input type="text" id="f-nom" readonly></label>
+        </div>
+        <p class="note" style="margin-top:-6px;">Ton nom et ton prénom figurent sur ton certificat. Pour les corriger, écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a>.</p>
+        <div class="rang">
+          <label class="champ">Courriel <input type="email" id="f-courriel" required></label>
+          <label class="champ">Téléphone <input type="tel" id="f-tel"></label>
+        </div>
+        <label class="champ">Date de naissance <input type="date" id="f-naissance"></label>
+        <label class="champ">Adresse postale <input type="text" id="f-adresse" placeholder="Commence à écrire ton adresse…"></label>
+        <div class="rang">
+          <label class="champ">App. / unité <span class="note">(facultatif)</span><input type="text" id="f-app"></label>
+          <label class="champ">Code postal <input type="text" id="f-cp"></label>
+        </div>
+        <label class="case"><input type="checkbox" id="f-adresse-ok"> Mon adresse n'apparaît pas dans la liste : je confirme qu'elle est complète et exacte.</label>
+        <button class="btn" type="submit" id="f-bouton">Enregistrer mes changements</button>
+      </form>
+    </div>
+    <div class="carte" id="carte-photo">
       <h3 style="margin-bottom:6px;">📷 Ma photo de profil</h3>
       <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;">
         <div id="pp-apercu" class="pp-grand"></div>
@@ -470,7 +469,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 
   <section class="vue" id="vue-evaluations" hidden>
     <h1>Mes évaluations</h1>
-    <p class="sous">Tes mises en situation avec la correction de Sabrina, tes ententes de formation signées et ton témoignage.</p>
+    <p class="sous">Tes mises en situation avec la correction de Sabrina et ton témoignage.</p>
     <div id="ev-contenu"></div>
   </section>
 
@@ -507,7 +506,6 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 <nav class="menu" id="menu" aria-label="Mon compte">
   <div class="qui"><span id="menu-photo" class="pp-petit"></span><strong id="menu-nom">Mon compte</strong><span id="menu-courriel"></span></div>
   <a href="#cours" data-vue="cours"><span class="i">📚</span><span>Mes cours</span></a>
-  <a href="#infos" data-vue="infos"><span class="i">👤</span><span>Mes informations</span></a>
   <a href="#marraine" data-vue="marraine" id="menu-marraine" hidden><span class="i">🤱</span><span>Ma fiche de marraine</span></a>
   <a href="#evaluations" data-vue="evaluations" id="menu-evaluations" hidden><span class="i">🧩</span><span>Mes évaluations</span></a>
   <a href="#stage" data-vue="stage" id="menu-stage" hidden><span class="i">📝</span><span>Documents de stage</span></a>
@@ -561,6 +559,7 @@ function routeConnectee() {
   if (h === 'stage' && !etat.valide) h = 'cours';
   if (h === 'marraine' && !etat.marraine) h = 'cours';
   if (h === 'avis') h = 'messages';
+  if (h === 'infos') h = 'parametres';   // « Mes informations » est maintenant dans Paramètres
   if (h === 'evaluations' && !etat.valide && !etat.marraine) h = 'cours';
   if (['cours', 'infos', 'stage', 'marraine', 'messages', 'parametres', 'evaluations'].indexOf(h) < 0) h = 'cours';
   avecMenu(true); vue(h);
@@ -934,7 +933,7 @@ function quand(d) { return new Date(d).toLocaleString('fr-CA', { weekday: 'long'
 function icone(g) { return { maintenance: '🛠️ ', nouveaute: '✨ ', info: '📣 ' }[g] || '📣 '; }
 function demarrerCommunication() {
   $('cloche').hidden = false;
-  chargerPhoto();
+  chargerPhoto(); chargerPhotoSabrina();
   $('appli-installee').hidden = !APPLI;
   if (!reglagesMontes && window.Reglages) { reglagesMontes = true; Reglages.monter($('rg'), { sb: sb, vapid: VAPID, admin: false, surPush: function () { chargerAvis(); chargerMessages(); chargerAnnonces(); } }); }
   chargerAvis(); chargerMessages(); chargerAnnonces();
@@ -1008,6 +1007,18 @@ function chargerAnnonces() {
 
 /* Conversation privée avec Sabrina */
 function heure(d) { return new Date(d).toLocaleTimeString('fr-CA', { hour: '2-digit', minute: '2-digit' }); }
+var photoSabrina = null;
+function chargerPhotoSabrina() {
+  sb.rpc('photo_sabrina').then(function (r) {
+    if (!r || !r.data) return;
+    return sb.storage.from('avatars').createSignedUrl(r.data, 3600).then(function (x) {
+      if (!x || !x.data) return;
+      photoSabrina = x.data.signedUrl;
+      var i = $('chat-sabrina'); if (i) { i.src = photoSabrina; i.classList.add('photo'); i.alt = 'Sabrina'; }
+      afficherChat();
+    });
+  }).catch(function () {});
+}
 function chargerMessages() {
   return sb.from('messages').select('*').order('created_at', { ascending: true }).limit(1000).then(function (r) {
     msgs = (r && r.data) || [];
@@ -1022,7 +1033,7 @@ function afficherChat() {
   msgs.forEach(function (m) {
     var d = new Date(m.created_at).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' });
     if (d !== j) { h += '<div class="jour-sep">' + d + '</div>'; j = d; }
-    h += '<div class="bulle ' + (m.de_admin ? 'elle' : 'moi') + (m.auto ? ' auto' : '') + '">' + (m.de_admin ? '<b>' + (m.auto ? 'Réponse automatique · Académie' : 'Sabrina') + '</b>' : '') + echapper(m.texte) +
+    h += '<div class="bulle ' + (m.de_admin ? 'elle' : 'moi') + (m.auto ? ' auto' : '') + '">' + (m.de_admin ? '<b>' + (m.auto ? 'Réponse automatique · Académie' : (photoSabrina ? '<img src="' + echapper(photoSabrina) + '" alt="">' : '') + 'Sabrina') + '</b>' : '') + echapper(m.texte) +
       '<small>' + heure(m.created_at) + (!m.de_admin ? (m.lu ? ' · lu ✓✓' : ' · envoyé ✓') : '') + '</small></div>';
   });
   var enBas = b.scrollHeight - b.scrollTop - b.clientHeight < 80;
@@ -1395,6 +1406,6 @@ demarrer();
 })();
 </script>
 <script src="/repliable.js"></script>
-<script>if (window.SereRepliable) SereRepliable.appliquer('#vue-parametres > .carte:not(#rg)');</script>
+<script>if (window.SereRepliable) SereRepliable.appliquer('#vue-parametres > .carte:not(#rg):not(#carte-infos):not(#carte-photo)');</script>
 </body>
 </html>

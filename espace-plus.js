@@ -96,7 +96,7 @@
         try { sessionStorage.removeItem('cle:' + f); } catch (e) {}
         c.remove(); liste.hidden = false; cours(o);
         var ok = document.createElement('div'); ok.className = 'message ok';
-        ok.innerHTML = '✅ ' + L('Entente signée. Bonne formation ! Tu peux la relire en tout temps dans « Mes évaluations ».', 'Agreement signed. Enjoy your course! You can read it again anytime in "My evaluations".');
+        ok.innerHTML = '✅ ' + L('Entente signée. Une copie vient de t\'être envoyée par courriel. Bonne formation ! 🌸', 'Agreement signed. A copy has just been sent to you by email. Enjoy your course! 🌸');
         bloc.insertBefore(ok, bloc.children[1] || null);
       });
     });
@@ -104,7 +104,7 @@
   function ligneSignee(e, bloc, liste) {
     if (bloc.querySelector('.ep-signee')) return;
     var p = document.createElement('p'); p.className = 'ep-signee';
-    p.innerHTML = '📜 ' + L('Entente signée le ', 'Agreement signed on ') + esc(jour(e.signee_le)) + ' · <a href="#evaluations">' + L('voir', 'view') + '</a>';
+    p.innerHTML = '📜 ' + L('Entente signée le ', 'Agreement signed on ') + esc(jour(e.signee_le)) + ' · ' + L('copie envoyée par courriel', 'copy sent by email');
     bloc.insertBefore(p, liste);
   }
 
@@ -207,12 +207,6 @@
     ]).then(function (x) {
       var mes = (x[0] && x[0].data) || [], ententes = x[1] || [], tem = (x[2] && x[2].data) || [];
       var h = '';
-      // Ententes signées
-      h += '<h2 style="font-size:1.15rem;margin:0 0 10px;">📜 ' + L('Mes ententes de formation', 'My training agreements') + '</h2>';
-      h += ententes.length ? '<ul class="ev-liste" style="margin-bottom:22px;">' + ententes.map(function (e) {
-        return '<li><div class="ev-haut"><div><h3>' + esc(NOMS[e.formation] || e.formation) + '</h3><small>' + L('Signée par ', 'Signed by ') + esc(e.nom_signature) + ' · ' + esc(jour(e.signee_le)) + ' ' + esc(heure(e.signee_le)) + ' · ' + esc(e.version) + '</small></div>' +
-          '<button type="button" class="btn fantome" style="padding:8px 16px;font-size:.84rem;" data-ep-imprimer="' + e.id + '">🖨️ ' + L('Voir / imprimer', 'View / print') + '</button></div></li>';
-      }).join('') + '</ul>' : '<p class="note" style="margin-bottom:22px;">' + L('Aucune entente signée pour le moment.', 'No agreement signed yet.') + '</p>';
       // Témoignage
       if (tem.length) {
         var t = tem[0];
@@ -237,14 +231,6 @@
           '<details class="ev-detail"><summary>' + L('Voir mes réponses', 'See my answers') + '</summary>' + rep + '</details></li>';
       }).join('') + '</ul>' : '<p class="note">' + L('Tes mises en situation apparaîtront ici après tes examens de module.', 'Your case scenarios will appear here after your module exams.') + '</p>';
       boite.innerHTML = h;
-      boite.querySelectorAll('[data-ep-imprimer]').forEach(function (b) {
-        b.addEventListener('click', function () {
-          var e = ententes.filter(function (y) { return String(y.id) === b.dataset.epImprimer; })[0]; if (!e) return;
-          texte(sb, e.version).then(function (t) {
-            imprimer(NOMS[e.formation], { texte: t, signature: L('Signée électroniquement par ', 'Electronically signed by ') + '<strong>' + esc(e.nom_signature) + '</strong> (' + esc(e.courriel || '') + ')<br>' + esc(jour(e.signee_le)) + ' ' + esc(heure(e.signee_le)) + ' · ' + L('version ', 'version ') + esc(e.version) });
-          });
-        });
-      });
       var rt = $('ep-retirer');
       if (rt) rt.addEventListener('click', function () {
         if (!confirm(L('Retirer ta permission ? Ton témoignage sera retiré du site.', 'Withdraw your permission? Your testimonial will be removed from the website.'))) return;

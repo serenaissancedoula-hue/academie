@@ -150,7 +150,7 @@ th { color: var(--doux); font-weight: 600; }
 <body>
 <script src="/accueil.js" data-mode="admin"></script>
 <header class="entete">
-  <img src="/icones/admin-192.png" alt="">
+  <img src="/icones/admin-192.png" alt="" id="entete-photo" style="object-fit:cover;">
   <h1>Admin · Académie</h1>
   <span class="direct hors" id="etat-direct" hidden>● en direct</span>
   <button class="cloche" id="cloche" type="button" hidden aria-label="Notifications">🔔<i class="compteur" id="nb-avis" hidden></i></button>
@@ -410,6 +410,16 @@ document.addEventListener('click', function (e) { var a = e.target.closest && e.
   <!-- Paramètres -->
   <section class="vue" id="vue-parametres" hidden>
     <h2 style="margin-bottom:12px;">Paramètres</h2>
+    <div class="carte" id="carte-ma-photo" data-fixe>
+      <h3 style="margin-bottom:6px;">📷 Ma photo de profil</h3>
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+        <img id="ma-photo" alt="" style="width:96px;height:96px;border-radius:50%;object-fit:cover;background:#efe6dc;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.08);">
+        <div style="flex:1;min-width:200px;">
+          <p style="font-size:.84rem;color:var(--doux);margin-bottom:8px;">Elle s'affiche en haut de ton admin et à côté de ton nom dans les messages de tes étudiantes (seulement pour les étudiantes connectées, jamais sur le site public).</p>
+          <div class="actions"><label class="btn" style="cursor:pointer;">Choisir une photo<input type="file" id="ma-photo-fichier" accept="image/jpeg,image/png,image/webp,image/heic" hidden></label><button class="btn gris" type="button" id="ma-photo-retirer" hidden>Retirer</button></div>
+        </div>
+      </div>
+    </div>
     <div class="carte" id="rg"></div>
     <div class="carte" id="carte-2fa">
       <h3 style="margin-bottom:6px;">🔐 Vérification en 2 étapes par courriel</h3>
@@ -543,7 +553,7 @@ function demarrer() {
       Reglages.monter($('rg'), { sb: sb, vapid: VAPID, admin: true, surPush: function () { chargerAvis(); chargerMessages(); } });
       $('cloche').hidden = false; $('appli-installee').hidden = !APPLI;
       chargerAvis(); chargerMessages(); chargerAnnonces();
-      viderPastille(); etatMfa();
+      viderPastille(); etatMfa(); chargerMaPhoto();
       sb.rpc('exclure_mon_appareil').then(function () {}, function () {});
       if (window.SereAdminPlus) SereAdminPlus.compter();   // cette adresse IP n'est plus comptée dans les visites
     });
@@ -1394,6 +1404,44 @@ $('form-annonce').addEventListener('submit', function (e) {
   });
 });
 
+/* ---------- Ma photo de profil (Sabrina) ---------- */
+function chargerMaPhoto() {
+  sb.rpc('photo_sabrina').then(function (r) {
+    var chemin = r && r.data;
+    $('ma-photo-retirer').hidden = !chemin;
+    if (!chemin) { $('ma-photo').removeAttribute('src'); $('entete-photo').src = '/icones/admin-192.png'; $('entete-photo').style.borderRadius = '9px'; return; }
+    sb.storage.from('avatars').createSignedUrl(chemin, 3600).then(function (x) {
+      if (!x || !x.data) return;
+      $('ma-photo').src = x.data.signedUrl; $('entete-photo').src = x.data.signedUrl; $('entete-photo').style.borderRadius = '50%';
+    });
+  });
+}
+$('ma-photo-fichier').addEventListener('change', function () {
+  var f = this.files && this.files[0]; this.value = ''; if (!f) return;
+  toast('Envoi de la photo…');
+  sb.auth.getUser().then(function (u) {
+    var uid = u.data && u.data.user && u.data.user.id; if (!uid) throw new Error('session');
+    return Promise.all([reduirePhoto(f), sb.rpc('photo_sabrina')]).then(function (x) {
+      var chemin = uid + '/sabrina-' + Date.now() + '.jpg', ancienne = x[1] && x[1].data;
+      return sb.storage.from('avatars').upload(chemin, x[0], { contentType: 'image/jpeg' }).then(function (r) {
+        if (r.error) throw r.error;
+        return sb.from('parametres').upsert({ cle: 'photo_admin', valeur: chemin, updated_at: new Date().toISOString() });
+      }).then(function (r) {
+        if (r.error) throw r.error;
+        if (ancienne && ancienne !== chemin) sb.storage.from('avatars').remove([ancienne]);
+        toast('📷 Ta photo est enregistrée'); chargerMaPhoto();
+      });
+    });
+  }).catch(function (e) { toast('Photo non enregistrée : ' + (e.message || e)); });
+});
+$('ma-photo-retirer').addEventListener('click', function () {
+  if (!confirm('Retirer ta photo de profil ?')) return;
+  sb.rpc('photo_sabrina').then(function (r) {
+    var ancienne = r && r.data;
+    return sb.from('parametres').upsert({ cle: 'photo_admin', valeur: '', updated_at: new Date().toISOString() }).then(function () { if (ancienne) sb.storage.from('avatars').remove([ancienne]); });
+  }).then(function () { toast('Photo retirée'); chargerMaPhoto(); });
+});
+
 /* ---------- Photo de marraine (modifiée par Sabrina) ---------- */
 function reduirePhoto(fichier) {
   return new Promise(function (ok, ko) {
@@ -1700,6 +1748,6 @@ demarrer();
 })();
 </script>
 <script src="/repliable.js"></script>
-<script>if (window.SereRepliable) SereRepliable.appliquer('#vue-outils > .carte, #vue-parametres > .carte, #carte-suivis, #vue-evaluations > .carte:not(#carte-mes)');</script>
+<script>if (window.SereRepliable) SereRepliable.appliquer('#vue-outils > .carte, #vue-parametres > .carte:not([data-fixe]), #carte-suivis, #vue-evaluations > .carte:not(#carte-mes)');</script>
 </body>
 </html>

@@ -35,7 +35,7 @@
     }
     function interaction() {
       occupe = true; clearTimeout(minuterie); clearTimeout(reprise);
-      reprise = setTimeout(function () { occupe = false; planifier(); }, 8000);
+      reprise = setTimeout(function () { occupe = false; planifier(); }, 5000);
     }
     var zone = o.conteneur || piste;
     ['pointerdown', 'touchstart', 'wheel', 'keydown'].forEach(function (ev) { zone.addEventListener(ev, interaction, { passive: true }); });

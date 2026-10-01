@@ -36,7 +36,7 @@
       '.tem-carte{flex:0 0 86%;scroll-snap-align:start;background:var(--card-bg,#fffbf8);border:1px solid var(--border-color,#e3d5c8);border-radius:20px;padding:24px 22px 20px;box-shadow:0 5px 20px rgba(0,0,0,.03);display:flex;flex-direction:column;min-width:0;position:relative}' +
       '.tem-guill{font-family:"Playfair Display",Georgia,serif;font-size:3.2rem;line-height:.6;height:26px;color:var(--accent-terracotta,#a85743);opacity:.55;margin:0 0 4px;user-select:none}' +
       '.tem-etoiles{color:var(--accent-terracotta,#a85743);letter-spacing:2px;font-size:.95rem;margin:0 0 8px}' +
-      '.tem-texte{font-size:.98rem;line-height:1.6;color:#4a3c35;margin:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:8;line-clamp:8;overflow:hidden;white-space:pre-line;overflow-wrap:break-word}' +
+      '.tem-texte{font-size:.98rem;line-height:1.6;color:#4a3c35;margin:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;line-clamp:6;overflow:hidden;white-space:pre-line;overflow-wrap:break-word}' +
       '.tem-carte.ouvert .tem-texte{display:block;-webkit-line-clamp:unset;line-clamp:unset;overflow:visible}' +
       '.tem-plus{align-self:flex-start;background:none;border:0;padding:8px 0 2px;margin-top:4px;font:700 .88rem "Plus Jakarta Sans",sans-serif;color:var(--accent-terracotta,#a85743);cursor:pointer;text-decoration:underline;text-underline-offset:3px;border-radius:6px}' +
       '.tem-qui{margin-top:auto;padding-top:16px}' +
@@ -192,7 +192,7 @@
     sec.hidden = false;
     afficher(courante);
     requestAnimationFrame(function () { mesurer(); maj(); });
-    if (window.SereDefilement) SereDefilement.activer(piste, { delai: 6000, conteneur: panneau, langue: l, placerBouton: function (b) { sec.insertBefore(b, sec.querySelector('.tem-perm')); } });
+    if (window.SereDefilement) SereDefilement.activer(piste, { delai: 4000, conteneur: panneau, langue: l, placerBouton: function (b) { sec.insertBefore(b, sec.querySelector('.tem-perm')); } });
   }
 
   function demarrer() {

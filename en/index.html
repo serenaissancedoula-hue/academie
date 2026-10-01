@@ -1547,7 +1547,7 @@
 
     <!-- Bandeau discret de l'offre de lancement (disparaît tout seul après le 5 octobre) -->
     <a href="#formations" id="bandeau-offre" class="bandeau-offre" onclick="switchPage('academie', null, event)">
-        <span class="bandeau-long">✨ Academy launch offer: <strong>$250</strong> <s>$550</s> + the Breastfeeding Peer Supporter course ($175 value) as a gift · 10 spots · until October 5 at noon</span>
+        <span class="bandeau-long">✨ Academy launch offer: <strong>$250</strong> <s>$550</s> + the Breastfeeding Peer Supporter course ($175 value) as a gift · <span class="nb-places">10 spots</span> · until October 5 at noon</span>
         <span class="bandeau-court">✨ Course for <strong>$250</strong> <s>$550</s> + a gift · until Oct. 5 noon <strong>→</strong></span>
         <span class="bandeau-lien">Find out more →</span>
     </a>
@@ -1629,7 +1629,7 @@
 
         <div class="home-summary-box" style="background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
             <h3>The Académie Sérénaissance</h3>
-            <div class="pastille-offre offre-elem">✨ Launch offer: $250 instead of $550 + a gift · 10 spots · until October 5 at noon</div>
+            <div class="pastille-offre offre-elem">✨ Launch offer: $250 instead of $550 + a gift · <span class="nb-places">10 spots</span> · until October 5 at noon</div>
             <p>A basic doula training can't cover everything: I wanted to go straight to the heart of the fourth trimester. A specialized, advanced training space to equip doulas with solid, ethical foundations grounded in physiology, in New Brunswick, Quebec, across Canada and in France. <em>This is the English version of the site.</em></p>
             <button class="btn-action" onclick="switchPage('apropos', null, event, 'section-academie')">Learn more about the Academy →</button>
         </div>
@@ -1807,7 +1807,7 @@
     <!-- ================= 3. PAGE FORMATIONS DE L'ACADÉMIE ================= -->
     <div id="page-academie" class="page-section">
         <div class="section-header-centered">
-            <div class="pastille-offre offre-elem">✨ Launch offer · 10 spots · until October 5 at noon <span class="places-restantes"></span></div>
+            <div class="pastille-offre offre-elem">✨ Launch offer · <span class="nb-places">10 spots</span> · until October 5 at noon <span class="places-restantes"></span></div>
             <h2>Académie Sérénaissance Courses</h2>
             <p>Ethical, safe online courses to support families with confidence.</p>
             <p class="bandeau-pays">🌎 For English speakers in <strong>New Brunswick</strong>, <strong>Quebec</strong>, the rest of <strong>Canada</strong> and <strong>France</strong>: care pathways, financial supports, legal framework and documents adapted to each. <span class="bientot-en">🇬🇧 English version</span></p>
@@ -2874,6 +2874,7 @@
             sbClient.rpc('places_offre_restantes').then(({ data, error }) => {
                 if (error || typeof data !== 'number') return;
                 window.OFFRE_COMPLETE = data <= 0;
+                document.querySelectorAll('.nb-places').forEach(el => el.textContent = data > 0 ? data + ' ' + (data > 1 ? 'spots left' : 'spot left') : 'full');
                 document.querySelectorAll('.places-restantes').forEach(el => el.textContent = data > 0 ? '· ' + data + (data > 1 ? ' spots left' : ' spot left') : '');
                 appliquerOffre();
             });
@@ -3010,6 +3011,7 @@
             select.innerHTML = '<option value="">-- Choose your payment option --</option>' +
                 choixPaiement.map(c => '<option value="' + c[0] + '">' + c[1] + '</option>').join('');
             if (choixPaiement.some(c => c[0] === avant)) select.value = avant;
+            else if (choixPaiement.some(c => c[0] === 'offre')) select.value = 'offre';
         }
 
         // ================= EXTRAIT GRATUIT =================
