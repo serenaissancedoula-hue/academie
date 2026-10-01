@@ -28,6 +28,8 @@
     <script src="/langue.js"></script>
 <script src="/stats.js" defer></script>
 <script src="/infolettre.js" defer></script>
+<script src="/blogue.js" defer></script>
+<script src="/temoignages.js" defer></script>
     <script src="/appli.js" defer></script>
     <script src="/tarifs.js"></script>
     <script src="/securite.js"></script>
@@ -1655,6 +1657,10 @@
             </div>
         </div>
 
+        <section id="temoignages" hidden></section>
+
+        <section id="accueil-blogue" class="accueil-blogue" style="max-width:1100px;margin:0 auto 40px;" hidden></section>
+
         <div class="contact-home-wrapper">
             <h3>A question or a message? Write to me</h3>
             <p>I reply personally, usually within 48 hours. 💕</p>
@@ -2435,7 +2441,7 @@
                 <li><strong>Notifications (optional)</strong>: if you turn them on, your device is registered to receive my messages and announcements; you can turn them off at any time in your Settings.</li>
                 <li><strong>Breastfeeding peer supporter profile</strong>: your name, photo, service areas, the languages you speak, your bio and your support methods are published on the "Our Breastfeeding Peer Supporters" page <strong>only after you electronically sign the membership and consent form</strong>, for the duration of your certificate (2 years). Your phone number, your declarations (conflict of interest, criminal record) and your monthly follow-up sheets (anonymous, with no family names) remain private: only Sabrina has access to them. You can withdraw this consent at any time in your account: your profile then immediately disappears from the site.</li>
                 <li><strong>Newsletter (optional)</strong>: your email address, your first name (optional), your language, and the date and wording of your consent — to send you the Académie newsletter (news, promotions, tips), about twice a month. You can unsubscribe at any time using the link at the bottom of each email; your request is processed immediately. These emails comply with <em>Canada's Anti-Spam Legislation</em> (CASL).</li>
-                <li><strong>Visit statistics (anonymous)</strong>: the page viewed, the site you came from (for example Google or Facebook), an approximate region based on your device's time zone, the type of device and the site language, linked to a random identifier stored in your browser. <strong>No IP address, name or email is recorded</strong>, and this data cannot identify you. It is used only to know how many people visit the site. If your browser sends a "Do Not Track" or "Global Privacy Control" signal, no statistics are collected.</li>
+                <li><strong>Visit statistics</strong>: the page viewed, the site you came from (for example Google or Facebook), an approximate region based on your device's time zone, the type of device and the site language. To count each visitor only once, your IP address is turned on the server into a <strong>one-way encrypted fingerprint</strong> (SHA-256 with a secret key): <strong>the IP address itself is never recorded</strong> and the fingerprint cannot be turned back into it. No name or email is linked to these statistics; they are used only to know how many people visit the site, and they are deleted after 13 months. If your browser sends a "Do Not Track" or "Global Privacy Control" signal, no statistics are collected.</li>
                 <li><strong>Payments</strong>: processed by Stripe. I receive a payment confirmation, but never your card number.</li>
                 <li><strong>Doula support</strong>: the information you choose to entrust to me about your pregnancy, your health and your family is used solely to support you. It is treated with the utmost confidentiality.</li>
             </ul>
@@ -2465,7 +2471,7 @@
             <ul>
                 <li>Contact form messages: for as long as it takes to handle your request, then at most 2 years.</li>
                 <li>Newsletter: your email address is kept as long as you are subscribed; if you unsubscribe, it is kept only as proof of your unsubscription (so you are never emailed again), and you can ask for it to be deleted completely.</li>
-                <li>Anonymous visit statistics: 13 months at most, then deleted automatically.</li>
+                <li>Visit statistics (including IP fingerprints): 13 months at most, then deleted automatically.</li>
                 <li>Doula diploma: until your access to the course ends, then deleted.</li>
                 <li>Registration file and payment documents: 6 years, as required by Canadian tax rules.</li>
                 <li>Information entrusted during doula support: for the duration of the support, then securely destroyed, unless the law requires it to be kept.</li>
@@ -2675,6 +2681,7 @@
             <li><a href="#" onclick="switchPage('academie', this, event)">Courses</a></li>
             <li><a href="/en/espace.html">My account</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)">FAQ</a></li>
+            <li><a href="/en/blog/">Blog</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)">About</a></li>
         </ul>
         <nav class="footer-legal" aria-label="Academy pages" style="margin-bottom:6px;">

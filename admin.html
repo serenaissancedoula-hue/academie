@@ -227,7 +227,8 @@ th { color: var(--doux); font-weight: 600; }
   <section class="vue" id="vue-outils" hidden>
     <div class="carte" id="carte-stats">
       <h3 style="margin-bottom:6px;">📊 Visites du site</h3>
-      <p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Statistiques anonymes : aucune adresse IP ni aucun nom n'est conservé (Loi 25, RGPD). Tes propres visites ne sont pas comptées sur les appareils où tu utilises l'appli admin.</p>
+      <p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Chaque adresse IP compte pour <b>une</b> visiteuse. Par respect de la loi (Loi 25, LPRPDE, RGPD), l'adresse n'est jamais conservée : seulement une empreinte chiffrée impossible à relire, effacée après 13 mois. Aucun nom, aucun courriel.</p>
+      <div class="infos-ligne" id="st-exclus" style="font-size:.8rem;margin-bottom:8px;">🙈 <b>Tes visites ne sont pas comptées</b> : chaque fois que tu ouvres l'admin, l'appareil et l'Internet utilisés sont retirés des statistiques. Pour ton cellulaire ou un autre ordi où tu n'ouvres pas l'admin, ouvre une fois ce lien dessus : <b>academiesere.ca/?moi=1</b> <button class="btn gris" type="button" id="st-copier-moi" style="padding:3px 10px;font-size:.72rem;">Copier</button> <span id="st-nb-exclus"></span></div>
       <label class="champ" style="max-width:220px;">Période<select id="st-periode"><option value="1">Aujourd'hui</option><option value="7">7 derniers jours</option><option value="30" selected>30 derniers jours</option><option value="90">3 derniers mois</option><option value="365">12 derniers mois</option></select></label>
       <div id="st-contenu">Chargement…</div>
     </div>
@@ -457,6 +458,7 @@ function demarrer() {
       $('cloche').hidden = false; $('appli-installee').hidden = !APPLI;
       chargerAvis(); chargerMessages(); chargerAnnonces();
       viderPastille(); etatMfa();
+      sb.rpc('exclure_mon_appareil').then(function () {}, function () {});   // cette adresse IP n'est plus comptée dans les visites
     });
   });
 }
@@ -1360,6 +1362,7 @@ function barres(liste, total, nom) {
 }
 function chargerStats() {
   var j = +$('st-periode').value;
+  sb.rpc('nb_appareils_exclus').then(function (r) { if (r && typeof r.data === 'number') $('st-nb-exclus').textContent = '· ' + r.data + ' connexion(s) Internet à toi exclue(s).'; });
   $('st-contenu').innerHTML = 'Chargement…';
   sb.rpc('stats_visites', { p_jours: j }).then(function (r) {
     if (r.error) { $('st-contenu').innerHTML = '<p class="infos-ligne ko">Statistiques indisponibles : ' + esc(r.error.message) + '</p>'; return; }
@@ -1369,8 +1372,8 @@ function chargerStats() {
     var lNom = function (k) { return { fr: '🇫🇷 Français', en: '🇬🇧 Anglais' }[k] || k; };
     $('st-contenu').innerHTML =
       '<div class="tuiles"><div class="tuile"><b>' + (d.aujourdhui || 0) + '</b><span>visiteuses aujourd\'hui</span></div>' +
-      '<div class="tuile"><b>' + (d.visiteurs || 0) + '</b><span>visiteuses (période)</span></div>' +
-      '<div class="tuile"><b>' + (d.nouveaux || 0) + '</b><span>nouvelles visiteuses</span></div>' +
+      '<div class="tuile"><b>' + (d.visiteurs || 0) + '</b><span>visiteuses (adresses IP différentes)</span></div>' +
+      '<div class="tuile"><b>' + (d.nouveaux || 0) + '</b><span>premières visites</span></div>' +
       '<div class="tuile"><b>' + (d.vues || 0) + '</b><span>pages vues</span></div></div>' +
       (pj.length > 1 ? '<h4 style="margin:6px 0 2px;font-size:.85rem;">Visiteuses par jour</h4><div class="graph-jours">' + pj.map(function (x) {
         return '<div style="height:' + Math.round(x.v / max * 100) + '%" title="' + esc(jour(x.j)) + ' : ' + x.v + ' visiteuse(s), ' + x.p + ' page(s)"></div>';
@@ -1383,6 +1386,10 @@ function chargerStats() {
   });
 }
 $('st-periode').addEventListener('change', chargerStats);
+$('st-copier-moi').addEventListener('click', function () {
+  var l = 'https://academiesere.ca/?moi=1';
+  (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function () { toast('Lien copié : ouvre-le sur ton cellulaire 👍'); }, function () { prompt('Copie ce lien :', l); });
+});
 
 /* ---------- Infolettre ---------- */
 var abonnes = [];

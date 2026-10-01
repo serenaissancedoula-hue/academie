@@ -1,10 +1,22 @@
-/* Académie Sérénaissance — statistiques de visites ANONYMES.
-   Aucune adresse IP, aucun nom, aucun courriel n'est enregistré : seulement la page vue, la source (Google, Facebook…),
-   une région approximative (d'après le fuseau horaire de l'appareil), le type d'appareil et la langue.
-   Respecte « Do Not Track » et « Global Privacy Control ». Les visites de Sabrina ne sont pas comptées. */
+/* Académie Sérénaissance — statistiques de visites.
+   1 adresse IP = 1 visiteuse. L'adresse IP n'est JAMAIS enregistrée : le serveur n'en garde qu'une empreinte
+   chiffrée à sens unique (SHA-256 + clé secrète), effacée après 13 mois. Aucun nom, aucun courriel.
+   Sont aussi notés : la page vue, la source (Google, Facebook…), une région approximative (fuseau horaire),
+   le type d'appareil et la langue. Respecte « Do Not Track » et « Global Privacy Control ».
+   Les visites de Sabrina ne sont pas comptées (appareils où l'admin a été ouvert, ou lien ?moi=1). */
 (function () {
   'use strict';
   try {
+    var moi = new URLSearchParams(location.search).get('moi');
+    if (moi === '1' || moi === '0') {
+      if (moi === '1') localStorage.setItem('sere-admin', '1'); else localStorage.removeItem('sere-admin');
+      history.replaceState(null, '', location.pathname + location.hash);
+      var a = document.createElement('div');
+      a.textContent = moi === '1' ? '🙈 C\'est noté : tes visites sur cet appareil ne seront plus comptées.' : 'Tes visites sur cet appareil seront de nouveau comptées.';
+      a.style.cssText = 'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#2c221e;color:#fff;padding:12px 18px;border-radius:14px;font:600 14px Arial,sans-serif;z-index:99999;max-width:90vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.25)';
+      (document.body ? Promise.resolve() : new Promise(function (r) { document.addEventListener('DOMContentLoaded', r); })).then(function () { document.body.appendChild(a); setTimeout(function () { a.remove(); }, 5000); });
+      if (moi === '1') return;
+    }
     if (navigator.doNotTrack === '1' || window.doNotTrack === '1' || navigator.globalPrivacyControl) return;
     if (localStorage.getItem('sere-admin') === '1') return;
     if (/^(localhost|127\.)/.test(location.hostname)) return;

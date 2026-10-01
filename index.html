@@ -30,6 +30,8 @@
     <script src="/langue.js"></script>
 <script src="/stats.js" defer></script>
 <script src="/infolettre.js" defer></script>
+<script src="/blogue.js" defer></script>
+<script src="/temoignages.js" defer></script>
     <script src="/appli.js" defer></script>
     <script src="/tarifs.js"></script>
     <script src="/securite.js"></script>
@@ -1657,6 +1659,10 @@
             </div>
         </div>
 
+        <section id="temoignages" hidden></section>
+
+        <section id="accueil-blogue" class="accueil-blogue" style="max-width:1100px;margin:0 auto 40px;" hidden></section>
+
         <div class="contact-home-wrapper">
             <h3>Une question ou un message ? Écris-moi</h3>
             <p>Je te réponds personnellement, habituellement en moins de 48 heures. 💕</p>
@@ -2437,7 +2443,7 @@
                 <li><strong>Notifications (facultatives)</strong> : si tu les actives, ton appareil est enregistré pour recevoir mes messages et mes annonces ; tu peux les désactiver en tout temps dans tes Paramètres.</li>
                 <li><strong>Fiche de marraine d'allaitement</strong> : ton nom, ta photo, tes secteurs desservis, les langues que tu parles, ta bio et tes modes d'accompagnement sont publiés sur la page « Nos marraines d'allaitement » <strong>seulement après ta signature électronique du formulaire d'adhésion et de consentement</strong>, pendant la durée de ton certificat (2 ans). Ton numéro de téléphone, tes déclarations (conflit d'intérêts, antécédents judiciaires) et tes feuilles de suivi mensuelles (anonymes, sans aucun nom de famille) restent privés : seule Sabrina y a accès. Tu peux retirer ce consentement en tout temps dans ton compte : ta fiche disparaît alors immédiatement du site.</li>
                 <li><strong>Infolettre (facultative)</strong> : ton courriel, ton prénom (facultatif), ta langue, la date et le texte de ton consentement — pour t'envoyer l'infolettre de l'Académie (nouvelles, promotions, conseils), environ 2 fois par mois. Tu peux te désabonner en tout temps avec le lien au bas de chaque courriel : ta demande est traitée immédiatement. Cet envoi respecte la <em>Loi canadienne anti-pourriel</em>.</li>
-                <li><strong>Statistiques de visites (anonymes)</strong> : la page consultée, le site d'où tu arrives (par exemple Google ou Facebook), une région approximative déduite du fuseau horaire de ton appareil, le type d'appareil et la langue du site, associés à un identifiant aléatoire conservé dans ton navigateur. <strong>Aucune adresse IP, aucun nom ni aucun courriel n'est enregistré</strong>, et ces données ne permettent pas de t'identifier. Elles servent seulement à savoir combien de personnes visitent le site. Si ton navigateur envoie le signal « Ne pas me pister » (Do Not Track ou Global Privacy Control), aucune statistique n'est recueillie.</li>
+                <li><strong>Statistiques de visites</strong> : la page consultée, le site d'où tu arrives (par exemple Google ou Facebook), une région approximative déduite du fuseau horaire de ton appareil, le type d'appareil et la langue du site. Pour compter chaque visiteuse une seule fois, ton adresse IP est transformée sur le serveur en une <strong>empreinte chiffrée à sens unique</strong> (SHA-256 avec une clé secrète) : <strong>l'adresse IP elle-même n'est jamais enregistrée</strong> et l'empreinte ne permet pas de la retrouver. Aucun nom ni aucun courriel n'est associé à ces statistiques ; elles servent seulement à savoir combien de personnes visitent le site, et elles sont effacées après 13 mois. Si ton navigateur envoie le signal « Ne pas me pister » (Do Not Track ou Global Privacy Control), aucune statistique n'est recueillie.</li>
                 <li><strong>Paiements</strong> : traités par Stripe. Je reçois une confirmation de paiement, mais jamais ton numéro de carte.</li>
                 <li><strong>Accompagnements de doula</strong> : les informations que tu choisis de me confier sur ta grossesse, ta santé et ta famille servent uniquement à t'accompagner. Elles sont traitées avec la plus grande confidentialité.</li>
             </ul>
@@ -2467,7 +2473,7 @@
             <ul>
                 <li>Messages du formulaire de contact : le temps de traiter ta demande, puis au plus 2 ans.</li>
                 <li>Infolettre : ton courriel est conservé tant que tu es abonnée ; si tu te désabonnes, il est gardé seulement comme preuve de ton désabonnement (pour ne plus jamais t'écrire), et tu peux demander qu'il soit effacé complètement.</li>
-                <li>Statistiques de visites anonymes : 13 mois au maximum, puis effacées automatiquement.</li>
+                <li>Statistiques de visites (empreintes d'adresse IP comprises) : 13 mois au maximum, puis effacées automatiquement.</li>
                 <li>Diplôme de doula : jusqu'à la fin de ton accès à la formation, puis supprimé.</li>
                 <li>Dossier d'inscription et documents de paiement : 6 ans, comme l'exigent les règles fiscales canadiennes.</li>
                 <li>Informations confiées lors d'un accompagnement : le temps de l'accompagnement, puis détruites de façon sécuritaire, sauf si la loi exige de les conserver.</li>
@@ -2677,6 +2683,7 @@
             <li><a href="#" onclick="switchPage('academie', this, event)">Formations</a></li>
             <li><a href="espace.html">Mon compte</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)">FAQ</a></li>
+            <li><a href="/blogue/">Blogue</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)">À propos</a></li>
         </ul>
         <nav class="footer-legal" aria-label="Pages de l'Académie" style="margin-bottom:6px;">
