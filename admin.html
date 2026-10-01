@@ -33,6 +33,7 @@ a { color: var(--terra); }
 .entete .direct.hors { background: #7a685e; }
 main { max-width: 1100px; margin: 0 auto; padding: 18px 16px 110px; }
 .vue[hidden] { display: none !important; }
+form[hidden], div[hidden], p[hidden], section[hidden] { display: none !important; }
 .carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
 .stat { background: var(--carte); border: 1px solid var(--bord); border-radius: 16px; padding: 14px; cursor: pointer; }
@@ -107,6 +108,8 @@ th { color: var(--doux); font-weight: 600; }
 .toast.voir { opacity: 1; }
 .connexion { max-width: 420px; margin: 40px auto; }
 .installer-admin { font-size: .82rem; color: var(--doux); margin-top: 12px; }
+.retour-site { color: #fff; text-decoration: none; font-size: .8rem; font-weight: 700; border: 1px solid rgba(255,255,255,.45); border-radius: 50px; padding: 6px 12px; white-space: nowrap; }
+.retour-site:hover { background: rgba(255,255,255,.12); }
 .cloche { position: relative; background: none; border: 0; font-size: 1.35rem; cursor: pointer; padding: 2px 6px; color: #fff; }
 .compteur { position: absolute; top: -4px; right: -6px; min-width: 18px; height: 18px; border-radius: 50px; background: #d64545; color: #fff; font-size: .68rem; font-style: normal; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
 .compteur[hidden] { display: none; }
@@ -148,6 +151,7 @@ th { color: var(--doux); font-weight: 600; }
   <h1>Admin · Académie</h1>
   <span class="direct hors" id="etat-direct" hidden>● en direct</span>
   <button class="cloche" id="cloche" type="button" hidden aria-label="Notifications">🔔<i class="compteur" id="nb-avis" hidden></i></button>
+  <a class="retour-site" id="retour-site" href="/" title="Me déconnecter et retourner au site">🏠 <span>Site</span></a>
 </header>
 <div class="panneau-avis" id="panneau-avis" hidden>
   <div class="pa-haut"><strong>Notifications</strong><button type="button" id="avis-tout-lu">Tout marquer comme lu</button></div>
@@ -166,11 +170,13 @@ th { color: var(--doux); font-weight: 600; }
         <button class="btn" type="submit">Me connecter</button>
       </form>
       <form id="form-code" hidden style="display:flex;flex-direction:column;gap:10px;">
-        <p style="font-size:.9rem;">🔐 Entre le code à 6 chiffres affiché dans ton application d'authentification (Google Authenticator, Authy, Mots de passe d'Apple…).</p>
+        <p style="font-size:.9rem;" id="code-texte">📩 Un code à 6 chiffres vient d'être envoyé à ton courriel. Entre-le ici pour terminer la connexion.</p>
         <input id="c-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="123456" required style="font-size:1.4rem;letter-spacing:.3em;text-align:center;">
         <button class="btn" type="submit">Valider</button>
+        <button class="btn fantome" type="button" id="code-renvoyer">Renvoyer un code</button>
         <button class="btn fantome" type="button" id="code-annuler">Annuler</button>
       </form>
+      <p style="text-align:center;margin-top:14px;"><a href="/" style="color:var(--terra,#a85743);font-weight:700;text-decoration:none;">← Retour au site</a></p>
     </div>
   </section>
 
@@ -337,16 +343,19 @@ th { color: var(--doux); font-weight: 600; }
     <h2 style="margin-bottom:12px;">Paramètres</h2>
     <div class="carte" id="rg"></div>
     <div class="carte" id="carte-2fa">
-      <h3 style="margin-bottom:6px;">🔐 Double vérification (recommandée)</h3>
+      <h3 style="margin-bottom:6px;">🔐 Vérification en 2 étapes par courriel</h3>
       <p id="mfa-etat" style="font-size:.86rem;color:var(--doux);margin-bottom:10px;"></p>
-      <div class="actions"><button class="btn" id="mfa-activer" hidden>Activer la double vérification</button><button class="btn gris" id="mfa-retirer" hidden>Désactiver</button></div>
-      <div id="mfa-config" hidden style="margin-top:12px;">
-        <p style="font-size:.86rem;margin-bottom:8px;">1. Ouvre ton application d'authentification (Google Authenticator, Authy, ou les Mots de passe d'Apple) et scanne ce code, <em>ou</em> copie la clé.</p>
-        <div id="mfa-qr" style="background:#fff;padding:10px;border-radius:12px;width:200px;max-width:100%;margin-bottom:8px;"></div>
-        <input id="mfa-secret" readonly style="font-family:monospace;font-size:.8rem;">
-        <p style="font-size:.86rem;margin:10px 0 8px;">2. Entre le code à 6 chiffres qu'elle affiche :</p>
-        <form id="form-mfa" style="display:flex;gap:8px;"><input id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" required><button class="btn" type="submit">Confirmer</button></form>
-      </div>
+      <div class="actions"><button class="btn" id="mfa-activer" type="button" hidden>Activer (recevoir un code par courriel)</button><button class="btn gris" id="mfa-retirer" type="button" hidden>Désactiver</button></div>
+      <form id="form-mfa" hidden style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+        <p style="font-size:.86rem;">📩 Un code à 6 chiffres a été envoyé à <strong>serenaissance.doula@gmail.com</strong>. Entre-le pour confirmer :</p>
+        <div style="display:flex;gap:8px;"><input id="mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" required style="font-size:1.2rem;letter-spacing:.25em;text-align:center;"><button class="btn" type="submit">Confirmer</button></div>
+      </form>
+      <p style="font-size:.78rem;color:var(--doux);margin-top:10px;">Pas de code QR ni d'application à installer : le code arrive dans tes courriels. (La vérification par texto demanderait un service d'envoi de SMS payant ; le courriel est gratuit et aussi sûr si ton compte Gmail est protégé.)</p>
+    </div>
+    <div class="carte">
+      <h3 style="margin-bottom:6px;">🏠 Retourner au site</h3>
+      <p style="font-size:.86rem;color:var(--doux);margin-bottom:10px;">Te déconnecte de l'admin et ouvre le site public.</p>
+      <a class="btn" href="/" id="retour-site-2" style="text-decoration:none;display:inline-block;">Me déconnecter et retourner au site</a>
     </div>
     <div class="carte">
       <h3 style="margin-bottom:6px;">📲 L'appli Admin sur ton cellulaire</h3>
@@ -438,18 +447,22 @@ function vue(v) {
 $('onglets').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) vue(b.dataset.v); });
 
 /* ---------- Connexion ---------- */
+function jwtParCode(session) {
+  try { var p = JSON.parse(atob(session.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        return (p.amr || []).some(function (a) { return ['otp', 'magiclink', 'totp'].indexOf(a.method) >= 0; }); } catch (e) { return false; }
+}
 function demarrer() {
   sb.auth.getSession().then(function (r) {
     var s = r.data && r.data.session;
     if (!s || (s.user.email || '').toLowerCase() !== ADMIN) {
       if (!s && /inactivite=1/.test(location.search)) { $('msg-connexion').textContent = '🔒 Déconnectée par sécurité après 30 minutes sans activité. Reconnecte-toi.'; history.replaceState(null, '', 'admin.html'); }
       if (s) $('msg-connexion').innerHTML = 'Tu es connectée avec ' + esc(s.user.email) + ', qui n\'est pas le compte administratrice. <a href="espace.html">Aller à Mon compte</a>';
+      $('form-code').hidden = true; $('form-connexion').hidden = false;
       vue('connexion'); return;
     }
-    // Double vérification : si un code est configuré, il faut l'entrer avant d'accéder aux dossiers
-    return sb.auth.mfa.getAuthenticatorAssuranceLevel().then(function (n) {
-      var d = n.data || {};
-      if (d.nextLevel === 'aal2' && d.currentLevel !== 'aal2') { demanderCode(); return; }
+    // Vérification en 2 étapes (si tu l'as activée) : un code reçu par courriel est demandé après le mot de passe
+    return sb.rpc('admin_2etapes_active').then(function (x) {
+      if (x && x.data === true && !jwtParCode(s)) { envoyerCode(); return; }
       $('form-code').hidden = true; $('form-connexion').hidden = false;
       $('onglets').hidden = false; vue('bord');
       if (!gardien) gardien = SereSecurite.surveiller({ sb: sb, minutes: 30, apres: 'admin.html' });
@@ -462,27 +475,28 @@ function demarrer() {
     });
   });
 }
-function demanderCode() {
+var dernierEnvoi = 0;
+function envoyerCode(force) {
   vue('connexion'); $('onglets').hidden = true;
   $('form-connexion').hidden = true; $('form-code').hidden = false;
   $('msg-connexion').textContent = 'Deuxième étape de sécurité.';
   $('c-code').value = ''; setTimeout(function () { $('c-code').focus(); }, 50);
-}
-function premierFacteur() {
-  return sb.auth.mfa.listFactors().then(function (r) { return ((r.data && r.data.totp) || []).filter(function (f) { return f.status === 'verified'; })[0]; });
+  if (!force && Date.now() - dernierEnvoi < 60000) return;
+  dernierEnvoi = Date.now();
+  sb.auth.signInWithOtp({ email: ADMIN, options: { shouldCreateUser: false } }).then(function (r) {
+    if (r.error) $('msg-connexion').textContent = /seconds|rate/i.test(r.error.message) ? 'Un code a déjà été envoyé il y a moins d\'une minute : regarde tes courriels (et les indésirables).' : 'Le code n\'a pas pu être envoyé : ' + r.error.message;
+  });
 }
 $('form-code').addEventListener('submit', function (e) {
   e.preventDefault();
   var code = $('c-code').value.replace(/\D/g, '');
-  premierFacteur().then(function (f) {
-    if (!f) { demarrer(); return; }
-    return sb.auth.mfa.challengeAndVerify({ factorId: f.id, code: code }).then(function (r) {
-      if (r.error) { $('msg-connexion').textContent = 'Code incorrect ou expiré. Réessaie avec le nouveau code.'; $('c-code').value = ''; return; }
-      demarrer();
-    });
+  sb.auth.verifyOtp({ email: ADMIN, token: code, type: 'email' }).then(function (r) {
+    if (r.error) { $('msg-connexion').textContent = 'Code incorrect ou expiré. Vérifie le dernier courriel reçu, ou demande un nouveau code.'; $('c-code').value = ''; return; }
+    demarrer();
   });
 });
-$('code-annuler').addEventListener('click', function () { sb.auth.signOut().then(function () { location.reload(); }); });
+$('code-renvoyer').addEventListener('click', function () { envoyerCode(true); toast('📩 Nouveau code envoyé'); });
+$('code-annuler').addEventListener('click', function () { sb.auth.signOut().then(function () { location.href = 'admin.html'; }); });
 $('form-connexion').addEventListener('submit', function (e) {
   e.preventDefault();
   if (window.SereSecurite && SereSecurite.reinitialiser) SereSecurite.reinitialiser();
@@ -491,53 +505,48 @@ $('form-connexion').addEventListener('submit', function (e) {
     demarrer();
   });
 });
+// Retour au site : on se déconnecte d'abord (sécurité), puis on ouvre le site public
+function retourSite(e) {
+  e.preventDefault();
+  var aller = function () { location.href = '/'; };
+  sb.auth.getSession().then(function (r) { return r.data && r.data.session ? sb.auth.signOut() : null; }).then(aller, aller);
+  setTimeout(aller, 2500);
+}
+$('retour-site').addEventListener('click', retourSite);
+$('retour-site-2').addEventListener('click', retourSite);
 
-/* ---------- Double vérification (TOTP) ---------- */
-var mfaEnCours = null;
+/* ---------- Vérification en 2 étapes par courriel ---------- */
 function etatMfa() {
-  premierFacteur().then(function (f) {
-    $('mfa-config').hidden = true;
-    $('mfa-activer').hidden = !!f; $('mfa-retirer').hidden = !f;
-    $('mfa-etat').innerHTML = f
-      ? '✅ <strong>Activée</strong> : même avec ton mot de passe, personne ne peut ouvrir les dossiers sans le code de ton cellulaire.'
-      : 'Ajoute un code à 6 chiffres (généré sur ton cellulaire) en plus de ton mot de passe. Si quelqu\'un vole ton mot de passe, il ne pourra quand même pas voir les dossiers des étudiantes.';
+  sb.rpc('admin_2etapes_active').then(function (x) {
+    var on = !!(x && x.data === true);
+    $('form-mfa').hidden = true;
+    $('mfa-activer').hidden = on; $('mfa-retirer').hidden = !on;
+    $('mfa-etat').innerHTML = on
+      ? '✅ <strong>Activée</strong> : à chaque connexion, après ton mot de passe, un code à 6 chiffres est envoyé à ton courriel. Même avec ton mot de passe, personne ne peut ouvrir les dossiers sans ce code.'
+      : 'Désactivée : la connexion demande seulement ton courriel et ton mot de passe. Si tu l\'actives, un code à 6 chiffres te sera envoyé par courriel à chaque connexion (recommandé pour protéger les dossiers des étudiantes).';
   });
 }
 $('mfa-activer').addEventListener('click', function () {
-  // nettoie une configuration commencée mais jamais confirmée
-  sb.auth.mfa.listFactors().then(function (r) {
-    var vieux = ((r.data && r.data.all) || []).filter(function (f) { return f.status !== 'verified'; });
-    return Promise.all(vieux.map(function (f) { return sb.auth.mfa.unenroll({ factorId: f.id }); }));
-  }).then(function () {
-    return sb.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Admin Sérénaissance ' + Date.now(), issuer: 'Académie Sérénaissance' });
-  }).then(function (r) {
-    if (r.error) { toast('Impossible : ' + r.error.message); return; }
-    mfaEnCours = r.data.id;
-    var img = document.createElement('img'); img.src = r.data.totp.qr_code; img.alt = 'Code QR'; img.style.width = '100%';
-    $('mfa-qr').innerHTML = ''; $('mfa-qr').appendChild(img);
-    $('mfa-secret').value = r.data.totp.secret;
-    $('mfa-config').hidden = false; $('mfa-activer').hidden = true;
+  sb.auth.signInWithOtp({ email: ADMIN, options: { shouldCreateUser: false } }).then(function (r) {
+    if (r.error) { toast(/seconds|rate/i.test(r.error.message) ? 'Attends une minute avant de demander un autre code.' : 'Impossible : ' + r.error.message); return; }
+    $('form-mfa').hidden = false; $('mfa-activer').hidden = true; setTimeout(function () { $('mfa-code').focus(); }, 50);
   });
 });
 $('form-mfa').addEventListener('submit', function (e) {
   e.preventDefault();
-  if (!mfaEnCours) return;
-  sb.auth.mfa.challengeAndVerify({ factorId: mfaEnCours, code: $('mfa-code').value.replace(/\D/g, '') }).then(function (r) {
-    if (r.error) { toast('Code incorrect. Entre le code affiché en ce moment.'); return; }
-    mfaEnCours = null; $('mfa-code').value = '';
-    toast('🔐 Double vérification activée !'); etatMfa();
-  });
-});
-$('mfa-retirer').addEventListener('click', function () {
-  if (!confirm('Désactiver la double vérification ? Ton compte sera protégé seulement par ton mot de passe.')) return;
-  premierFacteur().then(function (f) {
-    if (!f) return;
-    return sb.auth.mfa.unenroll({ factorId: f.id }).then(function (r) {
-      if (r.error) toast('Impossible : ' + r.error.message); else { toast('Double vérification désactivée.'); sb.auth.refreshSession().then(etatMfa); }
+  sb.auth.verifyOtp({ email: ADMIN, token: $('mfa-code').value.replace(/\D/g, ''), type: 'email' }).then(function (r) {
+    if (r.error) { toast('Code incorrect ou expiré.'); return; }
+    return sb.rpc('activer_2etapes').then(function (x) {
+      if (x.error) { toast('Impossible : ' + x.error.message); return; }
+      $('mfa-code').value = ''; toast('🔐 Vérification en 2 étapes activée !'); etatMfa();
     });
   });
 });
-$('deconnexion').addEventListener('click', function () { sb.auth.signOut().then(function () { location.reload(); }); });
+$('mfa-retirer').addEventListener('click', function () {
+  if (!confirm('Désactiver la vérification en 2 étapes ? Ton compte sera protégé seulement par ton mot de passe.')) return;
+  sb.rpc('desactiver_2etapes').then(function (x) { if (x.error) toast('Impossible : ' + x.error.message); else { toast('Vérification en 2 étapes désactivée.'); etatMfa(); } });
+});
+$('deconnexion').addEventListener('click', function () { sb.auth.signOut().then(function () { location.href = 'admin.html'; }); });
 
 /* ---------- Données ---------- */
 function charger() {
