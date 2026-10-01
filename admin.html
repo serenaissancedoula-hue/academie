@@ -148,6 +148,7 @@ th { color: var(--doux); font-weight: 600; }
 </style>
 </head>
 <body>
+<script src="/accueil.js" data-mode="admin"></script>
 <header class="entete">
   <img src="/icones/admin-192.png" alt="">
   <h1>Admin · Académie</h1>
@@ -160,12 +161,14 @@ th { color: var(--doux); font-weight: 600; }
 function retourSite(e) {
   e.preventDefault();
   var parti = false;
-  var aller = function () { if (parti) return; parti = true; window.location.assign('/'); };
+  var aller = function () { if (parti) return; parti = true; if (window.SereAccueil && connectee) SereAccueil.auRevoir(function () { window.location.assign('/'); }); else window.location.assign('/'); };
+  var connectee = false;
   setTimeout(aller, 1500);                                   // jamais bloquée, même si Supabase ne répond pas
   try {
     if (!window.sb || !sb.auth) return aller();
     sb.auth.getSession().then(function (r) {
       if (!(r && r.data && r.data.session)) return aller();  // pas connectée : on part tout de suite
+      connectee = true;
       try { localStorage.removeItem('sb-zeptirfcwstufcpgvkzx-auth-token'); sessionStorage.removeItem('sb-zeptirfcwstufcpgvkzx-auth-token'); } catch (x) {}
       return sb.auth.signOut().then(aller, aller);
     }).catch(aller);
@@ -609,7 +612,7 @@ $('mfa-retirer').addEventListener('click', function () {
   if (!confirm('Désactiver la vérification en 2 étapes ? Ton compte sera protégé seulement par ton mot de passe.')) return;
   sb.rpc('desactiver_2etapes').then(function (x) { if (x.error) toast('Impossible : ' + x.error.message); else { toast('Vérification en 2 étapes désactivée.'); etatMfa(); } });
 });
-$('deconnexion').addEventListener('click', function () { sb.auth.signOut().then(function () { location.href = 'admin.html'; }); });
+$('deconnexion').addEventListener('click', function () { sb.auth.signOut().then(function () { location.href = 'admin.html?deconnectee=1'; }, function () { location.href = 'admin.html?deconnectee=1'; }); });
 
 /* ---------- Données ---------- */
 function charger() {
