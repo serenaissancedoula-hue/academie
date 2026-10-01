@@ -31,6 +31,7 @@
 <script src="/stats.js" defer></script>
 <script src="/infolettre.js" defer></script>
 <script src="/blogue.js" defer></script>
+<script src="/defilement.js" defer></script>
 <script src="/temoignages.js" defer></script>
     <script src="/appli.js" defer></script>
     <script src="/tarifs.js"></script>
@@ -2897,6 +2898,10 @@
                 piste.appendChild(img);
             });
         })();
+        document.addEventListener('DOMContentLoaded', () => {
+            const piste = document.getElementById('carrousel-piste');
+            if (piste && window.SereDefilement) SereDefilement.activer(piste, { delai: 4500, conteneur: piste.parentNode, langue: 'fr', placerBouton: (b) => piste.parentNode.parentNode.appendChild(b) });
+        });
         function defilerGalerie(sens) {
             const piste = document.getElementById('carrousel-piste');
             if (piste) piste.scrollBy({ left: sens * piste.clientWidth * 0.9, behavior: 'smooth' });

@@ -93,6 +93,8 @@
         '<p style="font-size:.78rem;color:var(--doux,#7a685e);">' + L('Appli fermée : le volume suit celui de ton téléphone. ', 'When the app is closed, the volume follows your phone. ') + (IOS ? L('Sur iPhone, tu peux aussi choisir le style d\'alerte dans Réglages → Notifications.', 'On iPhone, you can also choose the alert style in Settings → Notifications.') : '') + '</p>' +
         '<div style="display:flex;flex-wrap:wrap;gap:8px;"><button type="button" class="btn gris rg-test">' + L('Essayer', 'Test') + '</button><button type="button" class="btn gris rg-desactiver" hidden>' + L('Désactiver sur cet appareil', 'Turn off on this device') + '</button></div>' +
       '</div>';
+    // Carte repliable comme les autres sections (on clique sur « Notifications » pour la dérouler)
+    if (window.SereRepliable && el.id) setTimeout(function () { SereRepliable.appliquer('#' + el.id); }, 0);
     if (!document.getElementById('rg-style')) {
       var st = document.createElement('style'); st.id = 'rg-style';
       st.textContent = '.rg-actions [hidden],.rg-reglages [hidden],.rg-reglages[hidden]{display:none!important}.rg-ligne{display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer}.rg-ligne span{display:flex;flex-direction:column;font-size:.92rem}.rg-ligne small{color:var(--doux,#7a685e);font-size:.78rem}' +

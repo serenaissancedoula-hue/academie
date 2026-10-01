@@ -1,7 +1,7 @@
 /* Académie Sérénaissance — carrousel de témoignages de l'accueil (FR et EN).
    Données : rpc « temoignages_publics » → [{categorie:'etudiante'|'famille', nom, role, role_en, texte, texte_en, note}].
    La section #temoignages reste cachée s'il n'y a aucune donnée ou en cas d'erreur réseau (aucun message au public).
-   Pas d'animation automatique. Défilement natif (scroll-snap, glisser au doigt) + flèches + points. */
+   Défilement automatique (defilement.js : pause au toucher, au survol et au clavier, bouton pause) + glisser au doigt (scroll-snap) + flèches + points. */
 (function () {
   'use strict';
   var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co', SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
@@ -192,6 +192,7 @@
     sec.hidden = false;
     afficher(courante);
     requestAnimationFrame(function () { mesurer(); maj(); });
+    if (window.SereDefilement) SereDefilement.activer(piste, { delai: 6000, conteneur: panneau, langue: l, placerBouton: function (b) { sec.insertBefore(b, sec.querySelector('.tem-perm')); } });
   }
 
   function demarrer() {
