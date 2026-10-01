@@ -483,6 +483,7 @@ $('form-code').addEventListener('submit', function (e) {
 $('code-annuler').addEventListener('click', function () { sb.auth.signOut().then(function () { location.reload(); }); });
 $('form-connexion').addEventListener('submit', function (e) {
   e.preventDefault();
+  if (window.SereSecurite && SereSecurite.reinitialiser) SereSecurite.reinitialiser();
   sb.auth.signInWithPassword({ email: $('c-courriel').value.trim(), password: $('c-mdp').value }).then(function (r) {
     if (r.error) { $('msg-connexion').textContent = 'Courriel ou mot de passe incorrect.'; return; }
     demarrer();
@@ -1153,8 +1154,8 @@ function ouvrirDepuisLien() {
   if (c) { history.replaceState(null, '', 'admin.html'); vue('messages'); ouvrirChat(c[1]); }
   var k = (location.hash || '').match(/^#m(\d+)/);
   if (k && marraines.length) { history.replaceState(null, '', 'admin.html'); vue('marraines'); ouvrirFicheM(+k[1]); }
-  if (location.hash === '#infolettre') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { $('carte-infolettre').scrollIntoView({ behavior: 'smooth' }); }, 300); }
-  if (location.hash === '#suivis') { history.replaceState(null, '', 'admin.html'); vue('marraines'); chargerSuivisAdmin(); setTimeout(function () { $('carte-suivis').scrollIntoView({ behavior: 'smooth' }); }, 200); }
+  if (location.hash === '#infolettre') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-infolettre')); $('carte-infolettre').scrollIntoView({ behavior: 'smooth' }); }, 300); }
+  if (location.hash === '#suivis') { history.replaceState(null, '', 'admin.html'); vue('marraines'); chargerSuivisAdmin(); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-suivis')); $('carte-suivis').scrollIntoView({ behavior: 'smooth' }); }, 200); }
 }
 window.addEventListener('hashchange', ouvrirDepuisLien);
 
@@ -1614,5 +1615,7 @@ $('installer-admin').addEventListener('click', function () { if (invite) { invit
 demarrer();
 })();
 </script>
+<script src="/repliable.js"></script>
+<script>if (window.SereRepliable) SereRepliable.appliquer('#vue-outils > .carte, #vue-parametres > .carte, #carte-suivis');</script>
 </body>
 </html>

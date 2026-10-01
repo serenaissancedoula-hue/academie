@@ -591,6 +591,7 @@ function demarrer() {
 $('form-connexion').addEventListener('submit', function (e) {
   e.preventDefault();
   var b = $('c-bouton'); b.disabled = true; b.textContent = 'Logging in…';
+  if (window.SereSecurite && SereSecurite.reinitialiser) SereSecurite.reinitialiser();
   sb.auth.signInWithPassword({ email: $('c-courriel').value.trim(), password: $('c-mdp').value }).then(function (r) {
     b.disabled = false; b.textContent = 'Log in';
     if (r.error) {
@@ -620,6 +621,7 @@ function preparerConfirmation() {
   if (type === 'email_change') { $('conf-titre').textContent = 'Email change'; $('conf-texte').textContent = 'Click the button to confirm your new email address.'; }
   $('conf-bouton').addEventListener('click', function () {
     var b = $('conf-bouton'); b.disabled = true;
+    if (window.SereSecurite && SereSecurite.reinitialiser) SereSecurite.reinitialiser();
     sb.auth.verifyOtp({ token_hash: params.get('token_hash'), type: type }).then(function (r) {
       history.replaceState(null, '', 'espace.html');
       if (r.error) {
@@ -866,6 +868,7 @@ function preparerInscription() {
       if (r.error) throw new Error('Your diploma could not be uploaded (' + r.error.message + ').');
       if (r.data) dossier.diplome_url = r.data.path;
       if (window.SereLangue) SereLangue.enregistrer(dossier.langue);
+      if (window.SereSecurite && SereSecurite.reinitialiser) SereSecurite.reinitialiser();
       return sb.auth.signUp({ email: courriel, password: m1, options: { emailRedirectTo: ICI, data: { langue: dossier.langue } } });
     }).then(function (r) {
       if (r.error && !/already|registered/i.test(r.error.message || '')) throw new Error('Your account could not be created (' + r.error.message + ').');
@@ -1378,5 +1381,7 @@ $('pp-retirer').addEventListener('click', function () {
 demarrer();
 })();
 </script>
+<script src="/repliable.js"></script>
+<script>if (window.SereRepliable) SereRepliable.appliquer('#vue-parametres > .carte:not(#rg)');</script>
 </body>
 </html>

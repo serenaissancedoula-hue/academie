@@ -9,6 +9,10 @@
 
   // Ancien stockage permanent : on l'efface (les sessions ne doivent plus survivre à la fermeture)
   try { localStorage.removeItem(CLE); localStorage.removeItem(CLE + '-code-verifier'); } catch (e) {}
+  // Après une déconnexion (ou à l'arrivée sur la page de connexion), l'ancienne heure d'activité ne doit jamais
+  // déconnecter la prochaine personne qui se connecte dans cet onglet.
+  try { if (/[?&](deconnectee|inactivite)=1/.test(location.search)) sessionStorage.removeItem(DERNIERE); } catch (e) {}
+  function reinitialiser() { try { sessionStorage.setItem(DERNIERE, String(Date.now())); } catch (e) {} }
 
   function options() {
     return { auth: { storage: window.sessionStorage, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } };
@@ -23,7 +27,7 @@
     function sortir() {
       if (fini) return; fini = true;
       var suite = function () {
-        try { sessionStorage.removeItem(CLE); } catch (e) {}
+        try { sessionStorage.removeItem(CLE); sessionStorage.removeItem(DERNIERE); } catch (e) {}
         location.href = (o.apres || '/espace.html') + '?deconnectee=1&inactivite=1';
       };
       Promise.resolve(o.avant ? o.avant() : null).catch(function () {}).then(function () {
@@ -62,8 +66,10 @@
       if (bandeau) { bandeau.remove(); bandeau = null; }
       planifier();
     }
-    // À l'ouverture : si la dernière activité date de trop longtemps (appli restée en arrière-plan), on déconnecte
-    if (lire(DERNIERE) && maintenant() - derniere() >= delai) return sortir();
+    // À l'ouverture : si la dernière activité date de trop longtemps (appli restée en arrière-plan), on déconnecte.
+    // Exception : une connexion qui vient d'être faite (o.nouvelle) repart toujours à zéro.
+    if (o.nouvelle) reinitialiser();
+    else if (lire(DERNIERE) && maintenant() - derniere() >= delai) return sortir();
     ecrire(DERNIERE, String(maintenant()));
     ['pointerdown', 'keydown', 'scroll', 'touchstart', 'wheel', 'mousemove'].forEach(function (ev) {
       window.addEventListener(ev, activite, { passive: true, capture: true });
@@ -74,5 +80,5 @@
     return { arreter: function () { fini = true; clearTimeout(minuterie); clearTimeout(avert); } };
   }
 
-  window.SereSecurite = { options: options, surveiller: surveiller, CLE: CLE };
+  window.SereSecurite = { options: options, surveiller: surveiller, reinitialiser: reinitialiser, CLE: CLE };
 })();
