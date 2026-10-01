@@ -44,14 +44,17 @@
       return;
     }
     ss('cle:' + FORMATION, null);
-    var connectee = raison === 'sans-acces';
+    var connectee = raison === 'sans-acces' || raison === 'entente';
     document.body.innerHTML =
       '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#f7f1ea;font-family:Inter,Arial,sans-serif;">' +
       '<div style="max-width:480px;background:#fffbf8;border:1px solid #e3d5c8;border-radius:22px;padding:36px 28px;text-align:center;color:#2c221e;">' +
       '<div style="font-size:42px;margin-bottom:8px;">🔒</div>' +
       '<h1 style="font-family:Fraunces,Georgia,serif;font-size:1.5rem;margin:0 0 12px;">' + L('Contenu réservé aux étudiantes', 'Students only') + '</h1>' +
       '<p style="color:#5a4a42;line-height:1.6;margin:0 0 22px;">' +
-      (connectee
+      (raison === 'entente'
+        ? L('Avant d\'ouvrir ' + NOMS[FORMATION] + ', lis et signe ton entente de formation dans ton compte (Mon compte → Mes cours). Si ton accès vient d\'être ouvert, c\'est la seule étape qui reste !',
+            'Before opening ' + NOMS[FORMATION] + ', read and sign your training agreement in your account (My account → My courses). If your access was just opened, this is the only step left!')
+        : connectee
         ? L('Ton compte n\'a pas encore accès à ' + NOMS[FORMATION] + '. Si tu viens de t\'inscrire, ton accès sera ouvert sous 24 à 48 heures après la vérification de ton dossier.',
             'Your account does not have access to ' + NOMS[FORMATION] + ' yet. If you just signed up, your access will be opened within 24 to 48 hours once your file has been checked.')
         : L('Cette page fait partie de ' + NOMS[FORMATION] + '. Connecte-toi à ton compte pour continuer ta formation.', 'This page is part of ' + NOMS[FORMATION] + '. Log in to your account to continue your course.')) +
@@ -260,7 +263,7 @@
     if (!session) return refus('deconnectee');
     sb.auth.onAuthStateChange(function (ev, s) { if (s) session = s; });
     return obtenirCle().then(function (cle) {
-      if (!cle) return refus('sans-acces');
+      if (!cle) return sb.rpc('entente_manquante', { p_formation: FORMATION }).then(function (r) { return refus(r && r.data === true ? 'entente' : 'sans-acces'); }, function () { return refus('sans-acces'); });
       return importer(cle).then(function (k) {
         cleCrypto = k;
         return preparerProgression();
