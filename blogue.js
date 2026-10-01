@@ -112,9 +112,9 @@
       '.sb-carte img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#efe6dc}' +
       '.sb-corps{padding:18px 20px 22px;display:flex;flex-direction:column;flex:1;text-align:left}' +
       '.sb-date{font-size:.8rem;font-weight:600;color:var(--text-muted,#7a685e);margin:0 0 6px;letter-spacing:.02em}' +
-      '.sb-carte h3{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;line-height:1.3;margin:0 0 8px;color:var(--text-dark,#2c221e)}' +
-      '.sb-carte h3 a{color:inherit;text-decoration:none}' +
-      '.sb-carte h3 a:hover{color:var(--accent-terracotta,#a85743)}' +
+      '.sb-carte h2,.sb-carte h3{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;line-height:1.3;margin:0 0 8px;color:var(--text-dark,#2c221e)}' +
+      '.sb-carte h2 a,.sb-carte h3 a{color:inherit;text-decoration:none}' +
+      '.sb-carte h2 a:hover,.sb-carte h3 a:hover{color:var(--accent-terracotta,#a85743)}' +
       '.sb-resume{font-size:.95rem;color:#555;margin:0 0 14px}' +
       '.sb-lire{margin-top:auto;font-weight:700;font-size:.92rem;color:var(--accent-terracotta,#a85743);text-decoration:none}' +
       '.sb-lire:hover{text-decoration:underline}' +

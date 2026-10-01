@@ -24,6 +24,7 @@
 <script src="/tarifs.js"></script>
 <script src="/securite.js"></script>
 <script src="/pdf-simple.js"></script>
+<script src="/espace-plus.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -466,6 +467,12 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     <button type="button" class="btn fantome" id="param-sortir" style="width:100%;">🚪 Me déconnecter</button>
   </section>
 
+  <section class="vue" id="vue-evaluations" hidden>
+    <h1>Mes évaluations</h1>
+    <p class="sous">Tes mises en situation avec la correction de Sabrina, tes ententes de formation signées et ton témoignage.</p>
+    <div id="ev-contenu"></div>
+  </section>
+
   <section class="vue" id="vue-stage" hidden>
     <h1>Documents de stage</h1>
     <p class="sous">Transmets ici tes documents de stage à Sabrina. Elle les reçoit automatiquement, et tu en gardes une copie dans ton compte.</p>
@@ -501,6 +508,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
   <a href="#cours" data-vue="cours"><span class="i">📚</span><span>Mes cours</span></a>
   <a href="#infos" data-vue="infos"><span class="i">👤</span><span>Mes informations</span></a>
   <a href="#marraine" data-vue="marraine" id="menu-marraine" hidden><span class="i">🤱</span><span>Ma fiche de marraine</span></a>
+  <a href="#evaluations" data-vue="evaluations" id="menu-evaluations" hidden><span class="i">🧩</span><span>Mes évaluations</span></a>
   <a href="#stage" data-vue="stage" id="menu-stage" hidden><span class="i">📝</span><span>Documents de stage</span></a>
   <a href="#messages" data-vue="messages"><span class="i">💬<i class="compteur" id="nb-messages" hidden></i></span><span>Messages</span></a>
   <a href="#parametres" data-vue="parametres"><span class="i">⚙️</span><span>Paramètres</span></a>
@@ -552,12 +560,14 @@ function routeConnectee() {
   if (h === 'stage' && !etat.valide) h = 'cours';
   if (h === 'marraine' && !etat.marraine) h = 'cours';
   if (h === 'avis') h = 'messages';
-  if (['cours', 'infos', 'stage', 'marraine', 'messages', 'parametres'].indexOf(h) < 0) h = 'cours';
+  if (h === 'evaluations' && !etat.valide && !etat.marraine) h = 'cours';
+  if (['cours', 'infos', 'stage', 'marraine', 'messages', 'parametres', 'evaluations'].indexOf(h) < 0) h = 'cours';
   avecMenu(true); vue(h);
   if (h === 'messages') { $('chat-bulles').dataset.vu = ''; afficherChat(); marquerAnnoncesVues(); majCloche(); }
   if (h === 'messages') { var rn = $('rappel-notif'); if (rn) rn.hidden = ('Notification' in window) && Notification.permission === 'granted'; }
   if (h === 'stage') listerStage();
   if (h === 'marraine') chargerFicheMarraine();
+  if (h === 'evaluations' && window.SereEspacePlus) SereEspacePlus.evaluations({ sb: sb, etat: etat });
 }
 window.addEventListener('hashchange', function () { if (etat.session) routeConnectee(); });
 
@@ -686,6 +696,7 @@ function charger(session, bienvenue) {
         if (Object.keys(maj).length) sb.from('etudiantes').update(maj).eq('id', d.id).then(function () {});
       }
       $('menu-stage').hidden = !etat.valide;
+      $('menu-evaluations').hidden = !etat.valide && !etat.marraine;
       $('menu-marraine').hidden = !etat.marraine;
       remplirInfos();
       return sb.from('progression').select('donnees').eq('user_id', session.user.id).maybeSingle();
@@ -736,6 +747,7 @@ function afficherCours() {
       'Formation/marraine/index.html', f === 0 && !exm ? 'Commencer' : (exm ? 'Revoir' : 'Continuer'))
       + (exm ? '<li><div><h3>🤱 Ma fiche de marraine certifiée</h3><div class="etat">Soumets ta fiche pour être validée et apparaître sur le site</div></div><a class="btn" href="#marraine">Ma fiche →</a></li>' : '');
   }
+  if (window.SereEspacePlus) SereEspacePlus.cours({ sb: sb, etat: etat });
 }
 
 /* ---------------- Mes informations ---------------- */

@@ -20,6 +20,8 @@
 <script src="/tarifs.js"></script>
 <script src="/courriels.js"></script>
 <script src="/securite.js"></script>
+<script src="/blogue.js" defer></script>
+<script src="/admin-plus.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; --rouge: #9b3a2a; --jaune: #8a6d1d; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -101,7 +103,7 @@ th { color: var(--doux); font-weight: 600; }
 .fichiers small { display: block; color: var(--doux); }
 .onglets-bas { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: var(--carte); border-top: 1px solid var(--bord); display: flex; padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
 .onglets-bas[hidden] { display: none !important; }
-.onglets-bas button { flex: 1; background: none; border: 0; font: inherit; font-size: .72rem; font-weight: 600; color: var(--doux); display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px; cursor: pointer; }
+.onglets-bas button { flex: 1; min-width: 0; background: none; border: 0; font: inherit; font-size: .66rem; font-weight: 600; color: var(--doux); display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px; cursor: pointer; }
 .onglets-bas button span { font-size: 1.3rem; }
 .onglets-bas button.actif { color: var(--terra); background: #f3e5dc; }
 .toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: var(--texte); color: #fff; padding: 11px 18px; border-radius: 50px; font-size: .9rem; z-index: 80; opacity: 0; transition: opacity .25s; pointer-events: none; max-width: 90vw; text-align: center; }
@@ -230,7 +232,53 @@ th { color: var(--doux); font-weight: 600; }
   </section>
 
   <!-- Outils -->
+  <section class="vue" id="vue-evaluations" hidden>
+    <h2 style="margin-bottom:12px;">Évaluations</h2>
+    <div class="carte" id="carte-mes">
+      <h3 style="margin-bottom:6px;">🧩 Mises en situation <span id="ap-mes-nb" style="color:var(--terra);"></span></h3>
+      <p style="font-size:.8rem;color:var(--doux);margin-bottom:6px;">Les réponses écrites des examens sont corrigées automatiquement ; tu confirmes ou ajustes la note, avec un commentaire. L'étudiante est avisée et voit ta correction dans « Mes évaluations ». Les exercices (études de cas des chapitres) sont là pour ton information.</p>
+      <div class="ap-filtres" id="ap-mes-filtres"><button type="button" data-f="a_valider" class="actif">À valider</button><button type="button" data-f="validee">Validées</button><button type="button" data-f="a_reprendre">À reprendre</button><button type="button" data-f="tout">Tous les examens</button><button type="button" data-f="formatif">Exercices</button></div>
+      <div id="ap-mes">Chargement…</div>
+    </div>
+    <div class="carte" id="carte-questionnaires">
+      <h3 style="margin-bottom:6px;">📝 Questionnaires de fin de formation</h3>
+      <div id="ap-questionnaires">Chargement…</div>
+    </div>
+    <div class="carte" id="carte-ententes">
+      <h3 style="margin-bottom:6px;">✍️ Ententes de formation signées</h3>
+      <p style="font-size:.8rem;color:var(--doux);margin-bottom:6px;">Chaque étudiante signe son entente (avec le code d'éthique) avant d'ouvrir ses cours. Preuve conservée : nom, date, heure et version.</p>
+      <div id="ap-ententes">Chargement…</div>
+    </div>
+  </section>
+
   <section class="vue" id="vue-outils" hidden>
+    <div class="carte" id="carte-temoignages">
+      <h3 style="margin-bottom:6px;">💬 Témoignages</h3>
+      <p style="font-size:.8rem;color:var(--doux);margin-bottom:6px;">Rien ne paraît sur le site tant que tu ne cliques pas « Publier ». Publie seulement des témoignages réels, avec la permission de la personne (ceux reçus par le questionnaire indiquent si elle a donné sa permission). <span id="ap-tem-resume"></span></p>
+      <div class="actions" style="margin-bottom:10px;"><button class="btn gris" type="button" id="ap-tem-ajouter">➕ Ajouter un témoignage</button></div>
+      <div id="ap-tem">Chargement…</div>
+    </div>
+    <div class="carte" id="carte-blogue">
+      <h3 style="margin-bottom:6px;">📰 Blogue</h3>
+      <p style="font-size:.8rem;color:var(--doux);margin-bottom:6px;">Les 3 derniers articles publiés s'affichent sur l'accueil ; tous sont sur academiesere.ca/blogue/. La version anglaise s'affiche sur le site anglais seulement si elle est remplie.</p>
+      <div class="actions" style="margin-bottom:10px;"><button class="btn" type="button" id="ap-art-nouveau">✍️ Nouvel article</button></div>
+      <form id="form-art" hidden style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;border:1px solid var(--bord);border-radius:14px;padding:12px;">
+        <label class="champ">Titre<input id="art-titre" maxlength="140" required></label>
+        <div class="rang"><label class="champ">Adresse (automatique)<input id="art-slug" maxlength="80"></label><label class="champ">Date de publication<input id="art-date" type="date" required></label></div>
+        <label class="champ">Image <span style="font-weight:400;">(ex. /bebe.jpg, /parents.jpg, /couple.jpg, /marraine-allaitement.jpg)</span><input id="art-image" maxlength="300"></label>
+        <label class="champ">Résumé (1 ou 2 phrases)<textarea id="art-resume" rows="2" maxlength="400"></textarea></label>
+        <label class="champ">Texte <span style="font-weight:400;">(ligne vide entre les paragraphes ; « ## » = intertitre ; « - » = puce ; **gras**)</span><textarea id="art-contenu" rows="12" required maxlength="40000"></textarea></label>
+        <div class="actions"><button class="btn gris" type="button" id="art-voir">👀 Aperçu</button><button class="btn gris" type="button" id="art-traduire">🌐 Traduire automatiquement en anglais</button></div>
+        <div class="ap-apercu" id="art-apercu" hidden></div>
+        <details><summary style="cursor:pointer;font-weight:700;color:var(--terra);font-size:.85rem;">🇬🇧 Version anglaise</summary>
+          <label class="champ">Title<input id="art-titre-en" maxlength="140"></label>
+          <label class="champ">Summary<textarea id="art-resume-en" rows="2" maxlength="400"></textarea></label>
+          <label class="champ">Text<textarea id="art-contenu-en" rows="10" maxlength="40000"></textarea></label>
+        </details>
+        <div class="actions"><button class="btn" type="submit">💾 Enregistrer</button><button class="btn gris" type="button" id="art-annuler">Annuler</button></div>
+      </form>
+      <div id="ap-art">Chargement…</div>
+    </div>
     <div class="carte" id="carte-stats">
       <h3 style="margin-bottom:6px;">📊 Visites du site</h3>
       <p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Chaque adresse IP compte pour <b>une</b> visiteuse. Par respect de la loi (Loi 25, LPRPDE, RGPD), l'adresse n'est jamais conservée : seulement une empreinte chiffrée impossible à relire, effacée après 13 mois. Aucun nom, aucun courriel.</p>
@@ -386,6 +434,7 @@ th { color: var(--doux); font-weight: 600; }
   <button data-v="etudiantes"><span>👩‍🎓</span>Étudiantes</button>
   <button data-v="marraines"><span>🤱</span>Marraines</button>
   <button data-v="messages"><span>💬<i class="compteur" id="nb-messages" hidden></i></span>Messages</button>
+  <button data-v="evaluations"><span>🧩<i class="compteur" hidden></i></span>Évaluations</button>
   <button data-v="outils"><span>🧰</span>Outils</button>
   <button data-v="parametres"><span>⚙️</span>Paramètres</button>
 </nav>
@@ -413,6 +462,7 @@ function $(id) { return document.getElementById(id); }
 function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
 function jour(d) { return d ? new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; }
 function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('voir'); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('voir'); }, 3200); }
+if (window.SereAdminPlus) SereAdminPlus.init({ sb: sb, toast: toast, traduire: traduire });
 function valide(e) { return (e.statut || '').trim().toLowerCase() === 'valide'; }
 function paiement(v) {
   var s = String(v || '');
@@ -443,6 +493,8 @@ function vue(v) {
   document.querySelectorAll('.onglets-bas button').forEach(function (b) { b.classList.toggle('actif', b.dataset.v === v); });
   window.scrollTo(0, 0);
   if (v === 'outils' && typeof chargerPlacesOffre === 'function') { chargerPlacesOffre(); chargerStats(); chargerInfolettre(); }
+  if (v === 'outils' && window.SereAdminPlus) SereAdminPlus.outils();
+  if (v === 'evaluations' && window.SereAdminPlus) SereAdminPlus.evaluations();
 }
 $('onglets').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) vue(b.dataset.v); });
 
@@ -471,7 +523,8 @@ function demarrer() {
       $('cloche').hidden = false; $('appli-installee').hidden = !APPLI;
       chargerAvis(); chargerMessages(); chargerAnnonces();
       viderPastille(); etatMfa();
-      sb.rpc('exclure_mon_appareil').then(function () {}, function () {});   // cette adresse IP n'est plus comptée dans les visites
+      sb.rpc('exclure_mon_appareil').then(function () {}, function () {});
+      if (window.SereAdminPlus) SereAdminPlus.compter();   // cette adresse IP n'est plus comptée dans les visites
     });
   });
 }
@@ -1166,6 +1219,8 @@ function ouvrirDepuisLien() {
   var k = (location.hash || '').match(/^#m(\d+)/);
   if (k && marraines.length) { history.replaceState(null, '', 'admin.html'); vue('marraines'); ouvrirFicheM(+k[1]); }
   if (location.hash === '#infolettre') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-infolettre')); $('carte-infolettre').scrollIntoView({ behavior: 'smooth' }); }, 300); }
+  if (location.hash === '#mises') { history.replaceState(null, '', 'admin.html'); vue('evaluations'); }
+  if (location.hash === '#temoignages') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-temoignages')); $('carte-temoignages').scrollIntoView({ behavior: 'smooth' }); }, 300); }
   if (location.hash === '#suivis') { history.replaceState(null, '', 'admin.html'); vue('marraines'); chargerSuivisAdmin(); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-suivis')); $('carte-suivis').scrollIntoView({ behavior: 'smooth' }); }, 200); }
 }
 window.addEventListener('hashchange', ouvrirDepuisLien);
@@ -1632,6 +1687,6 @@ demarrer();
 })();
 </script>
 <script src="/repliable.js"></script>
-<script>if (window.SereRepliable) SereRepliable.appliquer('#vue-outils > .carte, #vue-parametres > .carte, #carte-suivis');</script>
+<script>if (window.SereRepliable) SereRepliable.appliquer('#vue-outils > .carte, #vue-parametres > .carte, #carte-suivis, #vue-evaluations > .carte:not(#carte-mes)');</script>
 </body>
 </html>
