@@ -155,6 +155,24 @@ th { color: var(--doux); font-weight: 600; }
   <button class="cloche" id="cloche" type="button" hidden aria-label="Notifications">🔔<i class="compteur" id="nb-avis" hidden></i></button>
   <a class="retour-site" id="retour-site" href="/" title="Me déconnecter et retourner au site">🏠 <span>Site</span></a>
 </header>
+<script>
+// Retour au site : on se déconnecte d'abord (sécurité), puis on ouvre le site public
+function retourSite(e) {
+  e.preventDefault();
+  var parti = false;
+  var aller = function () { if (parti) return; parti = true; window.location.assign('/'); };
+  setTimeout(aller, 1500);                                   // jamais bloquée, même si Supabase ne répond pas
+  try {
+    if (!window.sb || !sb.auth) return aller();
+    sb.auth.getSession().then(function (r) {
+      if (!(r && r.data && r.data.session)) return aller();  // pas connectée : on part tout de suite
+      try { localStorage.removeItem('sb-zeptirfcwstufcpgvkzx-auth-token'); sessionStorage.removeItem('sb-zeptirfcwstufcpgvkzx-auth-token'); } catch (x) {}
+      return sb.auth.signOut().then(aller, aller);
+    }).catch(aller);
+  } catch (x) { aller(); }
+}
+document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('#retour-site, #retour-site-2, .retour-site-lien'); if (a) retourSite(e); });
+</script>
 <div class="panneau-avis" id="panneau-avis" hidden>
   <div class="pa-haut"><strong>Notifications</strong><button type="button" id="avis-tout-lu">Tout marquer comme lu</button></div>
   <div id="liste-avis"></div>
@@ -178,7 +196,7 @@ th { color: var(--doux); font-weight: 600; }
         <button class="btn fantome" type="button" id="code-renvoyer">Renvoyer un code</button>
         <button class="btn fantome" type="button" id="code-annuler">Annuler</button>
       </form>
-      <p style="text-align:center;margin-top:14px;"><a href="/" style="color:var(--terra,#a85743);font-weight:700;text-decoration:none;">← Retour au site</a></p>
+      <p style="text-align:center;margin-top:14px;"><a href="/" class="retour-site-lien" style="color:var(--terra,#a85743);font-weight:700;text-decoration:none;">← Retour au site</a></p>
     </div>
   </section>
 
@@ -558,15 +576,7 @@ $('form-connexion').addEventListener('submit', function (e) {
     demarrer();
   });
 });
-// Retour au site : on se déconnecte d'abord (sécurité), puis on ouvre le site public
-function retourSite(e) {
-  e.preventDefault();
-  var aller = function () { location.href = '/'; };
-  sb.auth.getSession().then(function (r) { return r.data && r.data.session ? sb.auth.signOut() : null; }).then(aller, aller);
-  setTimeout(aller, 2500);
-}
-$('retour-site').addEventListener('click', retourSite);
-$('retour-site-2').addEventListener('click', retourSite);
+// Retour au site : voir le petit script juste après l'en-tête (fonctionne même si le reste de la page n'a pas fini de charger)
 
 /* ---------- Vérification en 2 étapes par courriel ---------- */
 function etatMfa() {
