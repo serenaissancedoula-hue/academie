@@ -156,14 +156,13 @@
     var autre = EN ? location.pathname.replace('/Formation/en/', '/Formation/') : location.pathname.replace('/Formation/', '/Formation/en/');
     var liens = [
       ['📚', L('Mes cours', 'My courses'), ESPACE + '#cours'],
-      ['👤', L('Mes informations', 'My information'), ESPACE + '#infos'],
       ['📝', L('Documents de stage', 'Practicum documents'), ESPACE + '#stage'],
       ['💬', 'Messages', ESPACE + '#messages'],
       ['⚙️', L('Paramètres', 'Settings'), ESPACE + '#parametres'],
       ['🌐', L('English', 'Français'), autre + location.hash, EN ? 'fr' : 'en'],
       ['📅', L('Mentorat', 'Mentoring'), 'https://cal.com/sabrina-chavanel-zs5clq/mentorat']
     ];
-    if (FORMATION === 'marraine') liens.splice(2, 1);
+    if (FORMATION === 'marraine') liens.splice(1, 1);   // pas de stage pour la formation de marraine
     liens.forEach(function (l) {
       var a = document.createElement('a'); a.href = l[2]; a.title = l[1];
       if (/^https:\/\/cal/.test(l[2])) { a.target = '_blank'; a.rel = 'noopener'; }
