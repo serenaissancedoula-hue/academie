@@ -336,6 +336,29 @@ document.addEventListener('click', function (e) { var a = e.target.closest && e.
       </form>
       <div id="il-historique" style="margin-top:10px;"></div>
     </div>
+    <div class="carte" id="carte-cadeaux">
+      <h3 style="margin-bottom:6px;">🎁 Cartes-cadeaux et reçus</h3>
+      <p style="font-size:.86rem;color:var(--doux);margin-bottom:10px;">Quand quelqu'un achète une carte-cadeau sur le site, elle apparaît ici « en attente ». Vérifie le paiement dans Stripe, puis clique sur <b>Paiement reçu → envoyer</b> : le code est créé et la carte part par courriel. Tu peux aussi offrir une carte toi-même.</p>
+      <div id="cc-liste" style="font-size:.86rem;">Chargement…</div>
+      <details style="margin-top:12px;"><summary style="cursor:pointer;font-weight:700;">➕ Offrir une carte moi-même</summary>
+        <form id="form-cc" style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+          <div class="rang"><label class="champ">Formation<select id="cc-formation"><option value="4e-trimestre">4ᵉ trimestre (550 $)</option><option value="marraine">Marraine d'allaitement (175 $)</option></select></label>
+          <label class="champ">Langue du courriel<select id="cc-langue"><option value="fr">Français</option><option value="en">Anglais</option></select></label></div>
+          <div class="rang"><label class="champ">Nom de la personne<input id="cc-nom" required maxlength="80"></label><label class="champ">Son courriel<input id="cc-courriel" type="email" required maxlength="120"></label></div>
+          <label class="champ">Petit mot (facultatif)<textarea id="cc-message" rows="2" maxlength="500"></textarea></label>
+          <button class="btn" type="submit">Créer et envoyer la carte</button>
+        </form>
+      </details>
+      <details style="margin-top:12px;"><summary style="cursor:pointer;font-weight:700;">🔗 Liens Stripe (à faire une seule fois)</summary>
+        <p style="font-size:.8rem;color:var(--doux);margin:8px 0;">1) Dans Stripe, crée deux liens de paiement : « Carte-cadeau 4ᵉ trimestre » à 550 $ et « Carte-cadeau marraine » à 175 $, et colle-les ici. 2) Dans Stripe → Paramètres → Portail client, active le portail et copie le « lien de connexion » : tes étudiantes y retrouvent leurs reçus et leurs versements.</p>
+        <form id="form-cc-liens" style="display:flex;flex-direction:column;gap:8px;">
+          <label class="champ">Lien Stripe carte-cadeau 4ᵉ trimestre (550 $)<input id="cc-l4e" type="url" placeholder="https://buy.stripe.com/…"></label>
+          <label class="champ">Lien Stripe carte-cadeau marraine (175 $)<input id="cc-lm" type="url" placeholder="https://buy.stripe.com/…"></label>
+          <label class="champ">Lien du portail client Stripe (reçus des étudiantes)<input id="cc-lp" type="url" placeholder="https://billing.stripe.com/p/login/…"></label>
+          <button class="btn gris" type="submit">Enregistrer les liens</button>
+        </form>
+      </details>
+    </div>
     <div class="carte" id="carte-offre">
       <h3 style="margin-bottom:6px;">🎁 Offre de lancement — places</h3>
       <p style="font-size:.86rem;color:var(--doux);margin-bottom:10px;">10 places (code promo <strong>SERENAISSANCE300</strong> dans Stripe). Inscris ici le nombre de fois où le code a été utilisé : le site affiche les places restantes.</p>
@@ -497,6 +520,7 @@ if (window.SereAdminPlus) SereAdminPlus.init({ sb: sb, toast: toast, traduire: t
 function valide(e) { return (e.statut || '').trim().toLowerCase() === 'valide'; }
 function paiement(v) {
   var s = String(v || '');
+  if (s.indexOf('bon:') === 0) return '🎁 Carte-cadeau ' + s.slice(4);
   if (s === 'marraine') return "Marraine · 175 $";
   if (s.indexOf('lien-manuel') === 0) return '🔗 Lien manuel' + (s.indexOf('combo') >= 0 ? ' · combo (les 2)' : s.indexOf('cadeau') >= 0 ? ' · 4ᵉ + marraine en cadeau' : '') + ' (vérifier le paiement)';
   if (s.indexOf('combo') === 0) return 'Combo (4ᵉ + marraine) · ' + ({ '1': 'paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[1]] || '');
@@ -523,7 +547,7 @@ function vue(v) {
   document.querySelectorAll('.vue').forEach(function (x) { x.hidden = x.id !== 'vue-' + v; });
   document.querySelectorAll('.onglets-bas button').forEach(function (b) { b.classList.toggle('actif', b.dataset.v === v); });
   window.scrollTo(0, 0);
-  if (v === 'outils' && typeof chargerPlacesOffre === 'function') { chargerPlacesOffre(); chargerStats(); chargerInfolettre(); }
+  if (v === 'outils' && typeof chargerPlacesOffre === 'function') { chargerPlacesOffre(); chargerStats(); chargerInfolettre(); chargerCadeaux(); }
   if (v === 'outils' && window.SereAdminPlus) SereAdminPlus.outils();
   if (v === 'evaluations' && window.SereAdminPlus) SereAdminPlus.evaluations();
 }
@@ -1242,6 +1266,7 @@ function ouvrirDepuisLien() {
   var k = (location.hash || '').match(/^#m(\d+)/);
   if (k && marraines.length) { history.replaceState(null, '', 'admin.html'); vue('marraines'); ouvrirFicheM(+k[1]); }
   if (location.hash === '#infolettre') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-infolettre')); $('carte-infolettre').scrollIntoView({ behavior: 'smooth' }); }, 300); }
+  if (location.hash === '#cadeaux') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-cadeaux')); $('carte-cadeaux').scrollIntoView({ behavior: 'smooth' }); }, 300); }
   if (location.hash === '#mises') { history.replaceState(null, '', 'admin.html'); vue('evaluations'); }
   if (location.hash === '#temoignages') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-temoignages')); $('carte-temoignages').scrollIntoView({ behavior: 'smooth' }); }, 300); }
   if (location.hash === '#suivis') { history.replaceState(null, '', 'admin.html'); vue('marraines'); chargerSuivisAdmin(); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-suivis')); $('carte-suivis').scrollIntoView({ behavior: 'smooth' }); }, 200); }
@@ -1643,6 +1668,60 @@ $('form-offre').addEventListener('submit', function (ev) {
     if (r.error) return toast('Erreur : ' + r.error.message);
     toast('Places enregistrées ✔'); chargerPlacesOffre();
   });
+});
+/* ---------- Cartes-cadeaux ---------- */
+var CC_STATUT = { en_attente: '⏳ En attente du paiement', active: '✅ Envoyée (pas encore utilisée)', utilisee: '🎓 Utilisée', annulee: '✖ Annulée' };
+function chargerCadeaux() {
+  sb.from('parametres').select('cle,valeur').in('cle', ['lien_cadeau_4e', 'lien_cadeau_marraine', 'lien_portail_stripe']).then(function (r) {
+    ((r && r.data) || []).forEach(function (x) { var c = { lien_cadeau_4e: 'cc-l4e', lien_cadeau_marraine: 'cc-lm', lien_portail_stripe: 'cc-lp' }[x.cle]; if (c && !$(c).value) $(c).value = x.valeur || ''; });
+  });
+  sb.from('cartes_cadeaux').select('*').order('created_at', { ascending: false }).limit(100).then(function (r) {
+    if (r.error) { $('cc-liste').innerHTML = '<p class="infos-ligne">Les cartes-cadeaux seront disponibles après la mise à jour de la base de données.</p>'; return; }
+    var l = r.data || [];
+    $('cc-liste').innerHTML = l.length ? l.map(function (c) {
+      return '<div class="infos-ligne" style="border-bottom:1px solid var(--bord);padding:8px 0;">' +
+        '<b>CC-' + c.id + '</b> · ' + (c.formation === 'marraine' ? 'Marraine' : '4ᵉ trimestre') + ' · ' + c.montant + ' $ · ' + esc(CC_STATUT[c.statut] || c.statut) + '<br>' +
+        'De : ' + esc(c.acheteur_nom || 'toi') + (c.acheteur_courriel ? ' (' + esc(c.acheteur_courriel) + ')' : '') + ' → ' + esc(c.destinataire_nom || '') + (c.destinataire_courriel ? ' (' + esc(c.destinataire_courriel) + ')' : '') +
+        (c.code ? '<br>Code : <b style="letter-spacing:1px;">' + esc(c.code) + '</b>' : '') +
+        (c.utilisee_par_courriel ? '<br>Utilisée par ' + esc(c.utilisee_par_courriel) + ' le ' + jour(c.utilisee_le) : '') +
+        '<br><small>' + jour(c.created_at) + (c.message ? ' · « ' + esc(c.message) + ' »' : '') + '</small>' +
+        (c.statut === 'en_attente' ? '<div class="actions" style="margin-top:6px;"><button class="btn" type="button" style="padding:5px 12px;font-size:.76rem;" data-cc-activer="' + c.id + '">Paiement reçu → envoyer</button><button class="btn gris" type="button" style="padding:5px 12px;font-size:.76rem;" data-cc-annuler="' + c.id + '">Annuler</button></div>' : '') +
+        (c.statut === 'active' ? '<div class="actions" style="margin-top:6px;"><button class="btn gris" type="button" style="padding:5px 12px;font-size:.76rem;" data-cc-annuler="' + c.id + '">Annuler (remboursée)</button></div>' : '') +
+        '</div>';
+    }).join('') : '<p class="infos-ligne">Aucune carte-cadeau pour le moment.</p>';
+  });
+}
+function activerCarte(id) {
+  return sb.rpc('activer_carte_cadeau', { p_id: id }).then(function (r) {
+    if (r.error) { toast('Erreur : ' + r.error.message); return; }
+    toast('🎁 Carte envoyée · code ' + r.data); chargerCadeaux();
+  });
+}
+$('cc-liste').addEventListener('click', function (e) {
+  var a = e.target.closest('[data-cc-activer]'), x = e.target.closest('[data-cc-annuler]');
+  if (a && confirm('As-tu bien vu le paiement de cette carte dans Stripe ? Le code sera créé et envoyé par courriel.')) activerCarte(+a.dataset.ccActiver);
+  if (x && confirm('Annuler cette carte-cadeau ? Elle ne pourra plus être utilisée. (Si elle avait été payée, rembourse-la dans Stripe.)'))
+    sb.from('cartes_cadeaux').update({ statut: 'annulee' }).eq('id', +x.dataset.ccAnnuler).then(function (r) { if (r.error) toast('Erreur : ' + r.error.message); else { toast('Carte annulée'); chargerCadeaux(); } });
+});
+$('form-cc').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var f = $('cc-formation').value;
+  sb.from('cartes_cadeaux').insert({ formation: f, montant: f === 'marraine' ? 175 : 550, acheteur_nom: 'Sabrina', destinataire_nom: $('cc-nom').value.trim(),
+    destinataire_courriel: $('cc-courriel').value.trim().toLowerCase(), message: $('cc-message').value.trim() || null, langue: $('cc-langue').value, envoyer_a: 'destinataire', source: 'admin' })
+    .select('id').single().then(function (r) {
+      if (r.error) { toast('Erreur : ' + r.error.message); return; }
+      return activerCarte(r.data.id).then(function () { $('form-cc').reset(); });
+    });
+});
+$('form-cc-liens').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var maint = new Date().toISOString(), ok = true;
+  [['lien_cadeau_4e', 'cc-l4e'], ['lien_cadeau_marraine', 'cc-lm'], ['lien_portail_stripe', 'cc-lp']].forEach(function (x) {
+    var v = $(x[1]).value.trim(); if (v && !/^https:\/\/(buy|billing)\.stripe\.com\//.test(v)) ok = false;
+  });
+  if (!ok) { toast('Les liens doivent commencer par https://buy.stripe.com/ ou https://billing.stripe.com/'); return; }
+  sb.from('parametres').upsert([['lien_cadeau_4e', 'cc-l4e'], ['lien_cadeau_marraine', 'cc-lm'], ['lien_portail_stripe', 'cc-lp']].map(function (x) { return { cle: x[0], valeur: $(x[1]).value.trim(), updated_at: maint }; }))
+    .then(function (r) { toast(r.error ? 'Erreur : ' + r.error.message : 'Liens enregistrés ✔'); });
 });
 /* Lien d'inscription (courriel envoyé automatiquement) */
 var EJ_LIEN = 'template_7frp73b';

@@ -431,6 +431,12 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
         <button class="btn" type="submit" id="f-bouton">Enregistrer mes changements</button>
       </form>
     </div>
+    <div class="carte" id="carte-achats">
+      <h3 style="margin-bottom:6px;">🧾 Mes achats et reçus</h3>
+      <p class="note" style="margin-bottom:10px;">Tes formations achetées et la façon dont tu les as payées. Stripe t’envoie aussi un reçu par courriel à chaque paiement.</p>
+      <div id="achats-liste"></div>
+      <div id="achats-portail" style="margin-top:12px;"></div>
+    </div>
     <div class="carte" id="carte-photo">
       <h3 style="margin-bottom:6px;">📷 Ma photo de profil</h3>
       <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;">
@@ -752,6 +758,33 @@ function afficherCours() {
 
 /* ---------------- Mes informations ---------------- */
 var adresseBranchee = false;
+/* ---------------- Mes achats et reçus ---------------- */
+function chargerAchats() {
+  var P = {"1": "Paiement complet", "2": "2 versements", "4": "4 versements", "marraine": "Paiement unique (175 $)", "offre": "Offre de lancement (250 $) + marraine en cadeau", "combo": "Combo des 2 formations", "bon": "🎁 Carte-cadeau", "lien": "Inscription personnelle", "cadeau": "Offerte en cadeau"}, ST = {"valide": "✅ Accès ouvert", "en_attente": "⏳ En vérification"}, T = {"fm": "Formation de marraine d’allaitement", "f4e": "Accompagnement de pointe du 4ᵉ trimestre", "le": "Inscrite le ", "loc": "fr-CA", "aucun": "Aucun achat trouvé pour le moment.", "portail": "Mes reçus et versements (Stripe) →", "note": "Sur le portail sécurisé de Stripe, tu retrouves tous tes reçus, tes versements à venir et tu peux changer ta carte. Ta carte n’est jamais conservée par l’Académie.", "sansp": "Besoin d’un reçu ? Écris à serenaissance.doula@gmail.com, je te l’envoie rapidement."};
+  function lib(o) {
+    o = String(o || '');
+    if (o.indexOf('bon:') === 0) return P.bon + ' (' + echapper(o.slice(4)) + ')';
+    if (o.indexOf('combo') === 0) return P.combo;
+    if (o.indexOf('lien-manuel') === 0) return P.lien;
+    if (o.indexOf('offre') >= 0) return P.offre;
+    return P[o.split('-')[0]] || P[o] || '';
+  }
+  sb.from('etudiantes').select('formation,option_paiement,statut,acces_marraine,created_at').or('user_id.eq.' + etat.session.user.id + ',courriel.ilike.' + (etat.session.user.email || '').toLowerCase()).then(function (r) {
+    var l = (r && r.data) || [];
+    var h = l.map(function (e) {
+      var x = '<li style="margin-bottom:8px;"><strong>' + (e.formation === 'marraine' ? T.fm : T.f4e) + '</strong><br><small>' + T.le + new Date(e.created_at).toLocaleDateString(T.loc, { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + lib(e.option_paiement) + (ST[e.statut] ? ' · ' + ST[e.statut] : '') + '</small></li>';
+      if (e.formation !== 'marraine' && e.acces_marraine) x += '<li style="margin-bottom:8px;"><strong>' + T.fm + '</strong><br><small>' + P.cadeau + '</small></li>';
+      return x;
+    }).join('');
+    $('achats-liste').innerHTML = h ? '<ul style="list-style:none;padding:0;margin:0;">' + h + '</ul>' : '<p class="note">' + T.aucun + '</p>';
+  });
+  fetch(SB_URL + '/rest/v1/rpc/liens_publics', { method: 'POST', headers: { apikey: SB_CLE, 'Content-Type': 'application/json' }, body: '{}' })
+    .then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }).then(function (x) {
+      $('achats-portail').innerHTML = x && x.portail && /^https:\/\/billing\.stripe\.com\//.test(x.portail)
+        ? '<a class="btn fantome" href="' + echapper(x.portail) + '" target="_blank" rel="noopener">' + T.portail + '</a><p class="note" style="margin-top:8px;">' + T.note + '</p>'
+        : '<p class="note">' + T.sansp + '</p>';
+    });
+}
 function remplirInfos() {
   var d = etat.dossier || {};
   $('f-prenom').value = d.prenom || ''; $('f-nom').value = d.nom || '';
@@ -933,7 +966,7 @@ function quand(d) { return new Date(d).toLocaleString('fr-CA', { weekday: 'long'
 function icone(g) { return { maintenance: '🛠️ ', nouveaute: '✨ ', info: '📣 ' }[g] || '📣 '; }
 function demarrerCommunication() {
   $('cloche').hidden = false;
-  chargerPhoto(); chargerPhotoSabrina();
+  chargerPhoto(); chargerPhotoSabrina(); chargerAchats();
   $('appli-installee').hidden = !APPLI;
   if (!reglagesMontes && window.Reglages) { reglagesMontes = true; Reglages.monter($('rg'), { sb: sb, vapid: VAPID, admin: false, surPush: function () { chargerAvis(); chargerMessages(); chargerAnnonces(); } }); }
   chargerAvis(); chargerMessages(); chargerAnnonces();

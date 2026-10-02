@@ -31,6 +31,7 @@
 <script src="/blogue.js" defer></script>
 <script src="/defilement.js" defer></script>
 <script src="/temoignages.js" defer></script>
+<script src="/cadeau.js" defer></script>
     <script src="/appli.js" defer></script>
     <script src="/tarifs.js"></script>
     <script src="/securite.js"></script>
@@ -2147,6 +2148,8 @@
             </div>
         </div>
 
+        <div id="offrir-cadeau" hidden></div>
+
         <!-- Sois parmi les premières -->
         <div class="home-summary-box" style="margin-top: 50px; background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
             <div class="badge-offre" style="margin-bottom: 4px;">Be among the first</div>
@@ -2310,6 +2313,14 @@
                     </select>
                 </div>
                 <p id="note-marraine" hidden style="font-size: 0.88rem; color: #555; margin-top: 15px; background: #efe6dc; border-radius: 10px; padding: 12px 14px;">💳 One-time payment of <strong>$175</strong>. No diploma is required for this course.</p>
+                <div id="bloc-cadeau" style="margin-top: 15px; background: #fffbf8; border: 1px dashed var(--border-color); border-radius: 12px; padding: 12px 14px;">
+                    <label style="display:flex;gap:8px;align-items:center;font-size:0.92rem;font-weight:600;cursor:pointer;"><input type="checkbox" id="avec-cadeau" style="width:auto;"> 🎁 I have a gift card</label>
+                    <div id="champ-cadeau" hidden style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+                        <input type="text" id="code-cadeau" placeholder="SERE-XXXX-XXXX-XXXX" autocomplete="off" maxlength="25" style="text-transform:uppercase;letter-spacing:1px;">
+                        <p id="msg-cadeau" style="font-size:0.84rem;margin:0;color:#7a685e;">With a gift card, there's nothing to pay: you create your account right away.</p>
+                    </div>
+                </div>
+
 
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 15px;">
                     <label for="langue-formation" style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Language of your course</label>
@@ -2402,6 +2413,9 @@
 
             <h3>8. Individual consultations</h3>
             <p>A consultation may be cancelled or rescheduled free of charge up to 24 hours before the appointment. A consultation cancelled with less than 24 hours' notice, or missed, may be charged.</p>
+
+            <h3>8a. Gift cards</h3>
+            <p>A gift card gives access to a specific course (fourth trimester: $550; breastfeeding peer supporter: $175). It is sent by email with a code once the payment has been verified, usually within 24 hours. <strong>It does not expire</strong> and no fees apply. It cannot be exchanged for cash, but the buyer may request a full refund as long as it has not been used. The fourth trimester course requires a doula diploma: if the diploma of the person receiving the card cannot be validated, the card is refunded to the buyer. The email of the person receiving the gift is used only to send them their card.</p>
 
             <h3>9. Nature of the services</h3>
             <p>Doula support and the course are educational in nature and provide emotional, physical and informational support. They <strong>do not replace</strong> the care, diagnosis or advice of a midwife, nurse, physician or other health professional. I do not perform any medical acts.</p>
@@ -2989,13 +3003,22 @@
                 confirmation: document.getElementById('adresse-ok')
             });
         });
+        document.addEventListener('change', function (e) {
+            if (e.target && e.target.id === 'avec-cadeau') {
+                const avec = e.target.checked;
+                document.getElementById('champ-cadeau').hidden = !avec;
+                const sel = document.getElementById('option-paiement');
+                if (sel) { sel.required = !avec && document.getElementById('choix-formation').value !== 'marraine'; sel.disabled = avec; }
+                if (avec) document.getElementById('code-cadeau').focus();
+            }
+        });
         function ajusterFormulaireInscription() {
             const choix = document.getElementById('choix-formation').value;
             const marraine = choix === 'marraine', combo = choix === 'combo';
             document.getElementById('bloc-diplome').style.display = marraine ? 'none' : 'flex';
             document.getElementById('diplome').required = !marraine;
             document.getElementById('bloc-paiement').style.display = marraine ? 'none' : 'flex';
-            document.getElementById('option-paiement').required = !marraine;
+            document.getElementById('option-paiement').required = !marraine && !(document.getElementById('avec-cadeau') || {}).checked;
             document.getElementById('note-marraine').hidden = !marraine;
             const select = document.getElementById('option-paiement');
             if (!select) return;
@@ -3706,6 +3729,10 @@
         function preparerPageMerci() {
             const d = lireDossierEnCours();
             if (!d) return;
+            if (String(d.option_paiement || '').indexOf('bon:') === 0) {
+                const p0 = document.querySelector('#page-merci .merci-page-container > p');
+                if (p0) p0.textContent = "Your gift card has been accepted 🎁 and I'm delighted to welcome you to the Académie Sérénaissance!";
+            }
             if (d.formation === 'marraine') {
                 document.querySelectorAll('#page-merci .merci-page-container > p').forEach((p, i) => {
                     if (i === 0) p.textContent = "Your payment has been received and I'm delighted to welcome you to the Académie Sérénaissance!";
@@ -3730,6 +3757,11 @@
             const bouton = document.getElementById('merci-bouton');
             bouton.disabled = true; bouton.textContent = 'Creating…';
 
+            if (String(d.option_paiement || '').indexOf('bon:') === 0) {
+                let u = null;
+                try { u = await SereCadeau.utiliser(d.option_paiement.slice(4), d.courriel); } catch (e) { u = null; }
+                if (!u || !u.ok) { alert("This gift card has just been used or is no longer valid. Write to me at serenaissance.doula@gmail.com and I'll sort it out with you."); bouton.disabled = false; bouton.textContent = 'Create my account'; return; }
+            }
             // 1) Compte sécurisé : Supabase envoie alors le courriel de confirmation
             const { data: compte, error: signUpError } = await sbClient.auth.signUp({
                 email: d.courriel,
@@ -3783,6 +3815,18 @@
                 return;
             }
 
+            // Carte-cadeau : aucune redirection vers Stripe
+            const avecCadeau = document.getElementById('avec-cadeau') && document.getElementById('avec-cadeau').checked;
+            let codeCadeau = '';
+            if (avecCadeau) {
+                codeCadeau = document.getElementById('code-cadeau').value.trim().toUpperCase();
+                if (estCombo) { alert("A gift card covers one course. Choose the course written on your card, or write to me at serenaissance.doula@gmail.com."); return; }
+                let v = null;
+                try { v = await SereCadeau.verifier(codeCadeau); } catch (e) { v = null; }
+                if (!v || !v.ok) { alert("This gift card code is not valid or has already been used. Check it, or write to me at serenaissance.doula@gmail.com."); return; }
+                if (v.formation !== formation) { alert("Your gift card is for the “{f}” course. Choose that course in the form.".replace('{f}', v.formation === 'marraine' ? "Breastfeeding Peer Supporter" : "Advanced Fourth Trimester Support")); return; }
+            }
+
             // Liens de paiement Stripe (voir OFFRE DE LANCEMENT plus bas)
             const avecOffre = !estMarraine && !estCombo && optionPaiement === 'offre';
             if (avecOffre && !offreEstActive()) { alert("The launch offer has ended (deadline passed or all 10 spots filled). Choose the regular price, in 1, 2 or 4 instalments."); ajusterFormulaireInscription(); return; }
@@ -3790,6 +3834,7 @@
                 : estCombo ? ((TarifsSere.formations.combo.options[optionPaiement] || {}).lien || "")
                 : avecOffre ? LIENS_STRIPE_OFFRE['1']
                 : (LIENS_STRIPE_REGULIER[optionPaiement] || "");
+            if (avecCadeau) lienStripe = '#cadeau';
             if (estMarraine && !lienStripe) {
                 alert("Online registration for the Breastfeeding Peer Supporter course opens very soon! Until then, write to me at serenaissance.doula@gmail.com or call me at 506-759-2044, and I'll register you personally. 💕");
                 return;
@@ -3851,7 +3896,7 @@
                     date_naissance: dateNaissance,
                     diplome_url: uploadData ? uploadData.path : null,
                     formation: estCombo ? '4e-trimestre' : formation,
-                    option_paiement: estMarraine ? 'marraine' : estCombo ? 'combo-' + optionPaiement : avecOffre ? '1-offre' : optionPaiement,
+                    option_paiement: avecCadeau ? 'bon:' + codeCadeau : estMarraine ? 'marraine' : estCombo ? 'combo-' + optionPaiement : avecOffre ? '1-offre' : optionPaiement,
                     date: Date.now()
                 };
                 let dossierGarde = false;
@@ -3865,6 +3910,12 @@
                     await enregistrerDossier(dossier);
                 }
 
+                if (avecCadeau) {
+                    alert("Thank you {p} 💕! Your gift card has been accepted. All that's left is to create your password.".replace('{p}', prenom));
+                    history.replaceState(null, '', location.pathname + '#merci');
+                    switchPage('merci', null, null); preparerPageMerci(); window.scrollTo(0, 0);
+                    return;
+                }
                 alert(`Thank you ${prenom} 💕!\n\n${estMarraine ? 'Your registration is ready.' : 'Your diploma has been received.'} You will now be securely redirected to Stripe for payment.\n\nAfter payment, you'll come back here to create your password.`);
 
                 window.location.href = lienStripe;

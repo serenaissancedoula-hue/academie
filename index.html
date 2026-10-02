@@ -33,6 +33,7 @@
 <script src="/blogue.js" defer></script>
 <script src="/defilement.js" defer></script>
 <script src="/temoignages.js" defer></script>
+<script src="/cadeau.js" defer></script>
     <script src="/appli.js" defer></script>
     <script src="/tarifs.js"></script>
     <script src="/securite.js"></script>
@@ -2149,6 +2150,8 @@
             </div>
         </div>
 
+        <div id="offrir-cadeau" hidden></div>
+
         <!-- Sois parmi les premières -->
         <div class="home-summary-box" style="margin-top: 50px; background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
             <div class="badge-offre" style="margin-bottom: 4px;">Sois parmi les premières</div>
@@ -2312,6 +2315,14 @@
                     </select>
                 </div>
                 <p id="note-marraine" hidden style="font-size: 0.88rem; color: #555; margin-top: 15px; background: #efe6dc; border-radius: 10px; padding: 12px 14px;">💳 Paiement unique de <strong>175 $</strong>. Aucun diplôme n'est requis pour cette formation.</p>
+                <div id="bloc-cadeau" style="margin-top: 15px; background: #fffbf8; border: 1px dashed var(--border-color); border-radius: 12px; padding: 12px 14px;">
+                    <label style="display:flex;gap:8px;align-items:center;font-size:0.92rem;font-weight:600;cursor:pointer;"><input type="checkbox" id="avec-cadeau" style="width:auto;"> 🎁 J'ai une carte-cadeau</label>
+                    <div id="champ-cadeau" hidden style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+                        <input type="text" id="code-cadeau" placeholder="SERE-XXXX-XXXX-XXXX" autocomplete="off" maxlength="25" style="text-transform:uppercase;letter-spacing:1px;">
+                        <p id="msg-cadeau" style="font-size:0.84rem;margin:0;color:#7a685e;">Avec une carte-cadeau, tu n'as rien à payer : tu crées ton compte tout de suite.</p>
+                    </div>
+                </div>
+
 
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 15px;">
                     <label for="langue-formation" style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Langue de ta formation</label>
@@ -2404,6 +2415,9 @@
 
             <h3>8. Consultations individuelles</h3>
             <p>Une consultation peut être annulée ou déplacée sans frais jusqu'à 24 heures avant le rendez-vous. Une consultation annulée à moins de 24 heures d'avis, ou manquée, peut être facturée.</p>
+
+            <h3>8 bis. Cartes-cadeaux</h3>
+            <p>Une carte-cadeau donne accès à une formation précise (4ᵉ trimestre : 550 $ ; marraine d'allaitement : 175 $). Elle est envoyée par courriel avec un code après la vérification du paiement, habituellement en moins de 24 heures. <strong>Elle n'expire pas</strong> et aucuns frais ne s'y appliquent. Elle ne peut pas être échangée contre de l'argent, mais l'acheteuse peut en demander le remboursement complet tant qu'elle n'a pas été utilisée. La formation du 4ᵉ trimestre exige un diplôme de doula : si le diplôme de la personne qui reçoit la carte ne peut pas être validé, la carte est remboursée à l'acheteuse. Le courriel de la personne qui reçoit le cadeau sert seulement à lui envoyer sa carte.</p>
 
             <h3>9. Nature des services</h3>
             <p>Les accompagnements de doula et la formation sont de nature éducative et de soutien émotionnel, physique et informationnel. Ils <strong>ne remplacent pas</strong> les soins, le diagnostic ou les conseils d'une sage-femme, d'une infirmière, d'un médecin ou d'un autre professionnel de la santé. Je n'effectue aucun acte médical.</p>
@@ -2991,13 +3005,22 @@
                 confirmation: document.getElementById('adresse-ok')
             });
         });
+        document.addEventListener('change', function (e) {
+            if (e.target && e.target.id === 'avec-cadeau') {
+                const avec = e.target.checked;
+                document.getElementById('champ-cadeau').hidden = !avec;
+                const sel = document.getElementById('option-paiement');
+                if (sel) { sel.required = !avec && document.getElementById('choix-formation').value !== 'marraine'; sel.disabled = avec; }
+                if (avec) document.getElementById('code-cadeau').focus();
+            }
+        });
         function ajusterFormulaireInscription() {
             const choix = document.getElementById('choix-formation').value;
             const marraine = choix === 'marraine', combo = choix === 'combo';
             document.getElementById('bloc-diplome').style.display = marraine ? 'none' : 'flex';
             document.getElementById('diplome').required = !marraine;
             document.getElementById('bloc-paiement').style.display = marraine ? 'none' : 'flex';
-            document.getElementById('option-paiement').required = !marraine;
+            document.getElementById('option-paiement').required = !marraine && !(document.getElementById('avec-cadeau') || {}).checked;
             document.getElementById('note-marraine').hidden = !marraine;
             const select = document.getElementById('option-paiement');
             if (!select) return;
@@ -3708,6 +3731,10 @@
         function preparerPageMerci() {
             const d = lireDossierEnCours();
             if (!d) return;
+            if (String(d.option_paiement || '').indexOf('bon:') === 0) {
+                const p0 = document.querySelector('#page-merci .merci-page-container > p');
+                if (p0) p0.textContent = "Ta carte-cadeau est acceptée 🎁 et je suis ravie de t'accueillir à l'Académie Sérénaissance !";
+            }
             if (d.formation === 'marraine') {
                 document.querySelectorAll('#page-merci .merci-page-container > p').forEach((p, i) => {
                     if (i === 0) p.textContent = "Ton paiement a bien été reçu et je suis ravie de t'accueillir à l'Académie Sérénaissance !";
@@ -3732,6 +3759,11 @@
             const bouton = document.getElementById('merci-bouton');
             bouton.disabled = true; bouton.textContent = 'Création en cours…';
 
+            if (String(d.option_paiement || '').indexOf('bon:') === 0) {
+                let u = null;
+                try { u = await SereCadeau.utiliser(d.option_paiement.slice(4), d.courriel); } catch (e) { u = null; }
+                if (!u || !u.ok) { alert("Cette carte-cadeau vient d'être utilisée ou n'est plus valide. Écris-moi à serenaissance.doula@gmail.com et je règle ça avec toi."); bouton.disabled = false; bouton.textContent = 'Créer mon compte'; return; }
+            }
             // 1) Compte sécurisé : Supabase envoie alors le courriel de confirmation
             const { data: compte, error: signUpError } = await sbClient.auth.signUp({
                 email: d.courriel,
@@ -3785,6 +3817,18 @@
                 return;
             }
 
+            // Carte-cadeau : aucune redirection vers Stripe
+            const avecCadeau = document.getElementById('avec-cadeau') && document.getElementById('avec-cadeau').checked;
+            let codeCadeau = '';
+            if (avecCadeau) {
+                codeCadeau = document.getElementById('code-cadeau').value.trim().toUpperCase();
+                if (estCombo) { alert("La carte-cadeau couvre une seule formation. Choisis la formation inscrite sur ta carte, ou écris-moi à serenaissance.doula@gmail.com."); return; }
+                let v = null;
+                try { v = await SereCadeau.verifier(codeCadeau); } catch (e) { v = null; }
+                if (!v || !v.ok) { alert("Ce code de carte-cadeau n'est pas valide ou a déjà été utilisé. Vérifie-le, ou écris-moi à serenaissance.doula@gmail.com."); return; }
+                if (v.formation !== formation) { alert("Ta carte-cadeau est pour la formation « {f} ». Choisis cette formation dans le formulaire.".replace('{f}', v.formation === 'marraine' ? "Marraine d'allaitement" : "Accompagnement de pointe du 4ᵉ trimestre")); return; }
+            }
+
             // Liens de paiement Stripe (voir OFFRE DE LANCEMENT plus bas)
             const avecOffre = !estMarraine && !estCombo && optionPaiement === 'offre';
             if (avecOffre && !offreEstActive()) { alert("L'offre de lancement est terminée (date limite ou 10 places comblées). Choisis le prix régulier, en 1, 2 ou 4 versements."); ajusterFormulaireInscription(); return; }
@@ -3792,6 +3836,7 @@
                 : estCombo ? ((TarifsSere.formations.combo.options[optionPaiement] || {}).lien || "")
                 : avecOffre ? LIENS_STRIPE_OFFRE['1']
                 : (LIENS_STRIPE_REGULIER[optionPaiement] || "");
+            if (avecCadeau) lienStripe = '#cadeau';
             if (estMarraine && !lienStripe) {
                 alert("L'inscription en ligne à la formation de marraine d'allaitement ouvre très bientôt ! D'ici là, écris-moi à serenaissance.doula@gmail.com ou appelle-moi au 506-759-2044, et je t'inscris personnellement. 💕");
                 return;
@@ -3853,7 +3898,7 @@
                     date_naissance: dateNaissance,
                     diplome_url: uploadData ? uploadData.path : null,
                     formation: estCombo ? '4e-trimestre' : formation,
-                    option_paiement: estMarraine ? 'marraine' : estCombo ? 'combo-' + optionPaiement : avecOffre ? '1-offre' : optionPaiement,
+                    option_paiement: avecCadeau ? 'bon:' + codeCadeau : estMarraine ? 'marraine' : estCombo ? 'combo-' + optionPaiement : avecOffre ? '1-offre' : optionPaiement,
                     date: Date.now()
                 };
                 let dossierGarde = false;
@@ -3867,6 +3912,12 @@
                     await enregistrerDossier(dossier);
                 }
 
+                if (avecCadeau) {
+                    alert("Merci {p} 💕 ! Ta carte-cadeau est acceptée. Il ne reste qu'à créer ton mot de passe.".replace('{p}', prenom));
+                    history.replaceState(null, '', location.pathname + '#merci');
+                    switchPage('merci', null, null); preparerPageMerci(); window.scrollTo(0, 0);
+                    return;
+                }
                 alert(`Merci ${prenom} 💕 !\n\n${estMarraine ? 'Ton inscription est prête.' : 'Ton diplôme est bien reçu.'} Tu vas maintenant être redirigée en toute sécurité vers Stripe pour le paiement.\n\nAprès le paiement, tu reviendras ici pour créer ton mot de passe.`);
 
                 window.location.href = lienStripe;
