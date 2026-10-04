@@ -59,7 +59,7 @@
     document.querySelectorAll('.bloc-appli').forEach(function (b) {
       if (installee || (ferme && !b.hasAttribute('data-toujours'))) { b.hidden = true; return; }
       b.hidden = false;
-      b.innerHTML = '<img src="/icones/icone-192.png" alt=""><div><strong>' + L('📲 Installe l\'appli de l\'Académie', '📲 Install the Académie app') + '</strong>' +
+      b.innerHTML = '<img src="/icones/icone-192.png?v=2" alt=""><div><strong>' + L('📲 Installe l\'appli de l\'Académie', '📲 Install the Académie app') + '</strong>' +
         '<p>' + L('Tes cours en un toucher, sur ton cellulaire, ta tablette ou ton ordinateur, sans passer par l\'App Store ni Google Play.', 'Your courses in one tap on your phone, tablet or computer, without going through the App Store or Google Play.') + '</p>' +
         choixLangue() +
         (invite ? '<button type="button" class="installer">' + L('Installer l\'appli', 'Install the app') + '</button>' : etapes()) + '</div>' +

@@ -3,7 +3,7 @@
    restent disponibles sans connexion. Supabase et Stripe ne passent jamais par le cache. */
 var VERSION = 'sere-v6';
 var DE_BASE = ['/', '/index.html', '/espace.html', '/hors-ligne.html', '/en/', '/en/espace.html', '/en/hors-ligne.html', '/langue.js', '/adresse.js', '/logo.png', '/logo.jpg',
-  '/icones/icone-192.png', '/icones/icone-512.png', '/manifest.webmanifest'];
+  '/icones/icone-192.png?v=2', '/icones/icone-512.png?v=2', '/manifest.webmanifest'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(VERSION).then(function (c) { return c.addAll(DE_BASE); }).then(function () { return self.skipWaiting(); }));
@@ -53,7 +53,7 @@ self.addEventListener('push', function (e) {
   e.waitUntil(compteur(1).then(function (n) {
     var badge = self.navigator && self.navigator.setAppBadge ? self.navigator.setAppBadge(n).catch(function () {}) : Promise.resolve();
     var admin = !d.url || d.url.indexOf('/admin') === 0;
-    var icone = admin ? '/icones/admin-192.png' : '/icones/icone-192.png';
+    var icone = admin ? '/icones/admin-192.png?v=2' : '/icones/icone-192.png?v=2';
     var options = {
       body: d.message || '', icon: icone, badge: icone,
       data: { url: d.url || '/admin.html' }, tag: d.tag || undefined, renotify: !!d.tag,

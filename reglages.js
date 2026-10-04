@@ -132,7 +132,7 @@
       var x = lire();
       sonner();
       if ('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker) {
-        var icone = opts.admin ? '/icones/admin-192.png' : '/icones/icone-192.png', o = { body: L('Voici à quoi ressemblent tes notifications.', 'This is what your notifications look like.'), icon: icone, badge: icone, silent: !x.son };
+        var icone = opts.admin ? '/icones/admin-192.png?v=2' : '/icones/icone-192.png?v=2', o = { body: L('Voici à quoi ressemblent tes notifications.', 'This is what your notifications look like.'), icon: icone, badge: icone, silent: !x.son };
         if (x.vibration) o.vibrate = [120, 60, 120];
         navigator.serviceWorker.ready.then(function (reg) { reg.showNotification('🌸 Test', o); });
       }
