@@ -68,7 +68,7 @@
     };
     d.setAttribute('aria-label', t.titre);
     d.innerHTML = '<div class="boite">' +
-      '<img src="/logo.jpg" alt="Académie Sérénaissance">' +
+      '<img src="/logo.png" alt="Académie Sérénaissance">' +
       '<p class="script">' + t.script + '</p>' +
       '<h1>' + t.titre + '</h1>' +
       '<p>' + t.texte + '</p>' +

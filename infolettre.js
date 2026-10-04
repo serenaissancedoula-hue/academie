@@ -82,7 +82,7 @@
     var offre = offreActive();
     fond.innerHTML = '<div class="il-boite">' +
       '<button type="button" class="il-fermer" aria-label="' + T.fermer + '">✕</button>' +
-      '<img class="il-logo" src="/logo.jpg" alt="Académie Sérénaissance">' +
+      '<img class="il-logo" src="/logo.png" alt="Académie Sérénaissance">' +
       '<h2 id="il-titre">' + T.titre + '</h2>' +
       (offre ? '<div class="il-offre">' + T.offre + '<span class="il-places" hidden></span><a href="' + T.lienOffre + '">' + T.voir + '</a></div>' : '') +
       '<p>' + T.texte + '</p>' +

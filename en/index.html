@@ -17,7 +17,7 @@
     <link rel="alternate" hreflang="fr" href="https://academiesere.ca/">
     <link rel="alternate" hreflang="en" href="https://academiesere.ca/en/">
     <link rel="alternate" hreflang="x-default" href="https://academiesere.ca/">
-    <link rel="icon" type="image/jpeg" href="/logo.jpg">
+    <link rel="icon" type="image/png" href="/icones/favicon-64.png">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#a85743">
     <meta name="mobile-web-app-capable" content="yes">
@@ -108,10 +108,11 @@
             z-index: 1000;
         }
         .logo-img {
-            height: 85px;
+            height: 68px;
+            width: auto;
+            margin-right: 22px;
+            flex: none;
             object-fit: contain;
-            mix-blend-mode: darken;
-            filter: contrast(1.25) brightness(1.02);
             cursor: pointer;
         }
         .nav-center {
@@ -1481,7 +1482,7 @@
                 padding: 8px 16px;
                 border-bottom: 1px solid var(--border-color);
             }
-            .logo-img { height: 54px; }
+            .logo-img { height: 46px; }
             .btn-appel {
                 margin-left: auto;
                 width: 44px; height: 44px;
@@ -1555,7 +1556,7 @@
 
     <!-- En-tête / Navigation -->
     <header>
-        <img src="/logo.jpg" alt="Sérénaissance" class="logo-img" onclick="switchPage('accueil', this, event)">
+        <img src="/logo.png" alt="Sérénaissance" class="logo-img" onclick="switchPage('accueil', this, event)">
         <ul class="nav-center">
             <li><a href="#" onclick="switchPage('accueil', this, event)" class="active" id="nav-accueil">Home</a></li>
             <li><a href="#" onclick="switchPage('accompagnements', this, event)" id="nav-accompagnements">Support</a></li>

@@ -61,7 +61,7 @@
   }
   function imprimer(titre, corps) {
     var w = window.open('', '_blank'); if (!w) return;
-    w.document.write('<!DOCTYPE html><html lang="' + (EN ? 'en' : 'fr') + '"><head><meta charset="UTF-8"><title>' + esc(titre) + '</title><style>body{font-family:Arial,sans-serif;max-width:760px;margin:30px auto;padding:0 20px;color:#2c221e;line-height:1.55;font-size:13px}pre{white-space:pre-wrap;font-family:inherit}.sig{margin-top:24px;border-top:2px solid #a85743;padding-top:12px}</style></head><body><img src="/logo.jpg" alt="" style="width:130px"><pre>' + esc(corps.texte) + '</pre>' +
+    w.document.write('<!DOCTYPE html><html lang="' + (EN ? 'en' : 'fr') + '"><head><meta charset="UTF-8"><title>' + esc(titre) + '</title><style>body{font-family:Arial,sans-serif;max-width:760px;margin:30px auto;padding:0 20px;color:#2c221e;line-height:1.55;font-size:13px}pre{white-space:pre-wrap;font-family:inherit}.sig{margin-top:24px;border-top:2px solid #a85743;padding-top:12px}</style></head><body><img src="/logo.png" alt="" style="width:130px"><pre>' + esc(corps.texte) + '</pre>' +
       (corps.signature ? '<div class="sig">' + corps.signature + '</div>' : '') + '<script>setTimeout(function(){print()},400)<\/script></body></html>');
     w.document.close();
   }
