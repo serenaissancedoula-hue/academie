@@ -1267,7 +1267,7 @@
         .liste-fichiers li a { color: var(--accent-terracotta); font-weight: 700; white-space: nowrap; }
         .liste-fichiers li.vide { justify-content: center; color: #7a685e; font-style: italic; }
         /* Choix des formations */
-        /* ===== Cohorte de la formation de doula 335 h ===== */
+        /* ===== Cohorte de la formation de doula 350 h ===== */
         .cohorte-doula { max-width: 1060px; margin: 10px auto 46px; padding: 0 20px; }
         .cohorte-carte { position: relative; display: grid; grid-template-columns: minmax(260px, 420px) 1fr; gap: 42px; align-items: center;
             background: linear-gradient(135deg, #fbf6f1 0%, #f4e3d8 100%); border: 1px solid #ecd6c9; border-radius: 34px; padding: 40px 44px; overflow: hidden;
@@ -1298,6 +1298,20 @@
         .cohorte-puces li { background: rgba(255,255,255,.75); border: 1px solid #ecd6c9; border-radius: 30px; padding: 6px 13px; font-size: .84rem; color: #5a4a42; }
         .cohorte-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
         .cohorte-actions .places { font-size: .85rem; color: #8a6f63; }
+        .cohorte-prix { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; margin: 0 0 6px; }
+        .cohorte-prix .p-nouveau { font-family: 'Playfair Display', serif; font-size: 2.3rem; font-weight: 700; color: var(--accent-terracotta); line-height: 1; }
+        .cohorte-prix s { font-size: 1.15rem; color: #9a8a80; }
+        .cohorte-prix .p-note { font-size: .82rem; font-weight: 600; color: #7c3a2a; background: #f2c9b9; padding: 4px 10px; border-radius: 20px; }
+        .cohorte-inclus { font-size: .86rem; color: #6b5850; margin: 0 0 14px; }
+        .cohorte-paiements { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 0 12px; }
+        .cohorte-paiements a { display: block; text-align: center; text-decoration: none; background: #fff; border: 1.5px solid #e2c3b5; border-radius: 16px; padding: 10px 8px; color: var(--text-dark); transition: transform .15s, border-color .15s, box-shadow .15s; }
+        .cohorte-paiements a:hover, .cohorte-paiements a:focus-visible { transform: translateY(-2px); border-color: var(--accent-terracotta); box-shadow: 0 8px 18px -10px rgba(120,66,46,.5); }
+        .cohorte-paiements a.vedette { background: var(--accent-terracotta); border-color: var(--accent-terracotta); color: #fff; }
+        .cohorte-paiements strong { display: block; font-size: 1.05rem; }
+        .cohorte-paiements span { display: block; font-size: .76rem; opacity: .85; margin-top: 2px; }
+        .cohorte-question { font-size: .85rem; color: #8a6f63; }
+        .cohorte-question a { color: var(--accent-terracotta); text-decoration: underline; }
+        @media (max-width: 520px) { .cohorte-paiements { grid-template-columns: 1fr; } }
         @media (max-width: 820px) {
             .cohorte-carte { grid-template-columns: 1fr; padding: 26px 20px 28px; gap: 22px; border-radius: 26px; }
             .cohorte-visuel { max-width: 300px; margin: 14px auto 0; width: 100%; }
@@ -1693,20 +1707,24 @@
             <div class="cohorte-carte">
                 <div class="cohorte-visuel">
                     <div class="forme"><img src="doula.jpg" alt="Une doula soutient une maman enceinte appuyée sur un ballon" loading="lazy"></div>
-                    <div class="cohorte-sceau" aria-hidden="true"><div><span class="s1">Nouvelle cohorte</span><span class="s2">Doula</span><span class="s3">335 heures</span><span class="s4">DÈS LE 21 OCTOBRE</span></div></div>
+                    <div class="cohorte-sceau" aria-hidden="true"><div><span class="s1">Nouvelle cohorte</span><span class="s2">Doula</span><span class="s3">350 heures</span><span class="s4">DÈS LE 21 OCTOBRE</span></div></div>
                 </div>
                 <div class="cohorte-texte">
                     <span class="cohorte-etiquette"><span class="point"></span>Inscriptions ouvertes</span>
-                    <h2 id="cohorte-accueil-titre">Formation de base de doula · <em>335 heures</em></h2>
+                    <h2 id="cohorte-accueil-titre">Formation de base de doula · <em>350 heures</em></h2>
                     <p class="cohorte-date">Nouvelle cohorte : début le <strong>21 octobre 2026</strong>. Tout ce qu'il faut pour accompagner la grossesse, la naissance et le post-partum, avec rigueur et douceur.</p>
                     <p class="cohorte-equipe">🤍 Un bloc animé par une <strong>consultante en lactation IBCLC</strong> et un autre par une <strong>sage-femme</strong>.</p>
                     <ul class="cohorte-puces">
                         <li>12 modules</li><li>Ateliers pratiques et simulation</li><li>Stage supervisé de 100 h</li><li>Mentorat personnalisé</li><li>N.-B. · Québec · Canada</li>
                     </ul>
-                    <div class="cohorte-actions">
-                        <a href="#" class="btn-action" onclick="reserverCohorteDoula(event)">Réserver ma place →</a>
-                        <span class="places">Places limitées · je te réponds en moins de 48 h</span>
+                    <div class="cohorte-prix"><span class="p-nouveau">1 750 $</span><s>1 950 $</s><span class="p-note">Prix de lancement · cohorte du 21 octobre</span></div>
+                    <p class="cohorte-inclus">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</p>
+                    <div class="cohorte-paiements">
+                        <a href="https://buy.stripe.com/28E4gA2GHdXQ7zn83Q7N60l" class="vedette" target="_blank" rel="noopener"><strong>1 750 $</strong><span>1 paiement</span></a>
+                        <a href="https://buy.stripe.com/4gM5kEftt5rkcTH83Q7N60k" target="_blank" rel="noopener"><strong>3 × 583,33 $</strong><span>3 versements</span></a>
+                        <a href="https://buy.stripe.com/aFa7sM2GHcTMbPDfwi7N60j" target="_blank" rel="noopener"><strong>6 × 291,67 $</strong><span>6 versements</span></a>
                     </div>
+                    <p class="cohorte-question">Places limitées. Une question avant de t'inscrire? <a href="#" onclick="reserverCohorteDoula(event)">Écris-moi</a>, je te réponds en moins de 48 h.</p>
                 </div>
             </div>
         </section>
@@ -1869,20 +1887,24 @@
             <div class="cohorte-carte">
                 <div class="cohorte-visuel">
                     <div class="forme"><img src="doula.jpg" alt="Une doula soutient une maman enceinte appuyée sur un ballon" loading="lazy"></div>
-                    <div class="cohorte-sceau" aria-hidden="true"><div><span class="s1">Nouvelle cohorte</span><span class="s2">Doula</span><span class="s3">335 heures</span><span class="s4">DÈS LE 21 OCTOBRE</span></div></div>
+                    <div class="cohorte-sceau" aria-hidden="true"><div><span class="s1">Nouvelle cohorte</span><span class="s2">Doula</span><span class="s3">350 heures</span><span class="s4">DÈS LE 21 OCTOBRE</span></div></div>
                 </div>
                 <div class="cohorte-texte">
                     <span class="cohorte-etiquette"><span class="point"></span>Inscriptions ouvertes</span>
-                    <h2 id="cohorte-formations-titre">Formation de base de doula · <em>335 heures</em></h2>
+                    <h2 id="cohorte-formations-titre">Formation de base de doula · <em>350 heures</em></h2>
                     <p class="cohorte-date">Nouvelle cohorte : début le <strong>21 octobre 2026</strong>. Tout ce qu'il faut pour accompagner la grossesse, la naissance et le post-partum, avec rigueur et douceur.</p>
                     <p class="cohorte-equipe">🤍 Un bloc animé par une <strong>consultante en lactation IBCLC</strong> et un autre par une <strong>sage-femme</strong>.</p>
                     <ul class="cohorte-puces">
                         <li>12 modules</li><li>Ateliers pratiques et simulation</li><li>Stage supervisé de 100 h</li><li>Mentorat personnalisé</li><li>N.-B. · Québec · Canada</li>
                     </ul>
-                    <div class="cohorte-actions">
-                        <a href="#" class="btn-action" onclick="reserverCohorteDoula(event)">Réserver ma place →</a>
-                        <span class="places">Places limitées · je te réponds en moins de 48 h</span>
+                    <div class="cohorte-prix"><span class="p-nouveau">1 750 $</span><s>1 950 $</s><span class="p-note">Prix de lancement · cohorte du 21 octobre</span></div>
+                    <p class="cohorte-inclus">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</p>
+                    <div class="cohorte-paiements">
+                        <a href="https://buy.stripe.com/28E4gA2GHdXQ7zn83Q7N60l" class="vedette" target="_blank" rel="noopener"><strong>1 750 $</strong><span>1 paiement</span></a>
+                        <a href="https://buy.stripe.com/4gM5kEftt5rkcTH83Q7N60k" target="_blank" rel="noopener"><strong>3 × 583,33 $</strong><span>3 versements</span></a>
+                        <a href="https://buy.stripe.com/aFa7sM2GHcTMbPDfwi7N60j" target="_blank" rel="noopener"><strong>6 × 291,67 $</strong><span>6 versements</span></a>
                     </div>
+                    <p class="cohorte-question">Places limitées. Une question avant de t'inscrire? <a href="#" onclick="reserverCohorteDoula(event)">Écris-moi</a>, je te réponds en moins de 48 h.</p>
                 </div>
             </div>
         </section>
@@ -2813,8 +2835,8 @@
             if (event) event.preventDefault();
             switchPage('accueil', null);
             var s = document.getElementById('contact-sujet'), m = document.getElementById('contact-message');
-            if (s && !s.value) s.value = 'Formation de doula 335 h · cohorte du 21 octobre';
-            if (m && !m.value) m.value = "Bonjour Sabrina, j'aimerais réserver ma place dans la cohorte de la formation de doula 335 h qui commence le 21 octobre. ";
+            if (s && !s.value) s.value = 'Formation de doula 350 h · cohorte du 21 octobre';
+            if (m && !m.value) m.value = "Bonjour Sabrina, j'aimerais réserver ma place dans la cohorte de la formation de doula 350 h qui commence le 21 octobre. ";
             var f = document.getElementById('form-contact');
             if (f) setTimeout(function () { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); var n = document.getElementById('contact-nom'); if (n) n.focus({ preventScroll: true }); }, 60);
         }
