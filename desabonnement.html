@@ -27,7 +27,7 @@
 <script>
 (function () {
   var p = new URLSearchParams(location.search), jeton = p.get('t') || '', en = p.get('l') === 'en';
-  if (en) { document.documentElement.lang = 'en'; document.title = 'Unsubscribe · Académie Sérénaissance'; document.getElementById('retour').textContent = 'Back to the website'; document.getElementById('retour').href = '/en/'; }
+  if (en) { document.documentElement.lang = 'en'; document.title = 'Unsubscribe · Académie Sérénaissance'; document.getElementById('titre').textContent = 'Unsubscribing…'; document.getElementById('texte').textContent = 'One moment, please.'; document.getElementById('retour').textContent = 'Back to the website'; document.getElementById('retour').href = '/en/'; }
   var T = en ? { ok: ['You are unsubscribed', 'You will no longer receive the Académie Sérénaissance newsletter. Thank you for following us! 💕 You can subscribe again at any time on the website.'],
                  ko: ['Invalid link', 'This unsubscribe link is not valid. Write to serenaissance.doula@gmail.com and we will remove your address right away.'] }
              : { ok: ['Tu es désabonnée', 'Tu ne recevras plus l\'infolettre de l\'Académie Sérénaissance. Merci de nous avoir suivies ! 💕 Tu peux te réabonner en tout temps sur le site.'],

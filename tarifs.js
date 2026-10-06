@@ -2,9 +2,8 @@
    Utilisé par le site (inscription) et par l'appli Admin (liens envoyés aux étudiantes). */
 (function () {
   'use strict';
-  var PROMO_OFFRE = 'SERENAISSANCE300';
   var OFFRE_FIN = new Date('2026-10-05T12:00:00-03:00');   // fin de l'offre de lancement (5 oct. à midi, heure de l'Atlantique)
-  var OFFRE_ACTIVE = true;                                   // mettre false pour l'arrêter avant la date
+  var OFFRE_ACTIVE = false;                                  // offre de lancement terminée le 5 octobre 2026
 
   var T = {
     '4e-trimestre': {
@@ -36,15 +35,6 @@
         '1': { prix: '725 $', detail: 'paiement complet', en: { prix: '$725', detail: 'full payment' }, lien: 'https://buy.stripe.com/14AdRa2GH7zscTH4RE7N60h' },
         '2': { prix: '2 × 362,50 $', detail: '2 versements', en: { prix: '2 × $362.50', detail: '2 instalments' }, lien: 'https://buy.stripe.com/8x24gA955dXQcTH97U7N60g' },
         '4': { prix: '4 × 181,25 $', detail: '4 versements aux 2 semaines', en: { prix: '4 × $181.25', detail: '4 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/bJe4gAepp5rkdXL3NA7N60f' }
-      }
-    },
-    '4e-cadeau': {
-      nom: "4ᵉ trimestre + marraine d'allaitement en cadeau (offre de lancement)",
-      court: '4ᵉ trimestre + cadeau',
-      en: { nom: 'Fourth Trimester + free Breastfeeding Peer Supporter course (launch offer)', court: 'Fourth trimester + gift' },
-      diplome: true, marraine: true,
-      options: {
-        '1': { prix: '250 $', detail: 'paiement complet · code promo appliqué', en: { prix: '$250', detail: 'full payment · promo code applied' }, lien: 'https://buy.stripe.com/cNi4gAeppg5Y3j73NA7N601?prefilled_promo_code=' + PROMO_OFFRE }
       }
     }
   };
