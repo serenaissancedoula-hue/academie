@@ -1271,12 +1271,11 @@
         .photo-cohorte { position: relative; display: inline-block; }
         .photo-cohorte .etincelle { position: absolute; color: var(--accent-terracotta); font-size: 1.3rem; line-height: 1; pointer-events: none; }
         .photo-cohorte .e1 { left: -26px; top: 6%; }
-        .photo-cohorte .e2 { right: -30px; bottom: 30%; font-size: 1rem; }
-        .sceau-photo { position: absolute; right: -78px; top: -14px; width: 190px; height: 190px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: #8c3f2c;
+        .photo-cohorte .e2 { right: -26px; top: 12%; font-size: 1rem; }
+        .sceau-photo { position: absolute; right: -92px; bottom: 6px; width: 180px; height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: #8c3f2c;
             transform: rotate(-7deg); transition: transform .25s; filter: drop-shadow(0 8px 14px rgba(120,66,46,.28)); }
-        .sceau-photo::before { content: ''; position: absolute; inset: 0; background: #f2c9b9;
-            clip-path: polygon(50% 0%, 59% 9%, 71% 4%, 75% 16%, 88% 15%, 86% 28%, 97% 34%, 90% 45%, 99% 55%, 88% 62%, 92% 75%, 79% 77%, 77% 90%, 65% 87%, 57% 98%, 48% 89%, 37% 97%, 32% 85%, 19% 88%, 19% 75%, 6% 71%, 12% 59%, 2% 50%, 12% 41%, 5% 29%, 18% 26%, 18% 12%, 31% 14%, 37% 3%); }
-        .sceau-photo::after { content: ''; position: absolute; inset: 30px; border: 1.5px dashed rgba(140,63,44,.45); border-radius: 50%; }
+        .sceau-photo::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20200%20200%27%3E%3Cpath%20d%3D%27M100.00%2C14.00%20A21.43%2C21.43%200%200%201%20137.31%2C22.52%20A21.43%2C21.43%200%200%201%20167.24%2C46.38%20A21.43%2C21.43%200%200%201%20183.84%2C80.86%20A21.43%2C21.43%200%200%201%20183.84%2C119.14%20A21.43%2C21.43%200%200%201%20167.24%2C153.62%20A21.43%2C21.43%200%200%201%20137.31%2C177.48%20A21.43%2C21.43%200%200%201%20100.00%2C186.00%20A21.43%2C21.43%200%200%201%2062.69%2C177.48%20A21.43%2C21.43%200%200%201%2032.76%2C153.62%20A21.43%2C21.43%200%200%201%2016.16%2C119.14%20A21.43%2C21.43%200%200%201%2016.16%2C80.86%20A21.43%2C21.43%200%200%201%2032.76%2C46.38%20A21.43%2C21.43%200%200%201%2062.69%2C22.52%20A21.43%2C21.43%200%200%201%20100.00%2C14.00Z%27%20fill%3D%27%23f2c9b9%27/%3E%3C/svg%3E") center / contain no-repeat; }
+        .sceau-photo::after { content: ''; position: absolute; inset: 26px; border: 1.5px dashed rgba(140,63,44,.45); border-radius: 50%; }
         .sceau-photo:hover, .sceau-photo:focus-visible { transform: rotate(-3deg) scale(1.05); }
         .sceau-photo > span { position: relative; z-index: 1; display: block; max-width: 62%; }
         .sceau-photo .sp1 { font-family: 'Great Vibes', cursive; font-size: 1.05rem; line-height: 1; }
@@ -1287,9 +1286,11 @@
             border-radius: 22px; padding: 14px 20px; font-size: .98rem; line-height: 1.45; box-shadow: 0 10px 24px -16px rgba(120,66,46,.6); transition: transform .2s, background .2s; }
         .pastille-cohorte:hover, .pastille-cohorte:focus-visible { transform: translateY(-2px); background: #edbfad; }
         .pastille-cohorte small { display: block; font-weight: 700; font-size: .8rem; margin-top: 6px; text-decoration: underline; }
+        @media (max-width: 340px) { .photo-cohorte .sceau-photo { right: -12px !important; width: 112px !important; height: 112px !important; } }
+        @media (max-width: 400px) { .photo-cohorte .sceau-photo { width: 122px; height: 122px; right: -34px; } .photo-cohorte .sceau-photo::after { inset: 17px; } .photo-cohorte .sceau-photo .sp2 { font-size: 1.3rem; } .photo-cohorte .sceau-photo .sp1, .photo-cohorte .sceau-photo .sp3 { font-size: .78rem; } .photo-cohorte .e2 { right: -10px; } }
         @media (max-width: 768px) {
-            .sceau-photo { width: 150px; height: 150px; right: -40px; top: -18px; }
-            .sceau-photo::after { inset: 24px; }
+            .sceau-photo { width: 138px; height: 138px; right: -62px; bottom: -8px; top: auto; }
+            .sceau-photo::after { inset: 20px; }
             .sceau-photo .sp1 { font-size: .85rem; } .sceau-photo .sp2 { font-size: 1.5rem; } .sceau-photo .sp3 { font-size: .85rem; } .sceau-photo .sp4 { font-size: .5rem; }
             .photo-cohorte .e1 { left: -14px; } .photo-cohorte .e2 { right: -16px; }
             .pastille-cohorte { margin-top: 20px; font-size: .92rem; }
