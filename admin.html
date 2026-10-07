@@ -518,10 +518,12 @@ function jour(d) { return d ? new Date(d).toLocaleDateString('fr-CA', { day: 'nu
 function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('voir'); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('voir'); }, 3200); }
 if (window.SereAdminPlus) SereAdminPlus.init({ sb: sb, toast: toast, traduire: traduire });
 function valide(e) { return (e.statut || '').trim().toLowerCase() === 'valide'; }
+function doulaOk(e) { return e.formation === 'doula' && (e.statut || '').trim().toLowerCase() === 'doula_valide'; }
 function paiement(v) {
   var s = String(v || '');
   if (s.indexOf('bon:') === 0) return '🎁 Carte-cadeau ' + s.slice(4);
   if (s === 'marraine') return "Marraine · 175 $";
+  if (s.indexOf('doula-') === 0) return 'Doula 350 h · ' + ({ '1': '1 750 $ en 1 paiement', '3': '3 × 583,33 $', '6': '6 × 291,67 $' }[s.split('-')[1]] || s);
   if (s.indexOf('lien-manuel') === 0) return '🔗 Lien manuel' + (s.indexOf('combo') >= 0 ? ' · combo (les 2)' : s.indexOf('cadeau') >= 0 ? ' · 4ᵉ + marraine en cadeau' : '') + ' (vérifier le paiement)';
   if (s.indexOf('combo') === 0) return 'Combo (4ᵉ + marraine) · ' + ({ '1': 'paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[1]] || '');
   var base = { '1': 'Paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[0]] || s;
@@ -530,7 +532,8 @@ function paiement(v) {
 function pastilles(e) {
   var p = '';
   if (e.suspendu) p += '<span class="pastille p-suspendu">⛔ Suspendue</span>';
-  if (e.formation === 'marraine') p += e.acces_marraine ? '<span class="pastille p-valide">Marraine · accès ouvert</span>' : '<span class="pastille p-attente">Marraine · en attente</span>';
+  if (e.formation === 'doula') p += doulaOk(e) ? '<span class="pastille p-valide">Doula 350 h · place confirmée</span>' : '<span class="pastille p-attente">Doula 350 h · en attente</span>';
+  else if (e.formation === 'marraine') p += e.acces_marraine ? '<span class="pastille p-valide">Marraine · accès ouvert</span>' : '<span class="pastille p-attente">Marraine · en attente</span>';
   else {
     p += valide(e) ? '<span class="pastille p-valide">4ᵉ trimestre · validée</span>' : '<span class="pastille p-attente">4ᵉ trimestre · en attente</span>';
     if (e.acces_marraine) p += '<span class="pastille p-marraine">🎁 marraine</span>';
@@ -540,7 +543,7 @@ function pastilles(e) {
   if (e.langue === 'en') p += '<span class="pastille p-lien">🇬🇧 EN</span>';
   return p;
 }
-function enAttente(e) { return e.formation === 'marraine' ? !e.acces_marraine : !valide(e); }
+function enAttente(e) { return e.formation === 'doula' ? !doulaOk(e) : e.formation === 'marraine' ? !e.acces_marraine : !valide(e); }
 
 /* ---------- Navigation ---------- */
 function vue(v) {
@@ -743,16 +746,17 @@ function ouvrirFiche(id, rafraichir) {
   if (!e) { if (rafraichir) fermerFiche(); return; }
   ficheId = id;
   $('fiche-nom').innerHTML = '<span style="display:flex;align-items:center;gap:10px;">' + avatarHtml(e, 38) + esc((e.prenom || '') + ' ' + (e.nom || '')) + '</span>';
-  var f = e.formation === 'marraine';
+  var f = e.formation === 'marraine', fd = e.formation === 'doula';
   var acts = [];
-  if (!f) acts.push(valide(e) ? '<button class="btn gris" data-a="renvoyer">✉️ Renvoyer le courriel de bienvenue</button>' : '<button class="btn vert" data-a="valider">✓ Valider et envoyer le courriel</button>');
-  if (!f && valide(e)) acts.push('<button class="btn gris" data-a="retirer4e">Retirer la validation</button>');
+  if (fd) acts.push(doulaOk(e) ? '<button class="btn gris" data-a="renvoyer-doula">✉️ Renvoyer le courriel de confirmation</button><button class="btn gris" data-a="retirer-doula">Retirer la confirmation</button>' : '<button class="btn vert" data-a="valider">✓ Confirmer sa place et envoyer le courriel</button>');
+  if (!f && !fd) acts.push(valide(e) ? '<button class="btn gris" data-a="renvoyer">✉️ Renvoyer le courriel de bienvenue</button>' : '<button class="btn vert" data-a="valider">✓ Valider et envoyer le courriel</button>');
+  if (!f && !fd && valide(e)) acts.push('<button class="btn gris" data-a="retirer4e">Retirer la validation</button>');
   acts.push(e.acces_marraine ? '<button class="btn gris" data-a="marraine">Retirer l\'accès marraine</button>' : '<button class="btn' + (f ? ' vert' : '') + '" data-a="marraine">' + (f ? '✓ Ouvrir l\'accès marraine' : '🎁 Donner l\'accès marraine') + '</button>');
   acts.push(e.suspendu ? '<button class="btn vert" data-a="reactiver">▶️ Réactiver l\'accès</button>' : '<button class="btn danger" data-a="suspendre">⛔ Suspendre l\'accès</button>');
   var html =
     '<div class="carte"><div>' + pastilles(e) + '</div>' +
     (e.suspendu ? '<p class="infos-ligne ko" style="margin-top:8px;">⛔ Accès suspendu' + (e.motif_suspension ? ' : ' + esc(e.motif_suspension) : '') + '</p>' : '') +
-    '<p class="infos-ligne" style="margin-top:8px;"><b>Formation :</b> ' + (f ? "Marraine d'allaitement" : 'Accompagnement de pointe du 4ᵉ trimestre') + '</p>' +
+    '<p class="infos-ligne" style="margin-top:8px;"><b>Formation :</b> ' + (fd ? 'Formation de base de doula · 350 h (cohorte du 21 octobre)' : f ? "Marraine d'allaitement" : 'Accompagnement de pointe du 4ᵉ trimestre') + '</p>' +
     '<p class="infos-ligne"><b>Paiement :</b> ' + esc(paiement(e.option_paiement)) + '</p>' +
     '<p class="infos-ligne"><b>Inscrite le :</b> ' + jour(e.created_at) + '</p>' +
     '<p class="infos-ligne"><b>Langue :</b> ' + (e.langue === 'en' ? '🇬🇧 English (courriels et certificat en anglais)' : 'Français') + '</p>' +
@@ -874,6 +878,17 @@ function courrielBienvenue(e) {
     details: 'Log in to your account to start your course at your own pace. If you have any questions, write to me in your Messages or call me at 506-759-2044.',
     bouton: 'Open my courses →', lien: ESPACE_EN + '#cours' });
 }
+function courrielDoula(e) {
+  return courrielBilingue(e, { fr: 'Ta place est confirmée · formation de doula 🌸', en: 'Your spot is confirmed · doula training 🌸' }, {
+    accroche: 'Bienvenue', titre: (e.prenom || '') + ', ta place est confirmée !',
+    message: 'Ton paiement est bien reçu et ta place est confirmée dans la cohorte du 21 octobre de la formation de base de doula (350 h). Quelle joie de t\'accueillir ! 💕',
+    details: 'Ta formation s\'ouvre dans ton compte le 21 octobre 2026 et tu recevras un courriel ce jour-là. D\'ici là, connecte-toi pour compléter tes informations et ajouter ta photo. Au besoin, écris-moi dans tes Messages ou appelle-moi au 506-759-2044.',
+    bouton: 'Ouvrir mon compte →', lien: ESPACE_FR }, {
+    accroche: 'Welcome', titre: (e.prenom || '') + ', your spot is confirmed!',
+    message: 'Your payment has been received and your spot is confirmed in the October 21 cohort of the foundational doula training (350 h, in French). I am so happy to welcome you! 💕',
+    details: 'Your training opens in your account on October 21, 2026, and you will receive an email that day. Until then, log in to complete your information and add your photo. If you have any questions, write to me in your Messages or call me at 506-759-2044.',
+    bouton: 'Open my account →', lien: ESPACE_EN });
+}
 function courrielMarraine(e) {
   var combo = String(e.option_paiement || '').indexOf('combo') >= 0, cadeau = !combo && e.formation !== 'marraine';
   if (combo) return courrielBilingue(e, { fr: 'Ta formation de marraine d\'allaitement est ouverte 🌸', en: 'Your Breastfeeding Peer Supporter course is open 🌸' }, {
@@ -913,6 +928,16 @@ $('fiche-corps').addEventListener('click', function (ev) {
   var a = b.dataset.a;
   if (a === 'voir-marraine') { fermerFiche(); vue('marraines'); ouvrirFicheM(+b.dataset.m); return; }
   if (a === 'chat') { ouvrirChat(e.user_id); return; }
+  if (a === 'valider' && e.formation === 'doula') {
+    if (!confirm('Confirmer la place de ' + e.prenom + ' ' + e.nom + ' dans la cohorte de doula du 21 octobre ?\n\nVérifie d\'abord dans Stripe que son paiement est reçu.\nElle recevra un courriel de confirmation à ' + e.courriel + '.')) return;
+    maj(e, { statut: 'doula_valide' }).then(function (ok) {
+      if (!ok) return;
+      courrielDoula(e).then(function () { toast('💕 Place confirmée et courriel envoyé à ' + e.prenom); }, function () { toast('Place confirmée, mais le courriel n\'a pas pu partir'); });
+    });
+    return;
+  }
+  if (a === 'renvoyer-doula') { courrielDoula(e).then(function () { toast('✉️ Courriel de confirmation renvoyé'); }, function () { toast('Le courriel n\'a pas pu partir'); }); return; }
+  if (a === 'retirer-doula') { if (confirm('Retirer la confirmation de ' + e.prenom + ' ?')) maj(e, { statut: 'en_attente' }, 'Confirmation retirée'); return; }
   if (a === 'valider') {
     if (!confirm('Valider ' + e.prenom + ' ' + e.nom + ' ?\n\nVérifie d\'abord dans Stripe que son paiement est reçu.\nElle recevra le courriel de bienvenue à ' + e.courriel + '.')) return;
     var avecMarraine = TarifsSere.inclutMarraine(e.option_paiement) && !e.acces_marraine;

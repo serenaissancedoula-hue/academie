@@ -6,6 +6,18 @@
   var OFFRE_ACTIVE = false;                                  // offre de lancement terminée le 5 octobre 2026
 
   var T = {
+    'doula': {
+      nom: 'Formation de base de doula · 350 h',
+      court: 'Doula 350 h',
+      en: { nom: 'Foundational doula training · 350 h', court: 'Doula 350 h' },
+      diplome: false, marraine: false, cohorte: '21 octobre 2026', places: 6,
+      prixRegulier: '1 950 $',
+      options: {
+        '1': { prix: '1 750 $', detail: 'paiement complet', en: { prix: '$1,750', detail: 'full payment' }, lien: 'https://buy.stripe.com/28E4gA2GHdXQ7zn83Q7N60l' },
+        '3': { prix: '3 × 583,33 $', detail: '3 versements', en: { prix: '3 × $583.33', detail: '3 instalments' }, lien: 'https://buy.stripe.com/4gM5kEftt5rkcTH83Q7N60k' },
+        '6': { prix: '6 × 291,67 $', detail: '6 versements', en: { prix: '6 × $291.67', detail: '6 instalments' }, lien: 'https://buy.stripe.com/aFa7sM2GHcTMbPDfwi7N60j' }
+      }
+    },
     '4e-trimestre': {
       nom: 'Accompagnement de pointe du 4ᵉ trimestre',
       court: '4ᵉ trimestre',
@@ -45,8 +57,10 @@
     t: function (o, champ, langue) { return langue === 'en' && o.en && o.en[champ] != null ? o.en[champ] : o[champ]; },
     offreActive: function () { return OFFRE_ACTIVE && new Date() < OFFRE_FIN; },
     // Formation enregistrée dans le dossier (l'accès marraine est ouvert par Sabrina à la validation)
-    formationDossier: function (cle) { return cle === 'marraine' ? 'marraine' : '4e-trimestre'; },
+    formationDossier: function (cle) { return cle === 'marraine' ? 'marraine' : cle === 'doula' ? 'doula' : '4e-trimestre'; },
+    // Statut d'une étudiante de doula dont la place est confirmée (n'ouvre PAS le 4e trimestre)
+    STATUT_DOULA: 'doula_valide',
     // Le dossier donne-t-il droit à la formation de marraine en plus du 4e trimestre ?
-    inclutMarraine: function (optionPaiement) { return /combo|cadeau|offre/.test(String(optionPaiement || '')); }
+    inclutMarraine: function (optionPaiement) { var o = String(optionPaiement || ''); return o.indexOf('doula') !== 0 && /combo|cadeau|offre/.test(o); }
   };
 })();

@@ -1267,6 +1267,27 @@
         .liste-fichiers li a { color: var(--accent-terracotta); font-weight: 700; white-space: nowrap; }
         .liste-fichiers li.vide { justify-content: center; color: #7a685e; font-style: italic; }
         /* Choix des formations */
+        /* ===== Formation de doula : onglet, fiche et accueil ===== */
+        #onglet-doula .cf-prix s { margin-left: 6px; }
+        .choix-formations.trois { max-width: 1100px; grid-template-columns: repeat(3, 1fr); }
+        .doula-cohorte-ruban { display: inline-flex; align-items: center; gap: 8px; background: #f2c9b9; color: #7c3a2a; font-size: .85rem; padding: 7px 14px; border-radius: 30px; margin: 4px 0 14px; }
+        .doula-cohorte-ruban .point, .hero-cohorte .point { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-terracotta); animation: cohortePouls 1.8s ease-in-out infinite; flex: none; }
+        .doula-equipe { background: #fff; border-radius: 16px; padding: 12px 16px; font-size: .92rem; color: #5a4a42; border-left: 4px solid #d8a796; margin: 0 0 20px; }
+        .prix-barre-doula { font-size: 1.2rem; color: #9a8a80; font-weight: 600; }
+        .doula-lancement { display: inline-block; background: #f2c9b9; color: #7c3a2a; font-weight: 700; font-size: .8rem; padding: 5px 12px; border-radius: 20px; }
+        .doula-places { font-size: .95rem; color: var(--text-dark); margin: 10px 0 0; }
+        .hero-cohorte { display: flex; gap: 16px; align-items: center; text-decoration: none; color: var(--text-dark); background: linear-gradient(135deg, #fbf6f1, #f4e3d8); border: 1px solid #ecd6c9; border-radius: 22px; padding: 14px 18px; max-width: 520px; box-shadow: 0 14px 30px -20px rgba(120,66,46,.5); transition: transform .2s, border-color .2s; cursor: pointer; }
+        .hero-cohorte:hover, .hero-cohorte:focus-visible { transform: translateY(-2px); border-color: var(--accent-terracotta); }
+        .hero-cohorte .hc-sceau { flex: none; width: 78px; height: 78px; display: grid; place-items: center; text-align: center; color: #7c3a2a; background: #f2c9b9; transform: rotate(-8deg);
+            clip-path: polygon(50% 0%, 59% 9%, 71% 4%, 75% 16%, 88% 15%, 86% 28%, 97% 34%, 90% 45%, 99% 55%, 88% 62%, 92% 75%, 79% 77%, 77% 90%, 65% 87%, 57% 98%, 48% 89%, 37% 97%, 32% 85%, 19% 88%, 19% 75%, 6% 71%, 12% 59%, 2% 50%, 12% 41%, 5% 29%, 18% 26%, 18% 12%, 31% 14%, 37% 3%); }
+        .hero-cohorte .hc-sceau b { font-family: 'Playfair Display', serif; font-size: 1.05rem; line-height: 1; display: block; }
+        .hero-cohorte .hc-sceau small { font-size: .62rem; font-weight: 700; display: block; }
+        .hero-cohorte .hc-texte { display: flex; flex-direction: column; gap: 3px; }
+        .hero-cohorte .hc-etiquette { display: inline-flex; align-items: center; gap: 7px; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-terracotta); }
+        .hero-cohorte .hc-titre { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; line-height: 1.2; }
+        .hero-cohorte .hc-infos { font-size: .85rem; color: #5a4a42; }
+        .hero-cohorte .hc-lien { font-size: .85rem; font-weight: 700; color: var(--accent-terracotta); }
+        @media (max-width: 900px) { .choix-formations.trois { grid-template-columns: 1fr 1fr; } .choix-formations.trois #onglet-doula { grid-column: 1 / -1; } }
         /* ===== Cohorte de la formation de doula 350 h ===== */
         .cohorte-doula { max-width: 1060px; margin: 10px auto 46px; padding: 0 20px; }
         .cohorte-carte { position: relative; display: grid; grid-template-columns: minmax(260px, 420px) 1fr; gap: 42px; align-items: center;
@@ -1368,7 +1389,7 @@
         .choix-formation.actif { border: 2px solid var(--accent-terracotta); background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%); box-shadow: 0 6px 18px rgba(44,34,30,0.08); }
         .choix-formation.actif::after { content: 'Shown below ↓'; margin-top: 6px; font-size: 0.75rem; font-weight: 700; color: var(--accent-terracotta); }
         .choix-formation:not(.actif)::after { content: 'View this course →'; margin-top: 6px; font-size: 0.75rem; font-weight: 700; color: #7a685e; }
-        .panneau-formation[hidden] { display: none !important; }
+        .panneau-formation[hidden], .carte-combo[hidden] { display: none !important; }
         .panneau-formation { animation: apparaitre .35s ease; }
         @keyframes apparaitre { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
         /* Blocs plus compacts */
@@ -1659,6 +1680,15 @@
                     <button class="btn-action" onclick="switchPage('accompagnements', null, event)">Discover my support packages →</button>
                     <button class="btn-secondary" onclick="switchPage('academie', null, event)">Discover the Academy's courses</button>
                 </div>
+                <a href="#" class="hero-cohorte" onclick="voirFormationDoula(event)">
+                    <span class="hc-sceau" aria-hidden="true"><span><b>Doula</b><small>350 h</small></span></span>
+                    <span class="hc-texte">
+                        <span class="hc-etiquette"><span class="point"></span>New cohort · 6 spots</span>
+                        <span class="hc-titre">Foundational doula training · 350 hours</span>
+                        <span class="hc-infos">Starts <strong>October 21</strong> · $1,750 (launch price) · guest IBCLC and midwife · in French</span>
+                        <span class="hc-lien">Discover the training →</span>
+                    </span>
+                </a>
             </div>
             <div class="right-content">
                 <div class="photo-frame">
@@ -1702,32 +1732,6 @@
                 </div>
             </div>
         </div>
-
-        <section class="cohorte-doula" aria-labelledby="cohorte-accueil-titre">
-            <div class="cohorte-carte">
-                <div class="cohorte-visuel">
-                    <div class="forme"><img src="/doula.jpg" alt="A doula supports a pregnant mother leaning on a birth ball" loading="lazy"></div>
-                    <div class="cohorte-sceau" aria-hidden="true"><div><span class="s1">New cohort</span><span class="s2">Doula</span><span class="s3">350 hours</span><span class="s4">STARTS OCTOBER 21</span></div></div>
-                </div>
-                <div class="cohorte-texte">
-                    <span class="cohorte-etiquette"><span class="point"></span>Registration open</span>
-                    <h2 id="cohorte-accueil-titre">Foundational doula training · <em>350 hours</em></h2>
-                    <p class="cohorte-date">New cohort starting <strong>October 21, 2026</strong> (training given in French). Everything you need to support pregnancy, birth and postpartum, with rigour and gentleness.</p>
-                    <p class="cohorte-equipe">🤍 One block led by an <strong>IBCLC lactation consultant</strong> and another by a <strong>midwife</strong>.</p>
-                    <ul class="cohorte-puces">
-                        <li>12 modules</li><li>Hands-on workshops and simulation</li><li>100-hour supervised placement</li><li>Personal mentoring</li><li>N.B. · Quebec · Canada</li>
-                    </ul>
-                    <div class="cohorte-prix"><span class="p-nouveau">$1,750</span><s>$1,950</s><span class="p-note">Launch price · October 21 cohort</span></div>
-                    <p class="cohorte-inclus">All included: manuals, workshops, exams, mentoring, placement supervision and certificate.</p>
-                    <div class="cohorte-paiements">
-                        <a href="https://buy.stripe.com/28E4gA2GHdXQ7zn83Q7N60l" class="vedette" target="_blank" rel="noopener"><strong>$1,750</strong><span>1 payment</span></a>
-                        <a href="https://buy.stripe.com/4gM5kEftt5rkcTH83Q7N60k" target="_blank" rel="noopener"><strong>3 × $583.33</strong><span>3 instalments</span></a>
-                        <a href="https://buy.stripe.com/aFa7sM2GHcTMbPDfwi7N60j" target="_blank" rel="noopener"><strong>6 × $291.67</strong><span>6 instalments</span></a>
-                    </div>
-                    <p class="cohorte-question">Limited spots. A question before you register? <a href="#" onclick="reserverCohorteDoula(event)">Write to me</a>, I reply within 48 h.</p>
-                </div>
-            </div>
-        </section>
 
         <section id="temoignages" hidden></section>
 
@@ -1883,34 +1887,13 @@
             <p class="bandeau-pays">🌎 For learners in <strong>New Brunswick</strong>, <strong>Quebec</strong>, the rest of <strong>Canada</strong>, <strong>France</strong> and elsewhere: care pathways, financial supports, legal framework and documents adapted to each. <a class="bientot-en" href="/" lang="fr" style="text-decoration:none;">🇫🇷 Version française</a></p>
         </div>
 
-        <section class="cohorte-doula" aria-labelledby="cohorte-formations-titre">
-            <div class="cohorte-carte">
-                <div class="cohorte-visuel">
-                    <div class="forme"><img src="/doula.jpg" alt="A doula supports a pregnant mother leaning on a birth ball" loading="lazy"></div>
-                    <div class="cohorte-sceau" aria-hidden="true"><div><span class="s1">New cohort</span><span class="s2">Doula</span><span class="s3">350 hours</span><span class="s4">STARTS OCTOBER 21</span></div></div>
-                </div>
-                <div class="cohorte-texte">
-                    <span class="cohorte-etiquette"><span class="point"></span>Registration open</span>
-                    <h2 id="cohorte-formations-titre">Foundational doula training · <em>350 hours</em></h2>
-                    <p class="cohorte-date">New cohort starting <strong>October 21, 2026</strong> (training given in French). Everything you need to support pregnancy, birth and postpartum, with rigour and gentleness.</p>
-                    <p class="cohorte-equipe">🤍 One block led by an <strong>IBCLC lactation consultant</strong> and another by a <strong>midwife</strong>.</p>
-                    <ul class="cohorte-puces">
-                        <li>12 modules</li><li>Hands-on workshops and simulation</li><li>100-hour supervised placement</li><li>Personal mentoring</li><li>N.B. · Quebec · Canada</li>
-                    </ul>
-                    <div class="cohorte-prix"><span class="p-nouveau">$1,750</span><s>$1,950</s><span class="p-note">Launch price · October 21 cohort</span></div>
-                    <p class="cohorte-inclus">All included: manuals, workshops, exams, mentoring, placement supervision and certificate.</p>
-                    <div class="cohorte-paiements">
-                        <a href="https://buy.stripe.com/28E4gA2GHdXQ7zn83Q7N60l" class="vedette" target="_blank" rel="noopener"><strong>$1,750</strong><span>1 payment</span></a>
-                        <a href="https://buy.stripe.com/4gM5kEftt5rkcTH83Q7N60k" target="_blank" rel="noopener"><strong>3 × $583.33</strong><span>3 instalments</span></a>
-                        <a href="https://buy.stripe.com/aFa7sM2GHcTMbPDfwi7N60j" target="_blank" rel="noopener"><strong>6 × $291.67</strong><span>6 instalments</span></a>
-                    </div>
-                    <p class="cohorte-question">Limited spots. A question before you register? <a href="#" onclick="reserverCohorteDoula(event)">Write to me</a>, I reply within 48 h.</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="choix-formations" role="tablist">
-            <a href="#" class="choix-formation actif" id="onglet-4e" role="tab" aria-selected="true" onclick="montrerFormation('4e', event)">
+        <div class="choix-formations trois" role="tablist">
+            <a href="#" class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true" onclick="montrerFormation('doula', event)">
+                <span class="cf-titre">Foundational doula training · 350 h</span>
+                <span class="cf-info">October 21 cohort · 6 spots · open to everyone</span>
+                <span class="cf-prix">$1,750<s>$1,950</s></span>
+            </a>
+            <a href="#" class="choix-formation" id="onglet-4e" role="tab" aria-selected="false" onclick="montrerFormation('4e', event)">
                 <span class="cf-titre">Advanced Fourth Trimester Support</span>
                 <span class="cf-info">About 35 hours · for certified doulas</span>
                 <span class="cf-prix"><span id="cf-prix-4e">$550</span></span>
@@ -1922,7 +1905,7 @@
             </a>
         </div>
 
-        <div class="carte-combo">
+        <div class="carte-combo" hidden>
             <div>
                 <span class="cc-etiquette">Bundle · both courses</span>
                 <h3>Fourth Trimester + Breastfeeding Peer Supporter</h3>
@@ -1931,9 +1914,121 @@
             <a href="#" class="btn-action" onclick="inscrireA('combo', event)">Register for the bundle →</a>
         </div>
 
+        <div id="formation-doula" class="ancre-formation"></div>
+
+        <div class="academie-page-layout panneau-formation" id="panneau-doula">
+            <div>
+                <img src="/doula.jpg" alt="A doula supports a pregnant mother leaning on a birth ball" class="academie-img-discret">
+                <p class="doula-cohorte-ruban"><span class="point"></span> New cohort starting <strong>October 21, 2026</strong> · <strong>6 spots</strong></p>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
+                    🤰 Foundational doula training
+                </h3>
+                <p style="font-size: 0.95rem; color: #555; margin-bottom: 12px;">
+                    <strong>350-hour training</strong> (12 modules, 67 chapters, supervised placement and mentoring) to support families from pregnancy to the immediate postpartum. Online and at your own pace, with live workshops. <strong>The training is given in French.</strong>
+                </p>
+                <p class="doula-equipe">🤍 One block led by an <strong>IBCLC lactation consultant</strong> and another by a <strong>midwife</strong>.</p>
+                <div class="info-grid info-compacte">
+                    <div class="info-bloc">
+                        <h4>🌸 Who is it for?</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-check"></i> Anyone who wants to become a doula, no health diploma needed</li>
+                            <li><i class="fa-solid fa-check"></i> Mothers, support workers and companions who want a solid, safe foundation</li>
+                            <li><i class="fa-solid fa-check"></i> French speakers in N.B., Quebec, the rest of Canada and France</li>
+                        </ul>
+                    </div>
+                    <div class="info-bloc">
+                        <h4>✨ What you will be able to do</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-check"></i> Support pregnancy, birth and the first hours with confidence</li>
+                            <li><i class="fa-solid fa-check"></i> Offer comfort measures, positions and concrete emotional support</li>
+                            <li><i class="fa-solid fa-check"></i> Recognize warning signs: observe and refer</li>
+                            <li><i class="fa-solid fa-check"></i> Help parents make informed choices and work with the care team</li>
+                            <li><i class="fa-solid fa-check"></i> Build an ethical doula practice</li>
+                        </ul>
+                    </div>
+                    <div class="info-bloc">
+                        <h4>📋 Prerequisites</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-check"></i> Be 18 or older and read French fluently</li>
+                            <li><i class="fa-solid fa-check"></i> A device with Internet, a camera and a microphone</li>
+                            <li><i class="fa-solid fa-check"></i> Be able to complete 2 in-person placement follow-ups</li>
+                            <li><i class="fa-solid fa-check"></i> Before the placement: adult and infant first aid and CPR</li>
+                        </ul>
+                    </div>
+                </div>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 6px; color: var(--text-dark);">📚 What the training includes</h3>
+                <p style="font-size: 0.85rem; color: #7a685e; margin-bottom: 15px;">12 modules</p>
+                <div class="modules-accordeon">
+                    <details>
+                        <summary><span class="mod-num">1</span><span class="mod-titre">Becoming a doula: role, stance and ethics</span><span class="mod-info">6 chapters · 17.5 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">2</span><span class="mod-titre">Helping relationship and communication</span><span class="mod-info">6 chapters · 26 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">3</span><span class="mod-titre">Anatomy and physiology of pregnancy</span><span class="mod-info">5 chapters · 14 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">4</span><span class="mod-titre">Special pregnancies and birth preparation</span><span class="mod-info">5 chapters · 15 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">5</span><span class="mod-titre">Physiology of labour and birth</span><span class="mod-info">5 chapters · 20 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">6</span><span class="mod-titre">Support during labour</span><span class="mod-info">7 chapters · 21 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">7</span><span class="mod-titre">Medical interventions and special births</span><span class="mod-info">7 chapters · 18 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">8</span><span class="mod-titre">Immediate postpartum and the newborn</span><span class="mod-info">6 chapters · 12 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">9</span><span class="mod-titre">Breastfeeding basics</span><span class="mod-info">5 chapters · 10 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">10</span><span class="mod-titre">Perinatal mental health and grief</span><span class="mod-info">5 chapters · 9 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">11</span><span class="mod-titre">Diversity, cultural safety and traditions</span><span class="mod-info">4 chapters · 6:30 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">12</span><span class="mod-titre">Building your doula practice</span><span class="mod-info">6 chapters · 9 h</span></summary>
+                        <ul><li>Chapters and detailed syllabus available in French</li></ul>
+                    </details>
+                </div>
+                <div class="certificat-bloc">
+                    <h4>📜 Assessment and certificate, mailed to you</h4>
+                    <p>Quizzes, module exams, filmed comfort measures, prenatal meeting simulation, 2 placement follow-ups, case study and final exam. When you pass, you receive your printed Académie Sérénaissance doula certificate <strong>by mail</strong>. Suggested length: 9 to 12 months · 18 months of access.</p>
+                </div>
+            </div>
+            <div class="price-box-sticky">
+                <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Complete training · 350 h</span>
+                <div class="price-tag">$1,750 <s class="prix-barre-doula">$1,950</s></div>
+                <div class="doula-lancement">🔥 Launch price · October 21 cohort</div>
+                <p class="doula-places">Only <strong>6 spots</strong></p>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">All included: manuals, workshops, exams, mentoring, placement supervision and certificate.</div>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Pay in <strong>1 payment</strong> ($1,750), <strong>3 instalments</strong> ($583.33) or <strong>6 instalments</strong> ($291.67). You choose in the registration form.</div>
+                <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Secure payment with Stripe</div>
+                <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">Register online</button>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Launch price valid until October 20, 2026 or until the 6 spots are filled. After that: $1,950.</p>
+            </div>
+        </div>
+
         <div id="formation-4e" class="ancre-formation"></div>
 
-        <div class="academie-page-layout panneau-formation" id="panneau-4e">
+        <div class="academie-page-layout panneau-formation" id="panneau-4e" hidden>
             <div>
                 <img src="/etudiante.jpg" alt="Académie Sérénaissance student" class="academie-img-discret">
                 <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
@@ -2305,6 +2400,7 @@
                 </div>
                 <input type="email" id="lien-courriel" placeholder="Student's email" required>
                 <select id="lien-formation" style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <option value="doula">Foundational doula training · 350 h · October 21 cohort ($1,750, in French)</option>
                     <option value="4e-trimestre">Advanced Fourth Trimester Support</option>
                     <option value="marraine">Breastfeeding Peer Supporter</option>
                 </select>
@@ -2336,6 +2432,7 @@
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
                     <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Course chosen:</label>
                     <select id="choix-formation" onchange="ajusterFormulaireInscription()" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;">
+                        <option value="doula">Foundational doula training · 350 h · October 21 cohort ($1,750, in French)</option>
                         <option value="4e-trimestre">Advanced Fourth Trimester Support</option>
                         <option value="marraine">Breastfeeding Peer Supporter — $175</option>
                         <option value="combo">Bundle: Fourth Trimester + Breastfeeding Peer Supporter — $725</option>
@@ -3067,7 +3164,8 @@
         // Onglets : une seule formation affichée à la fois
         function montrerFormation(quelle, event, sansDefiler) {
             if (event) event.preventDefault();
-            ['4e', 'marraine'].forEach(f => {
+            const combo = document.querySelector('.carte-combo'); if (combo) combo.hidden = quelle === 'doula';
+            ['doula', '4e', 'marraine'].forEach(f => {
                 const actif = f === quelle;
                 document.getElementById('panneau-' + f).hidden = !actif;
                 const o = document.getElementById('onglet-' + f);
@@ -3088,6 +3186,17 @@
         })();
 
         // ================= INSCRIPTION : choix de la formation =================
+        function voirFormationDoula(event) {
+            if (event) event.preventDefault();
+            switchPage('academie', null, null);
+            montrerFormation('doula', null, true);
+            setTimeout(() => { const c = document.getElementById('formation-doula'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+        }
+        function inscrireDoula(option, event) {
+            inscrireA('doula', event);
+            const s = document.getElementById('option-paiement');
+            if (s && option) s.value = option;
+        }
         function inscrireA(formation, event) {
             switchPage('inscription', null, event);
             const choix = document.getElementById('choix-formation');
@@ -3111,9 +3220,11 @@
         });
         function ajusterFormulaireInscription() {
             const choix = document.getElementById('choix-formation').value;
-            const marraine = choix === 'marraine', combo = choix === 'combo';
-            document.getElementById('bloc-diplome').style.display = marraine ? 'none' : 'flex';
-            document.getElementById('diplome').required = !marraine;
+            const marraine = choix === 'marraine', combo = choix === 'combo', doula = choix === 'doula';
+            document.getElementById('bloc-diplome').style.display = (marraine || doula) ? 'none' : 'flex';
+            document.getElementById('diplome').required = !marraine && !doula;
+            const selLangue = document.getElementById('langue-formation');
+            if (selLangue) { if (doula) selLangue.value = 'fr'; Array.from(selLangue.options).forEach(o => { if (o.value === 'en') o.disabled = doula; }); }
             document.getElementById('bloc-paiement').style.display = marraine ? 'none' : 'flex';
             document.getElementById('option-paiement').required = !marraine && !(document.getElementById('avec-cadeau') || {}).checked;
             document.getElementById('note-marraine').hidden = !marraine;
@@ -3121,7 +3232,9 @@
             if (!select) return;
             const avant = select.value;
             let choixPaiement;
-            if (combo) {
+            if (doula) {
+                choixPaiement = [['1', 'Full payment — $1,750 (launch price, instead of $1,950)'], ['3', '3 instalments — $583.33 each'], ['6', '6 instalments — $291.67 each']];
+            } else if (combo) {
                 choixPaiement = [['1', 'Full payment — $725'], ['2', '2 instalments — $362.50 each'], ['4', '4 instalments every 2 weeks — $181.25 each']];
             } else {
                 choixPaiement = [];
@@ -3807,7 +3920,7 @@
             try {
                 emailjs.send("service_82vfhfg", "template_gy588ot", {
                     prenom: d.prenom, nom: d.nom, courriel: d.courriel, telephone: d.telephone, adresse: d.adresse,
-                    option_paiement: (d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
+                    option_paiement: (d.formation === 'doula' ? "Formation de doula 350 h · " + ({ '1': '1 750 $ (paiement complet)', '3': '3 × 583,33 $', '6': '6 × 291,67 $' }[String(d.option_paiement).split('-')[1]] || '') : d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
                 }, "HNvKdORRpRy_vT_FI");
             } catch (e) { console.log('Erreur EmailJS', e); }
             return true;
@@ -3829,6 +3942,12 @@
             if (String(d.option_paiement || '').indexOf('bon:') === 0) {
                 const p0 = document.querySelector('#page-merci .merci-page-container > p');
                 if (p0) p0.textContent = "Your gift card has been accepted 🎁 and I'm delighted to welcome you to the Académie Sérénaissance!";
+            }
+            if (d.formation === 'doula') {
+                document.querySelectorAll('#page-merci .merci-page-container > p').forEach((p, i) => {
+                    if (i === 0) p.textContent = "Your payment has been received and I'm delighted to welcome you to the October 21 cohort of the doula training! 🌸";
+                    if (i === 1) p.innerHTML = 'Create your password below: your student account is ready. I confirm your spot as soon as I see your payment (usually within <strong>24 hours</strong>) and you receive an email. Your training opens in your account on <strong>October 21</strong>.';
+                });
             }
             if (d.formation === 'marraine') {
                 document.querySelectorAll('#page-merci .merci-page-container > p').forEach((p, i) => {
@@ -3905,9 +4024,10 @@
             const formation = document.getElementById('choix-formation').value;
             const estMarraine = formation === 'marraine';
             const estCombo = formation === 'combo';
+            const estDoula = formation === 'doula';
             const optionPaiement = estMarraine ? '1' : document.getElementById('option-paiement').value;
 
-            if (!estMarraine && (!diplomeInput.files || diplomeInput.files.length === 0)) {
+            if (!estMarraine && !estDoula && (!diplomeInput.files || diplomeInput.files.length === 0)) {
                 alert("Please upload your doula diploma to continue your registration.");
                 return;
             }
@@ -3925,9 +4045,10 @@
             }
 
             // Liens de paiement Stripe (voir OFFRE DE LANCEMENT plus bas)
-            const avecOffre = !estMarraine && !estCombo && optionPaiement === 'offre';
+            const avecOffre = !estMarraine && !estCombo && !estDoula && optionPaiement === 'offre';
             if (avecOffre && !offreEstActive()) { alert("The launch offer has ended (deadline passed or all 10 spots filled). Choose the regular price, in 1, 2 or 4 instalments."); ajusterFormulaireInscription(); return; }
             let lienStripe = estMarraine ? LIEN_STRIPE_MARRAINE
+                : estDoula ? ((TarifsSere.formations.doula.options[optionPaiement] || {}).lien || "")
                 : estCombo ? ((TarifsSere.formations.combo.options[optionPaiement] || {}).lien || "")
                 : avecOffre ? LIENS_STRIPE_OFFRE['1']
                 : (LIENS_STRIPE_REGULIER[optionPaiement] || "");
@@ -3993,7 +4114,7 @@
                     date_naissance: dateNaissance,
                     diplome_url: uploadData ? uploadData.path : null,
                     formation: estCombo ? '4e-trimestre' : formation,
-                    option_paiement: avecCadeau ? 'bon:' + codeCadeau : estMarraine ? 'marraine' : estCombo ? 'combo-' + optionPaiement : avecOffre ? '1-offre' : optionPaiement,
+                    option_paiement: avecCadeau ? 'bon:' + codeCadeau : estMarraine ? 'marraine' : estDoula ? 'doula-' + optionPaiement : estCombo ? 'combo-' + optionPaiement : avecOffre ? '1-offre' : optionPaiement,
                     date: Date.now()
                 };
                 let dossierGarde = false;
@@ -4013,7 +4134,7 @@
                     switchPage('merci', null, null); preparerPageMerci(); window.scrollTo(0, 0);
                     return;
                 }
-                alert(`Thank you ${prenom} 💕!\n\n${estMarraine ? 'Your registration is ready.' : 'Your diploma has been received.'} You will now be securely redirected to Stripe for payment.\n\nAfter payment, you'll come back here to create your password.`);
+                alert(`Thank you ${prenom} 💕!\n\n${(estMarraine || estDoula) ? 'Your registration is ready.' : 'Your diploma has been received.'} You will now be securely redirected to Stripe for payment.\n\nAfter payment, you'll come back here to create your password.`);
 
                 window.location.href = lienStripe;
 

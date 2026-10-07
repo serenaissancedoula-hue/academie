@@ -1267,6 +1267,27 @@
         .liste-fichiers li a { color: var(--accent-terracotta); font-weight: 700; white-space: nowrap; }
         .liste-fichiers li.vide { justify-content: center; color: #7a685e; font-style: italic; }
         /* Choix des formations */
+        /* ===== Formation de doula : onglet, fiche et accueil ===== */
+        #onglet-doula .cf-prix s { margin-left: 6px; }
+        .choix-formations.trois { max-width: 1100px; grid-template-columns: repeat(3, 1fr); }
+        .doula-cohorte-ruban { display: inline-flex; align-items: center; gap: 8px; background: #f2c9b9; color: #7c3a2a; font-size: .85rem; padding: 7px 14px; border-radius: 30px; margin: 4px 0 14px; }
+        .doula-cohorte-ruban .point, .hero-cohorte .point { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-terracotta); animation: cohortePouls 1.8s ease-in-out infinite; flex: none; }
+        .doula-equipe { background: #fff; border-radius: 16px; padding: 12px 16px; font-size: .92rem; color: #5a4a42; border-left: 4px solid #d8a796; margin: 0 0 20px; }
+        .prix-barre-doula { font-size: 1.2rem; color: #9a8a80; font-weight: 600; }
+        .doula-lancement { display: inline-block; background: #f2c9b9; color: #7c3a2a; font-weight: 700; font-size: .8rem; padding: 5px 12px; border-radius: 20px; }
+        .doula-places { font-size: .95rem; color: var(--text-dark); margin: 10px 0 0; }
+        .hero-cohorte { display: flex; gap: 16px; align-items: center; text-decoration: none; color: var(--text-dark); background: linear-gradient(135deg, #fbf6f1, #f4e3d8); border: 1px solid #ecd6c9; border-radius: 22px; padding: 14px 18px; max-width: 520px; box-shadow: 0 14px 30px -20px rgba(120,66,46,.5); transition: transform .2s, border-color .2s; cursor: pointer; }
+        .hero-cohorte:hover, .hero-cohorte:focus-visible { transform: translateY(-2px); border-color: var(--accent-terracotta); }
+        .hero-cohorte .hc-sceau { flex: none; width: 78px; height: 78px; display: grid; place-items: center; text-align: center; color: #7c3a2a; background: #f2c9b9; transform: rotate(-8deg);
+            clip-path: polygon(50% 0%, 59% 9%, 71% 4%, 75% 16%, 88% 15%, 86% 28%, 97% 34%, 90% 45%, 99% 55%, 88% 62%, 92% 75%, 79% 77%, 77% 90%, 65% 87%, 57% 98%, 48% 89%, 37% 97%, 32% 85%, 19% 88%, 19% 75%, 6% 71%, 12% 59%, 2% 50%, 12% 41%, 5% 29%, 18% 26%, 18% 12%, 31% 14%, 37% 3%); }
+        .hero-cohorte .hc-sceau b { font-family: 'Playfair Display', serif; font-size: 1.05rem; line-height: 1; display: block; }
+        .hero-cohorte .hc-sceau small { font-size: .62rem; font-weight: 700; display: block; }
+        .hero-cohorte .hc-texte { display: flex; flex-direction: column; gap: 3px; }
+        .hero-cohorte .hc-etiquette { display: inline-flex; align-items: center; gap: 7px; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-terracotta); }
+        .hero-cohorte .hc-titre { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; line-height: 1.2; }
+        .hero-cohorte .hc-infos { font-size: .85rem; color: #5a4a42; }
+        .hero-cohorte .hc-lien { font-size: .85rem; font-weight: 700; color: var(--accent-terracotta); }
+        @media (max-width: 900px) { .choix-formations.trois { grid-template-columns: 1fr 1fr; } .choix-formations.trois #onglet-doula { grid-column: 1 / -1; } }
         /* ===== Cohorte de la formation de doula 350 h ===== */
         .cohorte-doula { max-width: 1060px; margin: 10px auto 46px; padding: 0 20px; }
         .cohorte-carte { position: relative; display: grid; grid-template-columns: minmax(260px, 420px) 1fr; gap: 42px; align-items: center;
@@ -1368,7 +1389,7 @@
         .choix-formation.actif { border: 2px solid var(--accent-terracotta); background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%); box-shadow: 0 6px 18px rgba(44,34,30,0.08); }
         .choix-formation.actif::after { content: 'Affichée ci-dessous ↓'; margin-top: 6px; font-size: 0.75rem; font-weight: 700; color: var(--accent-terracotta); }
         .choix-formation:not(.actif)::after { content: 'Voir cette formation →'; margin-top: 6px; font-size: 0.75rem; font-weight: 700; color: #7a685e; }
-        .panneau-formation[hidden] { display: none !important; }
+        .panneau-formation[hidden], .carte-combo[hidden] { display: none !important; }
         .panneau-formation { animation: apparaitre .35s ease; }
         @keyframes apparaitre { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
         /* Blocs plus compacts */
@@ -1659,6 +1680,15 @@
                     <button class="btn-action" onclick="switchPage('accompagnements', null, event)">Découvrir mes accompagnements →</button>
                     <button class="btn-secondary" onclick="switchPage('academie', null, event)">Découvrir les formations de l'Académie</button>
                 </div>
+                <a href="#" class="hero-cohorte" onclick="voirFormationDoula(event)">
+                    <span class="hc-sceau" aria-hidden="true"><span><b>Doula</b><small>350 h</small></span></span>
+                    <span class="hc-texte">
+                        <span class="hc-etiquette"><span class="point"></span>Nouvelle cohorte · 6 places</span>
+                        <span class="hc-titre">Formation de base de doula · 350 heures</span>
+                        <span class="hc-infos">Début le <strong>21 octobre</strong> · 1 750 $ (prix de lancement) · IBCLC et sage-femme invitées</span>
+                        <span class="hc-lien">Découvrir la formation →</span>
+                    </span>
+                </a>
             </div>
             <div class="right-content">
                 <div class="photo-frame">
@@ -1702,32 +1732,6 @@
                 </div>
             </div>
         </div>
-
-        <section class="cohorte-doula" aria-labelledby="cohorte-accueil-titre">
-            <div class="cohorte-carte">
-                <div class="cohorte-visuel">
-                    <div class="forme"><img src="doula.jpg" alt="Une doula soutient une maman enceinte appuyée sur un ballon" loading="lazy"></div>
-                    <div class="cohorte-sceau" aria-hidden="true"><div><span class="s1">Nouvelle cohorte</span><span class="s2">Doula</span><span class="s3">350 heures</span><span class="s4">DÈS LE 21 OCTOBRE</span></div></div>
-                </div>
-                <div class="cohorte-texte">
-                    <span class="cohorte-etiquette"><span class="point"></span>Inscriptions ouvertes</span>
-                    <h2 id="cohorte-accueil-titre">Formation de base de doula · <em>350 heures</em></h2>
-                    <p class="cohorte-date">Nouvelle cohorte : début le <strong>21 octobre 2026</strong>. Tout ce qu'il faut pour accompagner la grossesse, la naissance et le post-partum, avec rigueur et douceur.</p>
-                    <p class="cohorte-equipe">🤍 Un bloc animé par une <strong>consultante en lactation IBCLC</strong> et un autre par une <strong>sage-femme</strong>.</p>
-                    <ul class="cohorte-puces">
-                        <li>12 modules</li><li>Ateliers pratiques et simulation</li><li>Stage supervisé de 100 h</li><li>Mentorat personnalisé</li><li>N.-B. · Québec · Canada</li>
-                    </ul>
-                    <div class="cohorte-prix"><span class="p-nouveau">1 750 $</span><s>1 950 $</s><span class="p-note">Prix de lancement · cohorte du 21 octobre</span></div>
-                    <p class="cohorte-inclus">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</p>
-                    <div class="cohorte-paiements">
-                        <a href="https://buy.stripe.com/28E4gA2GHdXQ7zn83Q7N60l" class="vedette" target="_blank" rel="noopener"><strong>1 750 $</strong><span>1 paiement</span></a>
-                        <a href="https://buy.stripe.com/4gM5kEftt5rkcTH83Q7N60k" target="_blank" rel="noopener"><strong>3 × 583,33 $</strong><span>3 versements</span></a>
-                        <a href="https://buy.stripe.com/aFa7sM2GHcTMbPDfwi7N60j" target="_blank" rel="noopener"><strong>6 × 291,67 $</strong><span>6 versements</span></a>
-                    </div>
-                    <p class="cohorte-question">Places limitées. Une question avant de t'inscrire? <a href="#" onclick="reserverCohorteDoula(event)">Écris-moi</a>, je te réponds en moins de 48 h.</p>
-                </div>
-            </div>
-        </section>
 
         <section id="temoignages" hidden></section>
 
@@ -1883,34 +1887,13 @@
             <p class="bandeau-pays">🌎 Pour les francophones du <strong>Nouveau-Brunswick</strong>, du <strong>Québec</strong>, du reste du <strong>Canada</strong> et de la <strong>France</strong> : parcours de soins, aides, cadre légal et documents adaptés à chacun. <a class="bientot-en" href="/en/" lang="en" style="text-decoration:none;">🇬🇧 Also available in English</a></p>
         </div>
 
-        <section class="cohorte-doula" aria-labelledby="cohorte-formations-titre">
-            <div class="cohorte-carte">
-                <div class="cohorte-visuel">
-                    <div class="forme"><img src="doula.jpg" alt="Une doula soutient une maman enceinte appuyée sur un ballon" loading="lazy"></div>
-                    <div class="cohorte-sceau" aria-hidden="true"><div><span class="s1">Nouvelle cohorte</span><span class="s2">Doula</span><span class="s3">350 heures</span><span class="s4">DÈS LE 21 OCTOBRE</span></div></div>
-                </div>
-                <div class="cohorte-texte">
-                    <span class="cohorte-etiquette"><span class="point"></span>Inscriptions ouvertes</span>
-                    <h2 id="cohorte-formations-titre">Formation de base de doula · <em>350 heures</em></h2>
-                    <p class="cohorte-date">Nouvelle cohorte : début le <strong>21 octobre 2026</strong>. Tout ce qu'il faut pour accompagner la grossesse, la naissance et le post-partum, avec rigueur et douceur.</p>
-                    <p class="cohorte-equipe">🤍 Un bloc animé par une <strong>consultante en lactation IBCLC</strong> et un autre par une <strong>sage-femme</strong>.</p>
-                    <ul class="cohorte-puces">
-                        <li>12 modules</li><li>Ateliers pratiques et simulation</li><li>Stage supervisé de 100 h</li><li>Mentorat personnalisé</li><li>N.-B. · Québec · Canada</li>
-                    </ul>
-                    <div class="cohorte-prix"><span class="p-nouveau">1 750 $</span><s>1 950 $</s><span class="p-note">Prix de lancement · cohorte du 21 octobre</span></div>
-                    <p class="cohorte-inclus">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</p>
-                    <div class="cohorte-paiements">
-                        <a href="https://buy.stripe.com/28E4gA2GHdXQ7zn83Q7N60l" class="vedette" target="_blank" rel="noopener"><strong>1 750 $</strong><span>1 paiement</span></a>
-                        <a href="https://buy.stripe.com/4gM5kEftt5rkcTH83Q7N60k" target="_blank" rel="noopener"><strong>3 × 583,33 $</strong><span>3 versements</span></a>
-                        <a href="https://buy.stripe.com/aFa7sM2GHcTMbPDfwi7N60j" target="_blank" rel="noopener"><strong>6 × 291,67 $</strong><span>6 versements</span></a>
-                    </div>
-                    <p class="cohorte-question">Places limitées. Une question avant de t'inscrire? <a href="#" onclick="reserverCohorteDoula(event)">Écris-moi</a>, je te réponds en moins de 48 h.</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="choix-formations" role="tablist">
-            <a href="#" class="choix-formation actif" id="onglet-4e" role="tab" aria-selected="true" onclick="montrerFormation('4e', event)">
+        <div class="choix-formations trois" role="tablist">
+            <a href="#" class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true" onclick="montrerFormation('doula', event)">
+                <span class="cf-titre">Formation de base de doula · 350 h</span>
+                <span class="cf-info">Cohorte du 21 octobre · 6 places · ouverte à toutes</span>
+                <span class="cf-prix">1 750 $<s>1 950 $</s></span>
+            </a>
+            <a href="#" class="choix-formation" id="onglet-4e" role="tab" aria-selected="false" onclick="montrerFormation('4e', event)">
                 <span class="cf-titre">Accompagnement de pointe du 4ᵉ trimestre</span>
                 <span class="cf-info">Environ 35 h · pour les doulas diplômées</span>
                 <span class="cf-prix"><span id="cf-prix-4e">550 $</span></span>
@@ -1922,7 +1905,7 @@
             </a>
         </div>
 
-        <div class="carte-combo">
+        <div class="carte-combo" hidden>
             <div>
                 <span class="cc-etiquette">Combo · les 2 formations</span>
                 <h3>4ᵉ trimestre + Marraine d'allaitement</h3>
@@ -1931,9 +1914,206 @@
             <a href="#" class="btn-action" onclick="inscrireA('combo', event)">S'inscrire au combo →</a>
         </div>
 
+        <div id="formation-doula" class="ancre-formation"></div>
+
+        <div class="academie-page-layout panneau-formation" id="panneau-doula">
+            <div>
+                <img src="doula.jpg" alt="Une doula soutient une maman enceinte appuyée sur un ballon" class="academie-img-discret">
+                <p class="doula-cohorte-ruban"><span class="point"></span> Nouvelle cohorte : début le <strong>21 octobre 2026</strong> · <strong>6 places</strong></p>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
+                    🤰 Formation de base de doula
+                </h3>
+                <p style="font-size: 0.95rem; color: #555; margin-bottom: 12px;">
+                    <strong>Formation de 350 heures</strong> (12 modules, 67 chapitres, stage supervisé et mentorat) pour accompagner les familles de la grossesse jusqu'au post-partum immédiat. En ligne et à ton rythme, avec des ateliers en direct.
+                </p>
+                <p class="doula-equipe">🤍 Un bloc animé par une <strong>consultante en lactation IBCLC</strong> et un autre par une <strong>sage-femme</strong>.</p>
+
+                <div class="info-grid info-compacte">
+                    <div class="info-bloc">
+                        <h4>🌸 À qui s'adresse-t-elle ?</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-check"></i> À toute personne qui veut devenir doula, sans diplôme en santé</li>
+                            <li><i class="fa-solid fa-check"></i> Aux mamans, intervenantes et accompagnantes qui veulent une base solide et sécuritaire</li>
+                            <li><i class="fa-solid fa-check"></i> Aux francophones du N.-B., du Québec, du reste du Canada et de la France</li>
+                        </ul>
+                    </div>
+                    <div class="info-bloc">
+                        <h4>✨ Ce que tu sauras faire</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-check"></i> Accompagner la grossesse, la naissance et les premières heures avec assurance</li>
+                            <li><i class="fa-solid fa-check"></i> Offrir des gestes de confort, des positions et un soutien émotionnel concret</li>
+                            <li><i class="fa-solid fa-check"></i> Reconnaître les signaux d'alerte : observer et référer</li>
+                            <li><i class="fa-solid fa-check"></i> Aider les parents à faire des choix éclairés et collaborer avec l'équipe</li>
+                            <li><i class="fa-solid fa-check"></i> Bâtir ta pratique de doula de façon éthique</li>
+                        </ul>
+                    </div>
+                    <div class="info-bloc">
+                        <h4>📋 Prérequis</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-check"></i> Avoir 18 ans ou plus et lire le français couramment</li>
+                            <li><i class="fa-solid fa-check"></i> Un appareil avec Internet, une caméra et un micro</li>
+                            <li><i class="fa-solid fa-check"></i> Pouvoir faire 2 suivis de stage en personne</li>
+                            <li><i class="fa-solid fa-check"></i> Avant le stage : premiers soins et RCR adulte et nourrisson</li>
+                        </ul>
+                    </div>
+                </div>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 6px; color: var(--text-dark);">
+                    📚 Ce que contient la formation
+                </h3>
+                <p style="font-size: 0.85rem; color: #7a685e; margin-bottom: 15px;">12 modules · clique sur un module pour voir ses chapitres</p>
+                <div class="modules-accordeon">
+                    <details>
+                        <summary><span class="mod-num">1</span><span class="mod-titre">Devenir doula : rôle, posture et éthique</span><span class="mod-info">6 chapitres · 17,5 h</span></summary>
+                        <ul>
+                            <li>Histoire et rôle de la doula, ici et ailleurs</li>
+                            <li>Observer et référer : ce que la doula fait et ne fait pas, signaux d'alerte, comment orienter</li>
+                            <li>Les professionnels de la périnatalité au N.-B., au Québec, ailleurs au Canada et en France</li>
+                            <li>Éthique, confidentialité et consentement</li>
+                            <li>Les limites professionnelles</li>
+                            <li>Prendre soin de soi et vivre la garde</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">2</span><span class="mod-titre">Relation d'aide et communication</span><span class="mod-info">6 chapitres · 26 h</span></summary>
+                        <ul>
+                            <li>Les bases de la relation d'aide</li>
+                            <li>La communication bienveillante avec les parents et l'équipe</li>
+                            <li>Accompagner la peur, l'anxiété et les naissances passées difficiles</li>
+                            <li>Aider à faire des choix éclairés, dont l'outil BRAIN et le plan de naissance comme outil de décision</li>
+                            <li>Le partenaire et l'entourage</li>
+                            <li>La première rencontre avec une famille, avec étude de cas et jeu de rôle</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">3</span><span class="mod-titre">Anatomie et physiologie de la grossesse</span><span class="mod-info">5 chapitres · 14 h</span></summary>
+                        <ul>
+                            <li>L'anatomie de la grossesse : bassin, utérus, col, plancher pelvien, seins</li>
+                            <li>Le développement du bébé, le placenta, le liquide amniotique et le suivi prénatal</li>
+                            <li>Les hormones de la grossesse et de la naissance</li>
+                            <li>Les inconforts courants et les mesures de confort non médicales</li>
+                            <li>Alimentation, mouvement et repos</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">4</span><span class="mod-titre">Grossesses particulières et préparation à la naissance</span><span class="mod-info">5 chapitres · 15 h</span></summary>
+                        <ul>
+                            <li>Les grossesses avec un suivi particulier : diabète de grossesse, hypertension et prééclampsie, jumeaux, placenta praevia, grossesse après une perte, conditions chroniques</li>
+                            <li>Signaux d'alerte : mises en situation intégrées, de la grossesse au travail</li>
+                            <li>Les rencontres prénatales de la doula, avec le Guide des rencontres prénatales</li>
+                            <li>Construire le plan de naissance et la fiche « Quand m'appeler » avec les parents</li>
+                            <li>Préparer l'arrivée : sac d'hôpital, trajet, fratrie, animaux, retour à la maison</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">5</span><span class="mod-titre">Physiologie du travail et de l'accouchement</span><span class="mod-info">5 chapitres · 20 h</span></summary>
+                        <ul>
+                            <li>Signes de début de travail, faux travail et quand partir</li>
+                            <li>Les phases du travail et de la naissance</li>
+                            <li>La mécanique du bébé dans le bassin</li>
+                            <li>La délivrance et les premières heures</li>
+                            <li>Les variations du travail : travail prodromique, long, rapide, bébé dos à dos</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">6</span><span class="mod-titre">Soutien pendant le travail</span><span class="mod-info">7 chapitres · 21 h</span></summary>
+                        <ul>
+                            <li>Positions et mouvements selon la phase du travail</li>
+                            <li>Gestes de confort : massages, pressions, chaleur, rebozo, ballon</li>
+                            <li>Respiration, vocalisation et relaxation</li>
+                            <li>Comprendre la douleur et les options de soulagement, médicales et non médicales</li>
+                            <li>Guider le partenaire dans son rôle</li>
+                            <li>La doula à l'hôpital et en maison de naissance : collaborer avec l'équipe</li>
+                            <li>Exercice pratique filmé : démonstration de 3 gestes de confort</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">7</span><span class="mod-titre">Interventions médicales et naissances particulières</span><span class="mod-info">7 chapitres · 18 h</span></summary>
+                        <ul>
+                            <li>Déclenchement, péridurale, monitoring, instruments : ce que les parents doivent savoir</li>
+                            <li>La césarienne, planifiée ou en urgence, et le rôle de la doula</li>
+                            <li>Naissance prématurée, siège et AVAC</li>
+                            <li>Naissance imprévue avant l'arrivée des secours : appeler le 911, suivre les consignes du répartiteur, garder la mère et le bébé au chaud</li>
+                            <li>Consentement pendant le travail et soins tenant compte des traumatismes</li>
+                            <li>Soutenir les parents face à l'équipe, sans parler ni décider à leur place</li>
+                            <li>Les milieux de naissance au N.-B., au Québec et en France</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">8</span><span class="mod-titre">Post-partum immédiat et nouveau-né</span><span class="mod-info">6 chapitres · 12 h</span></summary>
+                        <ul>
+                            <li>Les premières heures : peau à peau, première tétée, rencontre</li>
+                            <li>La récupération physique de la mère et les signaux d'alerte</li>
+                            <li>Le nouveau-né : apparence, réflexes, soins de base et signaux d'alerte</li>
+                            <li>Le retour à la maison et la visite postnatale de la doula</li>
+                            <li>Le sommeil sécuritaire du nourrisson</li>
+                            <li>Prévenir le syndrome du bébé secoué et soutenir les parents face aux pleurs</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">9</span><span class="mod-titre">Bases de l'allaitement</span><span class="mod-info">5 chapitres · 10 h</span></summary>
+                        <ul>
+                            <li>La physiologie de la lactation</li>
+                            <li>La prise du sein et les positions</li>
+                            <li>Les jours 2-3-4 : pleurs, perte de poids, doutes, et quand le professionnel recommande de supplémenter</li>
+                            <li>Les difficultés courantes et quand orienter vers une IBCLC</li>
+                            <li>Respecter tous les choix : allaitement, biberon, alimentation mixte</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">10</span><span class="mod-titre">Santé mentale périnatale et deuil</span><span class="mod-info">5 chapitres · 9 h</span></summary>
+                        <ul>
+                            <li>Baby blues, dépression et anxiété périnatales, chez la mère et le second parent</li>
+                            <li>La psychose post-partum : une urgence</li>
+                            <li>Les ressources d'aide au N.-B., au Québec, au Canada et en France</li>
+                            <li>Accompagner le deuil périnatal et les naissances traumatiques</li>
+                            <li>La matrescence : le passage de femme à mère</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">11</span><span class="mod-titre">Diversité, sécurisation culturelle et traditions</span><span class="mod-info">4 chapitres · 6 h 30</span></summary>
+                        <ul>
+                            <li>Familles de toutes formes : familles 2SLGBTQIA+, monoparentales, recomposées, parents en situation de handicap</li>
+                            <li>Sécurisation culturelle et familles autochtones, avec une intervenante invitée rémunérée</li>
+                            <li>Traditions de la naissance et du post-partum d'ici et d'ailleurs</li>
+                            <li>Familles immigrantes, barrières de langue et interprètes</li>
+                        </ul>
+                    </details>
+                    <details>
+                        <summary><span class="mod-num">12</span><span class="mod-titre">Bâtir sa pratique de doula</span><span class="mod-info">6 chapitres · 9 h</span></summary>
+                        <ul>
+                            <li>Statut de travailleuse autonome, nom d'entreprise et taxes</li>
+                            <li>Assurance responsabilité et associations de doulas</li>
+                            <li>Contrat de service, dossier client et confidentialité</li>
+                            <li>Fixer ses prix et créer ses forfaits</li>
+                            <li>Se faire connaître de façon éthique</li>
+                            <li>Travailler en réseau, se trouver une doula remplaçante et continuer à se former</li>
+                        </ul>
+                    </details>
+                </div>
+                <p style="font-size: 0.85rem; color: #555; margin-top: 12px;">✔️ 12 modules débloqués un à la fois · ✔️ Un quiz par chapitre et un examen par module · ✔️ 2 ateliers en direct en visio (IBCLC et sage-femme) · ✔️ Pratique des gestes de confort et simulation de rencontre prénatale · ✔️ Stage supervisé de 100 h (2 suivis complets) · ✔️ 10 h de mentorat · ✔️ Étude de cas finale et examen final · ✔️ Trousse de modèles de documents pour ta pratique</p>
+                <div class="certificat-bloc">
+                    <h4>📜 Évaluation et certificat, livré chez toi</h4>
+                    <p>Quiz, examens de module, gestes de confort filmés, simulation de rencontre prénatale, 2 suivis de stage, étude de cas et examen final. À la réussite, tu reçois ton certificat de doula de l'Académie Sérénaissance imprimé, <strong>par la poste</strong>. Durée suggérée : 9 à 12 mois · accès pendant 18 mois.</p>
+                </div>
+            </div>
+
+            <div class="price-box-sticky">
+                <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Formation complète · 350 h</span>
+                <div class="price-tag">1 750 $ <s class="prix-barre-doula">1 950 $</s></div>
+                <div class="doula-lancement">🔥 Prix de lancement · cohorte du 21 octobre</div>
+                <p class="doula-places">Seulement <strong>6 places</strong></p>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</div>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Paiement en <strong>1 versement</strong> (1 750 $), <strong>3 versements</strong> (583,33 $) ou <strong>6 versements</strong> (291,67 $). Tu choisis dans le formulaire d'inscription.</div>
+                <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé avec Stripe</div>
+                <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">S'inscrire en ligne</button>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Prix de lancement valable jusqu'au 20 octobre 2026 ou jusqu'à ce que les 6 places soient comblées. Ensuite : 1 950 $.</p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 8px;">Annulation possible selon les règles de la Loi sur la protection du consommateur du Québec (et droit de rétractation de 14 jours pour les résidentes de la France et de l'Union européenne).</p>
+            </div>
+        </div>
+
         <div id="formation-4e" class="ancre-formation"></div>
 
-        <div class="academie-page-layout panneau-formation" id="panneau-4e">
+        <div class="academie-page-layout panneau-formation" id="panneau-4e" hidden>
             <div>
                 <img src="etudiante.jpg" alt="Étudiante Académie Sérénaissance" class="academie-img-discret">
                 <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
@@ -2305,6 +2485,7 @@
                 </div>
                 <input type="email" id="lien-courriel" placeholder="Courriel de l'étudiante" required>
                 <select id="lien-formation" style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <option value="doula">Formation de base de doula · 350 h · cohorte du 21 octobre (1 750 $)</option>
                     <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                     <option value="marraine">Marraine d'allaitement</option>
                 </select>
@@ -2336,6 +2517,7 @@
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
                     <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Formation choisie :</label>
                     <select id="choix-formation" onchange="ajusterFormulaireInscription()" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;">
+                        <option value="doula">Formation de base de doula · 350 h · cohorte du 21 octobre (1 750 $)</option>
                         <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                         <option value="marraine">Marraine d'allaitement — 175 $</option>
                         <option value="combo">Combo : 4ᵉ trimestre + marraine d'allaitement — 725 $</option>
@@ -3067,7 +3249,8 @@
         // Onglets : une seule formation affichée à la fois
         function montrerFormation(quelle, event, sansDefiler) {
             if (event) event.preventDefault();
-            ['4e', 'marraine'].forEach(f => {
+            const combo = document.querySelector('.carte-combo'); if (combo) combo.hidden = quelle === 'doula';
+            ['doula', '4e', 'marraine'].forEach(f => {
                 const actif = f === quelle;
                 document.getElementById('panneau-' + f).hidden = !actif;
                 const o = document.getElementById('onglet-' + f);
@@ -3088,6 +3271,17 @@
         })();
 
         // ================= INSCRIPTION : choix de la formation =================
+        function voirFormationDoula(event) {
+            if (event) event.preventDefault();
+            switchPage('academie', null, null);
+            montrerFormation('doula', null, true);
+            setTimeout(() => { const c = document.getElementById('formation-doula'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+        }
+        function inscrireDoula(option, event) {
+            inscrireA('doula', event);
+            const s = document.getElementById('option-paiement');
+            if (s && option) s.value = option;
+        }
         function inscrireA(formation, event) {
             switchPage('inscription', null, event);
             const choix = document.getElementById('choix-formation');
@@ -3111,9 +3305,11 @@
         });
         function ajusterFormulaireInscription() {
             const choix = document.getElementById('choix-formation').value;
-            const marraine = choix === 'marraine', combo = choix === 'combo';
-            document.getElementById('bloc-diplome').style.display = marraine ? 'none' : 'flex';
-            document.getElementById('diplome').required = !marraine;
+            const marraine = choix === 'marraine', combo = choix === 'combo', doula = choix === 'doula';
+            document.getElementById('bloc-diplome').style.display = (marraine || doula) ? 'none' : 'flex';
+            document.getElementById('diplome').required = !marraine && !doula;
+            const selLangue = document.getElementById('langue-formation');
+            if (selLangue) { if (doula) selLangue.value = 'fr'; Array.from(selLangue.options).forEach(o => { if (o.value === 'en') o.disabled = doula; }); }
             document.getElementById('bloc-paiement').style.display = marraine ? 'none' : 'flex';
             document.getElementById('option-paiement').required = !marraine && !(document.getElementById('avec-cadeau') || {}).checked;
             document.getElementById('note-marraine').hidden = !marraine;
@@ -3121,7 +3317,9 @@
             if (!select) return;
             const avant = select.value;
             let choixPaiement;
-            if (combo) {
+            if (doula) {
+                choixPaiement = [['1', 'Paiement complet — 1 750 $ (prix de lancement, au lieu de 1 950 $)'], ['3', '3 versements — 583,33 $ chacun'], ['6', '6 versements — 291,67 $ chacun']];
+            } else if (combo) {
                 choixPaiement = [['1', 'Paiement complet — 725 $'], ['2', '2 versements — 362,50 $ chacun'], ['4', '4 versements aux 2 semaines — 181,25 $ chacun']];
             } else {
                 choixPaiement = [];
@@ -3807,7 +4005,7 @@
             try {
                 emailjs.send("service_82vfhfg", "template_gy588ot", {
                     prenom: d.prenom, nom: d.nom, courriel: d.courriel, telephone: d.telephone, adresse: d.adresse,
-                    option_paiement: (d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
+                    option_paiement: (d.formation === 'doula' ? "Formation de doula 350 h · " + ({ '1': '1 750 $ (paiement complet)', '3': '3 × 583,33 $', '6': '6 × 291,67 $' }[String(d.option_paiement).split('-')[1]] || '') : d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
                 }, "HNvKdORRpRy_vT_FI");
             } catch (e) { console.log('Erreur EmailJS', e); }
             return true;
@@ -3829,6 +4027,12 @@
             if (String(d.option_paiement || '').indexOf('bon:') === 0) {
                 const p0 = document.querySelector('#page-merci .merci-page-container > p');
                 if (p0) p0.textContent = "Ta carte-cadeau est acceptée 🎁 et je suis ravie de t'accueillir à l'Académie Sérénaissance !";
+            }
+            if (d.formation === 'doula') {
+                document.querySelectorAll('#page-merci .merci-page-container > p').forEach((p, i) => {
+                    if (i === 0) p.textContent = "Ton paiement a bien été reçu et je suis ravie de t'accueillir dans la cohorte du 21 octobre de la formation de doula ! 🌸";
+                    if (i === 1) p.innerHTML = "Crée ton mot de passe ci-dessous : ton compte étudiante est prêt. Je confirme ta place dès que je vois ton paiement (habituellement en <strong>24 heures</strong>) et tu reçois un courriel. Ta formation s'ouvre dans ton compte le <strong>21 octobre</strong>.";
+                });
             }
             if (d.formation === 'marraine') {
                 document.querySelectorAll('#page-merci .merci-page-container > p').forEach((p, i) => {
@@ -3905,9 +4109,10 @@
             const formation = document.getElementById('choix-formation').value;
             const estMarraine = formation === 'marraine';
             const estCombo = formation === 'combo';
+            const estDoula = formation === 'doula';
             const optionPaiement = estMarraine ? '1' : document.getElementById('option-paiement').value;
 
-            if (!estMarraine && (!diplomeInput.files || diplomeInput.files.length === 0)) {
+            if (!estMarraine && !estDoula && (!diplomeInput.files || diplomeInput.files.length === 0)) {
                 alert("Veuillez téléverser votre diplôme de doula pour poursuivre l'inscription.");
                 return;
             }
@@ -3925,9 +4130,10 @@
             }
 
             // Liens de paiement Stripe (voir OFFRE DE LANCEMENT plus bas)
-            const avecOffre = !estMarraine && !estCombo && optionPaiement === 'offre';
+            const avecOffre = !estMarraine && !estCombo && !estDoula && optionPaiement === 'offre';
             if (avecOffre && !offreEstActive()) { alert("L'offre de lancement est terminée (date limite ou 10 places comblées). Choisis le prix régulier, en 1, 2 ou 4 versements."); ajusterFormulaireInscription(); return; }
             let lienStripe = estMarraine ? LIEN_STRIPE_MARRAINE
+                : estDoula ? ((TarifsSere.formations.doula.options[optionPaiement] || {}).lien || "")
                 : estCombo ? ((TarifsSere.formations.combo.options[optionPaiement] || {}).lien || "")
                 : avecOffre ? LIENS_STRIPE_OFFRE['1']
                 : (LIENS_STRIPE_REGULIER[optionPaiement] || "");
@@ -3993,7 +4199,7 @@
                     date_naissance: dateNaissance,
                     diplome_url: uploadData ? uploadData.path : null,
                     formation: estCombo ? '4e-trimestre' : formation,
-                    option_paiement: avecCadeau ? 'bon:' + codeCadeau : estMarraine ? 'marraine' : estCombo ? 'combo-' + optionPaiement : avecOffre ? '1-offre' : optionPaiement,
+                    option_paiement: avecCadeau ? 'bon:' + codeCadeau : estMarraine ? 'marraine' : estDoula ? 'doula-' + optionPaiement : estCombo ? 'combo-' + optionPaiement : avecOffre ? '1-offre' : optionPaiement,
                     date: Date.now()
                 };
                 let dossierGarde = false;
@@ -4013,7 +4219,7 @@
                     switchPage('merci', null, null); preparerPageMerci(); window.scrollTo(0, 0);
                     return;
                 }
-                alert(`Merci ${prenom} 💕 !\n\n${estMarraine ? 'Ton inscription est prête.' : 'Ton diplôme est bien reçu.'} Tu vas maintenant être redirigée en toute sécurité vers Stripe pour le paiement.\n\nAprès le paiement, tu reviendras ici pour créer ton mot de passe.`);
+                alert(`Merci ${prenom} 💕 !\n\n${(estMarraine || estDoula) ? 'Ton inscription est prête.' : 'Ton diplôme est bien reçu.'} Tu vas maintenant être redirigée en toute sécurité vers Stripe pour le paiement.\n\nAprès le paiement, tu reviendras ici pour créer ton mot de passe.`);
 
                 window.location.href = lienStripe;
 

@@ -256,6 +256,10 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
       <strong>⏳ Your file is being verified.</strong><br>
       Sabrina is verifying your registration<span id="attente-diplome"> and your doula diploma</span>. You will receive an email as soon as your access is open (usually within 24 to 48 hours). In the meantime, you can complete your information.
     </div>
+    <div id="bloc-doula" hidden>
+      <h2>Foundational doula training · 350 h</h2>
+      <div class="message ok" id="doula-message"><strong>🌸 Your spot in the October 21 cohort is confirmed!</strong><br>Your doula training (12 modules, in French) opens here on <strong>October 21, 2026</strong>. You will receive an email at that time. Until then, you can complete your information, add your photo and write to me in your Messages.</div>
+    </div>
     <div id="bloc-4e" hidden>
       <h2>Advanced Fourth Trimester Support</h2>
       <ul class="cours" id="liste-4e"></ul>
@@ -685,9 +689,11 @@ function charger(session, bienvenue) {
       etat.dossier = d;
       etat.valide = liste.some(function (x) { return (x.statut || '').trim().toLowerCase() === 'valide'; });
       etat.marraine = liste.some(function (x) { return !!x.acces_marraine; });
+      etat.doula = liste.some(function (x) { return x.formation === 'doula'; });
+      etat.doulaOk = liste.some(function (x) { return x.formation === 'doula' && (x.statut || '').trim().toLowerCase() === 'doula_valide'; });
       var susp = liste.filter(function (x) { return x.suspendu; })[0];
       etat.suspendu = !!susp; etat.motif = susp ? susp.motif_suspension : '';
-      if (etat.suspendu) { etat.valide = false; etat.marraine = false; }
+      if (etat.suspendu) { etat.valide = false; etat.marraine = false; etat.doulaOk = false; }
       if (d) {
         $('menu-nom').textContent = d.prenom ? d.prenom + ' ' + (d.nom || '') : 'My account';
         $('bonjour').textContent = 'Hello ' + (d.prenom || '') + ' 🌸';
@@ -725,9 +731,11 @@ function ligneCours(titre, sousTitre, fait, total, examOk, lien, libelle) {
 }
 function afficherCours() {
   var d = etat.dossier;
-  var acces = etat.valide || etat.marraine;
+  var acces = etat.valide || etat.marraine || etat.doulaOk;
   $('attente').hidden = acces || !d;
-  $('attente-diplome').hidden = !!(d && d.formation === 'marraine');
+  $('attente-diplome').hidden = !!(d && (d.formation === 'marraine' || d.formation === 'doula'));
+  if (d && d.formation === 'doula' && !etat.doulaOk && !etat.suspendu) $('attente').innerHTML = '<strong>⏳ Your doula training registration has been received.</strong><br>I confirm your spot in the October 21 cohort as soon as I see your payment (usually within 24 hours), and you receive an email. In the meantime, you can complete your information.';
+  $('bloc-doula').hidden = !etat.doulaOk;
   if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Your access is suspended for the moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Your progress is saved. Write to <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> or call 506-759-2044 to sort things out, and your access will be reopened.'; }
   if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'We could not find a registration file linked to this email. Write to <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> and Sabrina will sort it out quickly.'; }
   $('bloc-4e').hidden = !etat.valide;
@@ -760,9 +768,10 @@ function afficherCours() {
 var adresseBranchee = false;
 /* ---------------- Mes achats et reçus ---------------- */
 function chargerAchats() {
-  var P = {"1": "Full payment", "2": "2 instalments", "4": "4 instalments", "marraine": "One-time payment ($175)", "offre": "Launch offer ($250) + peer supporter course as a gift", "combo": "Bundle of both courses", "bon": "🎁 Gift card", "lien": "Personal registration", "cadeau": "Offered as a gift"}, ST = {"valide": "✅ Access open", "en_attente": "⏳ Being verified"}, T = {"fm": "Breastfeeding Peer Supporter course", "f4e": "Advanced Fourth Trimester Support", "le": "Registered on ", "loc": "en-CA", "aucun": "No purchases found yet.", "portail": "My receipts and instalments (Stripe) →", "note": "On Stripe’s secure portal, you’ll find all your receipts and upcoming instalments, and you can change your card. Your card is never stored by the Academy. Enter the email you used when paying: Stripe sends you a sign-in link. Nothing received (check your spam)? Write to serenaissance.doula@gmail.com and I’ll send your receipt.", "sansp": "Need a receipt? Write to serenaissance.doula@gmail.com and I will send it to you quickly."};
+  var P = {"1": "Full payment", "2": "2 instalments", "4": "4 instalments", "marraine": "One-time payment ($175)", "offre": "Launch offer ($250) + peer supporter course as a gift", "combo": "Bundle of both courses", "bon": "🎁 Gift card", "lien": "Personal registration", "cadeau": "Offered as a gift"}, ST = {"doula_valide": "✅ Spot confirmed", "valide": "✅ Access open", "en_attente": "⏳ Being verified"}, T = {"fm": "Breastfeeding Peer Supporter course", "f4e": "Advanced Fourth Trimester Support", "le": "Registered on ", "loc": "en-CA", "aucun": "No purchases found yet.", "portail": "My receipts and instalments (Stripe) →", "note": "On Stripe’s secure portal, you’ll find all your receipts and upcoming instalments, and you can change your card. Your card is never stored by the Academy. Enter the email you used when paying: Stripe sends you a sign-in link. Nothing received (check your spam)? Write to serenaissance.doula@gmail.com and I’ll send your receipt.", "sansp": "Need a receipt? Write to serenaissance.doula@gmail.com and I will send it to you quickly."};
   function lib(o) {
     o = String(o || '');
+    if (o.indexOf('doula-') === 0) return ({ '1': 'Full payment ($1,750)', '3': '3 instalments ($583.33)', '6': '6 instalments ($291.67)' })[o.split('-')[1]] || '';
     if (o.indexOf('bon:') === 0) return P.bon + ' (' + echapper(o.slice(4)) + ')';
     if (o.indexOf('combo') === 0) return P.combo;
     if (o.indexOf('lien-manuel') === 0) return P.lien;
@@ -772,7 +781,7 @@ function chargerAchats() {
   sb.from('etudiantes').select('formation,option_paiement,statut,acces_marraine,created_at').or('user_id.eq.' + etat.session.user.id + ',courriel.ilike.' + (etat.session.user.email || '').toLowerCase()).then(function (r) {
     var l = (r && r.data) || [];
     var h = l.map(function (e) {
-      var x = '<li style="margin-bottom:8px;"><strong>' + (e.formation === 'marraine' ? T.fm : T.f4e) + '</strong><br><small>' + T.le + new Date(e.created_at).toLocaleDateString(T.loc, { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + lib(e.option_paiement) + (ST[e.statut] ? ' · ' + ST[e.statut] : '') + '</small></li>';
+      var x = '<li style="margin-bottom:8px;"><strong>' + (e.formation === 'marraine' ? T.fm : e.formation === 'doula' ? 'Foundational doula training · 350 h' : T.f4e) + '</strong><br><small>' + T.le + new Date(e.created_at).toLocaleDateString(T.loc, { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + lib(e.option_paiement) + (ST[e.statut] ? ' · ' + ST[e.statut] : '') + '</small></li>';
       if (e.formation !== 'marraine' && e.acces_marraine) x += '<li style="margin-bottom:8px;"><strong>' + T.fm + '</strong><br><small>' + P.cadeau + '</small></li>';
       return x;
     }).join('');
@@ -879,16 +888,16 @@ $('form-stage').addEventListener('submit', function (e) {
 /* ---------------- Inscription par lien (paiement déjà fait, souci technique…) ---------------- */
 function preparerInscription() {
   var cle = params.get('inscription'), T = window.TarifsSere ? TarifsSere.formations : {};
-  if (!T[cle]) cle = cle === 'marraine' ? 'marraine' : '4e-trimestre';
-  var f = cle === 'marraine' ? 'marraine' : '4e-trimestre';
+  if (!T[cle]) cle = cle === 'marraine' ? 'marraine' : cle === 'doula' ? 'doula' : '4e-trimestre';
+  var f = cle === 'marraine' ? 'marraine' : cle === 'doula' ? 'doula' : '4e-trimestre';
   // Sécurité : si un autre compte était resté ouvert sur cet appareil, on le ferme avant l'inscription
   sb.auth.signOut().catch(function () {});
   var nomF = (T[cle] && window.TarifsSere && TarifsSere.t(T[cle], 'nom', 'en')) || (f === 'marraine' ? 'Breastfeeding Peer Supporter' : 'Advanced Fourth Trimester Support');
   avecMenu(false); vue('inscription');
   $('i-intro').textContent = "Sabrina sent you this link to complete your registration for the course “" + nomF + "”." +
-    (f === 'marraine' ? '' : ' Upload your doula diploma: your access will be opened once it has been verified.');
-  $('i-bloc-diplome').hidden = f === 'marraine';
-  $('i-diplome').required = f !== 'marraine';
+    (f === 'marraine' ? '' : f === 'doula' ? ' Your spot will be confirmed as soon as Sabrina sees your payment.' : ' Upload your doula diploma: your access will be opened once it has been verified.');
+  $('i-bloc-diplome').hidden = f === 'marraine' || f === 'doula';
+  $('i-diplome').required = f !== 'marraine' && f !== 'doula';
   if (params.get('courriel')) $('i-courriel').value = params.get('courriel');
   if (params.get('prenom')) $('i-prenom').value = params.get('prenom');
   if (params.get('langue') === 'en' || params.get('langue') === 'fr') $('i-langue').value = params.get('langue');
@@ -901,7 +910,7 @@ function preparerInscription() {
     if (!mdpValide(m1)) return message('msg-inscription', 'erreur', 'Your password must contain at least 8 characters, including an uppercase letter, a lowercase letter and a number.');
     if (window.AdresseAuto && !AdresseAuto.valide($('i-adresse'))) return message('msg-inscription', 'erreur', 'Choose your address from the suggestions list, or check the “My address does not appear in the list…” box.');
     var fichier = $('i-diplome').files && $('i-diplome').files[0];
-    if (f !== 'marraine' && !fichier) return message('msg-inscription', 'erreur', 'Upload your doula diploma.');
+    if (f !== 'marraine' && f !== 'doula' && !fichier) return message('msg-inscription', 'erreur', 'Upload your doula diploma.');
     if (fichier && fichier.size > 10 * 1024 * 1024) return message('msg-inscription', 'erreur', 'Your file is too large (10 MB maximum).');
     var b = $('i-bouton'); b.disabled = true; b.textContent = 'Creating…';
     var courriel = $('i-courriel').value.trim().toLowerCase();
@@ -932,7 +941,7 @@ function preparerInscription() {
       sb.auth.signOut().catch(function () {});
       message('msg-inscription', 'ok', '<strong>🌸 Welcome to Académie Sérénaissance, ' + echapper(dossier.prenom || '') + '!</strong><br><br>' +
         'Your account is created and your file has been received. 📧 <strong>Check your email</strong>: click the button in the welcome email to confirm your address (check your junk folder too).<br><br>' +
-        (f === 'marraine' ? 'Sabrina is verifying your registration' : 'Sabrina is verifying your registration and your <strong>doula diploma</strong>') +
+        ((f === 'marraine' || f === 'doula') ? 'Sabrina is verifying your registration' : 'Sabrina is verifying your registration and your <strong>doula diploma</strong>') +
         ': your access is usually opened within <strong>24 to 48 hours</strong>, and you will receive an email at that time. In the meantime, you can already log in to your account to add your photo and write to Sabrina.<br><br>' +
         '<a class="btn" href="/en/" style="margin-top:4px;">Back to the site home page</a> <span class="note" id="retour-auto">Automatic return in 20 seconds…</span>');
       var n = 20; var t = setInterval(function () { n--; var el = $('retour-auto'); if (el) el.textContent = 'Automatic return in ' + n + ' seconds…'; if (n <= 0) { clearInterval(t); location.href = 'index.html'; } }, 1000);
