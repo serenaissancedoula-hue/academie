@@ -1267,6 +1267,33 @@
         .liste-fichiers li a { color: var(--accent-terracotta); font-weight: 700; white-space: nowrap; }
         .liste-fichiers li.vide { justify-content: center; color: #7a685e; font-style: italic; }
         /* Choix des formations */
+        /* ===== Accueil : sceau de la cohorte posé sur la photo ===== */
+        .photo-cohorte { position: relative; display: inline-block; }
+        .photo-cohorte .etincelle { position: absolute; color: var(--accent-terracotta); font-size: 1.3rem; line-height: 1; pointer-events: none; }
+        .photo-cohorte .e1 { left: -26px; top: 6%; }
+        .photo-cohorte .e2 { right: -30px; bottom: 30%; font-size: 1rem; }
+        .sceau-photo { position: absolute; right: -78px; top: -14px; width: 190px; height: 190px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: #8c3f2c;
+            transform: rotate(-7deg); transition: transform .25s; filter: drop-shadow(0 8px 14px rgba(120,66,46,.28)); }
+        .sceau-photo::before { content: ''; position: absolute; inset: 0; background: #f2c9b9;
+            clip-path: polygon(50% 0%, 59% 9%, 71% 4%, 75% 16%, 88% 15%, 86% 28%, 97% 34%, 90% 45%, 99% 55%, 88% 62%, 92% 75%, 79% 77%, 77% 90%, 65% 87%, 57% 98%, 48% 89%, 37% 97%, 32% 85%, 19% 88%, 19% 75%, 6% 71%, 12% 59%, 2% 50%, 12% 41%, 5% 29%, 18% 26%, 18% 12%, 31% 14%, 37% 3%); }
+        .sceau-photo::after { content: ''; position: absolute; inset: 30px; border: 1.5px dashed rgba(140,63,44,.45); border-radius: 50%; }
+        .sceau-photo:hover, .sceau-photo:focus-visible { transform: rotate(-3deg) scale(1.05); }
+        .sceau-photo > span { position: relative; z-index: 1; display: block; max-width: 62%; }
+        .sceau-photo .sp1 { font-family: 'Great Vibes', cursive; font-size: 1.05rem; line-height: 1; }
+        .sceau-photo .sp2 { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.9rem; line-height: 1; margin: 2px 0 1px; }
+        .sceau-photo .sp3 { font-family: 'Playfair Display', serif; font-size: 1.02rem; line-height: 1.05; }
+        .sceau-photo .sp4 { font-size: .6rem; font-weight: 600; letter-spacing: .03em; margin-top: 3px; }
+        .pastille-cohorte { display: block; max-width: 360px; margin: 26px auto 0; background: #f2c9b9; color: #8c3f2c; text-decoration: none; text-align: center;
+            border-radius: 22px; padding: 14px 20px; font-size: .98rem; line-height: 1.45; box-shadow: 0 10px 24px -16px rgba(120,66,46,.6); transition: transform .2s, background .2s; }
+        .pastille-cohorte:hover, .pastille-cohorte:focus-visible { transform: translateY(-2px); background: #edbfad; }
+        .pastille-cohorte small { display: block; font-weight: 700; font-size: .8rem; margin-top: 6px; text-decoration: underline; }
+        @media (max-width: 768px) {
+            .sceau-photo { width: 150px; height: 150px; right: -40px; top: -18px; }
+            .sceau-photo::after { inset: 24px; }
+            .sceau-photo .sp1 { font-size: .85rem; } .sceau-photo .sp2 { font-size: 1.5rem; } .sceau-photo .sp3 { font-size: .85rem; } .sceau-photo .sp4 { font-size: .5rem; }
+            .photo-cohorte .e1 { left: -14px; } .photo-cohorte .e2 { right: -16px; }
+            .pastille-cohorte { margin-top: 20px; font-size: .92rem; }
+        }
         /* ===== Formation de doula : onglet, fiche et accueil ===== */
         #onglet-doula .cf-prix s { margin-left: 6px; }
         .choix-formations.trois { max-width: 1100px; grid-template-columns: repeat(3, 1fr); }
@@ -1680,20 +1707,16 @@
                     <button class="btn-action" onclick="switchPage('accompagnements', null, event)">Discover my support packages →</button>
                     <button class="btn-secondary" onclick="switchPage('academie', null, event)">Discover the Academy's courses</button>
                 </div>
-                <a href="#" class="hero-cohorte" onclick="voirFormationDoula(event)">
-                    <span class="hc-sceau" aria-hidden="true"><span><b>Doula</b><small>350 h</small></span></span>
-                    <span class="hc-texte">
-                        <span class="hc-etiquette"><span class="point"></span>New cohort · 6 spots</span>
-                        <span class="hc-titre">Foundational doula training · 350 hours</span>
-                        <span class="hc-infos">Starts <strong>October 21</strong> · $1,750 (launch price) · guest IBCLC and midwife · in French</span>
-                        <span class="hc-lien">Discover the training →</span>
-                    </span>
-                </a>
             </div>
             <div class="right-content">
-                <div class="photo-frame">
+                <div class="photo-cohorte">
+                    <span class="etincelle e1" aria-hidden="true">✦</span><span class="etincelle e2" aria-hidden="true">✦</span>
+                    <div class="photo-frame">
                     <img src="/sabrina.png" alt="Sabrina Chavanel, doula in Campbellton">
+                    </div>
+                    <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="See the doula training, new cohort starting October 21"><span class="sp1">New cohort</span><span class="sp2">Doula</span><span class="sp3">350 hours</span><span class="sp4">starts October 21</span></a>
                 </div>
+                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Foundational doula training: one block led by an IBCLC lactation consultant and another by a midwife ♥<small>6 spots · $1,750 · in French · discover the training →</small></a>
             </div>
         </div>
 
