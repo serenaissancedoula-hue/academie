@@ -257,7 +257,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
       Sabrina vérifie ton inscription<span id="attente-diplome"> et ton diplôme de doula</span>. Tu recevras un courriel dès que ton accès sera ouvert (habituellement en 24 à 48 heures). En attendant, tu peux compléter tes informations.
     </div>
     <div id="bloc-doula" hidden>
-      <h2>Formation de base de doula · 350 h</h2>
+      <h2>Formation de base de doula · 400 h</h2>
       <div class="message ok" id="doula-message"><strong>🌸 Ta place est confirmée dans la cohorte du 21 octobre !</strong><br>Ta formation de doula (12 modules) s'ouvre ici le <strong>21 octobre 2026</strong>. Tu recevras un courriel à ce moment-là. D'ici là, tu peux compléter tes informations, ajouter ta photo et m'écrire dans tes Messages.</div>
     </div>
     <div id="bloc-4e" hidden>
@@ -781,7 +781,7 @@ function chargerAchats() {
   sb.from('etudiantes').select('formation,option_paiement,statut,acces_marraine,created_at').or('user_id.eq.' + etat.session.user.id + ',courriel.ilike.' + (etat.session.user.email || '').toLowerCase()).then(function (r) {
     var l = (r && r.data) || [];
     var h = l.map(function (e) {
-      var x = '<li style="margin-bottom:8px;"><strong>' + (e.formation === 'marraine' ? T.fm : e.formation === 'doula' ? 'Formation de base de doula · 350 h' : T.f4e) + '</strong><br><small>' + T.le + new Date(e.created_at).toLocaleDateString(T.loc, { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + lib(e.option_paiement) + (ST[e.statut] ? ' · ' + ST[e.statut] : '') + '</small></li>';
+      var x = '<li style="margin-bottom:8px;"><strong>' + (e.formation === 'marraine' ? T.fm : e.formation === 'doula' ? 'Formation de base de doula · 400 h' : T.f4e) + '</strong><br><small>' + T.le + new Date(e.created_at).toLocaleDateString(T.loc, { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + lib(e.option_paiement) + (ST[e.statut] ? ' · ' + ST[e.statut] : '') + '</small></li>';
       if (e.formation !== 'marraine' && e.acces_marraine) x += '<li style="margin-bottom:8px;"><strong>' + T.fm + '</strong><br><small>' + P.cadeau + '</small></li>';
       return x;
     }).join('');
