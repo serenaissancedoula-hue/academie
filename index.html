@@ -1324,6 +1324,32 @@
         .doula-cohorte-ruban { display: inline-flex; align-items: center; gap: 8px; background: #f2c9b9; color: #7c3a2a; font-size: .85rem; padding: 7px 14px; border-radius: 30px; margin: 4px 0 14px; }
         .doula-cohorte-ruban .point, .hero-cohorte .point { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-terracotta); animation: cohortePouls 1.8s ease-in-out infinite; flex: none; }
         .doula-equipe { background: #fff; border-radius: 16px; padding: 12px 16px; font-size: .92rem; color: #5a4a42; border-left: 4px solid #d8a796; margin: 0 0 20px; }
+        /* ===== À venir + équipe de formatrices ===== */
+        .a-venir { margin: 36px 0 8px; }
+        .a-venir h3 { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--text-dark); text-align:center; margin:0 0 6px; }
+        .a-venir > p { text-align:center; color:#7a685e; font-size:.92rem; margin:0 0 18px; }
+        .a-venir-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+        .a-venir-carte { background:var(--card-bg); border:1.5px dashed #d9b9a9; border-radius:20px; padding:20px 22px; }
+        .a-venir-carte .etiquette-venir { display:inline-block; background:#f3e3da; color:#8a4233; font-size:.7rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:999px; padding:3px 10px; margin-bottom:10px; }
+        .a-venir-carte h4 { font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--text-dark); margin:0 0 6px; }
+        .a-venir-carte p { font-size:.9rem; color:#5a4a42; margin:0 0 10px; }
+        .a-venir-carte .lien-prevenir { font-size:.85rem; font-weight:700; color:var(--accent-terracotta); text-decoration:none; }
+        .equipe-section { margin: 10px 0 10px; }
+        .equipe-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; align-items:start; }
+        .formatrice-carte { background:var(--card-bg); border:1px solid var(--border-color); border-radius:24px; padding:26px; box-shadow:0 10px 30px rgba(0,0,0,.03); }
+        .formatrice-carte img { width:100%; aspect-ratio:4/5; object-fit:cover; object-position:center 20%; border-radius:18px; display:block; margin-bottom:16px; }
+        .formatrice-carte .role { font-size:.78rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--accent-terracotta); margin:0 0 4px; }
+        .formatrice-carte h3 { font-family:'Playfair Display',serif; font-size:1.4rem; color:var(--text-dark); margin:0 0 4px; }
+        .formatrice-carte .titres { font-size:.88rem; color:#7a685e; margin:0 0 12px; }
+        .formatrice-carte p { font-size:.93rem; color:#5a4a42; margin:0 0 10px; }
+        .formatrice-carte details { margin-top:6px; }
+        .formatrice-carte details summary { cursor:pointer; list-style:none; font-weight:700; color:var(--accent-terracotta); font-size:.9rem; display:inline-flex; align-items:center; gap:6px; }
+        .formatrice-carte details summary::-webkit-details-marker { display:none; }
+        .formatrice-carte details summary::after { content:"+"; font-size:1.1rem; }
+        .formatrice-carte details[open] summary::after { content:"−"; }
+        .formatrice-carte details[open] summary .voir-plus { display:none; }
+        .formatrice-carte details:not([open]) summary .voir-moins { display:none; }
+        .formatrice-carte details .suite { margin-top:10px; border-top:1px solid var(--border-color); padding-top:10px; }
         .bloc-complete { margin-top: 28px; background: linear-gradient(135deg,#fbefe9,#fff7f2); border: 1.5px solid #e6bfae; border-radius: 22px; padding: 22px 22px 18px; }
         .bloc-complete .etiquette { display:inline-block; background:#c9826b; color:#fff; font-size:.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:999px; padding:4px 12px; margin-bottom:10px; }
         .bloc-complete h3 { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--text-dark); margin:0 0 8px; }
@@ -1959,6 +1985,25 @@
                 <span class="cf-info">Environ 8 h 30 · ouverte à toutes</span>
                 <span class="cf-prix">175 $</span>
             </a>
+        </div>
+
+        <div class="a-venir">
+            <h3>Prochainement à l'Académie</h3>
+            <p>Deux nouvelles formations sont en préparation. Dates et prix annoncés bientôt.</p>
+            <div class="a-venir-grille">
+                <div class="a-venir-carte">
+                    <span class="etiquette-venir">À venir</span>
+                    <h4>Relation d'aide · 300 h</h4>
+                    <p>Écoute, communication aidante, éthique, déontologie et loi 21, deuil, situations de crise et santé mentale : 240 h de modules et 60 h de stage supervisé.</p>
+                    <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
+                </div>
+                <div class="a-venir-carte">
+                    <span class="etiquette-venir">À venir</span>
+                    <h4>Yoga prénatal et postnatal</h4>
+                    <p>Une formation pour accompagner le mouvement, le souffle et la détente pendant la grossesse et après la naissance.</p>
+                    <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
+                </div>
+            </div>
         </div>
 
         <div class="carte-combo" hidden>
@@ -2921,6 +2966,40 @@
                     <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
                         « Offrir aux mères et aux bébés le cocon qu'ils méritent. »
                     </p>
+                </div>
+            </div>
+
+            <!-- Équipe de formatrices -->
+            <div class="equipe-section">
+                <div class="section-header-centered" style="margin-bottom: 22px;">
+                    <h2 style="font-size: 1.9rem;">L'équipe de formatrices</h2>
+                    <p>Une formation montée avec des professionnelles du terrain.</p>
+                </div>
+                <div class="equipe-grille">
+                    <div class="formatrice-carte">
+                        <img src="sabrina.png" alt="Sabrina Chavanel, directrice de l'Académie Sérénaissance" loading="lazy">
+                        <p class="role">Directrice et formatrice</p>
+                        <h3>Sabrina Chavanel</h3>
+                        <p class="titres">Doula · Naturothérapeute · Intervenante en relation d'aide</p>
+                        <p>Fondatrice de l'Académie Sérénaissance, Sabrina accompagne les familles de Campbellton et des environs depuis 3 ans. Maman de 5 enfants, elle a bâti la formation à partir de ce qu'elle voit sur le terrain.</p>
+                    </div>
+                    <div class="formatrice-carte">
+                        <img src="laurence.jpg" alt="Laurence Boulanger, infirmière clinicienne et consultante en lactation IBCLC" loading="lazy">
+                        <p class="role">Formatrice · atelier obligatoire de 2 h sur l'allaitement</p>
+                        <h3>Laurence Boulanger</h3>
+                        <p class="titres">Infirmière clinicienne, consultante en lactation certifiée IBCLC (<em>International Board Certified Lactation Consultant</em>) et fondatrice de CAP Maternité</p>
+                        <p>Passionnée par la périnatalité et l’allaitement, Laurence est infirmière clinicienne depuis plus de 10 ans, principalement en natalité et en soins post-partum. Également maman de trois enfants, elle porte un regard à la fois professionnel et personnel sur les réalités de la maternité et de l’allaitement.</p>
+                        <details>
+                            <summary><span class="voir-plus">Voir plus</span><span class="voir-moins">Voir moins</span></summary>
+                            <div class="suite">
+                                <p>Au fil des années, elle a accompagné de nombreuses familles dans leurs premiers moments avec bébé, une expérience qui a nourri son désir d’approfondir ses connaissances et de se spécialiser en allaitement.</p>
+                                <p>Aujourd’hui consultante en lactation certifiée IBCLC, elle combine son expertise infirmière à ses connaissances spécialisées en allaitement pour offrir un accompagnement à la fois rigoureux, humain et respectueux des besoins, des choix et de la réalité de chaque famille.</p>
+                                <p>Également enseignante en soins infirmiers et fondatrice de CAP Maternité, Laurence aime particulièrement transmettre ses connaissances, vulgariser des notions parfois complexes et donner aux autres les outils pour mieux comprendre et agir avec confiance.</p>
+                                <p>C’est dans cet esprit qu’elle collabore à la formation des accompagnantes à la naissance, avec l’envie de leur transmettre des connaissances concrètes et des outils pratiques pour mieux comprendre l’allaitement, soutenir les familles et reconnaître les situations qui nécessitent un accompagnement spécialisé.</p>
+                                <p><strong>Sa conviction : mieux comprendre, c’est aussi mieux accompagner.</strong></p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </div>
 
