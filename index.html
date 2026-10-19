@@ -1345,6 +1345,9 @@
         .voir-modules ul { margin:0 18px 14px 40px; font-size:.86rem; color:#5a4a42; }
         .volet-titre { font-family:'Playfair Display',serif; font-weight:700; font-size:.98rem; color:var(--text-dark); margin:14px 0 6px !important; }
         .a-venir-grille { align-items:start; }
+        .mon-histoire { margin:6px 0 14px; }
+        .histoire-texte { margin:12px auto 0; max-width:760px; text-align:left; }
+        .histoire-texte p { margin:0 0 12px; }
         .equipe-section { margin: 10px 0 10px; }
         .equipe-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; align-items:start; }
         .formatrice-carte { background:var(--card-bg); border:1px solid var(--border-color); border-radius:24px; padding:26px; box-shadow:0 10px 30px rgba(0,0,0,.03); }
@@ -1726,6 +1729,7 @@
             <li><a href="#" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Marraines</a></li>
             <li><a href="espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>Mon compte</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
+            <li><a href="#" onclick="switchPage('formatrices', this, event)" id="nav-formatrices">Formatrices</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">À propos</a></li>
         </ul>
         <div class="appel-langue">
@@ -1793,7 +1797,16 @@
         <div class="home-summary-box">
             <h3>Bonjour, je suis Sabrina</h3>
             <p>Maman de 5 enfants (donc j'en connais quand même pas mal, hihi !), doula, intervenante en relation d'aide et naturothérapeute, j'offre un espace sécurisant et chaleureux aux futurs parents pour traverser la grossesse, l'accouchement et le post-partum. À travers Sérénaissance et mon Académie, je me consacre à honorer la matrescence et à outiller les accompagnantes.</p>
-            <button class="btn-secondary" onclick="switchPage('apropos', null, event)">En savoir plus sur moi →</button>
+            <details class="voir-modules mon-histoire"><summary>Lire mon histoire</summary>
+            <div class="histoire-texte">
+                <p>Ma maternité avec mes cinq enfants m'a appris une chose essentielle : <strong>on n'est pas bien préparées, et on n'est pas assez soutenues.</strong> Entre la fatigue, les conseils contradictoires et la pression de « bien faire », j'ai vécu ce que tant de mères traversent en silence.</p>
+                <p>En arrivant à la fin de ma propre période de maternité, je voulais garder un pied dans ce monde qui me passionne. Devenir doula, c'était le meilleur des deux mondes : continuer d'honorer la naissance et la matrescence, en mettant mon vécu au service des autres familles.</p>
+                <p>Depuis 3 ans, j'accompagne les familles de Campbellton et des environs avant, pendant et après la naissance. Ma formation en relation d'aide m'a donné des outils précieux pour accueillir l'anxiété et le stress, si souvent présents autour de l'arrivée d'un bébé.</p>
+                <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
+                        « Offrir aux mères et aux bébés le cocon qu'ils méritent. »
+                    </p>
+            </div></details>
+            <button class="btn-secondary" onclick="switchPage('formatrices', null, event)">Voir mon parcours de formatrice →</button>
         </div>
 
         <div class="home-summary-box" style="background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
@@ -3004,33 +3017,14 @@
         </div>
     </div>
 
-    <!-- ================= 7. PAGE À PROPOS ================= -->
-    <div id="page-apropos" class="page-section">
+    <!-- ================= PAGE FORMATRICES ================= -->
+    <div id="page-formatrices" class="page-section">
         <div class="about-page-container">
-            <!-- Présentation -->
-            <div class="about-page-box">
-                <div class="about-page-img">
-                    <img src="sabrina.png" alt="Sabrina Chavanel, doula et fondatrice de Sérénaissance">
-                </div>
-                <div class="about-page-text">
-                    <div class="badge-offre" style="font-size: 2.2rem; margin-bottom: 0;">Enchantée</div>
-                    <h2>Je suis Sabrina</h2>
-                    <p class="about-sous-titre">Doula · Naturothérapeute · Intervenante en relation d'aide<br>Maman de 5 enfants · Campbellton, N.-B.</p>
-                    <p>Ma maternité avec mes cinq enfants m'a appris une chose essentielle : <strong>on n'est pas bien préparées, et on n'est pas assez soutenues.</strong> Entre la fatigue, les conseils contradictoires et la pression de « bien faire », j'ai vécu ce que tant de mères traversent en silence.</p>
-                    <p>En arrivant à la fin de ma propre période de maternité, je voulais garder un pied dans ce monde qui me passionne. Devenir doula, c'était le meilleur des deux mondes : continuer d'honorer la naissance et la matrescence, en mettant mon vécu au service des autres familles.</p>
-                    <p>Depuis 3 ans, j'accompagne les familles de Campbellton et des environs avant, pendant et après la naissance. Ma formation en relation d'aide m'a donné des outils précieux pour accueillir l'anxiété et le stress, si souvent présents autour de l'arrivée d'un bébé.</p>
-                    <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
-                        « Offrir aux mères et aux bébés le cocon qu'ils méritent. »
-                    </p>
-                </div>
+            <div class="section-header-centered" style="margin-bottom: 22px;">
+                <h2>Les formatrices</h2>
+                <p>Une formation montée avec des professionnelles du terrain.</p>
             </div>
-
-            <!-- Équipe de formatrices -->
             <div class="equipe-section">
-                <div class="section-header-centered" style="margin-bottom: 22px;">
-                    <h2 style="font-size: 1.9rem;">L'équipe de formatrices</h2>
-                    <p>Une formation montée avec des professionnelles du terrain.</p>
-                </div>
                 <div class="equipe-grille">
                     <div class="formatrice-carte">
                         <img src="sabrina.png" alt="Sabrina Chavanel, directrice de l'Académie Sérénaissance" loading="lazy">
@@ -3069,7 +3063,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <!-- ================= 7. PAGE À PROPOS ================= -->
+    <div id="page-apropos" class="page-section">
+        <div class="about-page-container">
             <!-- En quelques chiffres -->
             <div class="about-chiffres">
                 <div><span class="chiffre">3 ans</span><span class="legende">à accompagner des familles</span></div>
@@ -3170,6 +3169,7 @@
             <li><a href="espace.html">Mon compte</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)">FAQ</a></li>
             <li><a href="/blogue/">Blogue</a></li>
+            <li><a href="#" onclick="switchPage('formatrices', this, event)">Formatrices</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)">À propos</a></li>
         </ul>
         <nav class="footer-legal" aria-label="Pages de l'Académie" style="margin-bottom:6px;">
@@ -3437,7 +3437,7 @@
         // ================= NAVIGATION PAR ADRESSE (#formations, #marraine…) =================
         const PAGES_PAR_ADRESSE = {
             '#accueil': 'accueil', '#accompagnements': 'accompagnements', '#formations': 'academie',
-            '#academie': 'academie', '#compte': 'compte', '#faq': 'faq', '#apropos': 'apropos', '#nos-marraines': 'nos-marraines',
+            '#academie': 'academie', '#compte': 'compte', '#faq': 'faq', '#apropos': 'apropos', '#formatrices': 'formatrices', '#nos-marraines': 'nos-marraines',
             '#conditions': 'conditions', '#confidentialite': 'confidentialite', '#inscription': 'inscription'
         };
         function allerA(event, idAncre) {

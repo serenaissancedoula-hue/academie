@@ -1345,6 +1345,9 @@
         .voir-modules ul { margin:0 18px 14px 40px; font-size:.86rem; color:#5a4a42; }
         .volet-titre { font-family:'Playfair Display',serif; font-weight:700; font-size:.98rem; color:var(--text-dark); margin:14px 0 6px !important; }
         .a-venir-grille { align-items:start; }
+        .mon-histoire { margin:6px 0 14px; }
+        .histoire-texte { margin:12px auto 0; max-width:760px; text-align:left; }
+        .histoire-texte p { margin:0 0 12px; }
         .equipe-section { margin: 10px 0 10px; }
         .equipe-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; align-items:start; }
         .formatrice-carte { background:var(--card-bg); border:1px solid var(--border-color); border-radius:24px; padding:26px; box-shadow:0 10px 30px rgba(0,0,0,.03); }
@@ -1726,6 +1729,7 @@
             <li><a href="#" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Peer Supporters</a></li>
             <li><a href="/en/espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>My account</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
+            <li><a href="#" onclick="switchPage('formatrices', this, event)" id="nav-formatrices">Trainers</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">About</a></li>
         </ul>
         <div class="appel-langue">
@@ -1793,7 +1797,16 @@
         <div class="home-summary-box">
             <h3>Hello, I'm Sabrina</h3>
             <p>A mom of 5 (so I know a thing or two, hehe!), doula, helping-relationship practitioner and naturotherapist, I offer expectant parents a safe, warm space to move through pregnancy, birth and the postpartum period. Through Sérénaissance and my Academy, I devote myself to honouring matrescence and equipping doulas and support people.</p>
-            <button class="btn-secondary" onclick="switchPage('apropos', null, event)">Learn more about me →</button>
+            <details class="voir-modules mon-histoire"><summary>Read my story</summary>
+            <div class="histoire-texte">
+                <p>My motherhood with my five children taught me one essential thing: <strong>we aren't well prepared, and we aren't supported enough.</strong> Between the exhaustion, the contradictory advice and the pressure to "do it right," I lived what so many mothers go through in silence.</p>
+                <p>As I neared the end of my own childbearing years, I wanted to keep a foot in this world I'm passionate about. Becoming a doula was the best of both worlds: continuing to honour birth and matrescence, while putting my own experience at the service of other families.</p>
+                <p>For 3 years, I've been supporting families in Campbellton and the surrounding area before, during and after birth. My training in the helping relationship gave me valuable tools to welcome the anxiety and stress so often present around a baby's arrival.</p>
+                <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
+                        "Giving mothers and babies the cocoon they deserve."
+                    </p>
+            </div></details>
+            <button class="btn-secondary" onclick="switchPage('formatrices', null, event)">See my path as a trainer →</button>
         </div>
 
         <div class="home-summary-box" style="background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
@@ -2920,33 +2933,14 @@
         </div>
     </div>
 
-    <!-- ================= 7. PAGE À PROPOS ================= -->
-    <div id="page-apropos" class="page-section">
+    <!-- ================= PAGE FORMATRICES ================= -->
+    <div id="page-formatrices" class="page-section">
         <div class="about-page-container">
-            <!-- Présentation -->
-            <div class="about-page-box">
-                <div class="about-page-img">
-                    <img src="/sabrina.png" alt="Sabrina Chavanel, doula and founder of Sérénaissance">
-                </div>
-                <div class="about-page-text">
-                    <div class="badge-offre" style="font-size: 2.2rem; margin-bottom: 0;">Nice to meet you</div>
-                    <h2>I'm Sabrina</h2>
-                    <p class="about-sous-titre">Doula · Naturotherapist · Helping-relationship practitioner<br>Mom of 5 · Campbellton, N.B.</p>
-                    <p>My motherhood with my five children taught me one essential thing: <strong>we aren't well prepared, and we aren't supported enough.</strong> Between the exhaustion, the contradictory advice and the pressure to "do it right," I lived what so many mothers go through in silence.</p>
-                    <p>As I neared the end of my own childbearing years, I wanted to keep a foot in this world I'm passionate about. Becoming a doula was the best of both worlds: continuing to honour birth and matrescence, while putting my own experience at the service of other families.</p>
-                    <p>For 3 years, I've been supporting families in Campbellton and the surrounding area before, during and after birth. My training in the helping relationship gave me valuable tools to welcome the anxiety and stress so often present around a baby's arrival.</p>
-                    <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
-                        "Giving mothers and babies the cocoon they deserve."
-                    </p>
-                </div>
+            <div class="section-header-centered" style="margin-bottom: 22px;">
+                <h2>Our trainers</h2>
+                <p>A training built with professionals from the field.</p>
             </div>
-
-            <!-- Team of trainers -->
             <div class="equipe-section">
-                <div class="section-header-centered" style="margin-bottom: 22px;">
-                    <h2 style="font-size: 1.9rem;">Our trainers</h2>
-                    <p>A training built with professionals from the field.</p>
-                </div>
                 <div class="equipe-grille">
                     <div class="formatrice-carte">
                         <img src="/sabrina.png" alt="Sabrina Chavanel, director of Académie Sérénaissance" loading="lazy">
@@ -2985,7 +2979,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <!-- ================= 7. PAGE À PROPOS ================= -->
+    <div id="page-apropos" class="page-section">
+        <div class="about-page-container">
             <!-- En quelques chiffres -->
             <div class="about-chiffres">
                 <div><span class="chiffre">3 years</span><span class="legende">supporting families</span></div>
@@ -3086,6 +3085,7 @@
             <li><a href="/en/espace.html">My account</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)">FAQ</a></li>
             <li><a href="/en/blog/">Blog</a></li>
+            <li><a href="#" onclick="switchPage('formatrices', this, event)">Trainers</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)">About</a></li>
         </ul>
         <nav class="footer-legal" aria-label="Academy pages" style="margin-bottom:6px;">
@@ -3353,7 +3353,7 @@
         // ================= NAVIGATION PAR ADRESSE (#formations, #marraine…) =================
         const PAGES_PAR_ADRESSE = {
             '#accueil': 'accueil', '#accompagnements': 'accompagnements', '#formations': 'academie',
-            '#academie': 'academie', '#compte': 'compte', '#faq': 'faq', '#apropos': 'apropos', '#nos-marraines': 'nos-marraines',
+            '#academie': 'academie', '#compte': 'compte', '#faq': 'faq', '#apropos': 'apropos', '#formatrices': 'formatrices', '#nos-marraines': 'nos-marraines',
             '#conditions': 'conditions', '#confidentialite': 'confidentialite', '#inscription': 'inscription'
         };
         function allerA(event, idAncre) {
