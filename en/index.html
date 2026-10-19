@@ -1324,6 +1324,32 @@
         .doula-cohorte-ruban { display: inline-flex; align-items: center; gap: 8px; background: #f2c9b9; color: #7c3a2a; font-size: .85rem; padding: 7px 14px; border-radius: 30px; margin: 4px 0 14px; }
         .doula-cohorte-ruban .point, .hero-cohorte .point { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-terracotta); animation: cohortePouls 1.8s ease-in-out infinite; flex: none; }
         .doula-equipe { background: #fff; border-radius: 16px; padding: 12px 16px; font-size: .92rem; color: #5a4a42; border-left: 4px solid #d8a796; margin: 0 0 20px; }
+        /* ===== À venir + équipe de formatrices ===== */
+        .a-venir { margin: 36px 0 8px; }
+        .a-venir h3 { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--text-dark); text-align:center; margin:0 0 6px; }
+        .a-venir > p { text-align:center; color:#7a685e; font-size:.92rem; margin:0 0 18px; }
+        .a-venir-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+        .a-venir-carte { background:var(--card-bg); border:1.5px dashed #d9b9a9; border-radius:20px; padding:20px 22px; }
+        .a-venir-carte .etiquette-venir { display:inline-block; background:#f3e3da; color:#8a4233; font-size:.7rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:999px; padding:3px 10px; margin-bottom:10px; }
+        .a-venir-carte h4 { font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--text-dark); margin:0 0 6px; }
+        .a-venir-carte p { font-size:.9rem; color:#5a4a42; margin:0 0 10px; }
+        .a-venir-carte .lien-prevenir { font-size:.85rem; font-weight:700; color:var(--accent-terracotta); text-decoration:none; }
+        .equipe-section { margin: 10px 0 10px; }
+        .equipe-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; align-items:start; }
+        .formatrice-carte { background:var(--card-bg); border:1px solid var(--border-color); border-radius:24px; padding:26px; box-shadow:0 10px 30px rgba(0,0,0,.03); }
+        .formatrice-carte img { width:100%; aspect-ratio:4/5; object-fit:cover; object-position:center 20%; border-radius:18px; display:block; margin-bottom:16px; }
+        .formatrice-carte .role { font-size:.78rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--accent-terracotta); margin:0 0 4px; }
+        .formatrice-carte h3 { font-family:'Playfair Display',serif; font-size:1.4rem; color:var(--text-dark); margin:0 0 4px; }
+        .formatrice-carte .titres { font-size:.88rem; color:#7a685e; margin:0 0 12px; }
+        .formatrice-carte p { font-size:.93rem; color:#5a4a42; margin:0 0 10px; }
+        .formatrice-carte details { margin-top:6px; }
+        .formatrice-carte details summary { cursor:pointer; list-style:none; font-weight:700; color:var(--accent-terracotta); font-size:.9rem; display:inline-flex; align-items:center; gap:6px; }
+        .formatrice-carte details summary::-webkit-details-marker { display:none; }
+        .formatrice-carte details summary::after { content:"+"; font-size:1.1rem; }
+        .formatrice-carte details[open] summary::after { content:"−"; }
+        .formatrice-carte details[open] summary .voir-plus { display:none; }
+        .formatrice-carte details:not([open]) summary .voir-moins { display:none; }
+        .formatrice-carte details .suite { margin-top:10px; border-top:1px solid var(--border-color); padding-top:10px; }
         .bloc-complete { margin-top: 28px; background: linear-gradient(135deg,#fbefe9,#fff7f2); border: 1.5px solid #e6bfae; border-radius: 22px; padding: 22px 22px 18px; }
         .bloc-complete .etiquette { display:inline-block; background:#c9826b; color:#fff; font-size:.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:999px; padding:4px 12px; margin-bottom:10px; }
         .bloc-complete h3 { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--text-dark); margin:0 0 8px; }
@@ -1749,7 +1775,7 @@
                     </div>
                     <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="See the doula training, new cohort starting October 21"><span class="sp1">New cohort</span><span class="sp2">Doula</span><span class="sp3">400 hours</span><span class="sp4">starts October 21</span></a>
                 </div>
-                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Foundational doula training: one block led by an IBCLC lactation consultant and another by a midwife ♥<small>6 spots · $1,750 · in French · discover the training →</small></a>
+                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Foundational doula training: one block led by an IBCLC lactation consultant and another by a midwife ♥<small>2 spots · $1,750 · in French · discover the training →</small></a>
             </div>
         </div>
 
@@ -1946,7 +1972,7 @@
         <div class="choix-formations trois" role="tablist">
             <a href="#" class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true" onclick="montrerFormation('doula', event)">
                 <span class="cf-titre">Foundational doula training · 400 h</span>
-                <span class="cf-info">October 21 cohort · 6 spots · open to everyone</span>
+                <span class="cf-info">October 21 cohort · 2 spots · open to everyone</span>
                 <span class="cf-prix">$1,750<s>$1,950</s></span>
             </a>
             <a href="#" class="choix-formation" id="onglet-4e" role="tab" aria-selected="false" onclick="montrerFormation('4e', event)">
@@ -1959,6 +1985,25 @@
                 <span class="cf-info">About 8.5 hours · open to everyone</span>
                 <span class="cf-prix">$175</span>
             </a>
+        </div>
+
+        <div class="a-venir">
+            <h3>Coming soon at the Academy</h3>
+            <p>Two new trainings are in preparation. Dates and prices announced soon.</p>
+            <div class="a-venir-grille">
+                <div class="a-venir-carte">
+                    <span class="etiquette-venir">Coming soon</span>
+                    <h4>Helping relationship · 300 h</h4>
+                    <p>Active listening, supportive communication, ethics, professional conduct and Law 21, grief, crisis situations and mental health: 240 h of modules and a 60 h supervised placement. Taught in French.</p>
+                    <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Notify me when it opens →</a>
+                </div>
+                <div class="a-venir-carte">
+                    <span class="etiquette-venir">Coming soon</span>
+                    <h4>Prenatal and postnatal yoga · 85 h</h4>
+                    <p>A training to guide movement, breath and relaxation during pregnancy and after birth. Taught in French.</p>
+                    <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Notify me when it opens →</a>
+                </div>
+            </div>
         </div>
 
         <div class="carte-combo" hidden>
@@ -1975,7 +2020,7 @@
         <div class="academie-page-layout panneau-formation" id="panneau-doula">
             <div>
                 <img src="/doula.jpg" alt="A doula supports a pregnant mother leaning on a birth ball" class="academie-img-discret">
-                <p class="doula-cohorte-ruban"><span class="point"></span> New cohort starting <strong>October 21, 2026</strong> · <strong>6 spots</strong></p>
+                <p class="doula-cohorte-ruban"><span class="point"></span> New cohort starting <strong>October 21, 2026</strong> · <strong>2 spots</strong></p>
                 <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
                     🤰 Foundational doula training
                 </h3>
@@ -2069,40 +2114,17 @@
                     <p>Quizzes, module exams, filmed comfort measures, prenatal meeting simulation, 2 placement follow-ups, case study and final exam. When you pass, you receive your printed Académie Sérénaissance doula certificate <strong>by mail</strong>. Suggested length: 9 to 12 months · 18 months of access.</p>
                 </div>
 
-                <div class="bloc-complete" id="formation-complete-550">
-                    <span class="etiquette">New · go further</span>
-                    <h3>🌟 Complete doula training · 600 hours</h3>
-                    <p>The foundational training prepares you to support families. The complete training makes you a doula who supports them <strong>from pregnancy to the end of the fourth trimester</strong>, including in the most delicate situations.</p>
-                    <div class="compo-550">
-                        <div><strong>400 h</strong>Foundational doula training</div>
-                        <div><strong>35 h</strong>Advanced Fourth Trimester Support</div>
-                        <div><strong>8.5 h</strong>Breastfeeding Peer Supporter</div>
-                        <div><strong>156.5 h</strong>Advanced track</div>
-                    </div>
-                    <p style="margin-bottom:4px;"><strong>The advanced track:</strong></p>
-                    <ul>
-                        <li>Breastfeeding: supporting difficulties, with an IBCLC</li>
-                        <li>Perinatal loss and difficult situations</li>
-                        <li>Perinatal mental health and trauma-informed care</li>
-                        <li>Special births: VBAC, caesarean, home, birth centre, NICU</li>
-                        <li>Supporting every family</li>
-                        <li>The baby: sleep, crying, babywearing and care</li>
-                        <li>Running a doula business that lasts</li>
-                        <li>Advanced live mentoring (10 circles) and a 3rd supervised placement</li>
-                    </ul>
-                    <p class="prix-550">💛 <strong>$2,950</strong> for the complete training (instead of more than $3,900 when buying each part separately).<br>You can <strong>start with the foundational training on October 21</strong> and upgrade to the complete training at any time by paying only the difference ($1,200). The advanced track follows the foundational training. Training in French.</p>
-                </div>
-            </div>
+                            </div>
             <div class="price-box-sticky">
                 <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Foundational training · 400 h</span>
                 <div class="price-tag">$1,750 <s class="prix-barre-doula">$1,950</s></div>
                 <div class="doula-lancement">🔥 Launch price · October 21 cohort</div>
-                <p class="doula-places">Only <strong>6 spots</strong></p>
+                <p class="doula-places">Only <strong>2 spots</strong></p>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">All included: manuals, workshops, exams, mentoring, placement supervision and certificate.</div>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Pay in <strong>1 payment</strong> ($1,750), <strong>3 instalments</strong> ($583.33) or <strong>6 instalments</strong> ($291.67). You choose in the registration form.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Secure payment with Stripe</div>
                 <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">Register online</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Launch price valid until October 20, 2026 or until the 6 spots are filled. After that: $1,950.</p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Launch price valid until October 20, 2026 or until the 2 spots are filled. After that: $1,950.</p>
             </div>
         </div>
 
@@ -2860,6 +2882,50 @@
                     <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
                         "Giving mothers and babies the cocoon they deserve."
                     </p>
+                </div>
+            </div>
+
+            <!-- Team of trainers -->
+            <div class="equipe-section">
+                <div class="section-header-centered" style="margin-bottom: 22px;">
+                    <h2 style="font-size: 1.9rem;">Our trainers</h2>
+                    <p>A training built with professionals from the field.</p>
+                </div>
+                <div class="equipe-grille">
+                    <div class="formatrice-carte">
+                        <img src="/sabrina.png" alt="Sabrina Chavanel, director of Académie Sérénaissance" loading="lazy">
+                        <p class="role">Director and trainer</p>
+                        <h3>Sabrina Chavanel</h3>
+                        <p class="titres">Doula · Naturopath · Helping-relationship practitioner</p>
+                        <p>I have been a doula for three years. I started supporting families in the field before I even did my training, which I completed in 2026 to be certified. The field is where I learned the most, and it is also where I saw what was missing.</p>
+                        <details>
+                            <summary><span class="voir-plus">See more</span><span class="voir-moins">See less</span></summary>
+                            <div class="suite">
+                                <p>What was missing was information. In many trainings, the postpartum period and what families really live through are only skimmed over. I wanted future support people to arrive prepared, with solid foundations, and able to recognize when to refer.</p>
+                                <p>So I built this training with an IBCLC lactation consultant and a midwife, so that the content is accurate and rigorous. I am also a naturopath and a helping-relationship practitioner, and a mother of five.</p>
+                                <p>Pregnancy, birth and parenting are close to my heart. I am about to study nursing, to work even more in parenting and maternity: it is a field I am passionate about.</p>
+                                <p>The more I move forward, the more I see that families are not equipped enough. Doulas must be fully equipped, as much as possible, to support them well. That is why this training matters so much to me.</p>
+                                <p><strong>My conviction: fully equipped doulas mean better-supported families.</strong></p>
+                            </div>
+                        </details>
+                    </div>
+                    <div class="formatrice-carte">
+                        <img src="/laurence.jpg" alt="Laurence Boulanger, clinical nurse and IBCLC lactation consultant" loading="lazy">
+                        <p class="role">Trainer · mandatory 2-hour breastfeeding workshop</p>
+                        <h3>Laurence Boulanger</h3>
+                        <p class="titres">Clinical nurse, board-certified lactation consultant (IBCLC, <em>International Board Certified Lactation Consultant</em>) and founder of CAP Maternité</p>
+                        <p>Passionate about perinatal care and breastfeeding, Laurence has been a clinical nurse for over 10 years, mainly in maternity and postpartum care. A mother of three herself, she brings both a professional and a personal perspective to the realities of motherhood and breastfeeding.</p>
+                        <details>
+                            <summary><span class="voir-plus">See more</span><span class="voir-moins">See less</span></summary>
+                            <div class="suite">
+                                <p>Over the years, she has supported many families in their first moments with their baby, an experience that fueled her desire to deepen her knowledge and specialize in breastfeeding.</p>
+                                <p>Today a board-certified IBCLC lactation consultant, she combines her nursing expertise with specialized breastfeeding knowledge to offer support that is rigorous, human and respectful of each family's needs, choices and reality.</p>
+                                <p>Also a nursing instructor and the founder of CAP Maternité, Laurence particularly enjoys sharing her knowledge, making sometimes complex notions easy to grasp, and giving others the tools to understand and act with confidence.</p>
+                                <p>It is in this spirit that she contributes to the training of birth support people, wanting to pass on concrete knowledge and practical tools to better understand breastfeeding, support families and recognize situations that call for specialized help.</p>
+                                <p><strong>Her conviction: understanding better also means supporting better.</strong></p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </div>
 

@@ -1324,6 +1324,32 @@
         .doula-cohorte-ruban { display: inline-flex; align-items: center; gap: 8px; background: #f2c9b9; color: #7c3a2a; font-size: .85rem; padding: 7px 14px; border-radius: 30px; margin: 4px 0 14px; }
         .doula-cohorte-ruban .point, .hero-cohorte .point { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-terracotta); animation: cohortePouls 1.8s ease-in-out infinite; flex: none; }
         .doula-equipe { background: #fff; border-radius: 16px; padding: 12px 16px; font-size: .92rem; color: #5a4a42; border-left: 4px solid #d8a796; margin: 0 0 20px; }
+        /* ===== À venir + équipe de formatrices ===== */
+        .a-venir { margin: 36px 0 8px; }
+        .a-venir h3 { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--text-dark); text-align:center; margin:0 0 6px; }
+        .a-venir > p { text-align:center; color:#7a685e; font-size:.92rem; margin:0 0 18px; }
+        .a-venir-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+        .a-venir-carte { background:var(--card-bg); border:1.5px dashed #d9b9a9; border-radius:20px; padding:20px 22px; }
+        .a-venir-carte .etiquette-venir { display:inline-block; background:#f3e3da; color:#8a4233; font-size:.7rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:999px; padding:3px 10px; margin-bottom:10px; }
+        .a-venir-carte h4 { font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--text-dark); margin:0 0 6px; }
+        .a-venir-carte p { font-size:.9rem; color:#5a4a42; margin:0 0 10px; }
+        .a-venir-carte .lien-prevenir { font-size:.85rem; font-weight:700; color:var(--accent-terracotta); text-decoration:none; }
+        .equipe-section { margin: 10px 0 10px; }
+        .equipe-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; align-items:start; }
+        .formatrice-carte { background:var(--card-bg); border:1px solid var(--border-color); border-radius:24px; padding:26px; box-shadow:0 10px 30px rgba(0,0,0,.03); }
+        .formatrice-carte img { width:100%; aspect-ratio:4/5; object-fit:cover; object-position:center 20%; border-radius:18px; display:block; margin-bottom:16px; }
+        .formatrice-carte .role { font-size:.78rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--accent-terracotta); margin:0 0 4px; }
+        .formatrice-carte h3 { font-family:'Playfair Display',serif; font-size:1.4rem; color:var(--text-dark); margin:0 0 4px; }
+        .formatrice-carte .titres { font-size:.88rem; color:#7a685e; margin:0 0 12px; }
+        .formatrice-carte p { font-size:.93rem; color:#5a4a42; margin:0 0 10px; }
+        .formatrice-carte details { margin-top:6px; }
+        .formatrice-carte details summary { cursor:pointer; list-style:none; font-weight:700; color:var(--accent-terracotta); font-size:.9rem; display:inline-flex; align-items:center; gap:6px; }
+        .formatrice-carte details summary::-webkit-details-marker { display:none; }
+        .formatrice-carte details summary::after { content:"+"; font-size:1.1rem; }
+        .formatrice-carte details[open] summary::after { content:"−"; }
+        .formatrice-carte details[open] summary .voir-plus { display:none; }
+        .formatrice-carte details:not([open]) summary .voir-moins { display:none; }
+        .formatrice-carte details .suite { margin-top:10px; border-top:1px solid var(--border-color); padding-top:10px; }
         .bloc-complete { margin-top: 28px; background: linear-gradient(135deg,#fbefe9,#fff7f2); border: 1.5px solid #e6bfae; border-radius: 22px; padding: 22px 22px 18px; }
         .bloc-complete .etiquette { display:inline-block; background:#c9826b; color:#fff; font-size:.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; border-radius:999px; padding:4px 12px; margin-bottom:10px; }
         .bloc-complete h3 { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--text-dark); margin:0 0 8px; }
@@ -1749,7 +1775,7 @@
                     </div>
                     <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="Voir la formation de doula, nouvelle cohorte dès le 21 octobre"><span class="sp1">Nouvelle cohorte</span><span class="sp2">Doula</span><span class="sp3">400 heures</span><span class="sp4">dès le 21 octobre</span></a>
                 </div>
-                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Formation de base de doula : un bloc animé par une consultante IBCLC et un autre par une sage-femme ♥<small>6 places · 1 750 $ · découvrir la formation →</small></a>
+                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Formation de base de doula : un bloc animé par une consultante IBCLC et un autre par une sage-femme ♥<small>2 places · 1 750 $ · découvrir la formation →</small></a>
             </div>
         </div>
 
@@ -1946,7 +1972,7 @@
         <div class="choix-formations trois" role="tablist">
             <a href="#" class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true" onclick="montrerFormation('doula', event)">
                 <span class="cf-titre">Formation de base de doula · 400 h</span>
-                <span class="cf-info">Cohorte du 21 octobre · 6 places · ouverte à toutes</span>
+                <span class="cf-info">Cohorte du 21 octobre · 2 places · ouverte à toutes</span>
                 <span class="cf-prix">1 750 $<s>1 950 $</s></span>
             </a>
             <a href="#" class="choix-formation" id="onglet-4e" role="tab" aria-selected="false" onclick="montrerFormation('4e', event)">
@@ -1959,6 +1985,25 @@
                 <span class="cf-info">Environ 8 h 30 · ouverte à toutes</span>
                 <span class="cf-prix">175 $</span>
             </a>
+        </div>
+
+        <div class="a-venir">
+            <h3>Prochainement à l'Académie</h3>
+            <p>Deux nouvelles formations sont en préparation. Dates et prix annoncés bientôt.</p>
+            <div class="a-venir-grille">
+                <div class="a-venir-carte">
+                    <span class="etiquette-venir">À venir</span>
+                    <h4>Relation d'aide · 300 h</h4>
+                    <p>Écoute, communication aidante, éthique, déontologie et loi 21, deuil, situations de crise et santé mentale : 240 h de modules et 60 h de stage supervisé.</p>
+                    <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
+                </div>
+                <div class="a-venir-carte">
+                    <span class="etiquette-venir">À venir</span>
+                    <h4>Yoga prénatal et postnatal · 85 h</h4>
+                    <p>Une formation pour accompagner le mouvement, le souffle et la détente pendant la grossesse et après la naissance.</p>
+                    <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
+                </div>
+            </div>
         </div>
 
         <div class="carte-combo" hidden>
@@ -1975,7 +2020,7 @@
         <div class="academie-page-layout panneau-formation" id="panneau-doula">
             <div>
                 <img src="doula.jpg" alt="Une doula soutient une maman enceinte appuyée sur un ballon" class="academie-img-discret">
-                <p class="doula-cohorte-ruban"><span class="point"></span> Nouvelle cohorte : début le <strong>21 octobre 2026</strong> · <strong>6 places</strong></p>
+                <p class="doula-cohorte-ruban"><span class="point"></span> Nouvelle cohorte : début le <strong>21 octobre 2026</strong> · <strong>2 places</strong></p>
                 <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
                     🤰 Formation de base de doula
                 </h3>
@@ -2151,41 +2196,18 @@
                     <p>Quiz, examens de module, gestes de confort filmés, simulation de rencontre prénatale, 4 suivis de stage, étude de cas et examen final. À la réussite, tu reçois ton certificat de doula de l'Académie Sérénaissance imprimé, <strong>par la poste</strong>. Durée suggérée : 9 à 12 mois · accès pendant 18 mois.</p>
                 </div>
 
-                <div class="bloc-complete" id="formation-complete-550">
-                    <span class="etiquette">Nouveau · pour aller plus loin</span>
-                    <h3>🌟 Formation complète de doula · 600 heures</h3>
-                    <p>La formation de base te prépare à accompagner. La formation complète fait de toi une doula qui accompagne <strong>de la grossesse jusqu'à la fin du 4ᵉ trimestre</strong>, y compris dans les situations les plus délicates.</p>
-                    <div class="compo-550">
-                        <div><strong>400 h</strong>Formation de base de doula</div>
-                        <div><strong>35 h</strong>Accompagnement de pointe du 4ᵉ trimestre</div>
-                        <div><strong>8 h 30</strong>Marraine d'allaitement</div>
-                        <div><strong>156 h 30</strong>Volet avancé</div>
-                    </div>
-                    <p style="margin-bottom:4px;"><strong>Le volet avancé :</strong></p>
-                    <ul>
-                        <li>Allaitement : accompagner les difficultés, avec une consultante IBCLC</li>
-                        <li>Deuil périnatal et situations difficiles</li>
-                        <li>Santé mentale périnatale et approche sensible au trauma</li>
-                        <li>Naissances particulières : AVAC, césarienne, domicile, maison de naissance, néonatalogie</li>
-                        <li>Accompagner toutes les familles</li>
-                        <li>Le bébé : sommeil, pleurs, portage et soins</li>
-                        <li>Entreprendre : faire vivre sa pratique</li>
-                        <li>Mentorat avancé en direct (10 cercles) et un 5ᵉ suivi de stage supervisé</li>
-                    </ul>
-                    <p class="prix-550">💛 <strong>2 950 $</strong> pour la formation complète (au lieu de plus de 3 900 $ en achetant chaque partie séparément).<br>Tu peux <strong>commencer par la formation de base dès le 21 octobre</strong> et passer à la formation complète en tout temps en payant seulement la différence (1 200 $). Le volet avancé se fait après la base.</p>
-                </div>
-            </div>
+                            </div>
 
             <div class="price-box-sticky">
                 <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Formation de base · 400 h</span>
                 <div class="price-tag">1 750 $ <s class="prix-barre-doula">1 950 $</s></div>
                 <div class="doula-lancement">🔥 Prix de lancement · cohorte du 21 octobre</div>
-                <p class="doula-places">Seulement <strong>6 places</strong></p>
+                <p class="doula-places">Seulement <strong>2 places</strong></p>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</div>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Paiement en <strong>1 versement</strong> (1 750 $), <strong>3 versements</strong> (583,33 $) ou <strong>6 versements</strong> (291,67 $). Tu choisis dans le formulaire d'inscription.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé avec Stripe</div>
                 <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">S'inscrire en ligne</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Prix de lancement valable jusqu'au 20 octobre 2026 ou jusqu'à ce que les 6 places soient comblées. Ensuite : 1 950 $.</p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Prix de lancement valable jusqu'au 20 octobre 2026 ou jusqu'à ce que les 2 places soient comblées. Ensuite : 1 950 $.</p>
                 <p style="font-size: 0.78rem; color: #7a685e; margin-top: 8px;">Annulation possible selon les règles de la Loi sur la protection du consommateur du Québec (et droit de rétractation de 14 jours pour les résidentes de la France et de l'Union européenne).</p>
             </div>
         </div>
@@ -2944,6 +2966,50 @@
                     <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
                         « Offrir aux mères et aux bébés le cocon qu'ils méritent. »
                     </p>
+                </div>
+            </div>
+
+            <!-- Équipe de formatrices -->
+            <div class="equipe-section">
+                <div class="section-header-centered" style="margin-bottom: 22px;">
+                    <h2 style="font-size: 1.9rem;">L'équipe de formatrices</h2>
+                    <p>Une formation montée avec des professionnelles du terrain.</p>
+                </div>
+                <div class="equipe-grille">
+                    <div class="formatrice-carte">
+                        <img src="sabrina.png" alt="Sabrina Chavanel, directrice de l'Académie Sérénaissance" loading="lazy">
+                        <p class="role">Directrice et formatrice</p>
+                        <h3>Sabrina Chavanel</h3>
+                        <p class="titres">Doula · Naturothérapeute · Intervenante en relation d'aide</p>
+                        <p>Je suis doula depuis trois ans. J’ai commencé à accompagner des familles sur le terrain avant même de faire ma formation, que j’ai complétée en 2026 pour être certifiée. C’est sur le terrain que j’ai le plus appris, et c’est aussi là que j’ai vu ce qui manquait.</p>
+                        <details>
+                            <summary><span class="voir-plus">Voir plus</span><span class="voir-moins">Voir moins</span></summary>
+                            <div class="suite">
+                                <p>Ce qui manquait, c’était de l’information. Dans bien des formations, le post-partum et ce que les familles vivent vraiment sont seulement survolés. Je voulais que les futures accompagnantes arrivent préparées, avec des bases solides, et qu’elles sachent reconnaître quand référer.</p>
+                                <p>J’ai donc monté cette formation avec une consultante en lactation IBCLC et une sage-femme, pour que le contenu soit juste et rigoureux. Je suis aussi naturothérapeute et intervenante en relation d’aide, et maman de cinq enfants.</p>
+                                <p>La grossesse, la naissance et la parentalité me tiennent profondément à cœur. Je m’apprête d’ailleurs à étudier en soins infirmiers, pour travailler encore plus en parentalité et en maternité : c’est un domaine qui me passionne.</p>
+                                <p>Plus j’avance, plus je constate que les familles ne sont pas assez outillées. Les doulas doivent l’être pleinement, le plus possible, pour bien les soutenir. C’est pour ça que cette formation compte autant pour moi.</p>
+                                <p><strong>Ma conviction : des doulas pleinement outillées, ce sont des familles mieux soutenues.</strong></p>
+                            </div>
+                        </details>
+                    </div>
+                    <div class="formatrice-carte">
+                        <img src="laurence.jpg" alt="Laurence Boulanger, infirmière clinicienne et consultante en lactation IBCLC" loading="lazy">
+                        <p class="role">Formatrice · atelier obligatoire de 2 h sur l'allaitement</p>
+                        <h3>Laurence Boulanger</h3>
+                        <p class="titres">Infirmière clinicienne, consultante en lactation certifiée IBCLC (<em>International Board Certified Lactation Consultant</em>) et fondatrice de CAP Maternité</p>
+                        <p>Passionnée par la périnatalité et l’allaitement, Laurence est infirmière clinicienne depuis plus de 10 ans, principalement en natalité et en soins post-partum. Également maman de trois enfants, elle porte un regard à la fois professionnel et personnel sur les réalités de la maternité et de l’allaitement.</p>
+                        <details>
+                            <summary><span class="voir-plus">Voir plus</span><span class="voir-moins">Voir moins</span></summary>
+                            <div class="suite">
+                                <p>Au fil des années, elle a accompagné de nombreuses familles dans leurs premiers moments avec bébé, une expérience qui a nourri son désir d’approfondir ses connaissances et de se spécialiser en allaitement.</p>
+                                <p>Aujourd’hui consultante en lactation certifiée IBCLC, elle combine son expertise infirmière à ses connaissances spécialisées en allaitement pour offrir un accompagnement à la fois rigoureux, humain et respectueux des besoins, des choix et de la réalité de chaque famille.</p>
+                                <p>Également enseignante en soins infirmiers et fondatrice de CAP Maternité, Laurence aime particulièrement transmettre ses connaissances, vulgariser des notions parfois complexes et donner aux autres les outils pour mieux comprendre et agir avec confiance.</p>
+                                <p>C’est dans cet esprit qu’elle collabore à la formation des accompagnantes à la naissance, avec l’envie de leur transmettre des connaissances concrètes et des outils pratiques pour mieux comprendre l’allaitement, soutenir les familles et reconnaître les situations qui nécessitent un accompagnement spécialisé.</p>
+                                <p><strong>Sa conviction : mieux comprendre, c’est aussi mieux accompagner.</strong></p>
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </div>
 
