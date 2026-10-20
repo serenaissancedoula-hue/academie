@@ -1334,6 +1334,20 @@
         .a-venir-carte h4 { font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--text-dark); margin:0 0 6px; }
         .a-venir-carte p { font-size:.9rem; color:#5a4a42; margin:0 0 10px; }
         .a-venir-carte .lien-prevenir { font-size:.85rem; font-weight:700; color:var(--accent-terracotta); text-decoration:none; }
+        .a-venir-note { font-size:.82rem !important; color:#7a685e !important; font-style:italic; }
+        .voir-modules { margin:8px 0 14px; }
+        .voir-modules > summary { cursor:pointer; list-style:none; font-weight:700; color:var(--accent-terracotta); font-size:.9rem; display:inline-flex; align-items:center; gap:6px; }
+        .voir-modules > summary::-webkit-details-marker { display:none; }
+        .voir-modules > summary::after { content:"▾"; transition:transform .2s; }
+        .voir-modules[open] > summary::after { transform:rotate(180deg); }
+        .voir-modules .modules-accordeon { margin-top:12px; }
+        .voir-modules .mod-titre { font-size:.92rem; }
+        .voir-modules ul { margin:0 18px 14px 40px; font-size:.86rem; color:#5a4a42; }
+        .volet-titre { font-family:'Playfair Display',serif; font-weight:700; font-size:.98rem; color:var(--text-dark); margin:14px 0 6px !important; }
+        .a-venir-grille { align-items:start; }
+        .mon-histoire { margin:6px 0 14px; }
+        .histoire-texte { margin:12px auto 0; max-width:760px; text-align:left; }
+        .histoire-texte p { margin:0 0 12px; }
         .equipe-section { margin: 10px 0 10px; }
         .equipe-grille { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:24px; align-items:start; }
         .formatrice-carte { background:var(--card-bg); border:1px solid var(--border-color); border-radius:24px; padding:26px; box-shadow:0 10px 30px rgba(0,0,0,.03); }
@@ -1715,6 +1729,7 @@
             <li><a href="#" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Marraines</a></li>
             <li><a href="espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>Mon compte</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
+            <li><a href="#" onclick="switchPage('formatrices', this, event)" id="nav-formatrices">Formatrices</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">À propos</a></li>
         </ul>
         <div class="appel-langue">
@@ -1782,7 +1797,16 @@
         <div class="home-summary-box">
             <h3>Bonjour, je suis Sabrina</h3>
             <p>Maman de 5 enfants (donc j'en connais quand même pas mal, hihi !), doula, intervenante en relation d'aide et naturothérapeute, j'offre un espace sécurisant et chaleureux aux futurs parents pour traverser la grossesse, l'accouchement et le post-partum. À travers Sérénaissance et mon Académie, je me consacre à honorer la matrescence et à outiller les accompagnantes.</p>
-            <button class="btn-secondary" onclick="switchPage('apropos', null, event)">En savoir plus sur moi →</button>
+            <details class="voir-modules mon-histoire"><summary>Lire mon histoire</summary>
+            <div class="histoire-texte">
+                <p>Ma maternité avec mes cinq enfants m'a appris une chose essentielle : <strong>on n'est pas bien préparées, et on n'est pas assez soutenues.</strong> Entre la fatigue, les conseils contradictoires et la pression de « bien faire », j'ai vécu ce que tant de mères traversent en silence.</p>
+                <p>En arrivant à la fin de ma propre période de maternité, je voulais garder un pied dans ce monde qui me passionne. Devenir doula, c'était le meilleur des deux mondes : continuer d'honorer la naissance et la matrescence, en mettant mon vécu au service des autres familles.</p>
+                <p>Depuis 3 ans, j'accompagne les familles de Campbellton et des environs avant, pendant et après la naissance. Ma formation en relation d'aide m'a donné des outils précieux pour accueillir l'anxiété et le stress, si souvent présents autour de l'arrivée d'un bébé.</p>
+                <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
+                        « Offrir aux mères et aux bébés le cocon qu'ils méritent. »
+                    </p>
+            </div></details>
+            <button class="btn-secondary" onclick="switchPage('formatrices', null, event)">Voir mon parcours de formatrice →</button>
         </div>
 
         <div class="home-summary-box" style="background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
@@ -1994,13 +2018,58 @@
                 <div class="a-venir-carte">
                     <span class="etiquette-venir">À venir</span>
                     <h4>Relation d'aide · 300 h</h4>
-                    <p>Écoute, communication aidante, éthique, déontologie et loi 21, deuil, situations de crise et santé mentale : 240 h de modules et 60 h de stage supervisé.</p>
+                    <p>Cette formation prépare les accompagnantes à offrir une relation d'aide de qualité, dans un cadre éthique, légal et sécuritaire. Elle distingue clairement la relation d'aide de la psychothérapie, qui est encadrée au Québec par la loi 21. 240 h de modules et 60 h de stage supervisé, à ton rythme (9 à 12 mois suggérés).</p>
+                    <p class="a-venir-note">Un certificat de l'école est remis à la réussite de toutes les évaluations. Il ne constitue pas un titre professionnel réglementé.</p>
+                    <details class="voir-modules"><summary>Voir les 16 modules</summary>
+<div class="modules-accordeon">
+<details><summary><span class="mod-num">1</span><span class="mod-titre">Fondements, courants et posture</span><span class="mod-info">15 h</span></summary><ul><li>Définition et histoire de la relation d'aide</li><li>Courants : humaniste, centré sur la personne, émotivo-rationnel et systémique (aperçu)</li><li>Différence avec la psychothérapie, le coaching et le conseil</li><li>Posture d'humilité, de présence et de non-jugement</li></ul></details>
+<details><summary><span class="mod-num">2</span><span class="mod-titre">Éthique, déontologie, tenue de dossier et loi 21</span><span class="mod-info">25 h</span></summary><ul><li>Principes éthiques et code de déontologie</li><li>Confidentialité et ses limites, consentement éclairé, conflits d'intérêts</li><li>Tenue de dossier : fiche d'ouverture, notes, plan d'accompagnement, conservation et protection des renseignements</li><li>Loi 21 et encadrement de la psychothérapie au Québec : ce que l'intervenante peut et ne peut pas faire, quand référer</li></ul></details>
+<details><summary><span class="mod-num">3</span><span class="mod-titre">Alliance et communication aidante</span><span class="mod-info">20 h</span></summary><ul><li>Alliance de travail, écoute active, reformulation, questionnement ouvert</li><li>Silence, empathie, validation, communication non verbale</li><li>Erreurs courantes : conseils non demandés, minimisation, positivité toxique</li></ul></details>
+<details><summary><span class="mod-num">4</span><span class="mod-titre">Première rencontre, besoins et cadre</span><span class="mod-info">15 h</span></summary><ul><li>Déroulement d'une première rencontre et entrevue d'accueil</li><li>Cerner la demande et les besoins, objectifs d'accompagnement</li><li>Contrat de service, durée, fréquence et clôture</li></ul></details>
+<details><summary><span class="mod-num">5</span><span class="mod-titre">Approche centrée sur la personne et approche humaniste</span><span class="mod-info">15 h</span></summary><ul><li>Conditions de la relation aidante : acceptation inconditionnelle, congruence, empathie</li><li>Pouvoir d'agir de la personne et respect de son rythme</li><li>Motivation et changement</li></ul></details>
+<details><summary><span class="mod-num">6</span><span class="mod-titre">Comprendre et accompagner les émotions</span><span class="mod-info">15 h</span></summary><ul><li>Émotions de base et leurs fonctions</li><li>Colère, tristesse, peur, honte, culpabilité</li><li>Accompagner l'expression des émotions sans les alimenter, et quand une émotion devient envahissante</li></ul></details>
+<details><summary><span class="mod-num">7</span><span class="mod-titre">Anxiété, stress et régulation émotionnelle</span><span class="mod-info">20 h</span></summary><ul><li>Stress et anxiété : fonctionnement et signes</li><li>Outils de régulation non thérapeutiques : respiration, ancrage, relaxation, pleine conscience (aperçu)</li><li>Psychoéducation, habitudes de vie et limites de ces outils</li></ul></details>
+<details><summary><span class="mod-num">8</span><span class="mod-titre">Deuil, transitions et approche sensible au trauma</span><span class="mod-info">20 h</span></summary><ul><li>Deuil et deuil non reconnu</li><li>Transitions de vie</li><li>Approche sensible au trauma : sécurité, choix, collaboration</li><li>Réactions normales, signes de traumatisme et référence</li></ul></details>
+<details><summary><span class="mod-num">9</span><span class="mod-titre">Communication, conflits, couple et famille</span><span class="mod-info">15 h</span></summary><ul><li>Communication non violente et affirmation de soi</li><li>Gestion de conflits, dynamiques de couple et de famille</li><li>Accompagner une personne sans prendre parti</li><li>Violence conjugale et familiale : repérer et référer</li></ul></details>
+<details><summary><span class="mod-num">10</span><span class="mod-titre">Situations de crise et prévention du suicide</span><span class="mod-info">15 h</span></summary><ul><li>Repérer une crise et évaluer le niveau d'urgence dans les limites de son rôle</li><li>Idées suicidaires : signes, questions à poser, ne pas laisser la personne seule</li><li>Protocole de crise, ressources d'urgence de sa région, soutien après un événement</li></ul></details>
+<details><summary><span class="mod-num">11</span><span class="mod-titre">Santé mentale : repérer et référer</span><span class="mod-info">15 h</span></summary><ul><li>Repérer sans diagnostiquer : dépression, troubles anxieux, stress post-traumatique, troubles alimentaires, dépendances</li><li>Différence entre accompagnement et intervention thérapeutique</li><li>Référer avec douceur et travailler en réseau</li></ul></details>
+<details><summary><span class="mod-num">12</span><span class="mod-titre">Diversité, sécurisation culturelle et équité</span><span class="mod-info">10 h</span></summary><ul><li>Humilité culturelle</li><li>Familles et personnes 2SLGBTQIA+</li><li>Sécurisation culturelle et personnes autochtones</li><li>Immigration, barrières de langue, handicap et inégalités d'accès aux services</li></ul></details>
+<details><summary><span class="mod-num">13</span><span class="mod-titre">Relation d'aide en périnatalité et parentalité</span><span class="mod-info">15 h</span></summary><ul><li>Matrescence et transition à la parentalité</li><li>Santé mentale périnatale : repérer et référer</li><li>Deuil périnatal et naissances difficiles</li><li>Soutien au second parent et collaboration avec l'équipe de soins</li></ul></details>
+<details><summary><span class="mod-num">14</span><span class="mod-titre">Bâtir sa pratique professionnelle</span><span class="mod-info">15 h</span></summary><ul><li>Statut de travailleuse autonome, nom d'entreprise, assurance responsabilité</li><li>Adhésion à une association professionnelle</li><li>Reçus, tarification et publicité éthique</li><li>Travail en réseau et formation continue</li></ul></details>
+<details><summary><span class="mod-num">15</span><span class="mod-titre">Se préserver et durer</span><span class="mod-info">10 h</span></summary><ul><li>Fatigue de compassion, traumatisme vicariant, transfert émotionnel</li><li>Hygiène professionnelle, supervision et soutien entre pairs</li><li>Limites personnelles</li></ul></details>
+<details><summary><span class="mod-num">16</span><span class="mod-titre">Stage supervisé, supervision et intégration</span><span class="mod-info">60 h</span></summary><ul><li>Pratique supervisée (30 h) : rencontres de relation d'aide avec des pairs ou des personnes consentantes, sous supervision. Aucun acte de psychothérapie n'est posé</li><li>Supervision (20 h) : séances individuelles et de groupe</li><li>Intégration (10 h) : journal réflexif, rapports de rencontres, tenue de dossier et bilan de stage</li></ul></details>
+</div>
+                    </details>
                     <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
                 </div>
                 <div class="a-venir-carte">
                     <span class="etiquette-venir">À venir</span>
                     <h4>Yoga prénatal et postnatal · 85 h</h4>
-                    <p>Une formation pour accompagner le mouvement, le souffle et la détente pendant la grossesse et après la naissance.</p>
+                    <p>Cette formation apprend à enseigner le yoga de façon sécuritaire et adaptée aux femmes enceintes et aux nouvelles mères, de la grossesse jusqu'au post-partum et à la relation avec le bébé. Anatomie et physiologie périnatales, adaptation des postures, respiration et relaxation, pédagogie, cadre professionnel et limites de la pratique. 85 h, dont un stage supervisé de 20 h. Aucune formation médicale requise ; une pratique personnelle du yoga est recommandée.</p>
+                    <details class="voir-modules"><summary>Voir les 12 modules</summary>
+<p class="volet-titre">Volet 1 · Yoga prénatal · 29 h</p>
+<div class="modules-accordeon">
+<details><summary><span class="mod-num">1</span><span class="mod-titre">Philosophie, anatomie et physiologie de la grossesse</span><span class="mod-info">7 h</span></summary><ul><li>Le yoga et la maternité</li><li>Hormones et changements biomécaniques de la grossesse</li><li>Caractéristiques de chaque trimestre et malaises courants</li><li>Bassin, utérus, plancher pelvien, transverse, diaphragme</li><li>Symptômes normaux, signaux d'alerte et conditions médicales particulières</li></ul></details>
+<details><summary><span class="mod-num">2</span><span class="mod-titre">Physiologie de l'accouchement</span><span class="mod-info">4 h</span></summary><ul><li>Déroulement physiologique du travail et rôle des hormones</li><li>Positions, mobilité et poussée</li><li>Interventions médicales courantes et droits des femmes enceintes</li><li>Gestion de la douleur et rôle de l'enseignante, sans jamais se substituer à l'équipe soignante</li></ul></details>
+<details><summary><span class="mod-num">3</span><span class="mod-titre">Postures et adaptations prénatales</span><span class="mod-info">8 h</span></summary><ul><li>Postures à privilégier, à modifier et contre-indiquées, par trimestre</li><li>Alignement, correction posturale et accessoires</li><li>Travail du bassin, du plancher pelvien et du transverse</li><li>Renforcement, étirements et postures de confort</li><li>Respiration prénatale et introduction au prânâyâma adapté</li></ul></details>
+<details><summary><span class="mod-num">4</span><span class="mod-titre">Relaxation, méditation et pratiques intérieures</span><span class="mod-info">5 h</span></summary><ul><li>Relaxation profonde, yoga nidra prénatal, visualisation et méditation</li><li>Mouvement intuitif, son et respiration pour la préparation à l'accouchement</li><li>Accompagner les peurs liées à la naissance</li><li>Pratiques énergétiques et symboliques, présentées comme des traditions du yoga et non comme des soins médicaux</li></ul></details>
+<details><summary><span class="mod-num">5</span><span class="mod-titre">Enseigner le yoga prénatal</span><span class="mod-info">5 h</span></summary><ul><li>Formulaires d'accueil, consentement et questionnaire de santé</li><li>Structure d'une séance et construction d'un cours thématique</li><li>Animer un cercle d'échange et poser un cadre sécurisant</li><li>Cours de groupe, ateliers et séances privées, avec micro-enseignement</li></ul></details>
+</div>
+<p class="volet-titre">Volet 2 · Yoga postnatal · 26 h</p>
+<div class="modules-accordeon">
+<details><summary><span class="mod-num">6</span><span class="mod-titre">Physiologie du post-partum</span><span class="mod-info">5 h</span></summary><ul><li>Suites de couches et récupération après accouchement vaginal et césarienne</li><li>Transformations du corps, plancher pelvien, diastase et symptômes courants</li><li>Allaitement et besoins du nouveau-né (aperçu, sans conseil médical)</li><li>Santé mentale périnatale : repérer la dépression et l'anxiété postnatales et savoir référer</li><li>Quand reprendre l'activité physique</li></ul></details>
+<details><summary><span class="mod-num">7</span><span class="mod-titre">Yoga postnatal pour la mère</span><span class="mod-info">7 h</span></summary><ul><li>Plan de reprise progressive du mouvement</li><li>Plancher pelvien, respiration et sangle abdominale profonde</li><li>Prise en compte de la diastase et du pubis</li><li>Postures de récupération, mobilité du dos et des épaules (portage, allaitement)</li><li>Structure d'une séance postnatale et relaxation</li></ul></details>
+<details><summary><span class="mod-num">8</span><span class="mod-titre">Yoga et bébé</span><span class="mod-info">5 h</span></summary><ul><li>Observer le bébé et savoir quand ne pas intervenir</li><li>Manipulation sécuritaire, portage et positions</li><li>Massage du bébé et mouvements d'éveil sensoriel et moteur, avec limites claires de pratique</li><li>Chants, comptines et jeux adaptés</li></ul></details>
+<details><summary><span class="mod-num">9</span><span class="mod-titre">Yoga mère-bébé</span><span class="mod-info">4 h</span></summary><ul><li>Échauffements et postures à deux, au sol et en portage</li><li>Jeux d'équilibre et de mouvement</li><li>Relaxation partagée et clôture du cours</li></ul></details>
+<details><summary><span class="mod-num">10</span><span class="mod-titre">Enseigner le yoga postnatal</span><span class="mod-info">5 h</span></summary><ul><li>Accueil, formulaires et consentement</li><li>Gérer les pleurs, l'allaitement et les imprévus pendant le cours</li><li>Corrections posturales et toucher consenti</li><li>Cours en présentiel et en ligne, avec micro-enseignement évalué</li></ul></details>
+</div>
+<p class="volet-titre">Compléments · 30 h</p>
+<div class="modules-accordeon">
+<details><summary><span class="mod-num">11</span><span class="mod-titre">Professionnels de santé, éthique, déontologie, tenue de dossier et loi 21</span><span class="mod-info">10 h</span></summary><ul><li>Champ de pratique de l'enseignante de yoga : ce qui relève ou non de son rôle</li><li>Déontologie, confidentialité, consentement et tenue de dossier</li><li>Référer vers les professionnels de la santé (sage-femme, médecin, physiothérapeute du plancher pelvien, psychologue)</li><li>Loi 21 et encadrement de la psychothérapie au Québec : ce que l'enseignante peut et ne peut pas faire face à la détresse psychologique</li><li>Assurance responsabilité, contrats, tarification et gestion de base de la pratique</li><li>Pratique inclusive et approche sensible au trauma (pertes périnatales, traumatisme obstétrical, diversité des familles)</li><li>Philosophie, mode de vie et éthique du yoga (5 h) : yamas et niyamas appliqués à la maternité</li><li>Relation avec les professionnels de la santé (5 h) : collaborer avec sages-femmes, médecins et physiothérapeutes</li></ul></details>
+<details><summary><span class="mod-num">12</span><span class="mod-titre">Stage pratique supervisé</span><span class="mod-info">20 h</span></summary><ul><li>Observation (10 h) : observer une autre enseignante donner des cours prénataux</li><li>Enseignement (10 h) : donner des cours prénataux, dont 6 h avec la formatrice principale et au moins 4 h comme enseignante principale, avec rétroaction</li><li>Rapport d'enseignement et auto-évaluation réflexive</li></ul></details>
+</div>
+
+                    </details>
                     <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
                 </div>
             </div>
@@ -2948,33 +3017,14 @@
         </div>
     </div>
 
-    <!-- ================= 7. PAGE À PROPOS ================= -->
-    <div id="page-apropos" class="page-section">
+    <!-- ================= PAGE FORMATRICES ================= -->
+    <div id="page-formatrices" class="page-section">
         <div class="about-page-container">
-            <!-- Présentation -->
-            <div class="about-page-box">
-                <div class="about-page-img">
-                    <img src="sabrina.png" alt="Sabrina Chavanel, doula et fondatrice de Sérénaissance">
-                </div>
-                <div class="about-page-text">
-                    <div class="badge-offre" style="font-size: 2.2rem; margin-bottom: 0;">Enchantée</div>
-                    <h2>Je suis Sabrina</h2>
-                    <p class="about-sous-titre">Doula · Naturothérapeute · Intervenante en relation d'aide<br>Maman de 5 enfants · Campbellton, N.-B.</p>
-                    <p>Ma maternité avec mes cinq enfants m'a appris une chose essentielle : <strong>on n'est pas bien préparées, et on n'est pas assez soutenues.</strong> Entre la fatigue, les conseils contradictoires et la pression de « bien faire », j'ai vécu ce que tant de mères traversent en silence.</p>
-                    <p>En arrivant à la fin de ma propre période de maternité, je voulais garder un pied dans ce monde qui me passionne. Devenir doula, c'était le meilleur des deux mondes : continuer d'honorer la naissance et la matrescence, en mettant mon vécu au service des autres familles.</p>
-                    <p>Depuis 3 ans, j'accompagne les familles de Campbellton et des environs avant, pendant et après la naissance. Ma formation en relation d'aide m'a donné des outils précieux pour accueillir l'anxiété et le stress, si souvent présents autour de l'arrivée d'un bébé.</p>
-                    <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
-                        « Offrir aux mères et aux bébés le cocon qu'ils méritent. »
-                    </p>
-                </div>
+            <div class="section-header-centered" style="margin-bottom: 22px;">
+                <h2>Les formatrices</h2>
+                <p>Une formation montée avec des professionnelles du terrain.</p>
             </div>
-
-            <!-- Équipe de formatrices -->
             <div class="equipe-section">
-                <div class="section-header-centered" style="margin-bottom: 22px;">
-                    <h2 style="font-size: 1.9rem;">L'équipe de formatrices</h2>
-                    <p>Une formation montée avec des professionnelles du terrain.</p>
-                </div>
                 <div class="equipe-grille">
                     <div class="formatrice-carte">
                         <img src="sabrina.png" alt="Sabrina Chavanel, directrice de l'Académie Sérénaissance" loading="lazy">
@@ -3011,6 +3061,29 @@
                             </div>
                         </details>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 7. PAGE À PROPOS ================= -->
+    <div id="page-apropos" class="page-section">
+        <div class="about-page-container">
+            <!-- Présentation -->
+            <div class="about-page-box">
+                <div class="about-page-img">
+                    <img src="sabrina.png" alt="Sabrina Chavanel, doula et fondatrice de Sérénaissance">
+                </div>
+                <div class="about-page-text">
+                    <div class="badge-offre" style="font-size: 2.2rem; margin-bottom: 0;">Enchantée</div>
+                    <h2>Je suis Sabrina</h2>
+                    <p class="about-sous-titre">Doula · Naturothérapeute · Intervenante en relation d'aide<br>Maman de 5 enfants · Campbellton, N.-B.</p>
+                    <p>Ma maternité avec mes cinq enfants m'a appris une chose essentielle : <strong>on n'est pas bien préparées, et on n'est pas assez soutenues.</strong> Entre la fatigue, les conseils contradictoires et la pression de « bien faire », j'ai vécu ce que tant de mères traversent en silence.</p>
+                    <p>En arrivant à la fin de ma propre période de maternité, je voulais garder un pied dans ce monde qui me passionne. Devenir doula, c'était le meilleur des deux mondes : continuer d'honorer la naissance et la matrescence, en mettant mon vécu au service des autres familles.</p>
+                    <p>Depuis 3 ans, j'accompagne les familles de Campbellton et des environs avant, pendant et après la naissance. Ma formation en relation d'aide m'a donné des outils précieux pour accueillir l'anxiété et le stress, si souvent présents autour de l'arrivée d'un bébé.</p>
+                    <p style="font-family: 'Playfair Display', serif; font-style: italic; color: var(--accent-terracotta); margin-top: 15px; font-size: 1.05rem;">
+                        « Offrir aux mères et aux bébés le cocon qu'ils méritent. »
+                    </p>
                 </div>
             </div>
 
@@ -3114,6 +3187,7 @@
             <li><a href="espace.html">Mon compte</a></li>
             <li><a href="#" onclick="switchPage('faq', this, event)">FAQ</a></li>
             <li><a href="/blogue/">Blogue</a></li>
+            <li><a href="#" onclick="switchPage('formatrices', this, event)">Formatrices</a></li>
             <li><a href="#" onclick="switchPage('apropos', this, event)">À propos</a></li>
         </ul>
         <nav class="footer-legal" aria-label="Pages de l'Académie" style="margin-bottom:6px;">
@@ -3381,7 +3455,7 @@
         // ================= NAVIGATION PAR ADRESSE (#formations, #marraine…) =================
         const PAGES_PAR_ADRESSE = {
             '#accueil': 'accueil', '#accompagnements': 'accompagnements', '#formations': 'academie',
-            '#academie': 'academie', '#compte': 'compte', '#faq': 'faq', '#apropos': 'apropos', '#nos-marraines': 'nos-marraines',
+            '#academie': 'academie', '#compte': 'compte', '#faq': 'faq', '#apropos': 'apropos', '#formatrices': 'formatrices', '#nos-marraines': 'nos-marraines',
             '#conditions': 'conditions', '#confidentialite': 'confidentialite', '#inscription': 'inscription'
         };
         function allerA(event, idAncre) {
