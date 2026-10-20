@@ -154,6 +154,41 @@
         .nav-center a:hover, .nav-center a.active {
             color: var(--accent-terracotta);
         }
+
+        /* ===== Menu déroulant « Formations » et vue liste / détail ===== */
+        .nav-center li.a-menu { position: relative; }
+        .sous-menu { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); padding-top: 14px; min-width: 330px; z-index: 1100; }
+        .nav-center li.a-menu:hover .sous-menu, .nav-center li.a-menu:focus-within .sous-menu { display: block; }
+        .sous-boite { background: #fff; border: 1px solid var(--border-color); border-radius: 18px; box-shadow: 0 16px 38px rgba(44,34,30,.14); padding: 10px; }
+        .sous-menu a.sm-item { display: block; padding: 11px 14px; border-radius: 12px; white-space: normal; }
+        .sous-menu a.sm-item strong { display: block; font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--text-dark); }
+        .sous-menu a.sm-item small { display: block; font-size: .8rem; color: #7a685e; margin-top: 2px; }
+        .sous-menu a.sm-item:hover { background: #f7ece5; }
+        .sous-menu a.sm-item:hover strong { color: var(--accent-terracotta); }
+        .sous-menu .sm-groupe { font-size: .68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent-terracotta); padding: 10px 14px 2px; border-top: 1px solid var(--border-color); margin-top: 6px; }
+        .sous-menu a.sm-bientot { display: flex; justify-content: space-between; gap: 12px; padding: 7px 14px; font-size: .88rem; color: #7a685e; border-radius: 10px; }
+        .sous-menu a.sm-bientot:hover { background: #f7ece5; color: var(--accent-terracotta); }
+        .sous-menu a.sm-toutes { display: block; text-align: center; margin-top: 8px; padding: 10px; font-weight: 700; font-size: .88rem; color: var(--accent-terracotta); border-top: 1px solid var(--border-color); }
+        @media (max-width: 950px) {
+            .nav-center li.a-menu { text-align: center; }
+            .sous-menu { display: block; position: static; transform: none; min-width: 0; padding: 0 0 6px; }
+            .sous-boite { border: 0; box-shadow: none; padding: 0; background: transparent; }
+            .nav-center li .sous-menu a { border-bottom: 0; padding: 8px 4px; font-size: .95rem; }
+            .sous-menu .sm-groupe, .sous-menu a.sm-toutes { display: none; }
+            .sous-menu a.sm-bientot { display: none; }
+        }
+        #page-academie[data-vue="liste"] .panneau-formation, #page-academie[data-vue="liste"] .ancre-formation, #page-academie[data-vue="liste"] .carte-combo, #page-academie[data-vue="liste"] .retour-formations { display: none !important; }
+        #page-academie[data-vue="detail"] .a-venir, #page-academie[data-vue="detail"] #pourquoi-academie, #page-academie[data-vue="detail"] #cohorte-fondatrice, #page-academie[data-vue="detail"] .comparatif, #page-academie[data-vue="detail"] .aide-liste { display: none !important; }
+        .aide-liste { text-align: center; color: #7a685e; font-size: .92rem; margin: 6px 0 4px; }
+        .retour-formations { display: inline-block; margin: 0 0 12px; font-weight: 700; font-size: .92rem; color: var(--accent-terracotta); text-decoration: none; }
+        .comparatif { margin: 34px 0 10px; }
+        .comparatif h3 { font-family: 'Playfair Display', serif; text-align: center; font-size: 1.35rem; margin: 0 0 14px; color: var(--text-dark); }
+        .comparatif .defile { overflow-x: auto; border: 1px solid var(--border-color); border-radius: 18px; background: var(--card-bg); }
+        .comparatif table { width: 100%; border-collapse: collapse; min-width: 680px; font-size: .9rem; }
+        .comparatif th, .comparatif td { padding: 12px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border-color); color: #5a4a42; }
+        .comparatif tr:last-child th, .comparatif tr:last-child td { border-bottom: 0; }
+        .comparatif thead th { font-family: 'Playfair Display', serif; color: var(--text-dark); font-size: 1rem; background: #f7ece5; }
+        .comparatif tbody th { color: var(--accent-terracotta); font-size: .78rem; text-transform: uppercase; letter-spacing: .8px; width: 130px; }
         /* Gestionnaire de pages (Affichage/Masquage) */
         .page-section {
             display: none;
@@ -1725,7 +1760,7 @@
         <ul class="nav-center">
             <li><a href="/en/" onclick="switchPage('accueil', this, event)" class="active" id="nav-accueil">Home</a></li>
             <li><a href="/en/support/" onclick="switchPage('accompagnements', this, event)" id="nav-accompagnements">Support</a></li>
-            <li><a href="/en/courses/" onclick="switchPage('academie', this, event)" id="nav-academie">Courses</a></li>
+            <li class="a-menu"><a href="/en/courses/" onclick="switchPage('academie', this, event)" id="nav-academie" aria-haspopup="true">Courses</a><div class="sous-menu"><div class="sous-boite"><a class="sm-item" href="/en/courses/#doula" onclick="allerFormation('doula', event)"><strong>Foundational doula training</strong><small>400 h · open to everyone</small></a><a class="sm-item" href="/en/courses/#4e" onclick="allerFormation('4e', event)"><strong>Advanced Fourth Trimester Support</strong><small>35 h · for certified doulas</small></a><a class="sm-item" href="/en/courses/#marraine" onclick="allerFormation('marraine', event)"><strong>Breastfeeding Peer Supporter</strong><small>8.5 h · open to everyone</small></a><div class="sm-groupe">Coming soon</div><a class="sm-bientot" href="/en/courses/" onclick="toutesLesFormations(event, true)"><span>Helping relationship</span><span>300 h</span></a><a class="sm-bientot" href="/en/courses/" onclick="toutesLesFormations(event, true)"><span>Prenatal and postnatal yoga</span><span>85 h</span></a><a class="sm-toutes" href="/en/courses/" onclick="switchPage('academie', null, event)">See all courses →</a></div></div></li>
             <li><a href="/en/peer-supporters/" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Peer Supporters</a></li>
             <li><a href="/en/espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>My account</a></li>
             <li><a href="/en/faq/" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
@@ -1977,13 +2012,14 @@
     </div>
 
     <!-- ================= 3. PAGE FORMATIONS DE L'ACADÉMIE ================= -->
-    <div id="page-academie" class="page-section">
+    <div id="page-academie" class="page-section" data-vue="liste">
         <div class="section-header-centered">
             <h2>Académie Sérénaissance Courses</h2>
             <p>Ethical, safe online courses to support families with confidence.</p>
             <p class="bandeau-pays">🌎 For learners in <strong>New Brunswick</strong>, <strong>Quebec</strong>, the rest of <strong>Canada</strong>, <strong>France</strong> and elsewhere: care pathways, financial supports, legal framework and documents adapted to each. <a class="bientot-en" href="/" lang="fr" style="text-decoration:none;">🇫🇷 Version française</a></p>
         </div>
 
+        <a href="/en/courses/" class="retour-formations" onclick="toutesLesFormations(event)">← All courses</a>
         <div class="choix-formations trois" role="tablist">
             <a href="#" class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true" onclick="montrerFormation('doula', event)">
                 <span class="cf-titre">Foundational doula training · 400 h</span>
@@ -2001,6 +2037,9 @@
                 <span class="cf-prix">$175</span>
             </a>
         </div>
+
+        <p class="aide-liste">Click a course to see the details.</p>
+        <div class="comparatif"><h3>The courses at a glance</h3><div class="defile"><table><thead><tr><th></th><th scope="col">Foundational</th><th scope="col">Fourth trimester</th><th scope="col">Peer supporter</th></tr></thead><tbody><tr><th scope="row">Length</th><td>400 h, at your own pace (9 to 12 months suggested)</td><td>About 35 h, at your own pace</td><td>About 8.5 h, at your own pace</td></tr><tr><th scope="row">Who it is for</th><td>Anyone who wants to become a doula</td><td>Certified doulas</td><td>Open to everyone</td></tr><tr><th scope="row">Prerequisites</th><td>Age 18+, fluent French, 4 in-person practicums</td><td>Doula diploma or certificate</td><td>None</td></tr><tr><th scope="row">What's included</th><td>Live workshops, supervised practicums, mentoring</td><td>Online modules, guided case report</td><td>Online modules</td></tr><tr><th scope="row">Certificate</th><td>Académie doula certificate, printed and mailed</td><td>Académie certificate, printed and mailed</td><td>Certificate of participation, printed and mailed</td></tr></tbody></table></div></div>
 
         <div class="a-venir">
             <h3>Coming soon at the Academy</h3>
@@ -2465,7 +2504,7 @@
         </div>
 
         <!-- Pourquoi choisir l'Académie -->
-        <div style="margin-top: 60px;">
+        <div style="margin-top: 60px;" id="pourquoi-academie">
             <div class="section-header-centered" style="margin-bottom: 25px;">
                 <h2 style="font-size: 1.9rem;">Why choose the Academy?</h2>
                 <p>A course designed by a hands-on doula, for those who want to become a doula or go further.</p>
@@ -2497,7 +2536,7 @@
         <div id="offrir-cadeau" hidden></div>
 
         <!-- Sois parmi les premières -->
-        <div class="home-summary-box" style="margin-top: 50px; background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
+        <div id="cohorte-fondatrice" class="home-summary-box" style="margin-top: 50px; background: linear-gradient(135deg, #efe6dc 0%, #f7f1ea 100%);">
             <div class="badge-offre" style="margin-bottom: 4px;">Be among the first</div>
             <h3>You're part of the founding cohort 🌱</h3>
             <p>The Académie Sérénaissance is opening its doors. The first students are shaping the course with me: their feedback helps me make it even better, and their testimonials will appear here very soon.</p>
@@ -3248,6 +3287,7 @@
             if (cible) {
                 cible.classList.add('active');
             }
+            if (pageId === 'academie') vueFormations('liste');
             if (pageId === 'nos-marraines') setTimeout(chargerMarraines, 0);
 
             const navLinks = document.querySelectorAll('.nav-center a');
@@ -3445,6 +3485,22 @@
             });
         }
 
+        // ================= VUE « LISTE » OU « DÉTAIL » DE LA PAGE FORMATIONS =================
+        function vueFormations(v) { const p = document.getElementById('page-academie'); if (p) p.setAttribute('data-vue', v); }
+        function allerFormation(quelle, event) {
+            if (event) event.preventDefault();
+            if (typeof basculerMenu === 'function') basculerMenu(true);
+            switchPage('academie', null, null);
+            montrerFormation(quelle, null, true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function toutesLesFormations(event, versAVenir) {
+            if (event) event.preventDefault();
+            if (typeof basculerMenu === 'function') basculerMenu(true);
+            switchPage('academie', null, null);
+            if (versAVenir) setTimeout(() => { const c = document.querySelector('.a-venir'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+        }
+
         // ================= NAVIGATION PAR ADRESSE (#formations, #marraine…) =================
         const PAGES_PAR_ADRESSE = {
             '#accueil': 'accueil', '#accompagnements': 'accompagnements', '#formations': 'academie',
@@ -3462,6 +3518,7 @@
         // Onglets : une seule formation affichée à la fois
         function montrerFormation(quelle, event, sansDefiler) {
             if (event) event.preventDefault();
+            vueFormations('detail');
             const combo = document.querySelector('.carte-combo'); if (combo) combo.hidden = quelle === 'doula';
             ['doula', '4e', 'marraine'].forEach(f => {
                 const actif = f === quelle;
@@ -3479,9 +3536,10 @@
         (function ouvrirSelonAdresse() {
             window.__titreAccueil = window.__titreAccueil || document.title;
             const pChemin = pagePourChemin(location.pathname);
-            if (pChemin && pChemin !== 'accueil') { window.__sansHistorique = true; switchPage(pChemin, null, null); window.__sansHistorique = false; return; }
+            if (pChemin && pChemin !== 'accueil') { window.__sansHistorique = true; switchPage(pChemin, null, null); const hh = (location.hash || '').toLowerCase(); if (pChemin === 'academie' && ['#doula', '#4e', '#marraine'].includes(hh)) montrerFormation(hh.slice(1), null, true); window.__sansHistorique = false; return; }
             window.__remplacer = true;
             const a = (window.location.hash || '').toLowerCase();
+            if (a === '#doula' || a === '#4e') { allerFormation(a.slice(1), null); window.__remplacer = false; return; }
             if (a === '#marraine') { allerA(null, 'formation-marraine'); window.__remplacer = false; return; }
             if (PAGES_PAR_ADRESSE[a]) switchPage(PAGES_PAR_ADRESSE[a], null, null);
             window.__remplacer = false;
