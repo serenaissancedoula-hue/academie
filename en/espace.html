@@ -183,7 +183,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
         <a href="#" id="c-oubli" style="font-size:.88rem;text-align:center;">Forgot your password?</a>
       </form>
     </div>
-    <p class="note site-seulement" style="text-align:center;">Not registered yet? <a href="/en/#formations">Discover the courses</a></p>
+    <p class="note site-seulement" style="text-align:center;">Not registered yet? <a href="/en/courses/">Discover the courses</a></p>
     <div class="bloc-appli" data-toujours hidden style="margin-top:22px;"></div>
   </section>
 
@@ -240,8 +240,8 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
         <p class="note">At least 8 characters, with an uppercase letter, a lowercase letter and a number.</p>
         <label class="champ">Language of your course <span class="note">Your course, your account and your emails will be in this language.</span>
           <select id="i-langue" required><option value="fr">Français</option><option value="en" selected>English</option></select></label>
-        <label class="case"><input type="checkbox" id="i-accord" required> I have read and accept the <a href="/en/#conditions" target="_blank">terms of sale</a> and the <a href="/en/#confidentialite" target="_blank">privacy policy</a>.</label>
-        <label class="case"><input type="checkbox" id="i-acces" required> I ask that my access to the course be opened as soon as my file has been verified. If I live in France or the European Union, I acknowledge that I lose my 14-day right of withdrawal as soon as I start accessing the content (section 6 of the <a href="/en/#conditions" target="_blank">terms of sale</a>).</label>
+        <label class="case"><input type="checkbox" id="i-accord" required> I have read and accept the <a href="/en/terms/" target="_blank">terms of sale</a> and the <a href="/en/privacy/" target="_blank">privacy policy</a>.</label>
+        <label class="case"><input type="checkbox" id="i-acces" required> I ask that my access to the course be opened as soon as my file has been verified. If I live in France or the European Union, I acknowledge that I lose my 14-day right of withdrawal as soon as I start accessing the content (section 6 of the <a href="/en/terms/" target="_blank">terms of sale</a>).</label>
         <button class="btn" type="submit" id="i-bouton">Create my account</button>
       </form>
     </div>
@@ -1190,7 +1190,7 @@ function chargerFicheMarraine() {
       retiree: '<div class="message info">' + (ficheM.consent_retire_date ? 'You withdrew your consent on ' + new Date(ficheM.consent_retire_date).toLocaleString('en-CA') + ': your profile is no longer displayed on the site.' : 'Your profile is no longer displayed on the site.') + ' You can join the team again by filling out your form.</div>',
       validee: expiree
         ? '<div class="message erreur">⌛ <strong>Your certification expired on ' + jour(exp) + '.</strong> To renew your status, update your training (<strong>50% off</strong> for peer supporters trained at Sérénaissance), then sign your form again.</div>'
-        : '<div class="message ok">🎉 <strong>You are part of the Sérénaissance peer supporter team!</strong><br>Certificate obtained on ' + jour(ficheM.date_certification) + ' · valid until <strong>' + jour(exp) + '</strong>.<br>Your profile is visible on the <a href="/en/#nos-marraines" target="_blank">Our Breastfeeding Peer Supporters</a> page.' +
+        : '<div class="message ok">🎉 <strong>You are part of the Sérénaissance peer supporter team!</strong><br>Certificate obtained on ' + jour(ficheM.date_certification) + ' · valid until <strong>' + jour(exp) + '</strong>.<br>Your profile is visible on the <a href="/en/peer-supporters/" target="_blank">Our Breastfeeding Peer Supporters</a> page.' +
           '<br>📮 Your certificate is being mailed to you.' + copies + '</div>' + rappel
     }[ficheM.statut] || '';
     st.innerHTML = t;

@@ -12,7 +12,16 @@
     ['/formation-doula-post-partum/', '/en/postpartum-doula-training/'],
     ['/formation-marraine-allaitement/', '/en/breastfeeding-peer-supporter-training/'],
     ['/academie-serenaissance/', '/en/academie-serenaissance/'],
-    ['/doula-campbellton/', '/en/doula-campbellton/']
+    ['/doula-campbellton/', '/en/doula-campbellton/'],
+    ['/formation-doula-de-base/', '/en/foundational-doula-training/'],
+    ['/accompagnements/', '/en/support/'],
+    ['/formations/', '/en/courses/'],
+    ['/marraines/', '/en/peer-supporters/'],
+    ['/faq/', '/en/faq/'],
+    ['/formatrices/', '/en/trainers/'],
+    ['/a-propos/', '/en/about/'],
+    ['/conditions/', '/en/terms/'],
+    ['/confidentialite/', '/en/privacy/']
   ];
   function page() { return (document.documentElement.lang || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr'; }
   function choisie() { try { var v = localStorage.getItem(CLE); return v === 'en' || v === 'fr' ? v : null; } catch (e) { return null; } }
