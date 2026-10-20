@@ -1721,14 +1721,14 @@
     <header>
         <img src="logo.png" alt="Sérénaissance" class="logo-img" onclick="switchPage('accueil', this, event)">
         <ul class="nav-center">
-            <li><a href="#" onclick="switchPage('accueil', this, event)" class="active" id="nav-accueil">Accueil</a></li>
-            <li><a href="#" onclick="switchPage('accompagnements', this, event)" id="nav-accompagnements">Accompagnements</a></li>
-            <li><a href="#" onclick="switchPage('academie', this, event)" id="nav-academie">Formations</a></li>
-            <li><a href="#" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Marraines</a></li>
+            <li><a href="/" onclick="switchPage('accueil', this, event)" class="active" id="nav-accueil">Accueil</a></li>
+            <li><a href="/accompagnements/" onclick="switchPage('accompagnements', this, event)" id="nav-accompagnements">Accompagnements</a></li>
+            <li><a href="/formations/" onclick="switchPage('academie', this, event)" id="nav-academie">Formations</a></li>
+            <li><a href="/marraines/" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Marraines</a></li>
             <li><a href="espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>Mon compte</a></li>
-            <li><a href="#" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
-            <li><a href="#" onclick="switchPage('formatrices', this, event)" id="nav-formatrices">Formatrices</a></li>
-            <li><a href="#" onclick="switchPage('apropos', this, event)" id="nav-apropos">À propos</a></li>
+            <li><a href="/faq/" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
+            <li><a href="/formatrices/" onclick="switchPage('formatrices', this, event)" id="nav-formatrices">Formatrices</a></li>
+            <li><a href="/a-propos/" onclick="switchPage('apropos', this, event)" id="nav-apropos">À propos</a></li>
         </ul>
         <div class="appel-langue">
             <button class="btn-appel" onclick="ouvrirContact()" aria-label="Réserve ton appel gratuit"><i class="fa-solid fa-phone"></i><span class="txt-appel"> Réserve ton appel gratuit</span></button>
@@ -1794,7 +1794,7 @@
 
         <div class="home-summary-box">
             <h3>Bonjour, je suis Sabrina</h3>
-            <p>Maman de 5 enfants (donc j'en connais quand même pas mal, hihi !), doula, intervenante en relation d'aide et naturothérapeute, j'offre un espace sécurisant et chaleureux aux futurs parents pour traverser la grossesse, l'accouchement et le post-partum. À travers Sérénaissance et mon Académie, je me consacre à honorer la matrescence et à outiller les accompagnantes.</p>
+            <p>Maman de 5 enfants (donc j'en connais quand même pas mal, hihi !), doula et intervenante en relation d'aide, j'offre un espace sécurisant et chaleureux aux futurs parents pour traverser la grossesse, l'accouchement et le post-partum. À travers Sérénaissance et mon Académie, je me consacre à honorer la matrescence et à outiller les accompagnantes.</p>
             <button class="btn-secondary" onclick="switchPage('apropos', null, event)">En savoir plus sur moi →</button>
         </div>
 
@@ -2521,7 +2521,7 @@
                     </details>
                 </div>
                 <p style="font-size: 0.85rem; color: #555; margin-top: 12px;">✔️ 6 quiz et 6 exercices pratiques corrigés · ✔️ Un examen final de 24 questions (réussite à 80 %) · ✔️ Un certificat de participation envoyé par la poste</p>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 10px; font-style: italic;">Initiation donnée par Sabrina, marraine d'allaitement. Ce n'est pas une formation de Santé publique Nouveau-Brunswick ni d'un autre programme officiel, et elle ne donne ni titre professionnel ni accréditation d'un organisme public. À ta réussite, tu reçois par la poste ton certificat de marraine de Sérénaissance (valide 2 ans à partir de la date de réussite) et, après validation de ta fiche par Sabrina, tu apparais sur la page <a href="#" onclick="switchPage('nos-marraines', null, event)">Nos marraines d'allaitement</a>. Les jumelages qu'elle gère sont toujours gratuits et bénévoles pour les mamans.</p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 10px; font-style: italic;">Initiation donnée par Sabrina, marraine d'allaitement. Ce n'est pas une formation de Santé publique Nouveau-Brunswick ni d'un autre programme officiel, et elle ne donne ni titre professionnel ni accréditation d'un organisme public. À ta réussite, tu reçois par la poste ton certificat de marraine de Sérénaissance (valide 2 ans à partir de la date de réussite) et, après validation de ta fiche par Sabrina, tu apparais sur la page <a href="/marraines/" onclick="switchPage('nos-marraines', null, event)">Nos marraines d'allaitement</a>. Les jumelages qu'elle gère sont toujours gratuits et bénévoles pour les mamans.</p>
                 <div class="certificat-bloc">
                     <h4>📜 Ton certificat de participation, livré chez toi</h4>
                     <p>À la réussite de l'examen final, tu reçois ton certificat de participation imprimé directement chez toi, <strong>par la poste</strong>.</p>
@@ -2763,7 +2763,7 @@
 
                 <label class="case-accord">
                     <input type="checkbox" id="accord-conditions" required>
-                    <span>J'ai lu et j'accepte les <a href="#" onclick="switchPage('conditions', null, event)">conditions de vente et la politique de remboursement</a> ainsi que la <a href="#" onclick="switchPage('confidentialite', null, event)">politique de confidentialité</a>.</span>
+                    <span>J'ai lu et j'accepte les <a href="/conditions/" onclick="switchPage('conditions', null, event)">conditions de vente et la politique de remboursement</a> ainsi que la <a href="/confidentialite/" onclick="switchPage('confidentialite', null, event)">politique de confidentialité</a>.</span>
                 </label>
                 <label class="case-accord">
                     <input type="checkbox" id="accord-acces" required>
@@ -2774,7 +2774,7 @@
             </form>
 
             <div style="text-align: center; margin-top: 20px;">
-                <a href="#" onclick="switchPage('accueil', null, event)" style="font-size: 0.85rem; color: var(--text-muted); text-decoration: underline;">← Retour à l'accueil</a>
+                <a href="/" onclick="switchPage('accueil', null, event)" style="font-size: 0.85rem; color: var(--text-muted); text-decoration: underline;">← Retour à l'accueil</a>
             </div>
         </div>
     </div>
@@ -2971,7 +2971,7 @@
                 <details><summary>Quand ai-je accès à ma formation ?</summary><p>Après la vérification de ton dossier (et de ton diplôme pour le 4ᵉ trimestre), habituellement en 24 à 48 heures. Tu reçois alors un courriel, et tes cours apparaissent dans <strong>Mon compte</strong>.</p></details>
                 <details><summary>Puis-je payer en plusieurs versements ?</summary><p>Oui : la formation du 4ᵉ trimestre au prix régulier (550 $) se paie en 1, 2 ou 4 versements (275 $ ou 137,50 $), et le combo des deux formations (725 $) aussi (362,50 $, ou 181,25 $ aux 2 semaines). La formation de marraine (175 $) se paie en un seul versement.</p></details>
                 <details><summary>Mon paiement est passé, mais l'inscription a bogué. Que faire ?</summary><p>Écris-moi à serenaissance.doula@gmail.com ou appelle-moi au 506-759-2044 : je t'envoie un lien personnel pour créer ton compte et téléverser ton diplôme.</p></details>
-                <details><summary>Quelle est la politique de remboursement ?</summary><p>Tu peux annuler en tout temps par un simple courriel. Avant le début de la formation, tu es remboursée au complet ; après, tu paies seulement les modules commencés, plus une petite pénalité plafonnée à 50 $, selon les règles de l'Office de la protection du consommateur. Les résidentes de la France et de l'Union européenne ont en plus un droit de rétractation de 14 jours. Les détails sont dans les <a href="#" onclick="switchPage('conditions', null, event)">conditions de vente</a>.</p></details>
+                <details><summary>Quelle est la politique de remboursement ?</summary><p>Tu peux annuler en tout temps par un simple courriel. Avant le début de la formation, tu es remboursée au complet ; après, tu paies seulement les modules commencés, plus une petite pénalité plafonnée à 50 $, selon les règles de l'Office de la protection du consommateur. Les résidentes de la France et de l'Union européenne ont en plus un droit de rétractation de 14 jours. Les détails sont dans les <a href="/conditions/" onclick="switchPage('conditions', null, event)">conditions de vente</a>.</p></details>
             </div>
             <h3 class="faq-groupe">Ton compte étudiante</h3>
             <div class="faq-accordeon">
@@ -3019,14 +3019,14 @@
                         <img src="sabrina.png" alt="Sabrina Chavanel, directrice de l'Académie Sérénaissance" loading="lazy">
                         <p class="role">Directrice et formatrice</p>
                         <h3>Sabrina Chavanel</h3>
-                        <p class="titres">Doula · Naturothérapeute · Intervenante en relation d'aide</p>
+                        <p class="titres">Doula · Intervenante en relation d'aide</p>
                         <p>Je suis doula depuis trois ans. J’ai commencé à accompagner des familles sur le terrain avant même de faire ma formation, que j’ai complétée en 2026 pour être certifiée. C’est sur le terrain que j’ai le plus appris, et c’est aussi là que j’ai vu ce qui manquait.</p>
                         <details>
                             <summary><span class="voir-plus">Voir plus</span><span class="voir-moins">Voir moins</span></summary>
                             <div class="suite">
                                 <p>Ce qui manquait, c’était de l’information. Dans bien des formations, le post-partum et ce que les familles vivent vraiment sont seulement survolés. Je voulais que les futures accompagnantes arrivent préparées, avec des bases solides, et qu’elles sachent reconnaître quand référer.</p>
                                 <p>Mes cinq maternités m’ont appris une chose essentielle : on n’est pas bien préparées, et on n’est pas assez soutenues. Entre la fatigue, les conseils contradictoires et la pression de « bien faire », j’ai vécu ce que tant de mères traversent en silence. Devenir doula, c’était continuer d’honorer la naissance et la matrescence, en mettant mon vécu au service des autres familles. Ma formation en relation d’aide m’a aussi donné des outils précieux pour accueillir l’anxiété et le stress qui entourent l’arrivée d’un bébé.</p>
-                                <p>J’ai donc monté cette formation avec une consultante en lactation IBCLC et une sage-femme, pour que le contenu soit juste et rigoureux. Je suis aussi naturothérapeute et intervenante en relation d’aide, et maman de cinq enfants.</p>
+                                <p>J’ai donc monté cette formation avec une consultante en lactation IBCLC et une sage-femme, pour que le contenu soit juste et rigoureux. Je suis aussi intervenante en relation d’aide, et maman de cinq enfants.</p>
                                 <p>La grossesse, la naissance et la parentalité me tiennent profondément à cœur. Je m’apprête d’ailleurs à étudier en soins infirmiers, pour travailler encore plus en parentalité et en maternité : c’est un domaine qui me passionne.</p>
                                 <p>Quand une famille fait appel à une doula, elle se montre vulnérable : elle nous confie un moment fragile de sa vie. C’est pourquoi il est essentiel pour moi que mes étudiantes, les futures accompagnantes, soient prêtes à aller sur le terrain, avec des bases solides, de l’éthique et les bons outils. Plus j’avance, plus je constate que les familles ne sont pas assez outillées, et que les doulas doivent l’être pleinement. C’est pour ça que cette formation compte autant pour moi.</p>
                                 <p><strong>Ma conviction : des doulas pleinement outillées, ce sont des familles mieux soutenues.</strong></p>
@@ -3081,7 +3081,7 @@
                 <div class="about-page-text">
                     <div class="badge-offre" style="font-size: 2.2rem; margin-bottom: 0;">Enchantée</div>
                     <h2>Je suis Sabrina</h2>
-                    <p class="about-sous-titre">Doula · Naturothérapeute · Intervenante en relation d'aide<br>Maman de 5 enfants · Campbellton, N.-B.</p>
+                    <p class="about-sous-titre">Doula · Intervenante en relation d'aide<br>Maman de 5 enfants · Campbellton, N.-B.</p>
                     <p>Ma maternité avec mes cinq enfants m'a appris une chose essentielle : <strong>on n'est pas bien préparées, et on n'est pas assez soutenues.</strong> Entre la fatigue, les conseils contradictoires et la pression de « bien faire », j'ai vécu ce que tant de mères traversent en silence.</p>
                     <p>En arrivant à la fin de ma propre période de maternité, je voulais garder un pied dans ce monde qui me passionne. Devenir doula, c'était le meilleur des deux mondes : continuer d'honorer la naissance et la matrescence, en mettant mon vécu au service des autres familles.</p>
                     <p>Depuis 3 ans, j'accompagne les familles de Campbellton et des environs avant, pendant et après la naissance. Ma formation en relation d'aide m'a donné des outils précieux pour accueillir l'anxiété et le stress, si souvent présents autour de l'arrivée d'un bébé.</p>
@@ -3137,7 +3137,6 @@
                     <h3>Mon parcours</h3>
                     <ul class="about-parcours">
                         <li><i class="fa-solid fa-graduation-cap"></i><span><strong>Doula (accompagnante à la naissance)</strong></span></li>
-                        <li><i class="fa-solid fa-leaf"></i><span><strong>Naturothérapeute</strong></span></li>
                         <li><i class="fa-solid fa-comments"></i><span><strong>Intervenante en relation d'aide</strong></span></li>
                         <li><i class="fa-solid fa-person-breastfeeding"></i><span><strong>Marraine d'allaitement bénévole</strong><br>Santé publique du Nouveau-Brunswick</span></li>
                         <li><i class="fa-solid fa-seedling"></i><span><strong>Fondatrice</strong><br>Sérénaissance et l'Académie Sérénaissance</span></li>
@@ -3185,14 +3184,14 @@
         </div>
         <div class="footer-center-tag">Sérénaissance ♥ Campbellton</div>
         <ul class="footer-links-right">
-            <li><a href="#" onclick="switchPage('accueil', this, event)">Accueil</a></li>
-            <li><a href="#" onclick="switchPage('accompagnements', this, event)">Accompagnements</a></li>
-            <li><a href="#" onclick="switchPage('academie', this, event)">Formations</a></li>
+            <li><a href="/" onclick="switchPage('accueil', this, event)">Accueil</a></li>
+            <li><a href="/accompagnements/" onclick="switchPage('accompagnements', this, event)">Accompagnements</a></li>
+            <li><a href="/formations/" onclick="switchPage('academie', this, event)">Formations</a></li>
             <li><a href="espace.html">Mon compte</a></li>
-            <li><a href="#" onclick="switchPage('faq', this, event)">FAQ</a></li>
+            <li><a href="/faq/" onclick="switchPage('faq', this, event)">FAQ</a></li>
             <li><a href="/blogue/">Blogue</a></li>
-            <li><a href="#" onclick="switchPage('formatrices', this, event)">Formatrices</a></li>
-            <li><a href="#" onclick="switchPage('apropos', this, event)">À propos</a></li>
+            <li><a href="/formatrices/" onclick="switchPage('formatrices', this, event)">Formatrices</a></li>
+            <li><a href="/a-propos/" onclick="switchPage('apropos', this, event)">À propos</a></li>
         </ul>
         <nav class="footer-legal" aria-label="Pages de l'Académie" style="margin-bottom:6px;">
             <a href="/academie-serenaissance/">Académie Sérénaissance</a> ·
@@ -3203,8 +3202,8 @@
         </nav>
         <div class="footer-legal">
             © <span id="annee-courante">2026</span> Sérénaissance · Sabrina Chavanel ·
-            <a href="#" onclick="switchPage('conditions', null, event)">Conditions de vente et remboursement</a> ·
-            <a href="#" onclick="switchPage('confidentialite', null, event)">Politique de confidentialité</a>
+            <a href="/conditions/" onclick="switchPage('conditions', null, event)">Conditions de vente et remboursement</a> ·
+            <a href="/confidentialite/" onclick="switchPage('confidentialite', null, event)">Politique de confidentialité</a>
         </div>
     </footer>
 
@@ -3246,6 +3245,69 @@
             var f = document.getElementById('form-contact');
             if (f) setTimeout(function () { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); var n = document.getElementById('contact-nom'); if (n) n.focus({ preventScroll: true }); }, 60);
         }
+        // ================= ADRESSE PROPRE POUR CHAQUE PAGE (/faq/, /formatrices/…) =================
+        // Ce bloc est lu par outils/generer-pages.py : ne pas déplacer.
+        const PAGES_SEO = {
+ "accompagnements": {
+  "chemin": "/accompagnements/",
+  "titre": "Accompagnement de doula à Campbellton : naissance et post-partum | Sérénaissance",
+  "description": "Accompagnement de doula à Campbellton et dans le Nouveau-Brunswick : préparation à la naissance, présence à l'accouchement et soutien post-partum avec Sabrina Chavanel."
+ },
+ "academie": {
+  "chemin": "/formations/",
+  "titre": "Formations de doula en ligne : base 400 h, 4e trimestre, marraine d'allaitement | Académie Sérénaissance",
+  "description": "Toutes les formations de l'Académie Sérénaissance : formation de base de doula de 400 h, formation du 4e trimestre et formation de marraine d'allaitement. 100 % en ligne."
+ },
+ "nos-marraines": {
+  "chemin": "/marraines/",
+  "titre": "Nos marraines d'allaitement | Académie Sérénaissance",
+  "description": "Trouve une marraine d'allaitement formée par l'Académie Sérénaissance pour te soutenir dans ton allaitement."
+ },
+ "faq": {
+  "chemin": "/faq/",
+  "titre": "Questions fréquentes sur les formations et l'accompagnement | Académie Sérénaissance",
+  "description": "Réponses aux questions fréquentes sur les formations de doula, les paiements, les stages, l'espace étudiante et l'accompagnement."
+ },
+ "formatrices": {
+  "chemin": "/formatrices/",
+  "titre": "Nos formatrices : Sabrina Chavanel, Laurence Boulanger et Vanessa Boily | Académie Sérénaissance",
+  "description": "Rencontre l'équipe de l'Académie Sérénaissance : Sabrina Chavanel (directrice), Laurence Boulanger (IBCLC) et Vanessa Boily (doula et assistante sage-femme)."
+ },
+ "apropos": {
+  "chemin": "/a-propos/",
+  "titre": "À propos de Sabrina Chavanel, doula et fondatrice | Académie Sérénaissance",
+  "description": "Sabrina Chavanel, doula et intervenante en relation d'aide, fondatrice de l'Académie Sérénaissance à Campbellton, N.-B."
+ },
+ "conditions": {
+  "chemin": "/conditions/",
+  "titre": "Conditions générales | Académie Sérénaissance",
+  "description": "Conditions générales de l'Académie Sérénaissance : inscription, paiement, annulation et remboursement."
+ },
+ "confidentialite": {
+  "chemin": "/confidentialite/",
+  "titre": "Politique de confidentialité | Académie Sérénaissance",
+  "description": "Politique de confidentialité de l'Académie Sérénaissance : renseignements recueillis et utilisation."
+ }
+};
+        const ADRESSE_ACCUEIL = '/';
+        function pagePourChemin(chemin) {
+            for (const id in PAGES_SEO) if (PAGES_SEO[id].chemin === chemin || PAGES_SEO[id].chemin.slice(0, -1) === chemin) return id;
+            return (chemin === ADRESSE_ACCUEIL || chemin === ADRESSE_ACCUEIL + 'index.html') ? 'accueil' : null;
+        }
+        window.addEventListener('popstate', () => {
+            const p = pagePourChemin(location.pathname);
+            if (p) { window.__sansHistorique = true; switchPage(p, null, null); window.__sansHistorique = false; }
+        });
+        // Les liens internes « # » ne doivent jamais renvoyer à l'accueil
+        document.addEventListener('click', (e) => {
+            const a = e.target.closest && e.target.closest('a[href^="#"]');
+            if (!a || e.defaultPrevented) return;
+            e.preventDefault();
+            const id = a.getAttribute('href').slice(1);
+            const cible = id ? document.getElementById(id) : null;
+            if (cible) cible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
         function switchPage(pageId, element, event, sectionId) {
             if (event) event.preventDefault();
             if (typeof basculerMenu === 'function') basculerMenu(true);
@@ -3276,6 +3338,15 @@
             const activeNav = document.getElementById('nav-' + pageId);
             if (activeNav) {
                 activeNav.classList.add('active');
+            }
+
+            // Adresse propre de la page affichée
+            const infoSeo = PAGES_SEO[pageId];
+            const adresse = infoSeo ? infoSeo.chemin : (pageId === 'accueil' ? ADRESSE_ACCUEIL : null);
+            if (adresse) {
+                if (!window.__sansHistorique && location.pathname !== adresse) history[window.__remplacer ? 'replaceState' : 'pushState']({ page: pageId }, '', adresse);
+                if (infoSeo) document.title = infoSeo.titre;
+                else if (window.__titreAccueil) document.title = window.__titreAccueil;
             }
 
             const sousSection = sectionId ? document.getElementById(sectionId) : null;
@@ -3488,9 +3559,14 @@
             }
         }
         (function ouvrirSelonAdresse() {
+            window.__titreAccueil = window.__titreAccueil || document.title;
+            const pChemin = pagePourChemin(location.pathname);
+            if (pChemin && pChemin !== 'accueil') { window.__sansHistorique = true; switchPage(pChemin, null, null); window.__sansHistorique = false; return; }
+            window.__remplacer = true;
             const a = (window.location.hash || '').toLowerCase();
-            if (a === '#marraine') { allerA(null, 'formation-marraine'); return; }
+            if (a === '#marraine') { allerA(null, 'formation-marraine'); window.__remplacer = false; return; }
             if (PAGES_PAR_ADRESSE[a]) switchPage(PAGES_PAR_ADRESSE[a], null, null);
+            window.__remplacer = false;
 
         })();
 

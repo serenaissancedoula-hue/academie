@@ -19,7 +19,7 @@
     confid: 'Privacy policy', bouton: 'Sign me up', fermer: 'Close', envoi: 'Sending…',
     ok: '💕 Thank you! You are now subscribed to the newsletter.', deja: '💕 You were already subscribed. Thank you!',
     erreur: 'Something went wrong. Please try again in a moment.', invalide: 'Enter a valid email address.', coche: 'Check the box to give your consent.',
-    lienOffre: '/en/#formations', lienConfid: '/en/#confidentialite'
+    lienOffre: '/en/courses/', lienConfid: '/en/privacy/'
   } : {
     titre: 'Reste au courant 🌸',
     texte: 'Inscris-toi à l\'infolettre de l\'Académie Sérénaissance : nouvelles formations, promotions et conseils sur le post-partum. Environ 2 courriels par mois.',
@@ -30,7 +30,7 @@
     confid: 'Politique de confidentialité', bouton: 'Je m\'inscris', fermer: 'Fermer', envoi: 'Envoi…',
     ok: '💕 Merci ! Tu es maintenant inscrite à l\'infolettre.', deja: '💕 Tu étais déjà inscrite. Merci !',
     erreur: 'Oups, ça n\'a pas fonctionné. Réessaie dans un instant.', invalide: 'Entre une adresse courriel valide.', coche: 'Coche la case pour donner ton consentement.',
-    lienOffre: '/#formations', lienConfid: '/#confidentialite'
+    lienOffre: '/formations/', lienConfid: '/confidentialite/'
   };
   function lire() { try { return JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (e) { return {}; } }
   function ecrire(o) { try { localStorage.setItem(CLE, JSON.stringify(o)); } catch (e) {} }
