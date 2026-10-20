@@ -3346,7 +3346,7 @@
             const infoSeo = PAGES_SEO[pageId];
             const adresse = infoSeo ? infoSeo.chemin : (pageId === 'accueil' ? ADRESSE_ACCUEIL : null);
             if (adresse) {
-                if (!window.__sansHistorique && location.pathname !== adresse) history[window.__remplacer ? 'replaceState' : 'pushState']({ page: pageId }, '', adresse);
+                if (!window.__sansHistorique && location.pathname !== adresse) try { history[window.__remplacer ? 'replaceState' : 'pushState']({ page: pageId }, '', adresse); } catch (e) {}
                 if (infoSeo) document.title = infoSeo.titre;
                 else if (window.__titreAccueil) document.title = window.__titreAccueil;
             }
