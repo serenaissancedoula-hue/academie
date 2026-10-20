@@ -51,14 +51,30 @@ def generer(lang):
         s = meta(s, r'(<link rel="canonical" href=")[^"]*(")', url)
         eq = pages_autre[pid]['chemin']
         fr_url, en_url = (url, DOMAINE + eq) if lang == 'fr' else (DOMAINE + eq, url)
+        formation = p.get('formation')
+        if formation:
+            # Page d'une formation : même contenu que la page dédiée, qui reste l'adresse officielle pour Google
+            can = p['canonique']; can_autre = pages_autre[pid]['canonique']
+            fr_url, en_url = (DOMAINE + can, DOMAINE + can_autre) if lang == 'fr' else (DOMAINE + can_autre, DOMAINE + can)
+            s = meta(s, r'(<link rel="canonical" href=")[^"]*(")', DOMAINE + can)
+            s = meta(s, r'(<meta property="og:url" content=")[^"]*(")', DOMAINE + can)
         s = meta(s, r'(<link rel="alternate" hreflang="fr" href=")[^"]*(")', fr_url)
         s = meta(s, r'(<link rel="alternate" hreflang="en" href=")[^"]*(")', en_url)
         s = meta(s, r'(<link rel="alternate" hreflang="x-default" href=")[^"]*(")', fr_url)
+        cible = 'academie' if formation else pid
         # La bonne section est déjà ouverte au chargement (pas de flash de l'accueil)
         s = s.replace('<div id="page-accueil" class="page-section active">', '<div id="page-accueil" class="page-section">', 1)
-        s = s.replace('<div id="page-%s" class="page-section">' % pid, '<div id="page-%s" class="page-section active">' % pid, 1)
+        s = s.replace('<div id="page-%s" class="page-section"' % cible, '<div id="page-%s" class="page-section active"' % cible, 1)
         s = s.replace('class="active" id="nav-accueil"', 'id="nav-accueil"', 1)
-        s = re.sub(r'(<a href="[^"]*" onclick="switchPage\(\'%s\'[^>]*?)( id="nav-%s")' % (pid, pid), r'\1 class="active"\2', s, count=1)
+        s = re.sub(r'(<a href="[^"]*" onclick="switchPage\(\'%s\'[^>]*?)( id="nav-%s")' % (cible, cible), r'\1 class="active"\2', s, count=1)
+        if cible == 'academie':
+            s = s.replace('data-vue="liste"', 'data-vue="detail"' if formation else 'data-vue="liste"', 1)
+        if formation and formation != 'doula':
+            s = s.replace('id="panneau-doula">', 'id="panneau-doula" hidden>', 1)
+            s = s.replace('id="panneau-%s" hidden>' % formation, 'id="panneau-%s">' % formation, 1)
+            s = s.replace('class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true"', 'class="choix-formation" id="onglet-doula" role="tab" aria-selected="false"', 1)
+            s = s.replace('class="choix-formation" id="onglet-%s" role="tab" aria-selected="false"' % formation, 'class="choix-formation actif" id="onglet-%s" role="tab" aria-selected="true"' % formation, 1)
+            s = s.replace('<div class="carte-combo" hidden>', '<div class="carte-combo">', 1)
         dossier = os.path.join(RACINE, p['chemin'].strip('/'))
         os.makedirs(dossier, exist_ok=True)
         with open(os.path.join(dossier, 'index.html'), 'w', encoding='utf-8') as fh:
