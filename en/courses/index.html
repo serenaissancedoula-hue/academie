@@ -3487,7 +3487,7 @@
         }
 
         // ================= VUE « LISTE » OU « DÉTAIL » DE LA PAGE FORMATIONS =================
-        function vueFormations(v) { const p = document.getElementById('page-academie'); if (p) p.setAttribute('data-vue', v); }
+        function vueFormations(v) { const p = document.getElementById('page-academie'); if (p) p.setAttribute('data-vue', v); if (v === 'liste') document.querySelectorAll('.choix-formation').forEach(o => { o.classList.remove('actif'); o.setAttribute('aria-selected', 'false'); }); }
         function allerFormation(quelle, event) {
             if (event) event.preventDefault();
             if (typeof basculerMenu === 'function') basculerMenu(true);
@@ -3529,8 +3529,8 @@
                 o.setAttribute('aria-selected', actif ? 'true' : 'false');
             });
             if (!sansDefiler) {
-                const cible = document.getElementById('formation-' + quelle);
-                if (cible && cible.getBoundingClientRect().top > window.innerHeight * 0.6)
+                const cible = document.querySelector('.retour-formations') || document.getElementById('formation-' + quelle);
+                if (cible && (cible.getBoundingClientRect().top < 0 || cible.getBoundingClientRect().top > window.innerHeight * 0.6))
                     setTimeout(() => cible.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
             }
         }
