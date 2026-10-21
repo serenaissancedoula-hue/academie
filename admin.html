@@ -22,6 +22,7 @@
 <script src="/securite.js"></script>
 <script src="/blogue.js" defer></script>
 <script src="/admin-plus.js"></script>
+<script src="/ateliers.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; --rouge: #9b3a2a; --jaune: #8a6d1d; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -273,6 +274,26 @@ document.addEventListener('click', function (e) { var a = e.target.closest && e.
   </section>
 
   <section class="vue" id="vue-outils" hidden>
+    <div class="carte" id="carte-ateliers">
+      <h3 style="margin-bottom:6px;">🎥 Ateliers en direct</h3>
+      <p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Les étudiantes de la formation choisie voient l'atelier dans leur compte, avec le lien (il s'ouvre 15 minutes avant). Elles reçoivent une notification à l'ajout, un courriel et une notification la veille, puis une notification 1 heure avant. L'heure est celle de ton appareil ; chaque étudiante la voit dans son propre fuseau.</p>
+      <form id="form-atelier" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+        <label class="champ">Pour qui
+          <select id="at-formation">
+            <option value="doula">Formation de base de doula</option>
+            <option value="4e-trimestre">Accompagnement du 4ᵉ trimestre</option>
+            <option value="marraine">Marraine d'allaitement</option>
+            <option value="toutes">Toutes les formations</option>
+          </select></label>
+        <label class="champ">Titre<input id="at-titre" maxlength="140" placeholder="Ex. Atelier 3 · Positions et gestes de confort"></label>
+        <div class="rang"><label class="champ">Date et heure<input type="datetime-local" id="at-debut"></label>
+          <label class="champ">Durée<select id="at-duree"><option value="60">1 h</option><option value="90" selected>1 h 30</option><option value="120">2 h</option><option value="150">2 h 30</option><option value="180">3 h</option><option value="240">4 h</option></select></label></div>
+        <label class="champ">Lien Zoom, Meet ou Teams<input id="at-lien" type="url" maxlength="500" placeholder="https://…"></label>
+        <label class="champ">Description <span style="font-weight:400;">(facultatif : à préparer, matériel…)</span><textarea id="at-desc" rows="3" maxlength="2000"></textarea></label>
+        <div class="actions"><button class="btn" type="submit" id="at-bouton">🎥 Ajouter l'atelier</button><button class="btn gris" type="button" id="at-annuler" hidden>Annuler</button></div>
+      </form>
+      <div id="liste-ateliers-admin">Chargement…</div>
+    </div>
     <div class="carte" id="carte-temoignages">
       <h3 style="margin-bottom:6px;">💬 Témoignages</h3>
       <p style="font-size:.8rem;color:var(--doux);margin-bottom:6px;">Rien ne paraît sur le site tant que tu ne cliques pas « Publier ». Publie seulement des témoignages réels, avec la permission de la personne (ceux reçus par le questionnaire indiquent si elle a donné sa permission). <span id="ap-tem-resume"></span></p>
@@ -517,6 +538,7 @@ function esc(t) { var d = document.createElement('div'); d.textContent = t == nu
 function jour(d) { return d ? new Date(d).toLocaleDateString('fr-CA', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; }
 function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('voir'); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('voir'); }, 3200); }
 if (window.SereAdminPlus) SereAdminPlus.init({ sb: sb, toast: toast, traduire: traduire });
+if (window.SereAteliers) SereAteliers.admin({ sb: sb, toast: toast });
 function valide(e) { return (e.statut || '').trim().toLowerCase() === 'valide'; }
 function doulaOk(e) { return e.formation === 'doula' && (e.statut || '').trim().toLowerCase() === 'doula_valide'; }
 function paiement(v) {
@@ -552,6 +574,7 @@ function vue(v) {
   window.scrollTo(0, 0);
   if (v === 'outils' && typeof chargerPlacesOffre === 'function') { chargerPlacesOffre(); chargerStats(); chargerInfolettre(); chargerCadeaux(); }
   if (v === 'outils' && window.SereAdminPlus) SereAdminPlus.outils();
+  if (v === 'outils' && window.SereAteliers) SereAteliers.chargerAdmin();
   if (v === 'evaluations' && window.SereAdminPlus) SereAdminPlus.evaluations();
 }
 $('onglets').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) vue(b.dataset.v); });
@@ -1290,6 +1313,7 @@ function ouvrirDepuisLien() {
   if (c) { history.replaceState(null, '', 'admin.html'); vue('messages'); ouvrirChat(c[1]); }
   var k = (location.hash || '').match(/^#m(\d+)/);
   if (k && marraines.length) { history.replaceState(null, '', 'admin.html'); vue('marraines'); ouvrirFicheM(+k[1]); }
+  if (location.hash === '#ateliers') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-ateliers')); $('carte-ateliers').scrollIntoView({ behavior: 'smooth' }); }, 300); }
   if (location.hash === '#infolettre') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-infolettre')); $('carte-infolettre').scrollIntoView({ behavior: 'smooth' }); }, 300); }
   if (location.hash === '#cadeaux') { history.replaceState(null, '', 'admin.html'); vue('outils'); setTimeout(function () { if (window.SereRepliable) SereRepliable.ouvrir($('carte-cadeaux')); $('carte-cadeaux').scrollIntoView({ behavior: 'smooth' }); }, 300); }
   if (location.hash === '#mises') { history.replaceState(null, '', 'admin.html'); vue('evaluations'); }

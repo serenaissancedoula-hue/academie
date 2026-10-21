@@ -25,6 +25,7 @@
 <script src="/securite.js"></script>
 <script src="/pdf-simple.js"></script>
 <script src="/espace-plus.js"></script>
+<script src="/ateliers.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -259,6 +260,10 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     <div id="bloc-doula" hidden>
       <h2>Foundational doula training · 400 h</h2>
       <div class="message ok" id="doula-message"><strong>🌸 Your spot is confirmed!</strong><br>Your doula training (12 modules, in French and English) will open here: you will receive an email at that time. Until then, you can complete your information, add your photo and write to me in your Messages.</div>
+    </div>
+    <div id="bloc-ateliers" hidden>
+      <h2>🎥 My live workshops</h2>
+      <div id="liste-ateliers"></div>
     </div>
     <div id="bloc-4e" hidden>
       <h2>Advanced Fourth Trimester Support</h2>
@@ -569,6 +574,7 @@ function routeConnectee() {
   if (h === 'stage' && !etat.valide) h = 'cours';
   if (h === 'marraine' && !etat.marraine) h = 'cours';
   if (h === 'avis') h = 'messages';
+  if (h === 'ateliers') h = 'cours';
   if (h === 'infos') h = 'parametres';   // « Mes informations » est maintenant dans Paramètres
   if (h === 'evaluations' && !etat.valide && !etat.marraine) h = 'cours';
   if (['cours', 'infos', 'stage', 'marraine', 'messages', 'parametres', 'evaluations'].indexOf(h) < 0) h = 'cours';
@@ -762,6 +768,7 @@ function afficherCours() {
       + (exm ? '<li><div><h3>🤱 My certified peer supporter profile</h3><div class="etat">Submit your profile to be validated and appear on the site</div></div><a class="btn" href="#marraine">My profile →</a></li>' : '');
   }
   if (window.SereEspacePlus) SereEspacePlus.cours({ sb: sb, etat: etat });
+  if (window.SereAteliers) SereAteliers.etudiante({ sb: sb, etat: etat, en: true });
 }
 
 /* ---------------- Mes informations ---------------- */

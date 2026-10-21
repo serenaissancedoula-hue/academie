@@ -25,6 +25,7 @@
 <script src="/securite.js"></script>
 <script src="/pdf-simple.js"></script>
 <script src="/espace-plus.js"></script>
+<script src="/ateliers.js"></script>
 <style>
 :root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -259,6 +260,10 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     <div id="bloc-doula" hidden>
       <h2>Formation de base de doula · 400 h</h2>
       <div class="message ok" id="doula-message"><strong>🌸 Ta place est confirmée !</strong><br>Ta formation de doula (12 modules) s'ouvrira ici : tu recevras un courriel à ce moment-là. D'ici là, tu peux compléter tes informations, ajouter ta photo et m'écrire dans tes Messages.</div>
+    </div>
+    <div id="bloc-ateliers" hidden>
+      <h2>🎥 Mes ateliers en direct</h2>
+      <div id="liste-ateliers"></div>
     </div>
     <div id="bloc-4e" hidden>
       <h2>Accompagnement de pointe du 4ᵉ trimestre</h2>
@@ -569,6 +574,7 @@ function routeConnectee() {
   if (h === 'stage' && !etat.valide) h = 'cours';
   if (h === 'marraine' && !etat.marraine) h = 'cours';
   if (h === 'avis') h = 'messages';
+  if (h === 'ateliers') h = 'cours';
   if (h === 'infos') h = 'parametres';   // « Mes informations » est maintenant dans Paramètres
   if (h === 'evaluations' && !etat.valide && !etat.marraine) h = 'cours';
   if (['cours', 'infos', 'stage', 'marraine', 'messages', 'parametres', 'evaluations'].indexOf(h) < 0) h = 'cours';
@@ -762,6 +768,7 @@ function afficherCours() {
       + (exm ? '<li><div><h3>🤱 Ma fiche de marraine certifiée</h3><div class="etat">Soumets ta fiche pour être validée et apparaître sur le site</div></div><a class="btn" href="#marraine">Ma fiche →</a></li>' : '');
   }
   if (window.SereEspacePlus) SereEspacePlus.cours({ sb: sb, etat: etat });
+  if (window.SereAteliers) SereAteliers.etudiante({ sb: sb, etat: etat, en: false });
 }
 
 /* ---------------- Mes informations ---------------- */
