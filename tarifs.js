@@ -13,9 +13,9 @@
       diplome: false, marraine: false, cohorte: '21 octobre 2026', places: 2,
       prixRegulier: '1 950 $',
       options: {
-        '1': { prix: '1 750 $', detail: 'paiement complet', en: { prix: '$1,750', detail: 'full payment' }, lien: 'https://buy.stripe.com/28E4gA2GHdXQ7zn83Q7N60l' },
-        '3': { prix: '3 × 583,33 $', detail: '3 versements', en: { prix: '3 × $583.33', detail: '3 instalments' }, lien: 'https://buy.stripe.com/4gM5kEftt5rkcTH83Q7N60k' },
-        '6': { prix: '6 × 291,67 $', detail: '6 versements', en: { prix: '6 × $291.67', detail: '6 instalments' }, lien: 'https://buy.stripe.com/aFa7sM2GHcTMbPDfwi7N60j' }
+        '1': { prix: '1 950 $', detail: 'paiement complet', en: { prix: '$1,950', detail: 'full payment' }, lien: 'https://buy.stripe.com/3cIdR28Hu4wU1G40V4ffy00' },
+        '3': { prix: '3 × 650 $', detail: '3 versements', en: { prix: '3 × $650', detail: '3 instalments' }, lien: 'https://buy.stripe.com/9B628k4re1kI5WkeLUffy01' },
+        '6': { prix: '6 × 325 $', detail: '6 versements aux 2 semaines', en: { prix: '6 × $325', detail: '6 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/4gMfZa5vi2oM2K8gU2ffy0j' }
       }
     },
     '4e-trimestre': {
@@ -24,9 +24,9 @@
       en: { nom: 'Advanced Fourth Trimester Support', court: 'Fourth trimester' },
       diplome: true, marraine: false,
       options: {
-        '1': { prix: '550 $', detail: 'paiement complet', en: { prix: '$550', detail: 'full payment' }, lien: 'https://buy.stripe.com/cNi4gAeppg5Y3j73NA7N601' },
-        '2': { prix: '2 × 275 $', detail: '2 versements', en: { prix: '2 × $275', detail: '2 instalments' }, lien: 'https://buy.stripe.com/28E4gA5ST6vo3j71Fs7N604' },
-        '4': { prix: '4 × 137,50 $', detail: '4 versements', en: { prix: '4 × $137.50', detail: '4 instalments' }, lien: 'https://buy.stripe.com/3cI5kE4OPcTM5rf3NA7N603' }
+        '1': { prix: '550 $', detail: 'paiement complet', en: { prix: '$550', detail: 'full payment' }, lien: 'https://buy.stripe.com/4gM14gg9We7u84s33cffy03' },
+        '2': { prix: '2 × 275 $', detail: '2 versements', en: { prix: '2 × $275', detail: '2 instalments' }, lien: 'https://buy.stripe.com/9B69AMaPC2oMacA1Z8ffy04' },
+        '4': { prix: '4 × 137,50 $', detail: '4 versements aux 2 semaines', en: { prix: '4 × $137.50', detail: '4 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/9B6aEQbTG4wUesQeLUffy05' }
       }
     },
     'marraine': {
@@ -35,7 +35,7 @@
       en: { nom: 'Breastfeeding Peer Supporter', court: 'Peer supporter' },
       diplome: false, marraine: true,
       options: {
-        '1': { prix: '175 $', detail: 'paiement complet', en: { prix: '$175', detail: 'full payment' }, lien: 'https://buy.stripe.com/aFa28s811f1UcTH97U7N60e' }
+        '1': { prix: '175 $', detail: 'paiement complet', en: { prix: '$175', detail: 'full payment' }, lien: 'https://buy.stripe.com/7sY5kw7Dq0gE0C047gffy06' }
       }
     },
     'combo': {
@@ -44,9 +44,9 @@
       en: { nom: 'Bundle: Fourth Trimester + Breastfeeding Peer Supporter', court: 'Bundle (both)' },
       diplome: true, marraine: true,
       options: {
-        '1': { prix: '725 $', detail: 'paiement complet', en: { prix: '$725', detail: 'full payment' }, lien: 'https://buy.stripe.com/14AdRa2GH7zscTH4RE7N60h' },
-        '2': { prix: '2 × 362,50 $', detail: '2 versements', en: { prix: '2 × $362.50', detail: '2 instalments' }, lien: 'https://buy.stripe.com/8x24gA955dXQcTH97U7N60g' },
-        '4': { prix: '4 × 181,25 $', detail: '4 versements aux 2 semaines', en: { prix: '4 × $181.25', detail: '4 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/bJe4gAepp5rkdXL3NA7N60f' }
+        '1': { prix: '725 $', detail: 'paiement complet', en: { prix: '$725', detail: 'full payment' }, lien: 'https://buy.stripe.com/8x2fZa3nabZm4SgbzIffy07' },
+        '2': { prix: '2 × 362,50 $', detail: '2 versements', en: { prix: '2 × $362.50', detail: '2 instalments' }, lien: 'https://buy.stripe.com/00w9AMcXKgfC98w9rAffy08' },
+        '4': { prix: '4 × 181,25 $', detail: '4 versements aux 2 semaines', en: { prix: '4 × $181.25', detail: '4 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/9B67sEcXKfby3OccDMffy09' }
       }
     }
   };
