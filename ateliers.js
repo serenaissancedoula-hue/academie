@@ -9,6 +9,10 @@
   function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
   function lienSur(u) { return /^https:\/\/[^\s<>"]+$/i.test(u || '') ? u : ''; }
   var AVANT = 15 * 60000; // le lien s'ouvre 15 minutes avant
+  var CAMERA = {
+    fr: 'Caméra ouverte obligatoire pendant tout l\'atelier, sauf exception accordée par la direction.',
+    en: 'Camera on is required for the whole workshop, unless the school\'s direction grants an exception.'
+  };
 
   var NOMS = {
     fr: { doula: 'Doula de base', '4e-trimestre': '4ᵉ trimestre', marraine: 'Marraine', toutes: 'Toutes les formations' },
@@ -37,7 +41,9 @@
       '.at-direct{display:inline-block;font-size:.72rem;font-weight:700;background:#c0392b;color:#fff;border-radius:50px;padding:2px 9px;margin-left:6px}' +
       '.at-pres{display:flex;flex-direction:column;gap:6px;margin-top:10px;border-top:1px dashed var(--bord);padding-top:10px}' +
       '.at-pres label{display:flex;gap:8px;align-items:center;font-size:.88rem}' +
-      '.at-pres input{width:auto}';
+      '.at-pres input{width:auto}' +
+      '.at-camera{background:#fbf3ee;border:1px solid #f0d5c8;border-radius:12px;padding:10px 12px;font-size:.84rem;color:#8c3f2c;margin:0 0 12px}' +
+      '.at-camera-mini{font-size:.8rem;color:#8c3f2c;margin-top:8px}';
     document.head.appendChild(s);
   }
 
@@ -48,7 +54,7 @@
     var compte = 'https://academiesere.ca/' + (en ? 'en/' : '') + 'espace.html#ateliers';
     return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Academie Serenaissance//Ateliers//FR', 'BEGIN:VEVENT',
       'UID:atelier-' + a.id + '@academiesere.ca', 'DTSTAMP:' + f(new Date()), 'DTSTART:' + f(a.debut), 'DTEND:' + f(fin(a)),
-      'SUMMARY:' + t(a.titre), 'DESCRIPTION:' + t((a.description ? a.description + '\n\n' : '') + (en ? 'Join from your account: ' : 'Le lien est dans ton compte : ') + compte),
+      'SUMMARY:' + t(a.titre), 'DESCRIPTION:' + t((a.description ? a.description + '\n\n' : '') + '📹 ' + CAMERA[en ? 'en' : 'fr'] + '\n\n' + (en ? 'Join from your account: ' : 'Le lien est dans ton compte : ') + compte),
       'URL:' + compte, 'BEGIN:VALARM', 'TRIGGER:-PT30M', 'ACTION:DISPLAY', 'DESCRIPTION:' + t(a.titre), 'END:VALARM',
       'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
   }
@@ -97,6 +103,7 @@
         if (p === true) h += '<div class="at-detail" style="margin-top:6px;color:var(--vert);font-weight:700;">✓ ' + (en ? 'Attendance recorded' : 'Présence notée') + '</div>';
         else if (p === false) h += '<div class="at-detail" style="margin-top:6px;">' + (en ? 'Marked absent. If this is a mistake, write to Sabrina in your Messages.' : 'Absence notée. Si c\'est une erreur, écris à Sabrina dans tes Messages.') + '</div>';
       } else {
+        h += '<div class="at-camera-mini">📹 ' + (en ? 'Camera on at all times' : 'Caméra ouverte en tout temps') + '</div>';
         h += '<div class="at-actions">';
         if (lien && ouvert) h += '<a class="btn" href="' + esc(lien) + '" target="_blank" rel="noopener">🎥 ' + (en ? 'Join the workshop' : 'Rejoindre l\'atelier') + '</a>';
         else if (lien) h += '<button class="btn" type="button" disabled>🔒 ' + (en ? 'Link opens 15 min before' : 'Le lien s\'ouvre 15 min avant') + '</button>';
@@ -106,7 +113,7 @@
       }
       return h + '</div>';
     }
-    var html = '';
+    var html = avenir.length ? '<div class="at-camera">📹 <strong>' + (en ? 'Important:' : 'Important :') + '</strong> ' + CAMERA[en ? 'en' : 'fr'] + '</div>' : '';
     if (avenir.length) html += avenir.map(function (a) { return carte(a, false); }).join('');
     else html += '<p class="at-detail" style="margin-bottom:10px;">' + (en ? 'No upcoming workshop for now. You will get a notification as soon as one is scheduled.' : 'Aucun atelier à venir pour l\'instant. Tu recevras une notification dès qu\'un atelier est prévu.') + '</p>';
     if (passes.length) html += '<h3 style="margin:16px 0 8px;font-size:1rem;">' + (en ? 'Past workshops' : 'Ateliers passés') + '</h3>' + passes.map(function (a) { return carte(a, true); }).join('');
