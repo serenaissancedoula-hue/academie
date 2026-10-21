@@ -1851,9 +1851,9 @@
                     <div class="photo-frame">
                     <img src="sabrina.png" alt="Sabrina Chavanel, doula à Campbellton">
                     </div>
-                    <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="Voir la formation de doula, nouvelle cohorte dès le 21 octobre"><span class="sp1">Nouvelle cohorte</span><span class="sp2">Doula</span><span class="sp3">400 heures</span><span class="sp4">dès le 21 octobre</span></a>
+                    <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="Voir la formation de doula, inscriptions en continu"><span class="sp1">Inscriptions</span><span class="sp2">Doula</span><span class="sp3">400 heures</span><span class="sp4">en continu</span></a>
                 </div>
-                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Formation de base de doula : un bloc animé par une consultante IBCLC et un autre par une sage-femme ♥<small>2 places · 1 950 $ · découvrir la formation →</small></a>
+                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Formation de base de doula : un bloc animé par une consultante IBCLC et un autre par une sage-femme ♥<small>1 950 $ · découvrir la formation →</small></a>
             </div>
         </div>
 
@@ -2070,7 +2070,7 @@
         <div class="choix-formations trois" role="tablist">
             <a href="#" class="choix-formation" id="onglet-doula" role="tab" aria-selected="false" onclick="montrerFormation('doula', event)">
                 <span class="cf-titre">Formation de base de doula · 400 h</span>
-                <span class="cf-info">Cohorte du 21 octobre · 2 places · ouverte à toutes</span>
+                <span class="cf-info">Inscriptions en continu · ouverte à toutes</span>
                 <span class="cf-prix">1 950 $</span>
             </a>
             <a href="#" class="choix-formation actif" id="onglet-4e" role="tab" aria-selected="true" onclick="montrerFormation('4e', event)">
@@ -2126,7 +2126,7 @@
         <div class="academie-page-layout panneau-formation" id="panneau-doula" hidden>
             <div>
                 <img src="doula.jpg" alt="Une doula soutient une maman enceinte appuyée sur un ballon" class="academie-img-discret">
-                <p class="doula-cohorte-ruban"><span class="point"></span> Nouvelle cohorte : début le <strong>21 octobre 2026</strong> · <strong>2 places</strong></p>
+                <p class="doula-cohorte-ruban"><span class="point"></span> Inscriptions <strong>en continu</strong> · commence quand tu veux</p>
                 <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
                     🤰 Formation de base de doula
                 </h3>
@@ -2311,13 +2311,12 @@
             <div class="price-box-sticky">
                 <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Formation de base · 400 h</span>
                 <div class="price-tag">1 950 $</div>
-                <div class="doula-lancement">Cohorte du 21 octobre · 2 places</div>
-                <p class="doula-places">Seulement <strong>2 places</strong></p>
+                <div class="doula-lancement">Inscriptions en continu</div>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</div>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Paiement en <strong>1 versement</strong> (1 950 $), <strong>3 versements</strong> (650 $) ou <strong>6 versements aux 2 semaines</strong> (325 $). Tu choisis dans le formulaire d'inscription.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé avec Stripe</div>
                 <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">S'inscrire en ligne</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Cohorte du 21 octobre 2026 · 2 places seulement.</p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Inscriptions en continu.</p>
                 <p style="font-size: 0.78rem; color: #7a685e; margin-top: 8px;">Annulation possible selon les règles de la Loi sur la protection du consommateur du Québec (et droit de rétractation de 14 jours pour les résidentes de la France et de l'Union européenne).</p>
             </div>
         </div>
@@ -2848,7 +2847,7 @@
                 </div>
                 <input type="email" id="lien-courriel" placeholder="Courriel de l'étudiante" required>
                 <select id="lien-formation" style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <option value="doula">Formation de base de doula · 400 h · cohorte du 21 octobre (1 950 $)</option>
+                    <option value="doula">Formation de base de doula · 400 h · inscriptions en continu (1 950 $)</option>
                     <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                     <option value="marraine">Marraine d'allaitement</option>
                 </select>
@@ -2880,7 +2879,7 @@
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
                     <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Formation choisie :</label>
                     <select id="choix-formation" onchange="ajusterFormulaireInscription()" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;">
-                        <option value="doula">Formation de base de doula · 400 h · cohorte du 21 octobre (1 950 $)</option>
+                        <option value="doula">Formation de base de doula · 400 h · inscriptions en continu (1 950 $)</option>
                         <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                         <option value="marraine">Marraine d'allaitement — 175 $</option>
                         <option value="combo">Combo : 4ᵉ trimestre + marraine d'allaitement — 725 $</option>
@@ -3451,8 +3450,8 @@
             if (event) event.preventDefault();
             switchPage('accueil', null);
             var s = document.getElementById('contact-sujet'), m = document.getElementById('contact-message');
-            if (s && !s.value) s.value = 'Formation de doula 400 h · cohorte du 21 octobre';
-            if (m && !m.value) m.value = "Bonjour Sabrina, j'aimerais réserver ma place dans la cohorte de la formation de doula 400 h qui commence le 21 octobre. ";
+            if (s && !s.value) s.value = 'Formation de doula 400 h';
+            if (m && !m.value) m.value = "Bonjour Sabrina, j'aimerais réserver ma place à la formation de doula 400 h. ";
             var f = document.getElementById('form-contact');
             if (f) setTimeout(function () { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); var n = document.getElementById('contact-nom'); if (n) n.focus({ preventScroll: true }); }, 60);
         }
@@ -4604,8 +4603,8 @@
             }
             if (d.formation === 'doula') {
                 document.querySelectorAll('#page-merci .merci-page-container > p').forEach((p, i) => {
-                    if (i === 0) p.textContent = "Ton paiement a bien été reçu et je suis ravie de t'accueillir dans la cohorte du 21 octobre de la formation de doula ! 🌸";
-                    if (i === 1) p.innerHTML = "Crée ton mot de passe ci-dessous : ton compte étudiante est prêt. Je confirme ta place dès que je vois ton paiement (habituellement en <strong>24 heures</strong>) et tu reçois un courriel. Ta formation s'ouvre dans ton compte le <strong>21 octobre</strong>.";
+                    if (i === 0) p.textContent = "Ton paiement a bien été reçu et je suis ravie de t'accueillir dans la formation de doula ! 🌸";
+                    if (i === 1) p.innerHTML = "Crée ton mot de passe ci-dessous : ton compte étudiante est prêt. Je confirme ta place dès que je vois ton paiement (habituellement en <strong>24 heures</strong>) et tu reçois un courriel. Ta formation s'ouvrira dans ton compte et tu recevras un courriel à ce moment-là.";
                 });
             }
             if (d.formation === 'marraine') {

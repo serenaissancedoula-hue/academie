@@ -10,7 +10,7 @@
       nom: 'Formation de base de doula · 400 h',
       court: 'Doula 400 h',
       en: { nom: 'Foundational doula training · 400 h', court: 'Doula 400 h' },
-      diplome: false, marraine: false, cohorte: '21 octobre 2026', places: 2,
+      diplome: false, marraine: false, cohorte: 'en continu', places: null,
       prixRegulier: '1 950 $',
       options: {
         '1': { prix: '1 950 $', detail: 'paiement complet', en: { prix: '$1,950', detail: 'full payment' }, lien: 'https://buy.stripe.com/3cIdR28Hu4wU1G40V4ffy00' },

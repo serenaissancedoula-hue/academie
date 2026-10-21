@@ -258,7 +258,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     </div>
     <div id="bloc-doula" hidden>
       <h2>Foundational doula training · 400 h</h2>
-      <div class="message ok" id="doula-message"><strong>🌸 Your spot in the October 21 cohort is confirmed!</strong><br>Your doula training (12 modules, in French and English) opens here on <strong>October 21, 2026</strong>. You will receive an email at that time. Until then, you can complete your information, add your photo and write to me in your Messages.</div>
+      <div class="message ok" id="doula-message"><strong>🌸 Your spot is confirmed!</strong><br>Your doula training (12 modules, in French and English) will open here: you will receive an email at that time. Until then, you can complete your information, add your photo and write to me in your Messages.</div>
     </div>
     <div id="bloc-4e" hidden>
       <h2>Advanced Fourth Trimester Support</h2>
@@ -734,7 +734,7 @@ function afficherCours() {
   var acces = etat.valide || etat.marraine || etat.doulaOk;
   $('attente').hidden = acces || !d;
   $('attente-diplome').hidden = !!(d && (d.formation === 'marraine' || d.formation === 'doula'));
-  if (d && d.formation === 'doula' && !etat.doulaOk && !etat.suspendu) $('attente').innerHTML = '<strong>⏳ Your doula training registration has been received.</strong><br>I confirm your spot in the October 21 cohort as soon as I see your payment (usually within 24 hours), and you receive an email. In the meantime, you can complete your information.';
+  if (d && d.formation === 'doula' && !etat.doulaOk && !etat.suspendu) $('attente').innerHTML = '<strong>⏳ Your doula training registration has been received.</strong><br>I confirm your spot as soon as I see your payment (usually within 24 hours), and you receive an email. In the meantime, you can complete your information.';
   $('bloc-doula').hidden = !etat.doulaOk;
   if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Your access is suspended for the moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Your progress is saved. Write to <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> or call 506-759-2044 to sort things out, and your access will be reopened.'; }
   if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'We could not find a registration file linked to this email. Write to <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> and Sabrina will sort it out quickly.'; }

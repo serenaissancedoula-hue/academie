@@ -258,7 +258,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     </div>
     <div id="bloc-doula" hidden>
       <h2>Formation de base de doula · 400 h</h2>
-      <div class="message ok" id="doula-message"><strong>🌸 Ta place est confirmée dans la cohorte du 21 octobre !</strong><br>Ta formation de doula (12 modules) s'ouvre ici le <strong>21 octobre 2026</strong>. Tu recevras un courriel à ce moment-là. D'ici là, tu peux compléter tes informations, ajouter ta photo et m'écrire dans tes Messages.</div>
+      <div class="message ok" id="doula-message"><strong>🌸 Ta place est confirmée !</strong><br>Ta formation de doula (12 modules) s'ouvrira ici : tu recevras un courriel à ce moment-là. D'ici là, tu peux compléter tes informations, ajouter ta photo et m'écrire dans tes Messages.</div>
     </div>
     <div id="bloc-4e" hidden>
       <h2>Accompagnement de pointe du 4ᵉ trimestre</h2>
@@ -734,7 +734,7 @@ function afficherCours() {
   var acces = etat.valide || etat.marraine || etat.doulaOk;
   $('attente').hidden = acces || !d;
   $('attente-diplome').hidden = !!(d && (d.formation === 'marraine' || d.formation === 'doula'));
-  if (d && d.formation === 'doula' && !etat.doulaOk && !etat.suspendu) $('attente').innerHTML = '<strong>⏳ Ton inscription à la formation de doula est bien reçue.</strong><br>Je confirme ta place dans la cohorte du 21 octobre dès que je vois ton paiement (habituellement en 24 heures), et tu reçois un courriel. En attendant, tu peux compléter tes informations.';
+  if (d && d.formation === 'doula' && !etat.doulaOk && !etat.suspendu) $('attente').innerHTML = '<strong>⏳ Ton inscription à la formation de doula est bien reçue.</strong><br>Je confirme ta place dès que je vois ton paiement (habituellement en 24 heures), et tu reçois un courriel. En attendant, tu peux compléter tes informations.';
   $('bloc-doula').hidden = !etat.doulaOk;
   if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Ton accès est suspendu pour le moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Ta progression est conservée. Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> ou appelle au 506-759-2044 pour régler la situation, et ton accès sera rouvert.'; }
   if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'Nous n\'avons pas trouvé de dossier d\'inscription relié à ce courriel. Écris à <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> et Sabrina règle ça rapidement.'; }

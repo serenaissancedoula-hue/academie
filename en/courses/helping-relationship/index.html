@@ -1851,9 +1851,9 @@
                     <div class="photo-frame">
                     <img src="/sabrina.png" alt="Sabrina Chavanel, doula in Campbellton">
                     </div>
-                    <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="See the doula training, new cohort starting October 21"><span class="sp1">New cohort</span><span class="sp2">Doula</span><span class="sp3">400 hours</span><span class="sp4">starts October 21</span></a>
+                    <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="See the doula training, open enrollment"><span class="sp1">Enroll</span><span class="sp2">Doula</span><span class="sp3">400 hours</span><span class="sp4">anytime</span></a>
                 </div>
-                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Foundational doula training: one block led by an IBCLC lactation consultant and another by a midwife ♥<small>2 spots · $1,950 · French and English · discover the training →</small></a>
+                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Foundational doula training: one block led by an IBCLC lactation consultant and another by a midwife ♥<small>$1,950 · French and English · discover the training →</small></a>
             </div>
         </div>
 
@@ -2070,7 +2070,7 @@
         <div class="choix-formations trois" role="tablist">
             <a href="#" class="choix-formation" id="onglet-doula" role="tab" aria-selected="false" onclick="montrerFormation('doula', event)">
                 <span class="cf-titre">Foundational doula training · 400 h</span>
-                <span class="cf-info">October 21 cohort · 2 spots · open to everyone</span>
+                <span class="cf-info">Open enrollment · open to everyone</span>
                 <span class="cf-prix">$1,950</span>
             </a>
             <a href="#" class="choix-formation" id="onglet-4e" role="tab" aria-selected="false" onclick="montrerFormation('4e', event)">
@@ -2126,7 +2126,7 @@
         <div class="academie-page-layout panneau-formation" id="panneau-doula" hidden>
             <div>
                 <img src="/doula.jpg" alt="A doula supports a pregnant mother leaning on a birth ball" class="academie-img-discret">
-                <p class="doula-cohorte-ruban"><span class="point"></span> New cohort starting <strong>October 21, 2026</strong> · <strong>2 spots</strong></p>
+                <p class="doula-cohorte-ruban"><span class="point"></span> <strong>Open enrollment</strong> · start anytime</p>
                 <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
                     🤰 Foundational doula training
                 </h3>
@@ -2224,13 +2224,12 @@
             <div class="price-box-sticky">
                 <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Foundational training · 400 h</span>
                 <div class="price-tag">$1,950</div>
-                <div class="doula-lancement">October 21 cohort · 2 spots</div>
-                <p class="doula-places">Only <strong>2 spots</strong></p>
+                <div class="doula-lancement">Open enrollment</div>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">All included: manuals, workshops, exams, mentoring, placement supervision and certificate.</div>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Pay in <strong>1 payment</strong> ($1,950), <strong>3 instalments</strong> ($650) or <strong>6 instalments every 2 weeks</strong> ($325). You choose in the registration form.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Secure payment with Stripe</div>
                 <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">Register online</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">October 21, 2026 cohort · only 2 spots.</p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">open enrollment.</p>
             </div>
         </div>
 
@@ -2760,7 +2759,7 @@
                 </div>
                 <input type="email" id="lien-courriel" placeholder="Student's email" required>
                 <select id="lien-formation" style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <option value="doula">Foundational doula training · 400 h · October 21 cohort ($1,950, French and English)</option>
+                    <option value="doula">Foundational doula training · 400 h · open enrollment ($1,950, French and English)</option>
                     <option value="4e-trimestre">Advanced Fourth Trimester Support</option>
                     <option value="marraine">Breastfeeding Peer Supporter</option>
                 </select>
@@ -2792,7 +2791,7 @@
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
                     <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Course chosen:</label>
                     <select id="choix-formation" onchange="ajusterFormulaireInscription()" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;">
-                        <option value="doula">Foundational doula training · 400 h · October 21 cohort ($1,950, French and English)</option>
+                        <option value="doula">Foundational doula training · 400 h · open enrollment ($1,950, French and English)</option>
                         <option value="4e-trimestre">Advanced Fourth Trimester Support</option>
                         <option value="marraine">Breastfeeding Peer Supporter — $175</option>
                         <option value="combo">Bundle: Fourth Trimester + Breastfeeding Peer Supporter — $725</option>
@@ -3363,8 +3362,8 @@
             if (event) event.preventDefault();
             switchPage('accueil', null);
             var s = document.getElementById('contact-sujet'), m = document.getElementById('contact-message');
-            if (s && !s.value) s.value = '400-hour doula training · October 21 cohort';
-            if (m && !m.value) m.value = "Hello Sabrina, I would like to save my spot in the 400-hour doula training cohort starting October 21. ";
+            if (s && !s.value) s.value = '400-hour doula training';
+            if (m && !m.value) m.value = "Hello Sabrina, I would like to save my spot in the 400-hour doula training. ";
             var f = document.getElementById('form-contact');
             if (f) setTimeout(function () { f.scrollIntoView({ behavior: 'smooth', block: 'center' }); var n = document.getElementById('contact-nom'); if (n) n.focus({ preventScroll: true }); }, 60);
         }
@@ -4516,8 +4515,8 @@
             }
             if (d.formation === 'doula') {
                 document.querySelectorAll('#page-merci .merci-page-container > p').forEach((p, i) => {
-                    if (i === 0) p.textContent = "Your payment has been received and I'm delighted to welcome you to the October 21 cohort of the doula training! 🌸";
-                    if (i === 1) p.innerHTML = 'Create your password below: your student account is ready. I confirm your spot as soon as I see your payment (usually within <strong>24 hours</strong>) and you receive an email. Your training opens in your account on <strong>October 21</strong>.';
+                    if (i === 0) p.textContent = "Your payment has been received and I'm delighted to welcome you to the doula training! 🌸";
+                    if (i === 1) p.innerHTML = 'Create your password below: your student account is ready. I confirm your spot as soon as I see your payment (usually within <strong>24 hours</strong>) and you receive an email. Your training will open in your account and you will receive an email at that time.';
                 });
             }
             if (d.formation === 'marraine') {
