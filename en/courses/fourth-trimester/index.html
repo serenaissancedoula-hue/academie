@@ -2219,7 +2219,7 @@
                 <div class="doula-lancement">October 21 cohort · 2 spots</div>
                 <p class="doula-places">Only <strong>2 spots</strong></p>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">All included: manuals, workshops, exams, mentoring, placement supervision and certificate.</div>
-                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Pay in <strong>1 payment</strong> ($1,950), <strong>3 instalments</strong> ($650) or <strong>6 instalments</strong> ($325). You choose in the registration form.</div>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Pay in <strong>1 payment</strong> ($1,950), <strong>3 instalments</strong> ($650) or <strong>6 instalments every 2 weeks</strong> ($325). You choose in the registration form.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Secure payment with Stripe</div>
                 <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">Register online</button>
                 <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">October 21, 2026 cohort · only 2 spots.</p>
@@ -2847,7 +2847,7 @@
                         <option value="">-- Choose your payment option --</option>
                         <option value="1">Full payment — $550</option>
                         <option value="2">2 instalments — $275 each</option>
-                        <option value="4">4 instalments — $137.50 each</option>
+                        <option value="4">4 instalments every 2 weeks — $137.50 each</option>
                     </select>
                 </div>
                 <p id="note-marraine" hidden style="font-size: 0.88rem; color: #555; margin-top: 15px; background: #efe6dc; border-radius: 10px; padding: 12px 14px;">💳 One-time payment of <strong>$175</strong>. No diploma is required for this course.</p>
@@ -3796,13 +3796,13 @@
             const avant = select.value;
             let choixPaiement;
             if (doula) {
-                choixPaiement = [['1', 'Full payment — $1,950'], ['3', '3 instalments — $650 each'], ['6', '6 instalments — $325 each']];
+                choixPaiement = [['1', 'Full payment — $1,950'], ['3', '3 instalments — $650 each'], ['6', '6 instalments every 2 weeks — $325 each']];
             } else if (combo) {
                 choixPaiement = [['1', 'Full payment — $725'], ['2', '2 instalments — $362.50 each'], ['4', '4 instalments every 2 weeks — $181.25 each']];
             } else {
                 choixPaiement = [];
                 if (offreEstActive()) choixPaiement.push(['offre', "🔥 Launch offer — $250 (instead of $550) + Breastfeeding Peer Supporter course as a gift · one-time payment"]);
-                choixPaiement.push(['1', 'Full payment — $550'], ['2', '2 instalments — $275 each'], ['4', '4 instalments — $137.50 each']);
+                choixPaiement.push(['1', 'Full payment — $550'], ['2', '2 instalments — $275 each'], ['4', '4 instalments every 2 weeks — $137.50 each']);
             }
             select.innerHTML = '<option value="">-- Choose your payment option --</option>' +
                 choixPaiement.map(c => '<option value="' + c[0] + '">' + c[1] + '</option>').join('');
@@ -4440,7 +4440,7 @@
             let lien = "";
             if (choix === "1") lien = "https://buy.stripe.com/9B63cocXK9ReacA6foffy0a";
             else if (choix === "2") lien = "https://buy.stripe.com/8x23co7Dq7J684sfPYffy0b";
-            else if (choix === "4") lien = "https://buy.stripe.com/4gM00c4regfCesQ7jsffy0c";
+            else if (choix === "4") lien = "https://buy.stripe.com/bJe6oA3na3sQesQ0V4ffy0k";
             window.location.href = lien;
         }
 

@@ -15,7 +15,7 @@
       options: {
         '1': { prix: '1 950 $', detail: 'paiement complet', en: { prix: '$1,950', detail: 'full payment' }, lien: 'https://buy.stripe.com/3cIdR28Hu4wU1G40V4ffy00' },
         '3': { prix: '3 × 650 $', detail: '3 versements', en: { prix: '3 × $650', detail: '3 instalments' }, lien: 'https://buy.stripe.com/9B628k4re1kI5WkeLUffy01' },
-        '6': { prix: '6 × 325 $', detail: '6 versements', en: { prix: '6 × $325', detail: '6 instalments' }, lien: 'https://buy.stripe.com/aFa6oAaPC4wU84s8nwffy02' }
+        '6': { prix: '6 × 325 $', detail: '6 versements aux 2 semaines', en: { prix: '6 × $325', detail: '6 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/4gMfZa5vi2oM2K8gU2ffy0j' }
       }
     },
     '4e-trimestre': {
@@ -26,7 +26,7 @@
       options: {
         '1': { prix: '550 $', detail: 'paiement complet', en: { prix: '$550', detail: 'full payment' }, lien: 'https://buy.stripe.com/4gM14gg9We7u84s33cffy03' },
         '2': { prix: '2 × 275 $', detail: '2 versements', en: { prix: '2 × $275', detail: '2 instalments' }, lien: 'https://buy.stripe.com/9B69AMaPC2oMacA1Z8ffy04' },
-        '4': { prix: '4 × 137,50 $', detail: '4 versements', en: { prix: '4 × $137.50', detail: '4 instalments' }, lien: 'https://buy.stripe.com/9B6aEQbTG4wUesQeLUffy05' }
+        '4': { prix: '4 × 137,50 $', detail: '4 versements aux 2 semaines', en: { prix: '4 × $137.50', detail: '4 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/9B6aEQbTG4wUesQeLUffy05' }
       }
     },
     'marraine': {

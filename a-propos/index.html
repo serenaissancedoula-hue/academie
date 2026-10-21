@@ -1954,7 +1954,7 @@
                     <select id="select-complet" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:10px; font-family:'Plus Jakarta Sans', sans-serif;">
                         <option value="1">1 paiement (1 450 $)</option>
                         <option value="2">2 paiements (725 $ chacun)</option>
-                        <option value="4">4 paiements (362,50 $ chacun)</option>
+                        <option value="4">4 paiements aux 2 semaines (362,50 $ chacun)</option>
                     </select>
                     <button class="btn-action" style="width:100%; justify-content:center;" onclick="payerForfaitComplet()">Réserver avec ce forfait</button>
                 </div>
@@ -2302,7 +2302,7 @@
                 <div class="doula-lancement">Cohorte du 21 octobre · 2 places</div>
                 <p class="doula-places">Seulement <strong>2 places</strong></p>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</div>
-                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Paiement en <strong>1 versement</strong> (1 950 $), <strong>3 versements</strong> (650 $) ou <strong>6 versements</strong> (325 $). Tu choisis dans le formulaire d'inscription.</div>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Paiement en <strong>1 versement</strong> (1 950 $), <strong>3 versements</strong> (650 $) ou <strong>6 versements aux 2 semaines</strong> (325 $). Tu choisis dans le formulaire d'inscription.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé avec Stripe</div>
                 <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">S'inscrire en ligne</button>
                 <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Cohorte du 21 octobre 2026 · 2 places seulement.</p>
@@ -2931,7 +2931,7 @@
                         <option value="">-- Choisis ton option de paiement --</option>
                         <option value="1">Paiement complet — 550 $</option>
                         <option value="2">2 versements — 275 $ chacun</option>
-                        <option value="4">4 versements — 137,50 $ chacun</option>
+                        <option value="4">4 versements aux 2 semaines — 137,50 $ chacun</option>
                     </select>
                 </div>
                 <p id="note-marraine" hidden style="font-size: 0.88rem; color: #555; margin-top: 15px; background: #efe6dc; border-radius: 10px; padding: 12px 14px;">💳 Paiement unique de <strong>175 $</strong>. Aucun diplôme n'est requis pour cette formation.</p>
@@ -3880,13 +3880,13 @@
             const avant = select.value;
             let choixPaiement;
             if (doula) {
-                choixPaiement = [['1', 'Paiement complet — 1 950 $'], ['3', '3 versements — 650 $ chacun'], ['6', '6 versements — 325 $ chacun']];
+                choixPaiement = [['1', 'Paiement complet — 1 950 $'], ['3', '3 versements — 650 $ chacun'], ['6', '6 versements aux 2 semaines — 325 $ chacun']];
             } else if (combo) {
                 choixPaiement = [['1', 'Paiement complet — 725 $'], ['2', '2 versements — 362,50 $ chacun'], ['4', '4 versements aux 2 semaines — 181,25 $ chacun']];
             } else {
                 choixPaiement = [];
                 if (offreEstActive()) choixPaiement.push(['offre', "🔥 Offre de lancement — 250 $ (au lieu de 550 $) + marraine d'allaitement en cadeau · paiement unique"]);
-                choixPaiement.push(['1', 'Paiement complet — 550 $'], ['2', '2 versements — 275 $ chacun'], ['4', '4 versements — 137,50 $ chacun']);
+                choixPaiement.push(['1', 'Paiement complet — 550 $'], ['2', '2 versements — 275 $ chacun'], ['4', '4 versements aux 2 semaines — 137,50 $ chacun']);
             }
             select.innerHTML = '<option value="">-- Choisis ton option de paiement --</option>' +
                 choixPaiement.map(c => '<option value="' + c[0] + '">' + c[1] + '</option>').join('');
@@ -4524,7 +4524,7 @@
             let lien = "";
             if (choix === "1") lien = "https://buy.stripe.com/9B63cocXK9ReacA6foffy0a";
             else if (choix === "2") lien = "https://buy.stripe.com/8x23co7Dq7J684sfPYffy0b";
-            else if (choix === "4") lien = "https://buy.stripe.com/4gM00c4regfCesQ7jsffy0c";
+            else if (choix === "4") lien = "https://buy.stripe.com/bJe6oA3na3sQesQ0V4ffy0k";
             window.location.href = lien;
         }
 
