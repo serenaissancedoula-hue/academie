@@ -32,6 +32,21 @@
     erreur: 'Oups, ça n\'a pas fonctionné. Réessaie dans un instant.', invalide: 'Entre une adresse courriel valide.', coche: 'Coche la case pour donner ton consentement.',
     lienOffre: '/formations/', lienConfid: '/confidentialite/'
   };
+  var NOMS = EN ? { 'relation-aide': 'Helping relationship · 300 h', yoga: 'Prenatal and postnatal yoga · 85 h' } : { 'relation-aide': 'Relation d\'aide · 300 h', yoga: 'Yoga prénatal et postnatal · 85 h' };
+  var A = EN ? {
+    titre: 'Waiting list 🌸', texte: 'Leave your email and you will be among the first to hear when registration opens. Dates and prices will be announced soon.',
+    accord: 'I agree that Académie Sérénaissance may email me when these courses open and send me its newsletter (' + ADRESSE.replace('(N.-B.)', 'NB') + '). I can unsubscribe at any time using the link in each email.',
+    bouton: 'Join the waiting list', ok: '💕 Noted! You are on the waiting list. I will email you as soon as registration opens.', aucune: 'Choose at least one course.'
+  } : {
+    titre: 'Liste d\'attente 🌸', texte: 'Laisse-moi ton courriel : tu seras parmi les premières prévenues quand les inscriptions ouvriront. Les dates et les prix seront annoncés bientôt.',
+    accord: 'J\'accepte que l\'Académie Sérénaissance m\'écrive à l\'ouverture de ces formations et m\'envoie son infolettre (' + ADRESSE + '). Je peux me désabonner en tout temps grâce au lien dans chaque courriel.',
+    bouton: 'Me mettre sur la liste', ok: '💕 C\'est noté ! Tu es sur la liste d\'attente : je t\'écris dès l\'ouverture.', aucune: 'Choisis au moins une formation.'
+  };
+  function casesAttente(choisie) {
+    return Object.keys(NOMS).map(function (k) {
+      return '<label class="il-case"><input type="checkbox" name="att-' + k + '"' + (k === choisie ? ' checked' : '') + '> <span><strong>' + NOMS[k] + '</strong></span></label>';
+    }).join('');
+  }
   function lire() { try { return JSON.parse(localStorage.getItem(CLE) || '{}'); } catch (e) { return {}; } }
   function ecrire(o) { try { localStorage.setItem(CLE, JSON.stringify(o)); } catch (e) {} }
   function offreActive() {
@@ -41,6 +56,19 @@
   function rpc(nom, corps) {
     return fetch(SB_URL + '/rest/v1/rpc/' + nom, { method: 'POST', headers: { 'apikey': SB_CLE, 'Content-Type': 'application/json' }, body: JSON.stringify(corps) })
       .then(function (r) { return r.text().then(function (t) { var d = null; try { d = JSON.parse(t); } catch (e) { d = t; } if (!r.ok) throw new Error((d && d.message) || 'erreur'); return d; }); });
+  }
+  // Avertit Sabrina par courriel (au cas où la personne était déjà abonnée à l'infolettre) ; sans effet si EmailJS n'est pas chargé
+  function prevenirSabrina(courriel, prenom, cles) {
+    try {
+      if (typeof emailjs === 'undefined') return;
+      var noms = cles.map(function (k) { return NOMS[k]; }).join(' ; ');
+      emailjs.send('service_82vfhfg', 'template_arhnc1s', {
+        name: prenom || courriel, nom: prenom || courriel, email: courriel, courriel: courriel,
+        sujet: 'Liste d\'attente : ' + noms, title: 'Liste d\'attente : ' + noms,
+        message: 'Nouvelle inscription à la liste d\'attente.\nFormation(s) : ' + noms + '\nCourriel : ' + courriel + (prenom ? '\nPrénom : ' + prenom : '') + '\nLangue : ' + (EN ? 'anglais' : 'français'),
+        time: new Date().toLocaleString('fr-CA', { dateStyle: 'long', timeStyle: 'short' })
+      }, 'HNvKdORRpRy_vT_FI');
+    } catch (e) {}
   }
   var fond = null;
   function css() {
@@ -75,22 +103,24 @@
     fond.remove(); fond = null; document.removeEventListener('keydown', echap);
   }
   function echap(ev) { if (ev.key === 'Escape') fermer(); }
-  function ouvrir() {
+  function ouvrir(opts) {
     if (fond) return;
+    var att = opts && opts.attente ? opts.attente : null;
     css();
     fond = document.createElement('div'); fond.className = 'il-fond'; fond.setAttribute('role', 'dialog'); fond.setAttribute('aria-modal', 'true'); fond.setAttribute('aria-labelledby', 'il-titre');
-    var offre = offreActive();
+    var offre = !att && offreActive();
     fond.innerHTML = '<div class="il-boite">' +
       '<button type="button" class="il-fermer" aria-label="' + T.fermer + '">✕</button>' +
       '<img class="il-logo" src="/logo.png" alt="Académie Sérénaissance">' +
-      '<h2 id="il-titre">' + T.titre + '</h2>' +
+      '<h2 id="il-titre">' + (att ? A.titre : T.titre) + '</h2>' +
       (offre ? '<div class="il-offre">' + T.offre + '<span class="il-places" hidden></span><a href="' + T.lienOffre + '">' + T.voir + '</a></div>' : '') +
-      '<p>' + T.texte + '</p>' +
+      '<p>' + (att ? A.texte : T.texte) + '</p>' +
       '<form novalidate>' +
         '<input type="text" name="prenom" autocomplete="given-name" maxlength="60" placeholder="' + T.prenom + '" aria-label="' + T.prenom + '">' +
         '<input type="email" name="courriel" autocomplete="email" maxlength="200" required placeholder="' + T.courriel + '" aria-label="' + T.courriel + '">' +
-        '<label class="il-case"><input type="checkbox" name="accord"> <span>' + T.accord + '</span></label>' +
-        '<button type="submit" class="il-envoyer">' + T.bouton + '</button>' +
+        (att ? casesAttente(att) : '') +
+        '<label class="il-case"><input type="checkbox" name="accord"> <span>' + (att ? A.accord : T.accord) + '</span></label>' +
+        '<button type="submit" class="il-envoyer">' + (att ? A.bouton : T.bouton) + '</button>' +
         '<div class="il-msg" role="status"></div>' +
       '</form>' +
       '<div class="il-petit"><a href="' + T.lienConfid + '">' + T.confid + '</a></div>' +
@@ -110,15 +140,18 @@
       var c = f.courriel.value.trim().toLowerCase();
       msg.className = 'il-msg ko';
       if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(c)) { msg.textContent = T.invalide; f.courriel.focus(); return; }
+      var choix = att ? Object.keys(NOMS).filter(function (k) { return f['att-' + k] && f['att-' + k].checked; }) : [];
+      if (att && !choix.length) { msg.textContent = A.aucune; return; }
       if (!f.accord.checked) { msg.textContent = T.coche; return; }
       b.disabled = true; b.textContent = T.envoi; msg.textContent = '';
-      rpc('abonner_infolettre', { p_courriel: c, p_prenom: f.prenom.value.trim(), p_langue: EN ? 'en' : 'fr', p_source: (location.pathname || '/').slice(0, 60), p_consentement: T.accord })
+      rpc('abonner_infolettre', { p_courriel: c, p_prenom: f.prenom.value.trim(), p_langue: EN ? 'en' : 'fr', p_source: att ? ('attente-' + choix.join('+')).slice(0, 60) : (location.pathname || '/').slice(0, 60), p_consentement: att ? A.accord : T.accord })
         .then(function (r) {
           ecrire({ inscrite: Date.now() });
-          f.innerHTML = '<div class="il-msg ok">' + (r === 'deja' ? T.deja : T.ok) + '</div>';
+          if (att) prevenirSabrina(c, f.prenom.value.trim(), choix);
+          f.innerHTML = '<div class="il-msg ok">' + (att ? A.ok : (r === 'deja' ? T.deja : T.ok)) + '</div>';
           setTimeout(fermer, 3500);
         }).catch(function (e) {
-          b.disabled = false; b.textContent = T.bouton;
+          b.disabled = false; b.textContent = att ? A.bouton : T.bouton;
           msg.textContent = e && e.message && e.message !== 'erreur' ? e.message : T.erreur;
         });
     });
@@ -140,6 +173,6 @@
     setTimeout(go, 9000);
     window.addEventListener('scroll', defil, { passive: true });
   }
-  window.SereInfolettre = { ouvrir: ouvrir };
+  window.SereInfolettre = { ouvrir: ouvrir, attente: function (cle) { ouvrir({ attente: cle }); } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', programmer); else programmer();
 })();

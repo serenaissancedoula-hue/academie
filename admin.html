@@ -1575,7 +1575,8 @@ function chargerInfolettre() {
     $('il-resume').innerHTML = '<div class="tuiles"><div class="tuile"><b>' + actifs.length + '</b><span>abonnées actives</span></div>' +
       '<div class="tuile"><b>' + actifs.filter(function (a) { return a.langue === 'fr'; }).length + '</b><span>🇫🇷 inscrites en français</span></div>' +
       '<div class="tuile"><b>' + actifs.filter(function (a) { return a.langue === 'en'; }).length + '</b><span>🇬🇧 inscrites en anglais</span></div>' +
-      '<div class="tuile"><b>' + (abonnes.length - actifs.length) + '</b><span>désabonnées</span></div></div>';
+      '<div class="tuile"><b>' + (abonnes.length - actifs.length) + '</b><span>désabonnées</span></div>' +
+      '<div class="tuile"><b>' + actifs.filter(function (a) { return libelleSource(a); }).length + '</b><span>⏳ sur une liste d\'attente</span></div></div>';
     $('il-envoyer').textContent = '📨 Envoyer à toutes les abonnées (' + actifs.length + ')';
     if (!$('il-liste').hidden) afficherAbonnes();
   });
@@ -1586,9 +1587,15 @@ function chargerInfolettre() {
     }).join('') : '';
   });
 }
+function libelleSource(a) {
+  var src = a && a.source ? String(a.source) : '';
+  if (src.indexOf('attente-') !== 0) return '';
+  var noms = { 'relation-aide': "relation d'aide 300 h", 'yoga': 'yoga 85 h' };
+  return src.slice(8).split('+').map(function (k) { return noms[k] || k; }).join(' + ');
+}
 function afficherAbonnes() {
-  $('il-liste').innerHTML = abonnes.length ? '<table class="table-abonnes"><tr><th>Courriel</th><th>Prénom</th><th>Langue</th><th>Inscrite le</th><th>Statut</th><th></th></tr>' + abonnes.map(function (a) {
-    return '<tr><td>' + esc(a.courriel) + '</td><td>' + esc(a.prenom || '') + '</td><td>' + (a.langue === 'en' ? '🇬🇧' : '🇫🇷') + '</td><td>' + jour(a.consent_date) + '</td><td>' +
+  $('il-liste').innerHTML = abonnes.length ? '<table class="table-abonnes"><tr><th>Courriel</th><th>Prénom</th><th>Langue</th><th>Inscrite le</th><th>Liste d&#39;attente</th><th>Statut</th><th></th></tr>' + abonnes.map(function (a) {
+    return '<tr><td>' + esc(a.courriel) + '</td><td>' + esc(a.prenom || '') + '</td><td>' + (a.langue === 'en' ? '🇬🇧' : '🇫🇷') + '</td><td>' + jour(a.consent_date) + '</td><td>' + esc(libelleSource(a)) + '</td><td>' +
       (a.actif ? '<span class="ok">Abonnée</span>' : '<span class="ko">Désabonnée le ' + jour(a.desabonne_le) + '</span>') + '</td><td><button class="btn gris" type="button" style="padding:4px 10px;font-size:.72rem;" data-il-suppr="' + a.id + '">Effacer</button></td></tr>';
   }).join('') + '</table>' : '<p class="infos-ligne">Aucune abonnée pour le moment.</p>';
 }
@@ -1600,7 +1607,7 @@ $('il-liste').addEventListener('click', function (e) {
   sb.from('abonnes_infolettre').delete().eq('id', a.id).then(function (r) { if (r.error) toast('Erreur : ' + r.error.message); else { toast('Abonnée effacée'); chargerInfolettre(); } });
 });
 $('il-csv').addEventListener('click', function () {
-  telecharger('abonnees-infolettre-' + aujourdhui() + '.csv', csv(abonnes, [['courriel', 'Courriel'], ['prenom', 'Prénom'], ['langue', 'Langue'], [function (a) { return a.actif ? 'Abonnée' : 'Désabonnée'; }, 'Statut'],
+  telecharger('abonnees-infolettre-' + aujourdhui() + '.csv', csv(abonnes, [['courriel', 'Courriel'], ['prenom', 'Prénom'], ['langue', 'Langue'], [function (a) { return a.actif ? 'Abonnée' : 'Désabonnée'; }, 'Statut'], [libelleSource, 'Liste d\'attente'],
     [function (a) { return a.consent_date ? new Date(a.consent_date).toLocaleString('fr-CA') : ''; }, 'Consentement donné le'], ['source', 'Page d\'inscription'], ['consentement', 'Texte du consentement']]));
 });
 // Brouillon gardé sur l'appareil
