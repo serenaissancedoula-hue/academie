@@ -54,7 +54,7 @@ def generer(lang):
         formation = p.get('formation')
         if formation:
             # Page d'une formation : même contenu que la page dédiée, qui reste l'adresse officielle pour Google
-            can = p['canonique']; can_autre = pages_autre[pid]['canonique']
+            can = p.get('canonique', p['chemin']); can_autre = pages_autre[pid].get('canonique', pages_autre[pid]['chemin'])
             fr_url, en_url = (DOMAINE + can, DOMAINE + can_autre) if lang == 'fr' else (DOMAINE + can_autre, DOMAINE + can)
             s = meta(s, r'(<link rel="canonical" href=")[^"]*(")', DOMAINE + can)
             s = meta(s, r'(<meta property="og:url" content=")[^"]*(")', DOMAINE + can)
@@ -69,13 +69,15 @@ def generer(lang):
         s = s.replace('class="active" id="nav-accueil"', 'id="nav-accueil"', 1)
         s = re.sub(r'(<a href="[^"]*" onclick="switchPage\(\'%s\'[^>]*?)( id="nav-%s")' % (nav_cible, nav_cible), r'\1 class="active"\2', s, count=1)
         if cible == 'academie':
-            s = s.replace('data-vue="liste"', 'data-vue="detail"' if formation else 'data-vue="liste"', 1)
+            if formation:
+                s = s.replace('id="page-academie" class="page-section active" data-vue="liste"', 'id="page-academie" class="page-section active" data-vue="detail"', 1)
         if formation and formation != 'doula':
             s = s.replace('id="panneau-doula">', 'id="panneau-doula" hidden>', 1)
             s = s.replace('id="panneau-%s" hidden>' % formation, 'id="panneau-%s">' % formation, 1)
             s = s.replace('class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true"', 'class="choix-formation" id="onglet-doula" role="tab" aria-selected="false"', 1)
             s = s.replace('class="choix-formation" id="onglet-%s" role="tab" aria-selected="false"' % formation, 'class="choix-formation actif" id="onglet-%s" role="tab" aria-selected="true"' % formation, 1)
-            s = s.replace('<div class="carte-combo" hidden>', '<div class="carte-combo">', 1)
+            if formation in ('4e', 'marraine'):
+                s = s.replace('<div class="carte-combo" hidden>', '<div class="carte-combo">', 1)
         dossier = os.path.join(RACINE, p['chemin'].strip('/'))
         os.makedirs(dossier, exist_ok=True)
         with open(os.path.join(dossier, 'index.html'), 'w', encoding='utf-8') as fh:
