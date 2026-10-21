@@ -1845,7 +1845,7 @@
                     </div>
                     <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="See the doula training, new cohort starting October 21"><span class="sp1">New cohort</span><span class="sp2">Doula</span><span class="sp3">400 hours</span><span class="sp4">starts October 21</span></a>
                 </div>
-                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Foundational doula training: one block led by an IBCLC lactation consultant and another by a midwife ♥<small>2 spots · $1,750 · French and English · discover the training →</small></a>
+                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Foundational doula training: one block led by an IBCLC lactation consultant and another by a midwife ♥<small>2 spots · $1,950 · French and English · discover the training →</small></a>
             </div>
         </div>
 
@@ -2063,7 +2063,7 @@
             <a href="#" class="choix-formation" id="onglet-doula" role="tab" aria-selected="false" onclick="montrerFormation('doula', event)">
                 <span class="cf-titre">Foundational doula training · 400 h</span>
                 <span class="cf-info">October 21 cohort · 2 spots · open to everyone</span>
-                <span class="cf-prix">$1,750<s>$1,950</s></span>
+                <span class="cf-prix">$1,950</span>
             </a>
             <a href="#" class="choix-formation" id="onglet-4e" role="tab" aria-selected="false" onclick="montrerFormation('4e', event)">
                 <span class="cf-titre">Advanced Fourth Trimester Support</span>
@@ -2215,14 +2215,14 @@
                             </div>
             <div class="price-box-sticky">
                 <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Foundational training · 400 h</span>
-                <div class="price-tag">$1,750 <s class="prix-barre-doula">$1,950</s></div>
-                <div class="doula-lancement">🔥 Launch price · October 21 cohort</div>
+                <div class="price-tag">$1,950</div>
+                <div class="doula-lancement">October 21 cohort · 2 spots</div>
                 <p class="doula-places">Only <strong>2 spots</strong></p>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">All included: manuals, workshops, exams, mentoring, placement supervision and certificate.</div>
-                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Pay in <strong>1 payment</strong> ($1,750), <strong>3 instalments</strong> ($583.33) or <strong>6 instalments</strong> ($291.67). You choose in the registration form.</div>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Pay in <strong>1 payment</strong> ($1,950), <strong>3 instalments</strong> ($650) or <strong>6 instalments</strong> ($325). You choose in the registration form.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Secure payment with Stripe</div>
                 <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">Register online</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Launch price valid until October 20, 2026 or until the 2 spots are filled. After that: $1,950.</p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">October 21, 2026 cohort · only 2 spots.</p>
             </div>
         </div>
 
@@ -2752,7 +2752,7 @@
                 </div>
                 <input type="email" id="lien-courriel" placeholder="Student's email" required>
                 <select id="lien-formation" style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <option value="doula">Foundational doula training · 400 h · October 21 cohort ($1,750, French and English)</option>
+                    <option value="doula">Foundational doula training · 400 h · October 21 cohort ($1,950, French and English)</option>
                     <option value="4e-trimestre">Advanced Fourth Trimester Support</option>
                     <option value="marraine">Breastfeeding Peer Supporter</option>
                 </select>
@@ -2784,7 +2784,7 @@
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
                     <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Course chosen:</label>
                     <select id="choix-formation" onchange="ajusterFormulaireInscription()" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;">
-                        <option value="doula">Foundational doula training · 400 h · October 21 cohort ($1,750, French and English)</option>
+                        <option value="doula">Foundational doula training · 400 h · October 21 cohort ($1,950, French and English)</option>
                         <option value="4e-trimestre">Advanced Fourth Trimester Support</option>
                         <option value="marraine">Breastfeeding Peer Supporter — $175</option>
                         <option value="combo">Bundle: Fourth Trimester + Breastfeeding Peer Supporter — $725</option>
@@ -3349,7 +3349,7 @@
         ];
         const CHEMIN_EXTRAIT = '/Formation/en/module-1/apercu.html';   // extrait gratuit
         const CHEMIN_MARRAINE = '/Formation/en/marraine/index.html';          // formation de marraine d'allaitement
-        const LIEN_STRIPE_MARRAINE = 'https://buy.stripe.com/aFa28s811f1UcTH97U7N60e';                                   // lien Stripe de 175 $
+        const LIEN_STRIPE_MARRAINE = 'https://buy.stripe.com/7sY5kw7Dq0gE0C047gffy06';                                   // lien Stripe de 175 $
 
         function reserverCohorteDoula(event) {
             if (event) event.preventDefault();
@@ -3582,9 +3582,9 @@
 
         // Liens Stripe au prix régulier (550 $)
         const LIENS_STRIPE_REGULIER = {
-            '1': 'https://buy.stripe.com/cNi4gAeppg5Y3j73NA7N601',
-            '2': 'https://buy.stripe.com/28E4gA5ST6vo3j71Fs7N604',
-            '4': 'https://buy.stripe.com/3cI5kE4OPcTM5rf3NA7N603'
+            '1': 'https://buy.stripe.com/4gM14gg9We7u84s33cffy03',
+            '2': 'https://buy.stripe.com/9B69AMaPC2oMacA1Z8ffy04',
+            '4': 'https://buy.stripe.com/9B6aEQbTG4wUesQeLUffy05'
         };
         // Liens de l'offre : le lien régulier avec le code promo Stripe déjà appliqué
         const LIENS_STRIPE_OFFRE = {
@@ -3796,7 +3796,7 @@
             const avant = select.value;
             let choixPaiement;
             if (doula) {
-                choixPaiement = [['1', 'Full payment — $1,750 (launch price, instead of $1,950)'], ['3', '3 instalments — $583.33 each'], ['6', '6 instalments — $291.67 each']];
+                choixPaiement = [['1', 'Full payment — $1,950'], ['3', '3 instalments — $650 each'], ['6', '6 instalments — $325 each']];
             } else if (combo) {
                 choixPaiement = [['1', 'Full payment — $725'], ['2', '2 instalments — $362.50 each'], ['4', '4 instalments every 2 weeks — $181.25 each']];
             } else {
@@ -4438,25 +4438,25 @@
         function payerForfaitComplet() {
             const choix = document.getElementById('select-complet').value;
             let lien = "";
-            if (choix === "1") lien = "https://buy.stripe.com/dRm3cw2GH9HA9HvgAm7N609";
-            else if (choix === "2") lien = "https://buy.stripe.com/6oUbJ2955dXQdXLbg27N607";
-            else if (choix === "4") lien = "https://buy.stripe.com/fZubJ2955bPI1aZ0Bo7N608";
+            if (choix === "1") lien = "https://buy.stripe.com/9B63cocXK9ReacA6foffy0a";
+            else if (choix === "2") lien = "https://buy.stripe.com/8x23co7Dq7J684sfPYffy0b";
+            else if (choix === "4") lien = "https://buy.stripe.com/4gM00c4regfCesQ7jsffy0c";
             window.location.href = lien;
         }
 
         function payerForfaitMoyen() {
             const choix = document.getElementById('select-moyen').value;
             let lien = "";
-            if (choix === "1") lien = "https://buy.stripe.com/6oUbJ2bdddXQ06V2Jw7N60a";
-            else if (choix === "2") lien = "https://buy.stripe.com/4gM5kEeppdXQ3j7doa7N60b";
+            if (choix === "1") lien = "https://buy.stripe.com/7sY00c4re3sQ70o8nwffy0d";
+            else if (choix === "2") lien = "https://buy.stripe.com/dRmdR2cXK1kI3Oc1Z8ffy0e";
             window.location.href = lien;
         }
 
         function payerAccouchement() {
             const choix = document.getElementById('select-accouchement').value;
             let lien = "";
-            if (choix === "1") lien = "https://buy.stripe.com/dRmcN64OP9HA5rf0Bo7N60c";
-            else if (choix === "2") lien = "https://buy.stripe.com/14AcN6dllg5Yf1P6ZM7N60d";
+            if (choix === "1") lien = "https://buy.stripe.com/3cI00cbTG9Re98wcDMffy0f";
+            else if (choix === "2") lien = "https://buy.stripe.com/14A3co9Ly8Na70o9rAffy0g";
             window.location.href = lien;
         }
 
@@ -4483,7 +4483,7 @@
             try {
                 emailjs.send("service_82vfhfg", "template_gy588ot", {
                     prenom: d.prenom, nom: d.nom, courriel: d.courriel, telephone: d.telephone, adresse: d.adresse,
-                    option_paiement: (d.formation === 'doula' ? "Formation de doula 400 h · " + ({ '1': '1 750 $ (paiement complet)', '3': '3 × 583,33 $', '6': '6 × 291,67 $' }[String(d.option_paiement).split('-')[1]] || '') : d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
+                    option_paiement: (d.formation === 'doula' ? "Formation de doula 400 h · " + ({ '1': '1 950 $ (paiement complet)', '3': '3 × 650 $', '6': '6 × 325 $' }[String(d.option_paiement).split('-')[1]] || '') : d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
                 }, "HNvKdORRpRy_vT_FI");
             } catch (e) { console.log('Erreur EmailJS', e); }
             return true;

@@ -1844,7 +1844,7 @@
                     </div>
                     <a href="#" class="sceau-photo" onclick="voirFormationDoula(event)" aria-label="Voir la formation de doula, nouvelle cohorte dès le 21 octobre"><span class="sp1">Nouvelle cohorte</span><span class="sp2">Doula</span><span class="sp3">400 heures</span><span class="sp4">dès le 21 octobre</span></a>
                 </div>
-                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Formation de base de doula : un bloc animé par une consultante IBCLC et un autre par une sage-femme ♥<small>2 places · 1 750 $ · découvrir la formation →</small></a>
+                <a href="#" class="pastille-cohorte" onclick="voirFormationDoula(event)">Formation de base de doula : un bloc animé par une consultante IBCLC et un autre par une sage-femme ♥<small>2 places · 1 950 $ · découvrir la formation →</small></a>
             </div>
         </div>
 
@@ -2062,7 +2062,7 @@
             <a href="#" class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true" onclick="montrerFormation('doula', event)">
                 <span class="cf-titre">Formation de base de doula · 400 h</span>
                 <span class="cf-info">Cohorte du 21 octobre · 2 places · ouverte à toutes</span>
-                <span class="cf-prix">1 750 $<s>1 950 $</s></span>
+                <span class="cf-prix">1 950 $</span>
             </a>
             <a href="#" class="choix-formation" id="onglet-4e" role="tab" aria-selected="false" onclick="montrerFormation('4e', event)">
                 <span class="cf-titre">Accompagnement de pointe du 4ᵉ trimestre</span>
@@ -2297,14 +2297,14 @@
 
             <div class="price-box-sticky">
                 <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Formation de base · 400 h</span>
-                <div class="price-tag">1 750 $ <s class="prix-barre-doula">1 950 $</s></div>
-                <div class="doula-lancement">🔥 Prix de lancement · cohorte du 21 octobre</div>
+                <div class="price-tag">1 950 $</div>
+                <div class="doula-lancement">Cohorte du 21 octobre · 2 places</div>
                 <p class="doula-places">Seulement <strong>2 places</strong></p>
                 <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</div>
-                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Paiement en <strong>1 versement</strong> (1 750 $), <strong>3 versements</strong> (583,33 $) ou <strong>6 versements</strong> (291,67 $). Tu choisis dans le formulaire d'inscription.</div>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Paiement en <strong>1 versement</strong> (1 950 $), <strong>3 versements</strong> (650 $) ou <strong>6 versements</strong> (325 $). Tu choisis dans le formulaire d'inscription.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé avec Stripe</div>
                 <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">S'inscrire en ligne</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Prix de lancement valable jusqu'au 20 octobre 2026 ou jusqu'à ce que les 2 places soient comblées. Ensuite : 1 950 $.</p>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Cohorte du 21 octobre 2026 · 2 places seulement.</p>
                 <p style="font-size: 0.78rem; color: #7a685e; margin-top: 8px;">Annulation possible selon les règles de la Loi sur la protection du consommateur du Québec (et droit de rétractation de 14 jours pour les résidentes de la France et de l'Union européenne).</p>
             </div>
         </div>
@@ -2835,7 +2835,7 @@
                 </div>
                 <input type="email" id="lien-courriel" placeholder="Courriel de l'étudiante" required>
                 <select id="lien-formation" style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <option value="doula">Formation de base de doula · 400 h · cohorte du 21 octobre (1 750 $)</option>
+                    <option value="doula">Formation de base de doula · 400 h · cohorte du 21 octobre (1 950 $)</option>
                     <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                     <option value="marraine">Marraine d'allaitement</option>
                 </select>
@@ -2867,7 +2867,7 @@
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
                     <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Formation choisie :</label>
                     <select id="choix-formation" onchange="ajusterFormulaireInscription()" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;">
-                        <option value="doula">Formation de base de doula · 400 h · cohorte du 21 octobre (1 750 $)</option>
+                        <option value="doula">Formation de base de doula · 400 h · cohorte du 21 octobre (1 950 $)</option>
                         <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                         <option value="marraine">Marraine d'allaitement — 175 $</option>
                         <option value="combo">Combo : 4ᵉ trimestre + marraine d'allaitement — 725 $</option>
@@ -3432,7 +3432,7 @@
         ];
         const CHEMIN_EXTRAIT = 'Formation/module-1/apercu.html';   // extrait gratuit
         const CHEMIN_MARRAINE = 'Formation/marraine/index.html';          // formation de marraine d'allaitement
-        const LIEN_STRIPE_MARRAINE = 'https://buy.stripe.com/aFa28s811f1UcTH97U7N60e';                                   // lien Stripe de 175 $
+        const LIEN_STRIPE_MARRAINE = 'https://buy.stripe.com/7sY5kw7Dq0gE0C047gffy06';                                   // lien Stripe de 175 $
 
         function reserverCohorteDoula(event) {
             if (event) event.preventDefault();
@@ -3665,9 +3665,9 @@
 
         // Liens Stripe au prix régulier (550 $)
         const LIENS_STRIPE_REGULIER = {
-            '1': 'https://buy.stripe.com/cNi4gAeppg5Y3j73NA7N601',
-            '2': 'https://buy.stripe.com/28E4gA5ST6vo3j71Fs7N604',
-            '4': 'https://buy.stripe.com/3cI5kE4OPcTM5rf3NA7N603'
+            '1': 'https://buy.stripe.com/4gM14gg9We7u84s33cffy03',
+            '2': 'https://buy.stripe.com/9B69AMaPC2oMacA1Z8ffy04',
+            '4': 'https://buy.stripe.com/9B6aEQbTG4wUesQeLUffy05'
         };
         // Liens de l'offre : le lien régulier avec le code promo Stripe déjà appliqué
         const LIENS_STRIPE_OFFRE = {
@@ -3879,7 +3879,7 @@
             const avant = select.value;
             let choixPaiement;
             if (doula) {
-                choixPaiement = [['1', 'Paiement complet — 1 750 $ (prix de lancement, au lieu de 1 950 $)'], ['3', '3 versements — 583,33 $ chacun'], ['6', '6 versements — 291,67 $ chacun']];
+                choixPaiement = [['1', 'Paiement complet — 1 950 $'], ['3', '3 versements — 650 $ chacun'], ['6', '6 versements — 325 $ chacun']];
             } else if (combo) {
                 choixPaiement = [['1', 'Paiement complet — 725 $'], ['2', '2 versements — 362,50 $ chacun'], ['4', '4 versements aux 2 semaines — 181,25 $ chacun']];
             } else {
@@ -4521,25 +4521,25 @@
         function payerForfaitComplet() {
             const choix = document.getElementById('select-complet').value;
             let lien = "";
-            if (choix === "1") lien = "https://buy.stripe.com/dRm3cw2GH9HA9HvgAm7N609";
-            else if (choix === "2") lien = "https://buy.stripe.com/6oUbJ2955dXQdXLbg27N607";
-            else if (choix === "4") lien = "https://buy.stripe.com/fZubJ2955bPI1aZ0Bo7N608";
+            if (choix === "1") lien = "https://buy.stripe.com/9B63cocXK9ReacA6foffy0a";
+            else if (choix === "2") lien = "https://buy.stripe.com/8x23co7Dq7J684sfPYffy0b";
+            else if (choix === "4") lien = "https://buy.stripe.com/4gM00c4regfCesQ7jsffy0c";
             window.location.href = lien;
         }
 
         function payerForfaitMoyen() {
             const choix = document.getElementById('select-moyen').value;
             let lien = "";
-            if (choix === "1") lien = "https://buy.stripe.com/6oUbJ2bdddXQ06V2Jw7N60a";
-            else if (choix === "2") lien = "https://buy.stripe.com/4gM5kEeppdXQ3j7doa7N60b";
+            if (choix === "1") lien = "https://buy.stripe.com/7sY00c4re3sQ70o8nwffy0d";
+            else if (choix === "2") lien = "https://buy.stripe.com/dRmdR2cXK1kI3Oc1Z8ffy0e";
             window.location.href = lien;
         }
 
         function payerAccouchement() {
             const choix = document.getElementById('select-accouchement').value;
             let lien = "";
-            if (choix === "1") lien = "https://buy.stripe.com/dRmcN64OP9HA5rf0Bo7N60c";
-            else if (choix === "2") lien = "https://buy.stripe.com/14AcN6dllg5Yf1P6ZM7N60d";
+            if (choix === "1") lien = "https://buy.stripe.com/3cI00cbTG9Re98wcDMffy0f";
+            else if (choix === "2") lien = "https://buy.stripe.com/14A3co9Ly8Na70o9rAffy0g";
             window.location.href = lien;
         }
 
@@ -4566,7 +4566,7 @@
             try {
                 emailjs.send("service_82vfhfg", "template_gy588ot", {
                     prenom: d.prenom, nom: d.nom, courriel: d.courriel, telephone: d.telephone, adresse: d.adresse,
-                    option_paiement: (d.formation === 'doula' ? "Formation de doula 400 h · " + ({ '1': '1 750 $ (paiement complet)', '3': '3 × 583,33 $', '6': '6 × 291,67 $' }[String(d.option_paiement).split('-')[1]] || '') : d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
+                    option_paiement: (d.formation === 'doula' ? "Formation de doula 400 h · " + ({ '1': '1 950 $ (paiement complet)', '3': '3 × 650 $', '6': '6 × 325 $' }[String(d.option_paiement).split('-')[1]] || '') : d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
                 }, "HNvKdORRpRy_vT_FI");
             } catch (e) { console.log('Erreur EmailJS', e); }
             return true;
