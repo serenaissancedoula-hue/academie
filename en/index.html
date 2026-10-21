@@ -177,6 +177,14 @@
             .sous-menu .sm-groupe, .sous-menu a.sm-toutes { display: none; }
             .sous-menu a.sm-bientot { display: none; }
         }
+        .sm-fleche { display: none; }
+        @media (max-width: 950px) {
+            .nav-center li.a-menu > a { display: inline-block; }
+            .sm-fleche { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; margin-left: 6px; vertical-align: middle; border: 1px solid var(--border-color); border-radius: 50%; background: #fff; color: var(--accent-terracotta); font-size: 1rem; line-height: 1; cursor: pointer; transition: transform .2s; padding: 0; }
+            .nav-center li.a-menu.ouvert .sm-fleche { transform: rotate(180deg); }
+            .nav-center li.a-menu .sous-menu, .nav-center li.a-menu:hover .sous-menu, .nav-center li.a-menu:focus-within .sous-menu { display: none; }
+            .nav-center li.a-menu.ouvert .sous-menu { display: block; }
+        }
         #page-academie[data-vue="liste"] .panneau-formation, #page-academie[data-vue="liste"] .ancre-formation, #page-academie[data-vue="liste"] .carte-combo, #page-academie[data-vue="liste"] .retour-formations { display: none !important; }
         #page-academie[data-vue="detail"] .a-venir, #page-academie[data-vue="detail"] #pourquoi-academie, #page-academie[data-vue="detail"] #cohorte-fondatrice, #page-academie[data-vue="detail"] .comparatif, #page-academie[data-vue="detail"] .aide-liste { display: none !important; }
         .aide-liste { text-align: center; color: #7a685e; font-size: .92rem; margin: 6px 0 4px; }
@@ -1777,7 +1785,7 @@
         <ul class="nav-center">
             <li><a href="/en/" onclick="switchPage('accueil', this, event)" class="active" id="nav-accueil">Home</a></li>
             <li><a href="/en/support/" onclick="switchPage('accompagnements', this, event)" id="nav-accompagnements">Support</a></li>
-            <li class="a-menu"><a href="/en/courses/" onclick="switchPage('academie', this, event)" id="nav-academie" aria-haspopup="true">Courses</a><div class="sous-menu"><div class="sous-boite"><a class="sm-item" href="/en/courses/foundational-doula/" onclick="allerFormation('doula', event)"><strong>Foundational doula training</strong><small>400 h · 12 modules · 71 chapters</small></a><a class="sm-item" href="/en/courses/fourth-trimester/" onclick="allerFormation('4e', event)"><strong>Advanced Fourth Trimester Support</strong><small>35 h · for certified doulas</small></a><a class="sm-item" href="/en/courses/peer-supporter/" onclick="allerFormation('marraine', event)"><strong>Breastfeeding Peer Supporter</strong><small>8.5 h · open to everyone</small></a><div class="sm-groupe">Coming soon</div><a class="sm-bientot" href="/en/courses/" onclick="toutesLesFormations(event, true)"><span>Helping relationship</span><span>300 h</span></a><a class="sm-bientot" href="/en/courses/" onclick="toutesLesFormations(event, true)"><span>Prenatal and postnatal yoga</span><span>85 h</span></a><a class="sm-toutes" href="/en/courses/" onclick="switchPage('academie', null, event)">See all courses →</a></div></div></li>
+            <li class="a-menu"><a href="/en/courses/" onclick="switchPage('academie', this, event)" id="nav-academie" aria-haspopup="true">Courses</a><button type="button" class="sm-fleche" aria-expanded="false" aria-label="Show courses">▾</button><div class="sous-menu"><div class="sous-boite"><a class="sm-item" href="/en/courses/foundational-doula/" onclick="allerFormation('doula', event)"><strong>Foundational doula training</strong><small>400 h · 12 modules · 71 chapters</small></a><a class="sm-item" href="/en/courses/fourth-trimester/" onclick="allerFormation('4e', event)"><strong>Advanced Fourth Trimester Support</strong><small>35 h · for certified doulas</small></a><a class="sm-item" href="/en/courses/peer-supporter/" onclick="allerFormation('marraine', event)"><strong>Breastfeeding Peer Supporter</strong><small>8.5 h · open to everyone</small></a><div class="sm-groupe">Coming soon</div><a class="sm-bientot" href="/en/courses/" onclick="toutesLesFormations(event, true)"><span>Helping relationship</span><span>300 h</span></a><a class="sm-bientot" href="/en/courses/" onclick="toutesLesFormations(event, true)"><span>Prenatal and postnatal yoga</span><span>85 h</span></a><a class="sm-toutes" href="/en/courses/" onclick="switchPage('academie', null, event)">See all courses →</a></div></div></li>
             <li><a href="/en/peer-supporters/" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Peer Supporters</a></li>
             <li><a href="/en/espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>My account</a></li>
             <li><a href="/en/faq/" onclick="switchPage('faq', this, event)" id="nav-faq">FAQ</a></li>
@@ -4699,5 +4707,6 @@
             }
         }
     </script>
+<script>document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.sm-fleche');if(!b)return;e.preventDefault();e.stopPropagation();var li=b.closest('li.a-menu');var o=li.classList.toggle('ouvert');b.setAttribute('aria-expanded',o?'true':'false');},true);</script>
 </body>
 </html>

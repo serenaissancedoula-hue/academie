@@ -178,6 +178,14 @@
             .sous-menu .sm-groupe, .sous-menu a.sm-toutes { display: none; }
             .sous-menu a.sm-bientot { display: none; }
         }
+        .sm-fleche { display: none; }
+        @media (max-width: 950px) {
+            .nav-center li.a-menu > a { display: inline-block; }
+            .sm-fleche { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; margin-left: 6px; vertical-align: middle; border: 1px solid var(--border-color); border-radius: 50%; background: #fff; color: var(--accent-terracotta); font-size: 1rem; line-height: 1; cursor: pointer; transition: transform .2s; padding: 0; }
+            .nav-center li.a-menu.ouvert .sm-fleche { transform: rotate(180deg); }
+            .nav-center li.a-menu .sous-menu, .nav-center li.a-menu:hover .sous-menu, .nav-center li.a-menu:focus-within .sous-menu { display: none; }
+            .nav-center li.a-menu.ouvert .sous-menu { display: block; }
+        }
         #page-academie[data-vue="liste"] .panneau-formation, #page-academie[data-vue="liste"] .ancre-formation, #page-academie[data-vue="liste"] .carte-combo, #page-academie[data-vue="liste"] .retour-formations { display: none !important; }
         #page-academie[data-vue="detail"] .a-venir, #page-academie[data-vue="detail"] #pourquoi-academie, #page-academie[data-vue="detail"] #cohorte-fondatrice, #page-academie[data-vue="detail"] .comparatif, #page-academie[data-vue="detail"] .aide-liste { display: none !important; }
         .aide-liste { text-align: center; color: #7a685e; font-size: .92rem; margin: 6px 0 4px; }
@@ -1778,7 +1786,7 @@
         <ul class="nav-center">
             <li><a href="/" onclick="switchPage('accueil', this, event)" id="nav-accueil">Accueil</a></li>
             <li><a href="/accompagnements/" onclick="switchPage('accompagnements', this, event)" id="nav-accompagnements">Accompagnements</a></li>
-            <li class="a-menu"><a href="/formations/" onclick="switchPage('academie', this, event)" id="nav-academie" aria-haspopup="true">Formations</a><div class="sous-menu"><div class="sous-boite"><a class="sm-item" href="/formations/doula-de-base/" onclick="allerFormation('doula', event)"><strong>Formation de base de doula</strong><small>400 h · 12 modules · 71 chapitres</small></a><a class="sm-item" href="/formations/4e-trimestre/" onclick="allerFormation('4e', event)"><strong>Accompagnement du 4ᵉ trimestre</strong><small>35 h · pour les doulas diplômées</small></a><a class="sm-item" href="/formations/marraine-allaitement/" onclick="allerFormation('marraine', event)"><strong>Marraine d'allaitement</strong><small>8 h 30 · ouverte à toutes</small></a><div class="sm-groupe">Prochainement</div><a class="sm-bientot" href="/formations/" onclick="toutesLesFormations(event, true)"><span>Relation d'aide</span><span>300 h</span></a><a class="sm-bientot" href="/formations/" onclick="toutesLesFormations(event, true)"><span>Yoga prénatal et postnatal</span><span>85 h</span></a><a class="sm-toutes" href="/formations/" onclick="switchPage('academie', null, event)">Voir toutes les formations →</a></div></div></li>
+            <li class="a-menu"><a href="/formations/" onclick="switchPage('academie', this, event)" id="nav-academie" aria-haspopup="true">Formations</a><button type="button" class="sm-fleche" aria-expanded="false" aria-label="Afficher les formations">▾</button><div class="sous-menu"><div class="sous-boite"><a class="sm-item" href="/formations/doula-de-base/" onclick="allerFormation('doula', event)"><strong>Formation de base de doula</strong><small>400 h · 12 modules · 71 chapitres</small></a><a class="sm-item" href="/formations/4e-trimestre/" onclick="allerFormation('4e', event)"><strong>Accompagnement du 4ᵉ trimestre</strong><small>35 h · pour les doulas diplômées</small></a><a class="sm-item" href="/formations/marraine-allaitement/" onclick="allerFormation('marraine', event)"><strong>Marraine d'allaitement</strong><small>8 h 30 · ouverte à toutes</small></a><div class="sm-groupe">Prochainement</div><a class="sm-bientot" href="/formations/" onclick="toutesLesFormations(event, true)"><span>Relation d'aide</span><span>300 h</span></a><a class="sm-bientot" href="/formations/" onclick="toutesLesFormations(event, true)"><span>Yoga prénatal et postnatal</span><span>85 h</span></a><a class="sm-toutes" href="/formations/" onclick="switchPage('academie', null, event)">Voir toutes les formations →</a></div></div></li>
             <li><a href="/marraines/" onclick="switchPage('nos-marraines', this, event)" id="nav-nos-marraines">Marraines</a></li>
             <li><a href="espace.html" id="nav-compte"><i class="fa-solid fa-user" style="font-size: 0.8rem; margin-right: 4px;"></i>Mon compte</a></li>
             <li><a href="/faq/" onclick="switchPage('faq', this, event)" class="active" id="nav-faq">FAQ</a></li>
@@ -4788,5 +4796,6 @@
             }
         }
     </script>
+<script>document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.sm-fleche');if(!b)return;e.preventDefault();e.stopPropagation();var li=b.closest('li.a-menu');var o=li.classList.toggle('ouvert');b.setAttribute('aria-expanded',o?'true':'false');},true);</script>
 </body>
 </html>
