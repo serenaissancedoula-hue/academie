@@ -62,11 +62,12 @@ def generer(lang):
         s = meta(s, r'(<link rel="alternate" hreflang="en" href=")[^"]*(")', en_url)
         s = meta(s, r'(<link rel="alternate" hreflang="x-default" href=")[^"]*(")', fr_url)
         cible = 'academie' if formation else pid
+        nav_cible = 'academie' if (formation or pid in ('relation-aide', 'yoga')) else pid
         # La bonne section est déjà ouverte au chargement (pas de flash de l'accueil)
         s = s.replace('<div id="page-accueil" class="page-section active">', '<div id="page-accueil" class="page-section">', 1)
         s = s.replace('<div id="page-%s" class="page-section"' % cible, '<div id="page-%s" class="page-section active"' % cible, 1)
         s = s.replace('class="active" id="nav-accueil"', 'id="nav-accueil"', 1)
-        s = re.sub(r'(<a href="[^"]*" onclick="switchPage\(\'%s\'[^>]*?)( id="nav-%s")' % (cible, cible), r'\1 class="active"\2', s, count=1)
+        s = re.sub(r'(<a href="[^"]*" onclick="switchPage\(\'%s\'[^>]*?)( id="nav-%s")' % (nav_cible, nav_cible), r'\1 class="active"\2', s, count=1)
         if cible == 'academie':
             s = s.replace('data-vue="liste"', 'data-vue="detail"' if formation else 'data-vue="liste"', 1)
         if formation and formation != 'doula':

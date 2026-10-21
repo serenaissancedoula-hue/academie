@@ -14,6 +14,8 @@
     ['/academie-serenaissance/', '/en/academie-serenaissance/'],
     ['/doula-campbellton/', '/en/doula-campbellton/'],
     ['/formation-doula-de-base/', '/en/foundational-doula-training/'],
+    ['/formations/relation-d-aide/', '/en/courses/helping-relationship/'],
+    ['/formations/yoga-prenatal-postnatal/', '/en/courses/prenatal-postnatal-yoga/'],
     ['/formations/doula-de-base/', '/en/courses/foundational-doula/'],
     ['/formations/4e-trimestre/', '/en/courses/fourth-trimester/'],
     ['/formations/marraine-allaitement/', '/en/courses/peer-supporter/'],

@@ -190,6 +190,17 @@
         .comparatif tr:last-child th, .comparatif tr:last-child td { border-bottom: 0; }
         .comparatif thead th { font-family: 'Playfair Display', serif; color: var(--text-dark); font-size: 1rem; background: #f7ece5; }
         .comparatif tbody th { color: var(--accent-terracotta); font-size: .78rem; text-transform: uppercase; letter-spacing: .8px; width: 130px; }
+        .venir-page { max-width: 900px; margin: 0 auto; }
+        .venir-page h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin: 8px 0 12px; color: var(--text-dark); }
+        .venir-page > p { color: #5a4a42; font-size: .98rem; }
+        .venir-page h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 26px 0 12px; color: var(--text-dark); }
+        .venir-bref { list-style: none; margin: 0; padding: 0; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 18px; }
+        .venir-bref li { padding: 12px 18px; border-bottom: 1px solid var(--border-color); font-size: .93rem; color: #5a4a42; }
+        .venir-bref li:last-child { border-bottom: 0; }
+        .venir-bref strong { display: inline-block; min-width: 130px; color: var(--accent-terracotta); font-size: .78rem; text-transform: uppercase; letter-spacing: .8px; }
+        .venir-fin { margin-top: 28px; text-align: center; }
+        .lien-savoir { font-size: .85rem; font-weight: 700; color: var(--accent-terracotta); text-decoration: none; margin-right: 16px; }
+        #page-academie[data-vue="detail"] .choix-formations { display: none !important; }
         /* Gestionnaire de pages (Affichage/Masquage) */
         .page-section {
             display: none;
@@ -1842,6 +1853,23 @@
             <button class="btn-action" onclick="switchPage('apropos', null, event, 'section-academie')">En savoir plus sur l'Académie →</button>
         </div>
 
+        <div class="a-venir" style="max-width:1100px;margin:0 auto 40px;">
+            <h3>Bientôt disponible</h3>
+            <p>Deux nouvelles formations arrivent à l'Académie.</p>
+            <div class="a-venir-grille">
+                <div class="a-venir-carte">
+                    <span class="etiquette-venir">À venir</span>
+                    <h4>Relation d'aide · 300 h</h4>
+                    <a class="lien-savoir" href="/formations/relation-d-aide/" onclick="switchPage('relation-aide', null, event)">En savoir plus →</a>
+                </div>
+                <div class="a-venir-carte">
+                    <span class="etiquette-venir">À venir</span>
+                    <h4>Yoga prénatal et postnatal · 85 h</h4>
+                    <a class="lien-savoir" href="/formations/yoga-prenatal-postnatal/" onclick="switchPage('yoga', null, event)">En savoir plus →</a>
+                </div>
+            </div>
+        </div>
+
         <div class="pedagogie-section-home">
             <div class="section-header-centered" style="margin-bottom: 20px;">
                 <h2>Notre pédagogie</h2>
@@ -2017,7 +2045,7 @@
         <div class="section-header-centered">
             <h2>Formations de l'Académie Sérénaissance</h2>
             <p>Des formations en ligne, éthiques et sécuritaires, pour accompagner les familles avec assurance.</p>
-            <p class="bandeau-pays">🌎 Pour les francophones du <strong>Nouveau-Brunswick</strong>, du <strong>Québec</strong>, du reste du <strong>Canada</strong> et de la <strong>France</strong> : parcours de soins, aides, cadre légal et documents adaptés à chacun. <a class="bientot-en" href="/en/" lang="en" style="text-decoration:none;">🇬🇧 Also available in English</a></p>
+            <p class="bandeau-pays">🌎 Pour le <strong>Nouveau-Brunswick</strong>, le <strong>Québec</strong>, le reste du <strong>Canada</strong> et la <strong>France</strong> : parcours de soins, aides, cadre légal et documents adaptés à chacun. Formation de base : ateliers en direct en français, modules à ton rythme en français et en anglais. <a class="bientot-en" href="/en/" lang="en" style="text-decoration:none;">🇬🇧 Also available in English</a></p>
         </div>
 
         <a href="/formations/" class="retour-formations" onclick="toutesLesFormations(event)">← Toutes les formations</a>
@@ -2051,60 +2079,18 @@
                     <h4>Relation d'aide · 300 h</h4>
                     <p>Cette formation prépare les accompagnantes à offrir une relation d'aide de qualité, dans un cadre éthique, légal et sécuritaire. Elle distingue clairement la relation d'aide de la psychothérapie, qui est encadrée au Québec par la loi 21. 240 h de modules et 60 h de stage supervisé, à ton rythme (9 à 12 mois suggérés).</p>
                     <p class="a-venir-note">Un certificat de l'école est remis à la réussite de toutes les évaluations. Il ne constitue pas un titre professionnel réglementé.</p>
-                    <details class="voir-modules"><summary>Voir les 16 modules</summary>
-<div class="modules-accordeon">
-<details><summary><span class="mod-num">1</span><span class="mod-titre">Fondements, courants et posture</span><span class="mod-info">15 h</span></summary><ul><li>Définition et histoire de la relation d'aide</li><li>Courants : humaniste, centré sur la personne, émotivo-rationnel et systémique (aperçu)</li><li>Différence avec la psychothérapie, le coaching et le conseil</li><li>Posture d'humilité, de présence et de non-jugement</li></ul></details>
-<details><summary><span class="mod-num">2</span><span class="mod-titre">Éthique, déontologie, tenue de dossier et loi 21</span><span class="mod-info">25 h</span></summary><ul><li>Principes éthiques et code de déontologie</li><li>Confidentialité et ses limites, consentement éclairé, conflits d'intérêts</li><li>Tenue de dossier : fiche d'ouverture, notes, plan d'accompagnement, conservation et protection des renseignements</li><li>Loi 21 et encadrement de la psychothérapie au Québec : ce que l'intervenante peut et ne peut pas faire, quand référer</li></ul></details>
-<details><summary><span class="mod-num">3</span><span class="mod-titre">Alliance et communication aidante</span><span class="mod-info">20 h</span></summary><ul><li>Alliance de travail, écoute active, reformulation, questionnement ouvert</li><li>Silence, empathie, validation, communication non verbale</li><li>Erreurs courantes : conseils non demandés, minimisation, positivité toxique</li></ul></details>
-<details><summary><span class="mod-num">4</span><span class="mod-titre">Première rencontre, besoins et cadre</span><span class="mod-info">15 h</span></summary><ul><li>Déroulement d'une première rencontre et entrevue d'accueil</li><li>Cerner la demande et les besoins, objectifs d'accompagnement</li><li>Contrat de service, durée, fréquence et clôture</li></ul></details>
-<details><summary><span class="mod-num">5</span><span class="mod-titre">Approche centrée sur la personne et approche humaniste</span><span class="mod-info">15 h</span></summary><ul><li>Conditions de la relation aidante : acceptation inconditionnelle, congruence, empathie</li><li>Pouvoir d'agir de la personne et respect de son rythme</li><li>Motivation et changement</li></ul></details>
-<details><summary><span class="mod-num">6</span><span class="mod-titre">Comprendre et accompagner les émotions</span><span class="mod-info">15 h</span></summary><ul><li>Émotions de base et leurs fonctions</li><li>Colère, tristesse, peur, honte, culpabilité</li><li>Accompagner l'expression des émotions sans les alimenter, et quand une émotion devient envahissante</li></ul></details>
-<details><summary><span class="mod-num">7</span><span class="mod-titre">Anxiété, stress et régulation émotionnelle</span><span class="mod-info">20 h</span></summary><ul><li>Stress et anxiété : fonctionnement et signes</li><li>Outils de régulation non thérapeutiques : respiration, ancrage, relaxation, pleine conscience (aperçu)</li><li>Psychoéducation, habitudes de vie et limites de ces outils</li></ul></details>
-<details><summary><span class="mod-num">8</span><span class="mod-titre">Deuil, transitions et approche sensible au trauma</span><span class="mod-info">20 h</span></summary><ul><li>Deuil et deuil non reconnu</li><li>Transitions de vie</li><li>Approche sensible au trauma : sécurité, choix, collaboration</li><li>Réactions normales, signes de traumatisme et référence</li></ul></details>
-<details><summary><span class="mod-num">9</span><span class="mod-titre">Communication, conflits, couple et famille</span><span class="mod-info">15 h</span></summary><ul><li>Communication non violente et affirmation de soi</li><li>Gestion de conflits, dynamiques de couple et de famille</li><li>Accompagner une personne sans prendre parti</li><li>Violence conjugale et familiale : repérer et référer</li></ul></details>
-<details><summary><span class="mod-num">10</span><span class="mod-titre">Situations de crise et prévention du suicide</span><span class="mod-info">15 h</span></summary><ul><li>Repérer une crise et évaluer le niveau d'urgence dans les limites de son rôle</li><li>Idées suicidaires : signes, questions à poser, ne pas laisser la personne seule</li><li>Protocole de crise, ressources d'urgence de sa région, soutien après un événement</li></ul></details>
-<details><summary><span class="mod-num">11</span><span class="mod-titre">Santé mentale : repérer et référer</span><span class="mod-info">15 h</span></summary><ul><li>Repérer sans diagnostiquer : dépression, troubles anxieux, stress post-traumatique, troubles alimentaires, dépendances</li><li>Différence entre accompagnement et intervention thérapeutique</li><li>Référer avec douceur et travailler en réseau</li></ul></details>
-<details><summary><span class="mod-num">12</span><span class="mod-titre">Diversité, sécurisation culturelle et équité</span><span class="mod-info">10 h</span></summary><ul><li>Humilité culturelle</li><li>Familles et personnes 2SLGBTQIA+</li><li>Sécurisation culturelle et personnes autochtones</li><li>Immigration, barrières de langue, handicap et inégalités d'accès aux services</li></ul></details>
-<details><summary><span class="mod-num">13</span><span class="mod-titre">Relation d'aide en périnatalité et parentalité</span><span class="mod-info">15 h</span></summary><ul><li>Matrescence et transition à la parentalité</li><li>Santé mentale périnatale : repérer et référer</li><li>Deuil périnatal et naissances difficiles</li><li>Soutien au second parent et collaboration avec l'équipe de soins</li></ul></details>
-<details><summary><span class="mod-num">14</span><span class="mod-titre">Bâtir sa pratique professionnelle</span><span class="mod-info">15 h</span></summary><ul><li>Statut de travailleuse autonome, nom d'entreprise, assurance responsabilité</li><li>Adhésion à une association professionnelle</li><li>Reçus, tarification et publicité éthique</li><li>Travail en réseau et formation continue</li></ul></details>
-<details><summary><span class="mod-num">15</span><span class="mod-titre">Se préserver et durer</span><span class="mod-info">10 h</span></summary><ul><li>Fatigue de compassion, traumatisme vicariant, transfert émotionnel</li><li>Hygiène professionnelle, supervision et soutien entre pairs</li><li>Limites personnelles</li></ul></details>
-<details><summary><span class="mod-num">16</span><span class="mod-titre">Stage supervisé, supervision et intégration</span><span class="mod-info">60 h</span></summary><ul><li>Pratique supervisée (30 h) : rencontres de relation d'aide avec des pairs ou des personnes consentantes, sous supervision. Aucun acte de psychothérapie n'est posé</li><li>Supervision (20 h) : séances individuelles et de groupe</li><li>Intégration (10 h) : journal réflexif, rapports de rencontres, tenue de dossier et bilan de stage</li></ul></details>
-</div>
-                    </details>
-                    <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
+                    <a class="lien-savoir" href="/formations/relation-d-aide/" onclick="switchPage('relation-aide', null, event)">En savoir plus →</a><a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
                 </div>
                 <div class="a-venir-carte">
                     <span class="etiquette-venir">À venir</span>
                     <h4>Yoga prénatal et postnatal · 85 h</h4>
                     <p>Cette formation apprend à enseigner le yoga de façon sécuritaire et adaptée aux femmes enceintes et aux nouvelles mères, de la grossesse jusqu'au post-partum et à la relation avec le bébé. Anatomie et physiologie périnatales, adaptation des postures, respiration et relaxation, pédagogie, cadre professionnel et limites de la pratique. 85 h, dont un stage supervisé de 20 h. Aucune formation médicale requise ; une pratique personnelle du yoga est recommandée.</p>
-                    <details class="voir-modules"><summary>Voir les 12 modules</summary>
-<p class="volet-titre">Volet 1 · Yoga prénatal · 29 h</p>
-<div class="modules-accordeon">
-<details><summary><span class="mod-num">1</span><span class="mod-titre">Philosophie, anatomie et physiologie de la grossesse</span><span class="mod-info">7 h</span></summary><ul><li>Le yoga et la maternité</li><li>Hormones et changements biomécaniques de la grossesse</li><li>Caractéristiques de chaque trimestre et malaises courants</li><li>Bassin, utérus, plancher pelvien, transverse, diaphragme</li><li>Symptômes normaux, signaux d'alerte et conditions médicales particulières</li></ul></details>
-<details><summary><span class="mod-num">2</span><span class="mod-titre">Physiologie de l'accouchement</span><span class="mod-info">4 h</span></summary><ul><li>Déroulement physiologique du travail et rôle des hormones</li><li>Positions, mobilité et poussée</li><li>Interventions médicales courantes et droits des femmes enceintes</li><li>Gestion de la douleur et rôle de l'enseignante, sans jamais se substituer à l'équipe soignante</li></ul></details>
-<details><summary><span class="mod-num">3</span><span class="mod-titre">Postures et adaptations prénatales</span><span class="mod-info">8 h</span></summary><ul><li>Postures à privilégier, à modifier et contre-indiquées, par trimestre</li><li>Alignement, correction posturale et accessoires</li><li>Travail du bassin, du plancher pelvien et du transverse</li><li>Renforcement, étirements et postures de confort</li><li>Respiration prénatale et introduction au prânâyâma adapté</li></ul></details>
-<details><summary><span class="mod-num">4</span><span class="mod-titre">Relaxation, méditation et pratiques intérieures</span><span class="mod-info">5 h</span></summary><ul><li>Relaxation profonde, yoga nidra prénatal, visualisation et méditation</li><li>Mouvement intuitif, son et respiration pour la préparation à l'accouchement</li><li>Accompagner les peurs liées à la naissance</li><li>Pratiques énergétiques et symboliques, présentées comme des traditions du yoga et non comme des soins médicaux</li></ul></details>
-<details><summary><span class="mod-num">5</span><span class="mod-titre">Enseigner le yoga prénatal</span><span class="mod-info">5 h</span></summary><ul><li>Formulaires d'accueil, consentement et questionnaire de santé</li><li>Structure d'une séance et construction d'un cours thématique</li><li>Animer un cercle d'échange et poser un cadre sécurisant</li><li>Cours de groupe, ateliers et séances privées, avec micro-enseignement</li></ul></details>
-</div>
-<p class="volet-titre">Volet 2 · Yoga postnatal · 26 h</p>
-<div class="modules-accordeon">
-<details><summary><span class="mod-num">6</span><span class="mod-titre">Physiologie du post-partum</span><span class="mod-info">5 h</span></summary><ul><li>Suites de couches et récupération après accouchement vaginal et césarienne</li><li>Transformations du corps, plancher pelvien, diastase et symptômes courants</li><li>Allaitement et besoins du nouveau-né (aperçu, sans conseil médical)</li><li>Santé mentale périnatale : repérer la dépression et l'anxiété postnatales et savoir référer</li><li>Quand reprendre l'activité physique</li></ul></details>
-<details><summary><span class="mod-num">7</span><span class="mod-titre">Yoga postnatal pour la mère</span><span class="mod-info">7 h</span></summary><ul><li>Plan de reprise progressive du mouvement</li><li>Plancher pelvien, respiration et sangle abdominale profonde</li><li>Prise en compte de la diastase et du pubis</li><li>Postures de récupération, mobilité du dos et des épaules (portage, allaitement)</li><li>Structure d'une séance postnatale et relaxation</li></ul></details>
-<details><summary><span class="mod-num">8</span><span class="mod-titre">Yoga et bébé</span><span class="mod-info">5 h</span></summary><ul><li>Observer le bébé et savoir quand ne pas intervenir</li><li>Manipulation sécuritaire, portage et positions</li><li>Massage du bébé et mouvements d'éveil sensoriel et moteur, avec limites claires de pratique</li><li>Chants, comptines et jeux adaptés</li></ul></details>
-<details><summary><span class="mod-num">9</span><span class="mod-titre">Yoga mère-bébé</span><span class="mod-info">4 h</span></summary><ul><li>Échauffements et postures à deux, au sol et en portage</li><li>Jeux d'équilibre et de mouvement</li><li>Relaxation partagée et clôture du cours</li></ul></details>
-<details><summary><span class="mod-num">10</span><span class="mod-titre">Enseigner le yoga postnatal</span><span class="mod-info">5 h</span></summary><ul><li>Accueil, formulaires et consentement</li><li>Gérer les pleurs, l'allaitement et les imprévus pendant le cours</li><li>Corrections posturales et toucher consenti</li><li>Cours en présentiel et en ligne, avec micro-enseignement évalué</li></ul></details>
-</div>
-<p class="volet-titre">Compléments · 30 h</p>
-<div class="modules-accordeon">
-<details><summary><span class="mod-num">11</span><span class="mod-titre">Professionnels de santé, éthique, déontologie, tenue de dossier et loi 21</span><span class="mod-info">10 h</span></summary><ul><li>Champ de pratique de l'enseignante de yoga : ce qui relève ou non de son rôle</li><li>Déontologie, confidentialité, consentement et tenue de dossier</li><li>Référer vers les professionnels de la santé (sage-femme, médecin, physiothérapeute du plancher pelvien, psychologue)</li><li>Loi 21 et encadrement de la psychothérapie au Québec : ce que l'enseignante peut et ne peut pas faire face à la détresse psychologique</li><li>Assurance responsabilité, contrats, tarification et gestion de base de la pratique</li><li>Pratique inclusive et approche sensible au trauma (pertes périnatales, traumatisme obstétrical, diversité des familles)</li><li>Philosophie, mode de vie et éthique du yoga (5 h) : yamas et niyamas appliqués à la maternité</li><li>Relation avec les professionnels de la santé (5 h) : collaborer avec sages-femmes, médecins et physiothérapeutes</li></ul></details>
-<details><summary><span class="mod-num">12</span><span class="mod-titre">Stage pratique supervisé</span><span class="mod-info">20 h</span></summary><ul><li>Observation (10 h) : observer une autre enseignante donner des cours prénataux</li><li>Enseignement (10 h) : donner des cours prénataux, dont 6 h avec la formatrice principale et au moins 4 h comme enseignante principale, avec rétroaction</li><li>Rapport d'enseignement et auto-évaluation réflexive</li></ul></details>
-</div>
-
-                    </details>
-                    <a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
+                    <a class="lien-savoir" href="/formations/yoga-prenatal-postnatal/" onclick="switchPage('yoga', null, event)">En savoir plus →</a><a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
                 </div>
             </div>
         </div>
+
+        
 
         <div class="carte-combo">
             <div>
@@ -2134,7 +2120,7 @@
                         <ul>
                             <li><i class="fa-solid fa-check"></i> À toute personne qui veut devenir doula, sans diplôme en santé</li>
                             <li><i class="fa-solid fa-check"></i> Aux mamans, intervenantes et accompagnantes qui veulent une base solide et sécuritaire</li>
-                            <li><i class="fa-solid fa-check"></i> Aux francophones du N.-B., du Québec, du reste du Canada et de la France</li>
+                            <li><i class="fa-solid fa-check"></i> Aux francophones et anglophones du N.-B., du Québec, du reste du Canada et de la France</li>
                         </ul>
                     </div>
                     <div class="info-bloc">
@@ -3113,6 +3099,79 @@
     </div>
 
     <!-- ================= 7. PAGE À PROPOS ================= -->
+    <div id="page-relation-aide" class="page-section">
+        <div class="venir-page">
+            <a href="/formations/" class="retour-formations" style="display:inline-block !important" onclick="toutesLesFormations(event)">← Toutes les formations</a><br>
+            <span class="etiquette-venir" style="display:inline-block;background:#f3e3da;color:#8a4233;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;">À venir</span>
+            <h2>Relation d'aide · 300 h</h2>
+            <p>Cette formation prépare les accompagnantes à offrir une relation d'aide de qualité, dans un cadre éthique, légal et sécuritaire. Elle distingue clairement la relation d'aide de la psychothérapie, qui est encadrée au Québec par la loi 21. 240 h de modules et 60 h de stage supervisé, à ton rythme (9 à 12 mois suggérés).</p>
+            <p class="a-venir-note">Un certificat de l'école est remis à la réussite de toutes les évaluations. Il ne constitue pas un titre professionnel réglementé.</p>
+            <h3>En bref</h3>
+            <ul class="venir-bref"><li><strong>Durée</strong> 300 h : 240 h de modules et 60 h de stage supervisé</li><li><strong>Rythme</strong> À ton rythme, 9 à 12 mois suggérés</li><li><strong>Prérequis</strong> Annoncés à l'ouverture</li><li><strong>Dates et prix</strong> À venir</li></ul>
+            <h3>Ce que contient la formation</h3>
+            <div class="modules-accordeon">
+<details><summary><span class="mod-num">1</span><span class="mod-titre">Fondements, courants et posture</span><span class="mod-info">15 h</span></summary><ul><li>Définition et histoire de la relation d'aide</li><li>Courants : humaniste, centré sur la personne, émotivo-rationnel et systémique (aperçu)</li><li>Différence avec la psychothérapie, le coaching et le conseil</li><li>Posture d'humilité, de présence et de non-jugement</li></ul></details>
+<details><summary><span class="mod-num">2</span><span class="mod-titre">Éthique, déontologie, tenue de dossier et loi 21</span><span class="mod-info">25 h</span></summary><ul><li>Principes éthiques et code de déontologie</li><li>Confidentialité et ses limites, consentement éclairé, conflits d'intérêts</li><li>Tenue de dossier : fiche d'ouverture, notes, plan d'accompagnement, conservation et protection des renseignements</li><li>Loi 21 et encadrement de la psychothérapie au Québec : ce que l'intervenante peut et ne peut pas faire, quand référer</li></ul></details>
+<details><summary><span class="mod-num">3</span><span class="mod-titre">Alliance et communication aidante</span><span class="mod-info">20 h</span></summary><ul><li>Alliance de travail, écoute active, reformulation, questionnement ouvert</li><li>Silence, empathie, validation, communication non verbale</li><li>Erreurs courantes : conseils non demandés, minimisation, positivité toxique</li></ul></details>
+<details><summary><span class="mod-num">4</span><span class="mod-titre">Première rencontre, besoins et cadre</span><span class="mod-info">15 h</span></summary><ul><li>Déroulement d'une première rencontre et entrevue d'accueil</li><li>Cerner la demande et les besoins, objectifs d'accompagnement</li><li>Contrat de service, durée, fréquence et clôture</li></ul></details>
+<details><summary><span class="mod-num">5</span><span class="mod-titre">Approche centrée sur la personne et approche humaniste</span><span class="mod-info">15 h</span></summary><ul><li>Conditions de la relation aidante : acceptation inconditionnelle, congruence, empathie</li><li>Pouvoir d'agir de la personne et respect de son rythme</li><li>Motivation et changement</li></ul></details>
+<details><summary><span class="mod-num">6</span><span class="mod-titre">Comprendre et accompagner les émotions</span><span class="mod-info">15 h</span></summary><ul><li>Émotions de base et leurs fonctions</li><li>Colère, tristesse, peur, honte, culpabilité</li><li>Accompagner l'expression des émotions sans les alimenter, et quand une émotion devient envahissante</li></ul></details>
+<details><summary><span class="mod-num">7</span><span class="mod-titre">Anxiété, stress et régulation émotionnelle</span><span class="mod-info">20 h</span></summary><ul><li>Stress et anxiété : fonctionnement et signes</li><li>Outils de régulation non thérapeutiques : respiration, ancrage, relaxation, pleine conscience (aperçu)</li><li>Psychoéducation, habitudes de vie et limites de ces outils</li></ul></details>
+<details><summary><span class="mod-num">8</span><span class="mod-titre">Deuil, transitions et approche sensible au trauma</span><span class="mod-info">20 h</span></summary><ul><li>Deuil et deuil non reconnu</li><li>Transitions de vie</li><li>Approche sensible au trauma : sécurité, choix, collaboration</li><li>Réactions normales, signes de traumatisme et référence</li></ul></details>
+<details><summary><span class="mod-num">9</span><span class="mod-titre">Communication, conflits, couple et famille</span><span class="mod-info">15 h</span></summary><ul><li>Communication non violente et affirmation de soi</li><li>Gestion de conflits, dynamiques de couple et de famille</li><li>Accompagner une personne sans prendre parti</li><li>Violence conjugale et familiale : repérer et référer</li></ul></details>
+<details><summary><span class="mod-num">10</span><span class="mod-titre">Situations de crise et prévention du suicide</span><span class="mod-info">15 h</span></summary><ul><li>Repérer une crise et évaluer le niveau d'urgence dans les limites de son rôle</li><li>Idées suicidaires : signes, questions à poser, ne pas laisser la personne seule</li><li>Protocole de crise, ressources d'urgence de sa région, soutien après un événement</li></ul></details>
+<details><summary><span class="mod-num">11</span><span class="mod-titre">Santé mentale : repérer et référer</span><span class="mod-info">15 h</span></summary><ul><li>Repérer sans diagnostiquer : dépression, troubles anxieux, stress post-traumatique, troubles alimentaires, dépendances</li><li>Différence entre accompagnement et intervention thérapeutique</li><li>Référer avec douceur et travailler en réseau</li></ul></details>
+<details><summary><span class="mod-num">12</span><span class="mod-titre">Diversité, sécurisation culturelle et équité</span><span class="mod-info">10 h</span></summary><ul><li>Humilité culturelle</li><li>Familles et personnes 2SLGBTQIA+</li><li>Sécurisation culturelle et personnes autochtones</li><li>Immigration, barrières de langue, handicap et inégalités d'accès aux services</li></ul></details>
+<details><summary><span class="mod-num">13</span><span class="mod-titre">Relation d'aide en périnatalité et parentalité</span><span class="mod-info">15 h</span></summary><ul><li>Matrescence et transition à la parentalité</li><li>Santé mentale périnatale : repérer et référer</li><li>Deuil périnatal et naissances difficiles</li><li>Soutien au second parent et collaboration avec l'équipe de soins</li></ul></details>
+<details><summary><span class="mod-num">14</span><span class="mod-titre">Bâtir sa pratique professionnelle</span><span class="mod-info">15 h</span></summary><ul><li>Statut de travailleuse autonome, nom d'entreprise, assurance responsabilité</li><li>Adhésion à une association professionnelle</li><li>Reçus, tarification et publicité éthique</li><li>Travail en réseau et formation continue</li></ul></details>
+<details><summary><span class="mod-num">15</span><span class="mod-titre">Se préserver et durer</span><span class="mod-info">10 h</span></summary><ul><li>Fatigue de compassion, traumatisme vicariant, transfert émotionnel</li><li>Hygiène professionnelle, supervision et soutien entre pairs</li><li>Limites personnelles</li></ul></details>
+<details><summary><span class="mod-num">16</span><span class="mod-titre">Stage supervisé, supervision et intégration</span><span class="mod-info">60 h</span></summary><ul><li>Pratique supervisée (30 h) : rencontres de relation d'aide avec des pairs ou des personnes consentantes, sous supervision. Aucun acte de psychothérapie n'est posé</li><li>Supervision (20 h) : séances individuelles et de groupe</li><li>Intégration (10 h) : journal réflexif, rapports de rencontres, tenue de dossier et bilan de stage</li></ul></details>
+</div>
+            <div class="home-summary-box venir-fin">
+                <p>Cette formation n'est pas encore ouverte. Les dates et les prix seront annoncés bientôt.</p>
+                <button class="btn-action" onclick="ouvrirContact()">Me prévenir à l'ouverture →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-yoga" class="page-section">
+        <div class="venir-page">
+            <a href="/formations/" class="retour-formations" style="display:inline-block !important" onclick="toutesLesFormations(event)">← Toutes les formations</a><br>
+            <span class="etiquette-venir" style="display:inline-block;background:#f3e3da;color:#8a4233;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;">À venir</span>
+            <h2>Yoga prénatal et postnatal · 85 h</h2>
+            <p>Cette formation apprend à enseigner le yoga de façon sécuritaire et adaptée aux femmes enceintes et aux nouvelles mères, de la grossesse jusqu'au post-partum et à la relation avec le bébé. Anatomie et physiologie périnatales, adaptation des postures, respiration et relaxation, pédagogie, cadre professionnel et limites de la pratique. 85 h, dont un stage supervisé de 20 h. Aucune formation médicale requise ; une pratique personnelle du yoga est recommandée.</p>
+            
+            <h3>En bref</h3>
+            <ul class="venir-bref"><li><strong>Durée</strong> 85 h, dont un stage supervisé de 20 h</li><li><strong>Prérequis</strong> Aucune formation médicale requise ; une pratique personnelle du yoga est recommandée</li><li><strong>Dates et prix</strong> À venir</li></ul>
+            <h3>Ce que contient la formation</h3>
+            <p class="volet-titre">Volet 1 · Yoga prénatal · 29 h</p>
+<div class="modules-accordeon">
+<details><summary><span class="mod-num">1</span><span class="mod-titre">Philosophie, anatomie et physiologie de la grossesse</span><span class="mod-info">7 h</span></summary><ul><li>Le yoga et la maternité</li><li>Hormones et changements biomécaniques de la grossesse</li><li>Caractéristiques de chaque trimestre et malaises courants</li><li>Bassin, utérus, plancher pelvien, transverse, diaphragme</li><li>Symptômes normaux, signaux d'alerte et conditions médicales particulières</li></ul></details>
+<details><summary><span class="mod-num">2</span><span class="mod-titre">Physiologie de l'accouchement</span><span class="mod-info">4 h</span></summary><ul><li>Déroulement physiologique du travail et rôle des hormones</li><li>Positions, mobilité et poussée</li><li>Interventions médicales courantes et droits des femmes enceintes</li><li>Gestion de la douleur et rôle de l'enseignante, sans jamais se substituer à l'équipe soignante</li></ul></details>
+<details><summary><span class="mod-num">3</span><span class="mod-titre">Postures et adaptations prénatales</span><span class="mod-info">8 h</span></summary><ul><li>Postures à privilégier, à modifier et contre-indiquées, par trimestre</li><li>Alignement, correction posturale et accessoires</li><li>Travail du bassin, du plancher pelvien et du transverse</li><li>Renforcement, étirements et postures de confort</li><li>Respiration prénatale et introduction au prânâyâma adapté</li></ul></details>
+<details><summary><span class="mod-num">4</span><span class="mod-titre">Relaxation, méditation et pratiques intérieures</span><span class="mod-info">5 h</span></summary><ul><li>Relaxation profonde, yoga nidra prénatal, visualisation et méditation</li><li>Mouvement intuitif, son et respiration pour la préparation à l'accouchement</li><li>Accompagner les peurs liées à la naissance</li><li>Pratiques énergétiques et symboliques, présentées comme des traditions du yoga et non comme des soins médicaux</li></ul></details>
+<details><summary><span class="mod-num">5</span><span class="mod-titre">Enseigner le yoga prénatal</span><span class="mod-info">5 h</span></summary><ul><li>Formulaires d'accueil, consentement et questionnaire de santé</li><li>Structure d'une séance et construction d'un cours thématique</li><li>Animer un cercle d'échange et poser un cadre sécurisant</li><li>Cours de groupe, ateliers et séances privées, avec micro-enseignement</li></ul></details>
+</div>
+<p class="volet-titre">Volet 2 · Yoga postnatal · 26 h</p>
+<div class="modules-accordeon">
+<details><summary><span class="mod-num">6</span><span class="mod-titre">Physiologie du post-partum</span><span class="mod-info">5 h</span></summary><ul><li>Suites de couches et récupération après accouchement vaginal et césarienne</li><li>Transformations du corps, plancher pelvien, diastase et symptômes courants</li><li>Allaitement et besoins du nouveau-né (aperçu, sans conseil médical)</li><li>Santé mentale périnatale : repérer la dépression et l'anxiété postnatales et savoir référer</li><li>Quand reprendre l'activité physique</li></ul></details>
+<details><summary><span class="mod-num">7</span><span class="mod-titre">Yoga postnatal pour la mère</span><span class="mod-info">7 h</span></summary><ul><li>Plan de reprise progressive du mouvement</li><li>Plancher pelvien, respiration et sangle abdominale profonde</li><li>Prise en compte de la diastase et du pubis</li><li>Postures de récupération, mobilité du dos et des épaules (portage, allaitement)</li><li>Structure d'une séance postnatale et relaxation</li></ul></details>
+<details><summary><span class="mod-num">8</span><span class="mod-titre">Yoga et bébé</span><span class="mod-info">5 h</span></summary><ul><li>Observer le bébé et savoir quand ne pas intervenir</li><li>Manipulation sécuritaire, portage et positions</li><li>Massage du bébé et mouvements d'éveil sensoriel et moteur, avec limites claires de pratique</li><li>Chants, comptines et jeux adaptés</li></ul></details>
+<details><summary><span class="mod-num">9</span><span class="mod-titre">Yoga mère-bébé</span><span class="mod-info">4 h</span></summary><ul><li>Échauffements et postures à deux, au sol et en portage</li><li>Jeux d'équilibre et de mouvement</li><li>Relaxation partagée et clôture du cours</li></ul></details>
+<details><summary><span class="mod-num">10</span><span class="mod-titre">Enseigner le yoga postnatal</span><span class="mod-info">5 h</span></summary><ul><li>Accueil, formulaires et consentement</li><li>Gérer les pleurs, l'allaitement et les imprévus pendant le cours</li><li>Corrections posturales et toucher consenti</li><li>Cours en présentiel et en ligne, avec micro-enseignement évalué</li></ul></details>
+</div>
+<p class="volet-titre">Compléments · 30 h</p>
+<div class="modules-accordeon">
+<details><summary><span class="mod-num">11</span><span class="mod-titre">Professionnels de santé, éthique, déontologie, tenue de dossier et loi 21</span><span class="mod-info">10 h</span></summary><ul><li>Champ de pratique de l'enseignante de yoga : ce qui relève ou non de son rôle</li><li>Déontologie, confidentialité, consentement et tenue de dossier</li><li>Référer vers les professionnels de la santé (sage-femme, médecin, physiothérapeute du plancher pelvien, psychologue)</li><li>Loi 21 et encadrement de la psychothérapie au Québec : ce que l'enseignante peut et ne peut pas faire face à la détresse psychologique</li><li>Assurance responsabilité, contrats, tarification et gestion de base de la pratique</li><li>Pratique inclusive et approche sensible au trauma (pertes périnatales, traumatisme obstétrical, diversité des familles)</li><li>Philosophie, mode de vie et éthique du yoga (5 h) : yamas et niyamas appliqués à la maternité</li><li>Relation avec les professionnels de la santé (5 h) : collaborer avec sages-femmes, médecins et physiothérapeutes</li></ul></details>
+<details><summary><span class="mod-num">12</span><span class="mod-titre">Stage pratique supervisé</span><span class="mod-info">20 h</span></summary><ul><li>Observation (10 h) : observer une autre enseignante donner des cours prénataux</li><li>Enseignement (10 h) : donner des cours prénataux, dont 6 h avec la formatrice principale et au moins 4 h comme enseignante principale, avec rétroaction</li><li>Rapport d'enseignement et auto-évaluation réflexive</li></ul></details>
+</div>
+            <div class="home-summary-box venir-fin">
+                <p>Cette formation n'est pas encore ouverte. Les dates et les prix seront annoncés bientôt.</p>
+                <button class="btn-action" onclick="ouvrirContact()">Me prévenir à l'ouverture →</button>
+            </div>
+        </div>
+    </div>
+
     <div id="page-apropos" class="page-section">
         <div class="about-page-container">
             <!-- Présentation -->
@@ -3350,6 +3409,16 @@
   "description": "Formation de marraine d'allaitement : environ 8 h 30 en ligne, ouverte à toutes, avec certificat de participation.",
   "formation": "marraine",
   "canonique": "/formation-marraine-allaitement/"
+ },
+ "relation-aide": {
+  "chemin": "/formations/relation-d-aide/",
+  "titre": "Formation en relation d'aide de 300 h (à venir) | Académie Sérénaissance",
+  "description": "Formation en relation d'aide de 300 h, à venir à l'Académie Sérénaissance : 16 modules, stage supervisé, cadre éthique et légal."
+ },
+ "yoga": {
+  "chemin": "/formations/yoga-prenatal-postnatal/",
+  "titre": "Formation de yoga prénatal et postnatal de 85 h (à venir) | Académie Sérénaissance",
+  "description": "Formation de yoga prénatal et postnatal de 85 h, à venir à l'Académie Sérénaissance : 12 modules et stage supervisé de 20 h."
  }
 };
         const ADRESSE_ACCUEIL = '/';
@@ -3406,7 +3475,7 @@
             const navLinks = document.querySelectorAll('.nav-center a');
             navLinks.forEach(link => link.classList.remove('active'));
 
-            const activeNav = document.getElementById('nav-' + pageId);
+            const activeNav = document.getElementById('nav-' + (['relation-aide', 'yoga'].includes(pageId) ? 'academie' : pageId));
             if (activeNav) {
                 activeNav.classList.add('active');
             }
