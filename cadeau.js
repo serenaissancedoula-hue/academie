@@ -80,7 +80,7 @@
       }).then(function (id) {
         var lien = form.formation.value === 'marraine' ? liens.cadeau_marraine : liens.cadeau_4e;
         window.location.href = lien + (lien.indexOf('?') >= 0 ? '&' : '?') + 'client_reference_id=CC-' + encodeURIComponent(id);
-      }).catch(function (err) { b.disabled = false; msg.textContent = err.message + ' ' + L('Réessaie, ou écris à serenaissance.doula@gmail.com.', 'Please try again, or write to serenaissance.doula@gmail.com.'); });
+      }).catch(function (err) { b.disabled = false; msg.textContent = err.message + ' ' + L('Réessaie, ou écris à sc@academiesere.ca.', 'Please try again, or write to sc@academiesere.ca.'); });
     });
   }
 

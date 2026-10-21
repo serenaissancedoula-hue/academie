@@ -29,16 +29,16 @@
   var p = new URLSearchParams(location.search), jeton = p.get('t') || '', en = p.get('l') === 'en';
   if (en) { document.documentElement.lang = 'en'; document.title = 'Unsubscribe · Académie Sérénaissance'; document.getElementById('titre').textContent = 'Unsubscribing…'; document.getElementById('texte').textContent = 'One moment, please.'; document.getElementById('retour').textContent = 'Back to the website'; document.getElementById('retour').href = '/en/'; }
   var T = en ? { ok: ['You are unsubscribed', 'You will no longer receive the Académie Sérénaissance newsletter. Thank you for following us! 💕 You can subscribe again at any time on the website.'],
-                 ko: ['Invalid link', 'This unsubscribe link is not valid. Write to serenaissance.doula@gmail.com and we will remove your address right away.'] }
+                 ko: ['Invalid link', 'This unsubscribe link is not valid. Write to sc@academiesere.ca and we will remove your address right away.'] }
              : { ok: ['Tu es désabonnée', 'Tu ne recevras plus l\'infolettre de l\'Académie Sérénaissance. Merci de nous avoir suivies ! 💕 Tu peux te réabonner en tout temps sur le site.'],
-                 ko: ['Lien invalide', 'Ce lien de désabonnement n\'est pas valide. Écris à serenaissance.doula@gmail.com et on retire ton adresse tout de suite.'] };
+                 ko: ['Lien invalide', 'Ce lien de désabonnement n\'est pas valide. Écris à sc@academiesere.ca et on retire ton adresse tout de suite.'] };
   function afficher(r) { document.getElementById('titre').textContent = r[0]; document.getElementById('texte').textContent = r[1]; }
   if (!/^[0-9a-f-]{36}$/i.test(jeton)) return afficher(T.ko);
   fetch('https://zeptirfcwstufcpgvkzx.supabase.co/rest/v1/rpc/desabonner_infolettre', {
     method: 'POST', headers: { 'apikey': 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl', 'Content-Type': 'application/json' },
     body: JSON.stringify({ p_jeton: jeton })
   }).then(function (r) { return r.json(); }).then(function (ok) { afficher(ok === true ? T.ok : T.ko); })
-    .catch(function () { afficher(en ? ['Connection problem', 'Please try again in a moment, or write to serenaissance.doula@gmail.com.'] : ['Problème de connexion', 'Réessaie dans un instant, ou écris à serenaissance.doula@gmail.com.']); });
+    .catch(function () { afficher(en ? ['Connection problem', 'Please try again in a moment, or write to sc@academiesere.ca.'] : ['Problème de connexion', 'Réessaie dans un instant, ou écris à sc@academiesere.ca.']); });
 })();
 </script>
 </body>

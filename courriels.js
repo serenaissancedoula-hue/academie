@@ -63,7 +63,7 @@
       corps +
       '<tr><td align="center" style="padding:24px 10px 0;' + POLICE + 'font-size:12px;line-height:1.7;color:#7a685e;">' +
         '<span style="font-weight:700;color:#a85743;">Sérénaissance ♥ Campbellton</span><br>' +
-        '<a href="https://academiesere.ca' + (seul === 'en' ? '/en/' : '') + '" style="color:#7a685e;">academiesere.ca</a> · 506-759-2044 · serenaissance.doula@gmail.com<br>' + esc(seul === 'en' ? ADRESSE.replace('(N.-B.)', 'NB') : ADRESSE) + desa +
+        '<a href="https://academiesere.ca' + (seul === 'en' ? '/en/' : '') + '" style="color:#7a685e;">academiesere.ca</a> · 506-759-2044 · sc@academiesere.ca<br>' + esc(seul === 'en' ? ADRESSE.replace('(N.-B.)', 'NB') : ADRESSE) + desa +
       '</td></tr></table></td></tr></table></body></html>';
   }
   function envoyer(o) {

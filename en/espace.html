@@ -420,7 +420,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
           <label class="champ">First name <input type="text" id="f-prenom" readonly></label>
           <label class="champ">Last name <input type="text" id="f-nom" readonly></label>
         </div>
-        <p class="note" style="margin-top:-6px;">Your first and last name appear on your certificate. To correct them, write to <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a>.</p>
+        <p class="note" style="margin-top:-6px;">Your first and last name appear on your certificate. To correct them, write to <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a>.</p>
         <div class="rang">
           <label class="champ">Email <input type="email" id="f-courriel" required></label>
           <label class="champ">Phone <input type="tel" id="f-tel"></label>
@@ -531,7 +531,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
 'use strict';
 var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co';
 var SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
-var ADMIN = 'serenaissance.doula@gmail.com';
+var ADMIN = 'sc@academiesere.ca';
 var EMAILJS = { service: 'service_82vfhfg', avis: 'template_gy588ot', cle: 'HNvKdORRpRy_vT_FI' };
 var ICI = 'https://academiesere.ca/espace.html';
 var sb = window.supabase.createClient(SB_URL, SB_CLE, SereSecurite.options());
@@ -736,8 +736,8 @@ function afficherCours() {
   $('attente-diplome').hidden = !!(d && (d.formation === 'marraine' || d.formation === 'doula'));
   if (d && d.formation === 'doula' && !etat.doulaOk && !etat.suspendu) $('attente').innerHTML = '<strong>⏳ Your doula training registration has been received.</strong><br>I confirm your spot as soon as I see your payment (usually within 24 hours), and you receive an email. In the meantime, you can complete your information.';
   $('bloc-doula').hidden = !etat.doulaOk;
-  if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Your access is suspended for the moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Your progress is saved. Write to <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> or call 506-759-2044 to sort things out, and your access will be reopened.'; }
-  if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'We could not find a registration file linked to this email. Write to <a href="mailto:serenaissance.doula@gmail.com">serenaissance.doula@gmail.com</a> and Sabrina will sort it out quickly.'; }
+  if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Your access is suspended for the moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Your progress is saved. Write to <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a> or call 506-759-2044 to sort things out, and your access will be reopened.'; }
+  if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'We could not find a registration file linked to this email. Write to <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a> and Sabrina will sort it out quickly.'; }
   $('bloc-4e').hidden = !etat.valide;
   $('bloc-marraine').hidden = !etat.marraine;
   if (etat.valide) {
@@ -768,7 +768,7 @@ function afficherCours() {
 var adresseBranchee = false;
 /* ---------------- Mes achats et reçus ---------------- */
 function chargerAchats() {
-  var P = {"1": "Full payment", "2": "2 instalments", "4": "4 instalments", "marraine": "One-time payment ($175)", "offre": "Launch offer ($250) + peer supporter course as a gift", "combo": "Bundle of both courses", "bon": "🎁 Gift card", "lien": "Personal registration", "cadeau": "Offered as a gift"}, ST = {"doula_valide": "✅ Spot confirmed", "valide": "✅ Access open", "en_attente": "⏳ Being verified"}, T = {"fm": "Breastfeeding Peer Supporter course", "f4e": "Advanced Fourth Trimester Support", "le": "Registered on ", "loc": "en-CA", "aucun": "No purchases found yet.", "portail": "My receipts and instalments (Stripe) →", "note": "On Stripe’s secure portal, you’ll find all your receipts and upcoming instalments, and you can change your card. Your card is never stored by the Academy. Enter the email you used when paying: Stripe sends you a sign-in link. Nothing received (check your spam)? Write to serenaissance.doula@gmail.com and I’ll send your receipt.", "sansp": "Need a receipt? Write to serenaissance.doula@gmail.com and I will send it to you quickly."};
+  var P = {"1": "Full payment", "2": "2 instalments", "4": "4 instalments", "marraine": "One-time payment ($175)", "offre": "Launch offer ($250) + peer supporter course as a gift", "combo": "Bundle of both courses", "bon": "🎁 Gift card", "lien": "Personal registration", "cadeau": "Offered as a gift"}, ST = {"doula_valide": "✅ Spot confirmed", "valide": "✅ Access open", "en_attente": "⏳ Being verified"}, T = {"fm": "Breastfeeding Peer Supporter course", "f4e": "Advanced Fourth Trimester Support", "le": "Registered on ", "loc": "en-CA", "aucun": "No purchases found yet.", "portail": "My receipts and instalments (Stripe) →", "note": "On Stripe’s secure portal, you’ll find all your receipts and upcoming instalments, and you can change your card. Your card is never stored by the Academy. Enter the email you used when paying: Stripe sends you a sign-in link. Nothing received (check your spam)? Write to sc@academiesere.ca and I’ll send your receipt.", "sansp": "Need a receipt? Write to sc@academiesere.ca and I will send it to you quickly."};
   function lib(o) {
     o = String(o || '');
     if (o.indexOf('doula-') === 0) return ({ '1': 'Full payment ($1,950)', '3': '3 instalments ($650)', '6': '6 instalments every 2 weeks ($325)' })[o.split('-')[1]] || '';
@@ -805,7 +805,7 @@ function remplirInfos() {
 $('form-infos').addEventListener('submit', function (e) {
   e.preventDefault();
   var d = etat.dossier;
-  if (!d) return message('msg-infos', 'erreur', 'No file found. Write to serenaissance.doula@gmail.com.');
+  if (!d) return message('msg-infos', 'erreur', 'No file found. Write to sc@academiesere.ca.');
   var champ = $('f-adresse');
   var adresseChangee = champ.value.trim() !== (d.adresse || '').trim() || $('f-app').value.trim() || $('f-cp').value.trim();
   if (adresseChangee && window.AdresseAuto && !AdresseAuto.valide(champ))
@@ -817,7 +817,7 @@ $('form-infos').addEventListener('submit', function (e) {
     if (r.error && /date_naissance/.test(r.error.message || '')) { delete maj.date_naissance; return sb.from('etudiantes').update(maj).eq('id', d.id).select(); }
     return r;
   }).then(function (r) {
-    if (r.error) { b.disabled = false; b.textContent = 'Save my changes'; return message('msg-infos', 'erreur', 'Your information could not be saved. Try again or write to serenaissance.doula@gmail.com.'); }
+    if (r.error) { b.disabled = false; b.textContent = 'Save my changes'; return message('msg-infos', 'erreur', 'Your information could not be saved. Try again or write to sc@academiesere.ca.'); }
     Object.assign(d, maj);
     if (maj.adresse) { champ.value = maj.adresse; $('f-app').value = ''; $('f-cp').value = ''; }
     var nouveau = $('f-courriel').value.trim().toLowerCase();
@@ -879,7 +879,7 @@ $('form-stage').addEventListener('submit', function (e) {
         option_paiement: '📝 Documents de stage déposés (' + type + ') : ' + ok.join(', ') }, EMAILJS.cle); } catch (err) {}
     }
     message('msg-stage', ko.length ? 'erreur' : 'ok', ko.length
-      ? 'Some files could not be sent: ' + echapper(ko.join(', ')) + '. Try again or write to serenaissance.doula@gmail.com.'
+      ? 'Some files could not be sent: ' + echapper(ko.join(', ')) + '. Try again or write to sc@academiesere.ca.'
       : '🌸 Sent! Sabrina has received ' + (ok.length > 1 ? 'your ' + ok.length + ' documents' : 'your document') + ', and you keep a copy below.');
     listerStage();
   });
@@ -948,7 +948,7 @@ function preparerInscription() {
       window.scrollTo(0, 0);
     }).catch(function (err) {
       b.disabled = false; b.textContent = 'Create my account';
-      message('msg-inscription', 'erreur', echapper(err.message) + ' Try again or write to serenaissance.doula@gmail.com.');
+      message('msg-inscription', 'erreur', echapper(err.message) + ' Try again or write to sc@academiesere.ca.');
     });
   });
 }
@@ -1094,7 +1094,7 @@ $('chat-texte').addEventListener('keydown', function (e) { if (e.key === 'Enter'
 $('chat-form').addEventListener('submit', function (e) {
   e.preventDefault();
   var t = $('chat-texte').value.trim(); if (!t) return;
-  if (etat.suspendu) { alert('Your access is suspended for the moment. Write to serenaissance.doula@gmail.com or call 506-759-2044.'); return; }
+  if (etat.suspendu) { alert('Your access is suspended for the moment. Write to sc@academiesere.ca or call 506-759-2044.'); return; }
   var bouton = this.querySelector('button'); bouton.disabled = true;
   sb.from('messages').insert({ etudiante: etat.session.user.id, texte: t }).then(function (r) {
     bouton.disabled = false;
@@ -1371,7 +1371,7 @@ function voirConsentementSigne() {
 function retirerConsentement() {
   if (!confirm('Withdraw your consent?\n\nYour profile will immediately disappear from the “Our Breastfeeding Peer Supporters” page. Your certification remains valid. You will be able to join the team again by signing a new form.')) return;
   sb.rpc('retirer_consentement_marraine').then(function (r) {
-    if (r.error) { alert('The withdrawal did not work. Write to serenaissance.doula@gmail.com.'); return; }
+    if (r.error) { alert('The withdrawal did not work. Write to sc@academiesere.ca.'); return; }
     message('msg-marraine', 'ok', 'Your consent is withdrawn: your profile is no longer displayed on the site. Sabrina has been notified.');
     chargerFicheMarraine();
   });
