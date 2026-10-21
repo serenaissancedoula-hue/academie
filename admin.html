@@ -523,7 +523,7 @@ function paiement(v) {
   var s = String(v || '');
   if (s.indexOf('bon:') === 0) return '🎁 Carte-cadeau ' + s.slice(4);
   if (s === 'marraine') return "Marraine · 175 $";
-  if (s.indexOf('doula-') === 0) return 'Doula 400 h · ' + ({ '1': '1 750 $ en 1 paiement', '3': '3 × 583,33 $', '6': '6 × 291,67 $' }[s.split('-')[1]] || s);
+  if (s.indexOf('doula-') === 0) return 'Doula 400 h · ' + ({ '1': '1 950 $ en 1 paiement', '3': '3 × 650 $', '6': '6 × 325 $ aux 2 semaines' }[s.split('-')[1]] || s);
   if (s.indexOf('lien-manuel') === 0) return '🔗 Lien manuel' + (s.indexOf('combo') >= 0 ? ' · combo (les 2)' : s.indexOf('cadeau') >= 0 ? ' · 4ᵉ + marraine en cadeau' : '') + ' (vérifier le paiement)';
   if (s.indexOf('combo') === 0) return 'Combo (4ᵉ + marraine) · ' + ({ '1': 'paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[1]] || '');
   var base = { '1': 'Paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[0]] || s;
