@@ -198,6 +198,8 @@
         .venir-bref li:last-child { border-bottom: 0; }
         .venir-bref strong { display: inline-block; min-width: 130px; color: var(--accent-terracotta); font-size: .78rem; text-transform: uppercase; letter-spacing: .8px; }
         .venir-fin { margin-top: 28px; text-align: center; }
+        .venir-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 16px; display: block; margin: 0 0 14px; }
+        .venir-page .venir-photo { aspect-ratio: 6 / 5; max-width: 620px; margin: 10px auto 18px; }
         .lien-savoir { font-size: .85rem; font-weight: 700; color: var(--accent-terracotta); text-decoration: none; margin-right: 16px; }
         #page-academie[data-vue="detail"] .choix-formations { display: none !important; }
         /* Gestionnaire de pages (Affichage/Masquage) */
@@ -1857,11 +1859,13 @@
             <p>Two new trainings are coming to the Academy.</p>
             <div class="a-venir-grille">
                 <div class="a-venir-carte">
+                    <img class="venir-photo" src="/relation-aide.jpg" alt="" style="object-position:center 30%" loading="lazy">
                     <span class="etiquette-venir">Coming soon</span>
                     <h4>Helping relationship · 300 h</h4>
                     <a class="lien-savoir" href="/en/courses/helping-relationship/" onclick="switchPage('relation-aide', null, event)">Learn more →</a>
                 </div>
                 <div class="a-venir-carte">
+                    <img class="venir-photo" src="/yoga-prenatal.jpg" alt="" style="object-position:center 18%" loading="lazy">
                     <span class="etiquette-venir">Coming soon</span>
                     <h4>Prenatal and postnatal yoga · 85 h</h4>
                     <a class="lien-savoir" href="/en/courses/prenatal-postnatal-yoga/" onclick="switchPage('yoga', null, event)">Learn more →</a>
@@ -2074,17 +2078,19 @@
             <p>Two new trainings are in preparation. Dates and prices announced soon.</p>
             <div class="a-venir-grille">
                 <div class="a-venir-carte">
+                    <img class="venir-photo" src="/relation-aide.jpg" alt="" style="object-position:center 30%" loading="lazy">
                     <span class="etiquette-venir">Coming soon</span>
                     <h4>Helping relationship · 300 h</h4>
-                    <p>This training prepares support people to offer quality helping relationships within an ethical, legal and safe framework. It clearly distinguishes the helping relationship from psychotherapy, which is regulated in Quebec by Law 21. 240 h of modules and a 60 h supervised placement, at your own pace (9 to 12 months suggested). Taught in French.</p>
+                    <p>This training prepares support people to offer quality helping relationships within an ethical, legal and safe framework. It clearly distinguishes the helping relationship from psychotherapy, which is regulated in Quebec by Law 21. 240 h of modules and a 60 h supervised placement, at your own pace (9 to 12 months suggested).</p>
                     <p class="a-venir-note">A certificate from the school is awarded on passing all assessments. It is not a regulated professional title.</p>
-                    <a class="lien-savoir" href="/en/courses/helping-relationship/" onclick="switchPage('relation-aide', null, event)">Learn more →</a><a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Notify me when it opens →</a>
+                    <a class="lien-savoir" href="/en/courses/helping-relationship/" onclick="switchPage('relation-aide', null, event)">Learn more →</a><a href="#" class="lien-prevenir" onclick="SereInfolettre.attente('relation-aide'); return false;">Join the waiting list →</a>
                 </div>
                 <div class="a-venir-carte">
+                    <img class="venir-photo" src="/yoga-prenatal.jpg" alt="" style="object-position:center 18%" loading="lazy">
                     <span class="etiquette-venir">Coming soon</span>
                     <h4>Prenatal and postnatal yoga · 85 h</h4>
-                    <p>This training teaches how to teach yoga safely, adapted to pregnant women and new mothers, from pregnancy through the postpartum period and the relationship with the baby. Perinatal anatomy and physiology, adapting postures, breathing and relaxation, teaching skills, professional framework and the limits of practice. 85 h, including a 20 h supervised placement. No medical training required; a personal yoga practice is recommended. Taught in French.</p>
-                    <a class="lien-savoir" href="/en/courses/prenatal-postnatal-yoga/" onclick="switchPage('yoga', null, event)">Learn more →</a><a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Notify me when it opens →</a>
+                    <p>This training teaches how to teach yoga safely, adapted to pregnant women and new mothers, from pregnancy through the postpartum period and the relationship with the baby. Perinatal anatomy and physiology, adapting postures, breathing and relaxation, teaching skills, professional framework and the limits of practice. 85 h, including a 20 h supervised placement. No medical training required; a personal yoga practice is recommended.</p>
+                    <a class="lien-savoir" href="/en/courses/prenatal-postnatal-yoga/" onclick="switchPage('yoga', null, event)">Learn more →</a><a href="#" class="lien-prevenir" onclick="SereInfolettre.attente('yoga'); return false;">Join the waiting list →</a>
                 </div>
             </div>
         </div>
@@ -3017,9 +3023,10 @@
     <div id="page-relation-aide" class="page-section">
         <div class="venir-page">
             <a href="/en/courses/" class="retour-formations" style="display:inline-block !important" onclick="toutesLesFormations(event)">← All courses</a><br>
+            <img class="venir-photo" src="/relation-aide.jpg" alt="Two hands holding each other" style="object-position:center 30%" loading="lazy">
             <span class="etiquette-venir" style="display:inline-block;background:#f3e3da;color:#8a4233;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;">Coming soon</span>
             <h2>Helping relationship · 300 h</h2>
-            <p>This training prepares support people to offer quality helping relationships within an ethical, legal and safe framework. It clearly distinguishes the helping relationship from psychotherapy, which is regulated in Quebec by Law 21. 240 h of modules and a 60 h supervised placement, at your own pace (9 to 12 months suggested). Taught in French.</p>
+            <p>This training prepares support people to offer quality helping relationships within an ethical, legal and safe framework. It clearly distinguishes the helping relationship from psychotherapy, which is regulated in Quebec by Law 21. 240 h of modules and a 60 h supervised placement, at your own pace (9 to 12 months suggested).</p>
             <p class="a-venir-note">A certificate from the school is awarded on passing all assessments. It is not a regulated professional title.</p>
             <h3>At a glance</h3>
             <ul class="venir-bref"><li><strong>Length</strong> 300 h: 240 h of modules and a 60 h supervised placement</li><li><strong>Pace</strong> At your own pace, 9 to 12 months suggested</li><li><strong>Prerequisites</strong> Announced when it opens</li><li><strong>Dates and price</strong> Coming soon</li></ul>
@@ -3043,8 +3050,8 @@
 <details><summary><span class="mod-num">16</span><span class="mod-titre">Supervised placement, supervision and integration</span><span class="mod-info">60 h</span></summary><ul><li>Supervised practice (30 h): helping-relationship meetings with peers or consenting people, under supervision. No psychotherapy is practised</li><li>Supervision (20 h): individual and group sessions</li><li>Integration (10 h): reflective journal, meeting reports, record keeping and placement review</li></ul></details>
 </div>
             <div class="home-summary-box venir-fin">
-                <p>This training is not open yet. Dates and prices will be announced soon.</p>
-                <button class="btn-action" onclick="ouvrirContact()">Notify me when it opens →</button>
+                <p>This training is not open yet. Join the waiting list to be the first to hear when dates and prices are announced.</p>
+                <button class="btn-action" onclick="SereInfolettre.attente('relation-aide')">Join the waiting list →</button>
             </div>
         </div>
     </div>
@@ -3052,9 +3059,10 @@
     <div id="page-yoga" class="page-section">
         <div class="venir-page">
             <a href="/en/courses/" class="retour-formations" style="display:inline-block !important" onclick="toutesLesFormations(event)">← All courses</a><br>
+            <img class="venir-photo" src="/yoga-prenatal.jpg" alt="An expectant mother in a yoga pose, guided by a teacher" style="object-position:center 18%" loading="lazy">
             <span class="etiquette-venir" style="display:inline-block;background:#f3e3da;color:#8a4233;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;">Coming soon</span>
             <h2>Prenatal and postnatal yoga · 85 h</h2>
-            <p>This training teaches how to teach yoga safely, adapted to pregnant women and new mothers, from pregnancy through the postpartum period and the relationship with the baby. Perinatal anatomy and physiology, adapting postures, breathing and relaxation, teaching skills, professional framework and the limits of practice. 85 h, including a 20 h supervised placement. No medical training required; a personal yoga practice is recommended. Taught in French.</p>
+            <p>This training teaches how to teach yoga safely, adapted to pregnant women and new mothers, from pregnancy through the postpartum period and the relationship with the baby. Perinatal anatomy and physiology, adapting postures, breathing and relaxation, teaching skills, professional framework and the limits of practice. 85 h, including a 20 h supervised placement. No medical training required; a personal yoga practice is recommended.</p>
             
             <h3>At a glance</h3>
             <ul class="venir-bref"><li><strong>Length</strong> 85 h, including a 20 h supervised placement</li><li><strong>Prerequisites</strong> No medical training required; a personal yoga practice is recommended</li><li><strong>Dates and price</strong> Coming soon</li></ul>
@@ -3081,8 +3089,8 @@
 <details><summary><span class="mod-num">12</span><span class="mod-titre">Supervised practical placement</span><span class="mod-info">20 h</span></summary><ul><li>Observation (10 h): observing another teacher give prenatal classes</li><li>Teaching (10 h): giving prenatal classes, including 6 h with the lead trainer and at least 4 h as lead teacher, with feedback</li><li>Teaching report and reflective self-assessment</li></ul></details>
 </div>
             <div class="home-summary-box venir-fin">
-                <p>This training is not open yet. Dates and prices will be announced soon.</p>
-                <button class="btn-action" onclick="ouvrirContact()">Notify me when it opens →</button>
+                <p>This training is not open yet. Join the waiting list to be the first to hear when dates and prices are announced.</p>
+                <button class="btn-action" onclick="SereInfolettre.attente('yoga')">Join the waiting list →</button>
             </div>
         </div>
     </div>

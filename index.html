@@ -198,6 +198,8 @@
         .venir-bref li:last-child { border-bottom: 0; }
         .venir-bref strong { display: inline-block; min-width: 130px; color: var(--accent-terracotta); font-size: .78rem; text-transform: uppercase; letter-spacing: .8px; }
         .venir-fin { margin-top: 28px; text-align: center; }
+        .venir-photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 16px; display: block; margin: 0 0 14px; }
+        .venir-page .venir-photo { aspect-ratio: 6 / 5; max-width: 620px; margin: 10px auto 18px; }
         .lien-savoir { font-size: .85rem; font-weight: 700; color: var(--accent-terracotta); text-decoration: none; margin-right: 16px; }
         #page-academie[data-vue="detail"] .choix-formations { display: none !important; }
         /* Gestionnaire de pages (Affichage/Masquage) */
@@ -1857,11 +1859,13 @@
             <p>Deux nouvelles formations arrivent à l'Académie.</p>
             <div class="a-venir-grille">
                 <div class="a-venir-carte">
+                    <img class="venir-photo" src="relation-aide.jpg" alt="" style="object-position:center 30%" loading="lazy">
                     <span class="etiquette-venir">À venir</span>
                     <h4>Relation d'aide · 300 h</h4>
                     <a class="lien-savoir" href="/formations/relation-d-aide/" onclick="switchPage('relation-aide', null, event)">En savoir plus →</a>
                 </div>
                 <div class="a-venir-carte">
+                    <img class="venir-photo" src="yoga-prenatal.jpg" alt="" style="object-position:center 18%" loading="lazy">
                     <span class="etiquette-venir">À venir</span>
                     <h4>Yoga prénatal et postnatal · 85 h</h4>
                     <a class="lien-savoir" href="/formations/yoga-prenatal-postnatal/" onclick="switchPage('yoga', null, event)">En savoir plus →</a>
@@ -2074,17 +2078,19 @@
             <p>Deux nouvelles formations sont en préparation. Dates et prix annoncés bientôt.</p>
             <div class="a-venir-grille">
                 <div class="a-venir-carte">
+                    <img class="venir-photo" src="relation-aide.jpg" alt="" style="object-position:center 30%" loading="lazy">
                     <span class="etiquette-venir">À venir</span>
                     <h4>Relation d'aide · 300 h</h4>
                     <p>Cette formation prépare les accompagnantes à offrir une relation d'aide de qualité, dans un cadre éthique, légal et sécuritaire. Elle distingue clairement la relation d'aide de la psychothérapie, qui est encadrée au Québec par la loi 21. 240 h de modules et 60 h de stage supervisé, à ton rythme (9 à 12 mois suggérés).</p>
                     <p class="a-venir-note">Un certificat de l'école est remis à la réussite de toutes les évaluations. Il ne constitue pas un titre professionnel réglementé.</p>
-                    <a class="lien-savoir" href="/formations/relation-d-aide/" onclick="switchPage('relation-aide', null, event)">En savoir plus →</a><a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
+                    <a class="lien-savoir" href="/formations/relation-d-aide/" onclick="switchPage('relation-aide', null, event)">En savoir plus →</a><a href="#" class="lien-prevenir" onclick="SereInfolettre.attente('relation-aide'); return false;">Me mettre sur la liste d'attente →</a>
                 </div>
                 <div class="a-venir-carte">
+                    <img class="venir-photo" src="yoga-prenatal.jpg" alt="" style="object-position:center 18%" loading="lazy">
                     <span class="etiquette-venir">À venir</span>
                     <h4>Yoga prénatal et postnatal · 85 h</h4>
                     <p>Cette formation apprend à enseigner le yoga de façon sécuritaire et adaptée aux femmes enceintes et aux nouvelles mères, de la grossesse jusqu'au post-partum et à la relation avec le bébé. Anatomie et physiologie périnatales, adaptation des postures, respiration et relaxation, pédagogie, cadre professionnel et limites de la pratique. 85 h, dont un stage supervisé de 20 h. Aucune formation médicale requise ; une pratique personnelle du yoga est recommandée.</p>
-                    <a class="lien-savoir" href="/formations/yoga-prenatal-postnatal/" onclick="switchPage('yoga', null, event)">En savoir plus →</a><a href="#" class="lien-prevenir" onclick="ouvrirContact(); return false;">Me prévenir à l'ouverture →</a>
+                    <a class="lien-savoir" href="/formations/yoga-prenatal-postnatal/" onclick="switchPage('yoga', null, event)">En savoir plus →</a><a href="#" class="lien-prevenir" onclick="SereInfolettre.attente('yoga'); return false;">Me mettre sur la liste d'attente →</a>
                 </div>
             </div>
         </div>
@@ -3101,6 +3107,7 @@
     <div id="page-relation-aide" class="page-section">
         <div class="venir-page">
             <a href="/formations/" class="retour-formations" style="display:inline-block !important" onclick="toutesLesFormations(event)">← Toutes les formations</a><br>
+            <img class="venir-photo" src="relation-aide.jpg" alt="Deux mains qui se tiennent" style="object-position:center 30%" loading="lazy">
             <span class="etiquette-venir" style="display:inline-block;background:#f3e3da;color:#8a4233;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;">À venir</span>
             <h2>Relation d'aide · 300 h</h2>
             <p>Cette formation prépare les accompagnantes à offrir une relation d'aide de qualité, dans un cadre éthique, légal et sécuritaire. Elle distingue clairement la relation d'aide de la psychothérapie, qui est encadrée au Québec par la loi 21. 240 h de modules et 60 h de stage supervisé, à ton rythme (9 à 12 mois suggérés).</p>
@@ -3127,8 +3134,8 @@
 <details><summary><span class="mod-num">16</span><span class="mod-titre">Stage supervisé, supervision et intégration</span><span class="mod-info">60 h</span></summary><ul><li>Pratique supervisée (30 h) : rencontres de relation d'aide avec des pairs ou des personnes consentantes, sous supervision. Aucun acte de psychothérapie n'est posé</li><li>Supervision (20 h) : séances individuelles et de groupe</li><li>Intégration (10 h) : journal réflexif, rapports de rencontres, tenue de dossier et bilan de stage</li></ul></details>
 </div>
             <div class="home-summary-box venir-fin">
-                <p>Cette formation n'est pas encore ouverte. Les dates et les prix seront annoncés bientôt.</p>
-                <button class="btn-action" onclick="ouvrirContact()">Me prévenir à l'ouverture →</button>
+                <p>Cette formation n'est pas encore ouverte. Inscris-toi à la liste d'attente pour être prévenue en premier, dès que les dates et les prix seront annoncés.</p>
+                <button class="btn-action" onclick="SereInfolettre.attente('relation-aide')">Me mettre sur la liste d'attente →</button>
             </div>
         </div>
     </div>
@@ -3136,6 +3143,7 @@
     <div id="page-yoga" class="page-section">
         <div class="venir-page">
             <a href="/formations/" class="retour-formations" style="display:inline-block !important" onclick="toutesLesFormations(event)">← Toutes les formations</a><br>
+            <img class="venir-photo" src="yoga-prenatal.jpg" alt="Une future maman en position de yoga, guidée par une enseignante" style="object-position:center 18%" loading="lazy">
             <span class="etiquette-venir" style="display:inline-block;background:#f3e3da;color:#8a4233;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:3px 10px;">À venir</span>
             <h2>Yoga prénatal et postnatal · 85 h</h2>
             <p>Cette formation apprend à enseigner le yoga de façon sécuritaire et adaptée aux femmes enceintes et aux nouvelles mères, de la grossesse jusqu'au post-partum et à la relation avec le bébé. Anatomie et physiologie périnatales, adaptation des postures, respiration et relaxation, pédagogie, cadre professionnel et limites de la pratique. 85 h, dont un stage supervisé de 20 h. Aucune formation médicale requise ; une pratique personnelle du yoga est recommandée.</p>
@@ -3165,8 +3173,8 @@
 <details><summary><span class="mod-num">12</span><span class="mod-titre">Stage pratique supervisé</span><span class="mod-info">20 h</span></summary><ul><li>Observation (10 h) : observer une autre enseignante donner des cours prénataux</li><li>Enseignement (10 h) : donner des cours prénataux, dont 6 h avec la formatrice principale et au moins 4 h comme enseignante principale, avec rétroaction</li><li>Rapport d'enseignement et auto-évaluation réflexive</li></ul></details>
 </div>
             <div class="home-summary-box venir-fin">
-                <p>Cette formation n'est pas encore ouverte. Les dates et les prix seront annoncés bientôt.</p>
-                <button class="btn-action" onclick="ouvrirContact()">Me prévenir à l'ouverture →</button>
+                <p>Cette formation n'est pas encore ouverte. Inscris-toi à la liste d'attente pour être prévenue en premier, dès que les dates et les prix seront annoncés.</p>
+                <button class="btn-action" onclick="SereInfolettre.attente('yoga')">Me mettre sur la liste d'attente →</button>
             </div>
         </div>
     </div>
