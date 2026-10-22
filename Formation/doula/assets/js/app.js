@@ -9,7 +9,7 @@
   var LASTMOD = 12;
   var PREFIX = 'd' + MN + ':';
   function url(type, id) { return type + '-' + MN + '-' + id.split('.')[1] + '.html'; }
-  var MENTORAT = 'https://cal.com/sabrina-chavanel-zs5clq/mentorat';
+  var MENTORAT = 'mailto:sc@academiesere.ca?subject=Mentorat';
   var H = 3600 * 1000;
 
   var store = {
@@ -296,7 +296,7 @@
   }
   var MSG_BLOQUE = function (quoi, nb) {
     return '<strong>Rencontre requise.</strong> Après ' + nb + ' tentatives non réussies, ' + quoi + ' est bloqué jusqu\'à ta rencontre avec Sabrina. ' +
-      'Elle a été avisée. Réserve ta rencontre ici : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>. ' +
+      'Elle a été avisée. Réserve ta rencontre ici : <a href="' + MENTORAT + '">réserver une rencontre</a>. ' +
       'Après la rencontre, Sabrina débloque ta prochaine tentative.';
   };
   function retirerQuestions(conteneur) {
@@ -391,7 +391,7 @@
         '<p>' + good + ' bonne' + (good > 1 ? 's' : '') + ' réponse' + (good > 1 ? 's' : '') + ' sur ' + NQ + ' (seuil : ' + seuil + ' sur ' + NQ + '). ' +
         (ok ? (id === LASTCH ? 'Tous les quiz du module sont réussis : l\'examen du module est ouvert. Pense à réviser avec le cahier pratique.' : 'Le chapitre suivant est ouvert.')
             : (passed(id) ? 'Tu avais déjà réussi ce quiz : ta meilleure note est conservée.'
-               : (echecs >= 3 ? 'Ce quiz est maintenant bloqué jusqu\'à ta rencontre avec Sabrina (elle a été avisée) : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>.'
+               : (echecs >= 3 ? 'Ce quiz est maintenant bloqué jusqu\'à ta rencontre avec Sabrina (elle a été avisée) : <a href="' + MENTORAT + '">réserver une rencontre</a>.'
                               : 'Relis les sections ci-dessous. Tu pourras reprendre le quiz dans 24 heures, avec d\'autres questions.' + (echecs === 2 ? ' Attention : après un 3e échec, une rencontre avec Sabrina sera obligatoire.' : '')))) + '</p>' +
         (!ok && sections.length ? '<div class="a-relire"><strong>À relire :</strong><ul class="bullets">' + sections.map(function (s) { return '<li>' + s.replace(/</g, '&lt;') + '</li>'; }).join('') + '</ul></div>' : '') +
         '<div class="actions">' + (passed(id) ? '<a class="btn" href="' + next + '">' + (id === LASTCH ? 'Aller à l\'examen du module →' : 'Chapitre suivant →') + '</a>'
@@ -546,7 +546,7 @@
         (tempsEcoule ? '<p><strong>Le temps est écoulé :</strong> tes réponses ont été remises automatiquement.</p>' : '') +
         '<p>Ta note : ' + score + ' / ' + tot + ' (seuil : ' + Math.ceil(tot * PASS - 1e-9) + ' / ' + tot + ').' +
         (ok ? (nextMod <= LASTMOD ? ' Le module ' + nextMod + ' est maintenant ouvert.' : ' Les 12 modules sont réussis ! Sabrina te contacte pour fixer ta date d\'examen final en direct (caméra ouverte), ton étude de cas finale et la validation de tes stages.')
-            : (echecs >= 2 ? ' L\'examen est maintenant bloqué jusqu\'à ta rencontre avec Sabrina (elle a été avisée) : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>. D\'ici là, relis les sections ci-dessous.'
+            : (echecs >= 2 ? ' L\'examen est maintenant bloqué jusqu\'à ta rencontre avec Sabrina (elle a été avisée) : <a href="' + MENTORAT + '">réserver une rencontre</a>. D\'ici là, relis les sections ci-dessous.'
                            : ' Relis les sections indiquées ci-dessous. Tu pourras reprendre l\'examen dans 48 heures, avec un nouveau tirage. Attention : après un 2e échec, une rencontre avec Sabrina sera obligatoire.')) + '</p>' +
         (aRevoir.length && !ok ? '<div class="a-relire"><strong>À relire :</strong><ul class="bullets">' + aRevoir.map(function (s) { return '<li>' + s.replace(/</g, '&lt;') + '</li>'; }).join('') + '</ul></div>' : '') +
         '<div class="actions">' + (ok ? (nextMod <= LASTMOD ? '<a class="btn" href="../module-' + nextMod + '/index.html">Passer au module ' + nextMod + ' →</a>' : '<a class="btn" href="../index.html">Accueil de la formation</a>')

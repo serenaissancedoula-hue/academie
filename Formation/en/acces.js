@@ -160,7 +160,7 @@
       ['💬', 'Messages', ESPACE + '#messages'],
       ['⚙️', L('Paramètres', 'Settings'), ESPACE + '#parametres'],
       ['🌐', L('English', 'Français'), autre + location.hash, EN ? 'fr' : 'en'],
-      ['📅', L('Mentorat', 'Mentoring'), 'https://cal.com/sabrina-chavanel-zs5clq/mentorat']
+      ['📅', L('Mentorat', 'Mentoring'), 'mailto:sc@academiesere.ca?subject=Mentorat']
     ];
     if (FORMATION === 'marraine') liens.splice(1, 1);   // pas de stage pour la formation de marraine
     liens.forEach(function (l) {
