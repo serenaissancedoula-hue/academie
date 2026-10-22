@@ -783,7 +783,7 @@ function afficherCours() {
       return ligneCours('Module ' + m.n + ' · ' + m.titre + (en ? '' : ' <small>(in French for now)</small>'), ex ? '✓ Module passed' : (verrou ? '🔒 Opens when you pass the module ' + (m.n - 1) + ' exam' : fait + ' / ' + m.ch + ' quizzes passed'), fait, m.ch, ex,
         (en ? 'Formation/en/doula/module-' : 'Formation/doula/module-') + m.n + '/index.html', verrou ? 'Preview' : (fait === 0 && !ex ? 'Start' : (ex ? 'Review' : 'Continue')));
     }).join('');
-    hd += ligneCours('Documents and tools', 'Syllabus, template kit and prenatal meetings guide (in French for now)', 0, 0, false, 'Formation/en/doula/documents.html', 'Open');
+    hd += ligneCours('Documents and tools', 'Syllabus, template kit, prenatal meetings guide, approach meeting guide and partner\'s guide (in French for now)', 0, 0, false, 'Formation/en/doula/documents.html', 'Open');
     hd += ligneCours('Appendix · Regional reference guide', 'Numbers and resources for each province, the territories and France', 0, 0, false, 'Formation/en/doula/annexe.html', 'Open');
     $('liste-doula').innerHTML = hd;
   }
