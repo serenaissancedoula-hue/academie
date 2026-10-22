@@ -258,98 +258,182 @@
     return card;
   }
 
-  /* ---------- quiz de chapitre : une question par thème, correction immédiate ---------- */
+  /* ---------- tentatives, délais et blocage (vérifiés dans le compte, sur le serveur) ----------
+     Quiz : nouvelle tentative 24 h après un échec ; après 3 échecs, bloqué jusqu'au déblocage par Sabrina.
+     Examen : nouvelle tentative 48 h après un échec ; après 2 échecs, bloqué jusqu'au déblocage par Sabrina. */
+  function etatTentatives(evaluation, cleLocale, seuil, delai) {
+    var local = store.get(cleLocale) || { n: 0 };
+    var enAttente = lireFile().filter(function (r) { return r.formation === 'doula' && r.evaluation === evaluation; });
+    function calcul(lignes, debloque) {
+      if (lignes.some(function (r) { return r.reussi; })) return { echecs: 0, bloque: false, reste: 0, reussi: true };
+      var depuis = debloque ? new Date(debloque).getTime() : 0;
+      var echecs = lignes.filter(function (r) { return !r.reussi && new Date(r.created_at).getTime() > depuis; });
+      var dernier = echecs.length ? Math.max.apply(null, echecs.map(function (r) { return new Date(r.created_at).getTime(); })) : 0;
+      var reste = dernier ? Math.max(0, dernier + delai - Date.now()) : 0;
+      return { echecs: echecs.length, bloque: echecs.length >= seuil, reste: reste };
+    }
+    return sessionValide().then(function (s) {
+      if (!s || !s.access_token) throw new Error('hors ligne');
+      var h = { 'apikey': SB_CLE, 'Authorization': 'Bearer ' + s.access_token };
+      var ev = encodeURIComponent(evaluation);
+      return Promise.all([
+        fetch(SB_URL + '/rest/v1/resultats?select=reussi,created_at&formation=eq.doula&evaluation=eq.' + ev + '&order=created_at.asc', { headers: h }).then(function (r) { if (!r.ok) throw new Error('r'); return r.json(); }),
+        fetch(SB_URL + '/rest/v1/deblocages?select=created_at&evaluation=eq.' + ev + '&order=created_at.desc&limit=1', { headers: h }).then(function (r) { return r.ok ? r.json() : []; })
+      ]).then(function (x) {
+        var deb = x[1] && x[1][0] ? x[1][0].created_at : null;
+        var et = calcul(x[0].concat(enAttente), deb);
+        store.set(cleLocale, { n: et.echecs, t: et.reste ? Date.now() - (delai - et.reste) : 0 });
+        return et;
+      });
+    }).catch(function () {
+      var reste = local.t ? Math.max(0, local.t + delai - Date.now()) : 0;
+      return { echecs: local.n || 0, bloque: (local.n || 0) >= seuil, reste: reste };
+    });
+  }
+  function noterEchec(cleLocale) {
+    var f = store.get(cleLocale) || { n: 0 };
+    store.set(cleLocale, { n: (f.n || 0) + 1, t: Date.now() });
+  }
+  var MSG_BLOQUE = function (quoi, nb) {
+    return '<strong>Rencontre requise.</strong> Après ' + nb + ' tentatives non réussies, ' + quoi + ' est bloqué jusqu\'à ta rencontre avec Sabrina. ' +
+      'Elle a été avisée. Réserve ta rencontre ici : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>. ' +
+      'Après la rencontre, Sabrina débloque ta prochaine tentative.';
+  };
+  function retirerQuestions(conteneur) {
+    conteneur.querySelectorAll('.q-card, .exam-part, .card.case').forEach(function (n) { n.remove(); });
+  }
+
+  /* ---------- quiz de chapitre : une question par thème, correction à la fin ---------- */
   var quizEl = document.getElementById('quiz');
   if (quizEl && window.QUIZ_DATA && !pageLock) {
-    var id = quizEl.dataset.quiz, data = window.QUIZ_DATA[id];
-    var fq = store.get('qfail:' + id) || { n: 0 };
-    var resteQ = passed(id) ? 0 : attente('qfail:' + id, 24 * H);
-    if (resteQ) {
-      pageVerrouillee({ titre: 'Nouvelle tentative bientôt', html: 'Tu pourras reprendre ce quiz dans ' + heures(resteQ) + ', avec d\'autres questions. Profites-en pour relire le chapitre ' + id + ', surtout les sections indiquées dans ta correction.' +
-        (fq.n >= 3 ? '<br><br><strong>Tu as fait 3 tentatives sans atteindre le seuil.</strong> Prends rendez-vous avec Sabrina pour faire le point avant de recommencer : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>.' : ''),
-        href: url('chapitre', id), label: 'Relire le chapitre ' + id }, 'quiz.svg');
-    } else {
-      var vues = store.get('qv:' + id) || [];
-      var tirage = data.themes.map(function (t, ti) {
-        var choix = t.v.map(function (_, i) { return i; }).filter(function (i) { return vues.indexOf(ti + ':' + i) < 0; });
-        if (!choix.length) choix = t.v.map(function (_, i) { return i; });
-        var k = choix[Math.floor(Math.random() * choix.length)];
-        return { ti: ti, k: k, theme: t.t, q: preparer(t.v[k]) };
-      });
-      store.set('qv:' + id, tirage.map(function (x) { return x.ti + ':' + x.k; }));
-      var answered = 0, good = 0, NQ = tirage.length, result = el('div', 'result'), sectionsErr = [];
-      if (fq.n >= 3 && !passed(id)) {
-        var av = el('div', 'callout caution');
-        av.innerHTML = '<p><strong>Tu as déjà fait ' + fq.n + ' tentatives.</strong> Tu peux reprendre le quiz, mais une rencontre avec Sabrina t\'aidera à faire le point : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>.</p>';
-        quizEl.appendChild(av);
+    var id = quizEl.dataset.quiz, data = window.QUIZ_DATA[id], EVQ = 'Quiz ' + id;
+    var attenteQ = el('p', 'meta', 'Vérification de tes tentatives…'); quizEl.appendChild(attenteQ);
+    etatTentatives(EVQ, 'qfail:' + id, 3, 24 * H).then(function (et) {
+      attenteQ.remove();
+      if (passed(id)) et = { echecs: 0, bloque: false, reste: 0 };
+      if (et.bloque) {
+        pageVerrouillee({ titre: 'Quiz ' + id + ' bloqué', html: MSG_BLOQUE('ce quiz', et.echecs), href: url('chapitre', id), label: 'Relire le chapitre ' + id }, 'cadenas.svg');
+        return;
       }
-      tirage.forEach(function (x, n) {
-        var q = x.q, card = questionCard(q, 'Question ' + (n + 1) + ' / ' + NQ, x.theme), fb = el('div', 'feedback');
-        card.appendChild(fb);
-        card.querySelectorAll('.opt').forEach(function (b) {
-          b.addEventListener('click', function () {
-            var i = +b.dataset.i;
-            card.querySelectorAll('.opt').forEach(function (z) { z.disabled = true; });
-            card.querySelectorAll('.opt')[q.a].classList.add('correct');
-            if (i === q.a) { good++; fb.textContent = '✓ Bonne réponse' + (q.e ? ' · ' + q.e : ''); fb.className = 'feedback show ok'; }
-            else {
-              b.classList.add('wrong');
-              fb.textContent = '✗ La bonne réponse est ' + LETTERS[q.a] + ') ' + q.o[q.a] + (q.e ? '. Pourquoi : ' + q.e : '') + (q.s ? ' (' + q.s + ')' : '');
-              fb.className = 'feedback show ko';
-              if (q.s && sectionsErr.indexOf(q.s) < 0) sectionsErr.push(q.s);
-            }
-            answered++;
-            if (answered === NQ) finish();
-          });
-        });
-        quizEl.appendChild(card);
-      });
-      quizEl.appendChild(result);
-      var finish = function () {
-        var prev = store.get('score:' + id);
-        if (!prev || good >= prev.score) store.set('score:' + id, { score: good, total: NQ });
-        enregistrerResultat('Quiz ' + id, good, NQ);
-        var ok = good / NQ >= PASS, seuil = Math.ceil(NQ * PASS - 1e-9);
-        if (!ok && !passed(id)) store.set('qfail:' + id, { n: (fq.n || 0) + 1, t: Date.now() });
-        if (ok) store.set('qfail:' + id, { n: 0 });
-        var next = id === LASTCH ? 'examen.html' : url('chapitre', CH[CH.indexOf(id) + 1]);
-        result.innerHTML = ring(good, NQ) + '<h3>' + (ok ? 'Bravo, quiz réussi !' : 'Pas encore réussi') + '</h3>' +
-          '<p>' + good + ' bonne' + (good > 1 ? 's' : '') + ' réponse' + (good > 1 ? 's' : '') + ' sur ' + NQ + ' (seuil : ' + seuil + ' sur ' + NQ + '). ' +
-          (ok ? (id === LASTCH ? 'Tous les quiz du module sont réussis : l\'examen du module est ouvert. Pense à réviser avec le cahier pratique.' : 'Le chapitre suivant est ouvert.')
-              : 'Relis le chapitre ' + id + (sectionsErr.length ? ' (surtout : ' + sectionsErr.join('; ') + ')' : '') + '. Tu pourras reprendre le quiz dans 24 heures, avec d\'autres questions.' +
-                ((fq.n || 0) + 1 >= 3 ? ' Après trois tentatives, prends rendez-vous avec Sabrina pour faire le point.' : '')) + '</p>' +
-          '<div class="actions">' + (passed(id) ? '<a class="btn" href="' + next + '">' + (id === LASTCH ? 'Aller à l\'examen du module →' : 'Chapitre suivant →') + '</a>'
-                                                : '<a class="btn" href="' + url('chapitre', id) + '">Relire le chapitre ' + id + '</a>') + '</div>';
-        result.classList.add('show');
-        result.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        paintScores(); applyLocks();
-      };
+      if (et.reste) {
+        pageVerrouillee({ titre: 'Nouvelle tentative bientôt', html: 'Tu pourras reprendre ce quiz dans ' + heures(et.reste) + ', avec d\'autres questions. Profites-en pour relire le chapitre ' + id + ', surtout les sections indiquées dans ton résultat.' +
+          (et.echecs === 2 ? '<br><br><strong>Attention :</strong> c\'est ta dernière tentative avant une rencontre obligatoire avec Sabrina.' : ''),
+          href: url('chapitre', id), label: 'Relire le chapitre ' + id }, 'quiz.svg');
+        return;
+      }
+      lancerQuiz(et);
+    });
+  }
+
+  function lancerQuiz(et) {
+    var id = quizEl.dataset.quiz, data = window.QUIZ_DATA[id];
+    var vues = store.get('qv:' + id) || [];
+    var themes = data.themes.map(function (t, ti) { return ti; });
+    if (themes.length > 14) themes = shuffle(themes).slice(0, 12).sort(function (a, b) { return a - b; });
+    var tirage = themes.map(function (ti) {
+      var t = data.themes[ti];
+      var choix = t.v.map(function (_, i) { return i; }).filter(function (i) { return vues.indexOf(ti + ':' + i) < 0; });
+      if (!choix.length) choix = t.v.map(function (_, i) { return i; });
+      var k = choix[Math.floor(Math.random() * choix.length)];
+      return { ti: ti, k: k, theme: t.t, q: preparer(t.v[k]) };
+    });
+    store.set('qv:' + id, tirage.map(function (x) { return x.ti + ':' + x.k; }));
+    var NQ = tirage.length, items = [];
+    if (et.echecs === 2) {
+      var av = el('div', 'callout caution');
+      av.innerHTML = '<p><strong>Dernière tentative avant une rencontre obligatoire.</strong> Si ce quiz n\'est pas réussi, il sera bloqué jusqu\'à ta rencontre avec Sabrina.</p>';
+      quizEl.appendChild(av);
     }
+    tirage.forEach(function (x, n) {
+      var card = questionCard(x.q, 'Question ' + (n + 1) + ' / ' + NQ, x.theme);
+      var item = { q: x.q, card: card, choice: null };
+      card.querySelectorAll('.opt').forEach(function (b) {
+        b.addEventListener('click', function () {
+          card.querySelectorAll('.opt').forEach(function (z) { z.classList.remove('selected'); });
+          b.classList.add('selected'); item.choice = +b.dataset.i; card.classList.remove('missing'); maj();
+        });
+      });
+      items.push(item); quizEl.appendChild(card);
+    });
+    var qbar = el('div', 'exam-bar');
+    qbar.innerHTML = '<span class="count">0 / ' + NQ + ' répondues</span><div class="track"><i></i></div>';
+    var envoyer = el('button', 'btn', 'Valider mes réponses'); envoyer.type = 'button'; qbar.appendChild(envoyer);
+    quizEl.appendChild(qbar);
+    var result = el('div', 'result'); quizEl.appendChild(result);
+    function maj() {
+      var c = items.filter(function (x) { return x.choice !== null; }).length;
+      qbar.querySelector('.count').textContent = c + ' / ' + NQ + ' répondues';
+      qbar.querySelector('.track i').style.width = (c / NQ * 100) + '%';
+    }
+    envoyer.addEventListener('click', function () {
+      var manque = items.filter(function (x) { return x.choice === null; });
+      if (manque.length) {
+        manque.forEach(function (x) { x.card.classList.add('missing'); });
+        manque[0].card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        qbar.querySelector('.count').textContent = manque.length + ' question' + (manque.length > 1 ? 's' : '') + ' sans réponse';
+        return;
+      }
+      var good = 0, sections = [];
+      items.forEach(function (x) {
+        if (x.choice === x.q.a) good++;
+        else { var lab = x.q.s || ('chapitre ' + id); if (sections.indexOf(lab) < 0) sections.push(lab); }
+      });
+      var prev = store.get('score:' + id);
+      if (!prev || good >= prev.score) store.set('score:' + id, { score: good, total: NQ });
+      enregistrerResultat('Quiz ' + id, good, NQ);
+      var ok = good / NQ >= PASS, seuil = Math.ceil(NQ * PASS - 1e-9);
+      if (!ok && !passed(id)) noterEchec('qfail:' + id);
+      if (ok) store.set('qfail:' + id, { n: 0 });
+      var echecs = (et.echecs || 0) + (ok ? 0 : 1);
+      var next = id === LASTCH ? 'examen.html' : url('chapitre', CH[CH.indexOf(id) + 1]);
+      retirerQuestions(quizEl); qbar.remove();
+      result.innerHTML = ring(good, NQ) + '<h3>' + (ok ? 'Bravo, quiz réussi !' : 'Pas encore réussi') + '</h3>' +
+        '<p>' + good + ' bonne' + (good > 1 ? 's' : '') + ' réponse' + (good > 1 ? 's' : '') + ' sur ' + NQ + ' (seuil : ' + seuil + ' sur ' + NQ + '). ' +
+        (ok ? (id === LASTCH ? 'Tous les quiz du module sont réussis : l\'examen du module est ouvert. Pense à réviser avec le cahier pratique.' : 'Le chapitre suivant est ouvert.')
+            : (passed(id) ? 'Tu avais déjà réussi ce quiz : ta meilleure note est conservée.'
+               : (echecs >= 3 ? 'Ce quiz est maintenant bloqué jusqu\'à ta rencontre avec Sabrina (elle a été avisée) : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>.'
+                              : 'Relis les sections ci-dessous. Tu pourras reprendre le quiz dans 24 heures, avec d\'autres questions.' + (echecs === 2 ? ' Attention : après un 3e échec, une rencontre avec Sabrina sera obligatoire.' : '')))) + '</p>' +
+        (!ok && sections.length ? '<div class="a-relire"><strong>À relire :</strong><ul class="bullets">' + sections.map(function (s) { return '<li>' + s.replace(/</g, '&lt;') + '</li>'; }).join('') + '</ul></div>' : '') +
+        '<div class="actions">' + (passed(id) ? '<a class="btn" href="' + next + '">' + (id === LASTCH ? 'Aller à l\'examen du module →' : 'Chapitre suivant →') + '</a>'
+                                              : '<a class="btn" href="' + url('chapitre', id) + '">Relire le chapitre ' + id + '</a>') + '</div>';
+      result.classList.add('show');
+      result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      paintScores(); applyLocks();
+    });
   }
 
   /* ---------- examen du module ---------- */
   var examEl = document.getElementById('exam'), intro = document.getElementById('examIntro'), startBtn = document.getElementById('examStart');
+  var etatExam = { echecs: 0 };
   if (examEl && window.EXAM_DATA && startBtn && !pageLock) {
-    var fe = store.get('efail') || { n: 0 };
-    var resteE = passed('exam') ? 0 : attente('efail', 48 * H);
     var best = store.get('score:exam');
     if (best) {
       var info = el('div', 'callout ' + (passed('exam') ? 'note' : 'caution'));
       info.innerHTML = '<p><strong>' + (passed('exam') ? 'Examen réussi ✓' : 'Meilleur résultat') + ' :</strong> ' + best.score + ' / ' + best.total + '.' +
-        (passed('exam') ? (+MN < LASTMOD ? ' Le module ' + (+MN + 1) + ' est ouvert. Tu peux repasser l\'examen pour t\'exercer.' : '') : '') + '</p>';
+        (passed('exam') && +MN < LASTMOD ? ' Le module ' + (+MN + 1) + ' est ouvert.' : '') + '</p>';
       intro.insertBefore(info, intro.firstChild.nextSibling);
     }
-    if (resteE) {
-      startBtn.disabled = true;
-      startBtn.textContent = 'Nouvelle tentative possible dans ' + heures(resteE);
-      var w = el('div', 'callout caution');
-      w.innerHTML = '<p>Une nouvelle tentative est possible 48 heures après un échec, avec un nouveau tirage. Relis d\'ici là les sections indiquées dans ton résultat.' +
-        (fe.n >= 2 ? ' <strong>Après deux échecs, une rencontre avec Sabrina est prévue avant la troisième tentative</strong> : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>.' : '') + '</p>';
-      intro.appendChild(w);
-    } else if (fe.n >= 2 && !passed('exam')) {
-      var w2 = el('div', 'callout caution');
-      w2.innerHTML = '<p><strong>Troisième tentative :</strong> as-tu fait ta rencontre avec Sabrina? Si ce n\'est pas fait, <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserve-la ici</a> avant de commencer.</p>';
-      intro.appendChild(w2);
+    if (passed('exam')) {
+      startBtn.disabled = true; startBtn.textContent = 'Examen réussi ✓';
+    } else {
+      startBtn.disabled = true; startBtn.textContent = 'Vérification de tes tentatives…';
+      etatTentatives('Examen du module ' + MN, 'efail', 2, 48 * H).then(function (et) {
+        etatExam = et;
+        var w = el('div', 'callout caution');
+        if (et.bloque) {
+          startBtn.textContent = '🔒 Examen bloqué';
+          w.innerHTML = '<p>' + MSG_BLOQUE('l\'examen du module ' + MN, et.echecs) + '</p>';
+          intro.appendChild(w); return;
+        }
+        if (et.reste) {
+          startBtn.textContent = 'Nouvelle tentative possible dans ' + heures(et.reste);
+          w.innerHTML = '<p>Une nouvelle tentative est possible 48 heures après un échec, avec un nouveau tirage. Relis d\'ici là les sections indiquées dans ton résultat.' +
+            (et.echecs === 1 ? ' <strong>Attention :</strong> après un 2e échec, une rencontre avec Sabrina sera obligatoire avant la tentative suivante.' : '') + '</p>';
+          intro.appendChild(w); return;
+        }
+        if (et.echecs === 1) { w.innerHTML = '<p><strong>Dernière tentative avant une rencontre obligatoire.</strong> Si l\'examen n\'est pas réussi, il sera bloqué jusqu\'à ta rencontre avec Sabrina.</p>'; intro.appendChild(w); }
+        startBtn.disabled = false; startBtn.textContent = 'Commencer l\'examen';
+      });
     }
     startBtn.addEventListener('click', function () {
       if (startBtn.disabled) return;
@@ -370,7 +454,8 @@
     if (D.cas && D.cas.length) {
       var dernier = store.get('exam:cas');
       var choix = D.cas.filter(function (x) { return x.id !== dernier; });
-      cas = (choix.length ? choix : D.cas)[Math.floor(Math.random() * (choix.length || D.cas.length))];
+      if (!choix.length) choix = D.cas;
+      cas = choix[Math.floor(Math.random() * choix.length)];
       store.set('exam:cas', cas.id);
     }
     store.set('exam:vues', TIRAGE.map(function (x) { return x.d.q; }));
@@ -420,7 +505,9 @@
       timerEl.classList.toggle('urgent', r < 5 * 60000);
       if (r <= 0) { clearInterval(tick); corriger(true); }
     }, 1000);
+    // quitter la page pendant l'examen compte comme une tentative remise
     window.addEventListener('beforeunload', function (e) { if (!fini) { e.preventDefault(); e.returnValue = ''; } });
+    window.addEventListener('pagehide', function () { if (!fini) corriger(false, true); });
     submit.addEventListener('click', function () {
       var missing = all.filter(function (x) { return x.choice === null; });
       if (missing.length) {
@@ -431,24 +518,16 @@
       }
       corriger(false);
     });
-    function corriger(tempsEcoule) {
+    function corriger(tempsEcoule, quitte) {
       if (fini) return; fini = true; clearInterval(tick);
       var score = 0, aRevoir = [], chapsRates = [];
       all.forEach(function (x) {
-        x.fini = true;
-        x.card.querySelectorAll('.opt').forEach(function (b) { b.disabled = true; });
-        var fb = el('div', 'feedback show');
-        if (x.choice === x.q.a) { score++; fb.textContent = '✓ Bonne réponse'; fb.className += ' ok'; }
-        else {
-          var lab = x.q.s || (x.c ? 'chapitre ' + x.c : '');
-          fb.textContent = '✗ Réponse incorrecte' + (x.choice === null ? ' (sans réponse)' : '') + (lab ? ' · À relire : ' + lab : '');
-          fb.className += ' ko';
-          if (lab && aRevoir.indexOf(lab) < 0) aRevoir.push(lab);
-          var cs = (x.q.s || '').match(new RegExp('\\b' + MN + '\\.(\\d+)\\.\\d+', 'g')) || [];
-          cs.forEach(function (sx) { var k = MN + '.' + sx.split('.')[1]; if (CH.indexOf(k) >= 0 && chapsRates.indexOf(k) < 0) chapsRates.push(k); });
-          if (x.c && chapsRates.indexOf(x.c) < 0) chapsRates.push(x.c);
-        }
-        x.card.appendChild(fb);
+        if (x.choice === x.q.a) { score++; return; }
+        var lab = x.q.s || (x.c ? 'chapitre ' + x.c : '');
+        if (lab && aRevoir.indexOf(lab) < 0) aRevoir.push(lab);
+        var cs = (x.q.s || '').match(new RegExp('\\b' + MN + '\\.(\\d+)\\.\\d+', 'g')) || [];
+        cs.forEach(function (sx) { var k = MN + '.' + sx.split('.')[1]; if (CH.indexOf(k) >= 0 && chapsRates.indexOf(k) < 0) chapsRates.push(k); });
+        if (x.c && chapsRates.indexOf(x.c) < 0) chapsRates.push(x.c);
       });
       var tot = all.length, ok = score / tot >= PASS;
       chapsRates.sort(function (a, b) { return +a.split('.')[1] - +b.split('.')[1]; });
@@ -456,17 +535,20 @@
       if (!prev || score >= prev.score) store.set('score:exam', { score: score, total: tot });
       enregistrerResultat('Examen du module ' + MN, score, tot);
       if (ok) { store.set('efail', { n: 0 }); store.set('arelire', []); }
-      else if (!passed('exam')) { store.set('efail', { n: (fe.n || 0) + 1, t: Date.now() }); store.set('arelire', chapsRates); }
+      else { noterEchec('efail'); store.set('arelire', chapsRates); }
+      if (quitte) return;
+      var echecs = (etatExam.echecs || 0) + (ok ? 0 : 1);
       var nextMod = +MN + 1;
       ebar.style.display = 'none';
+      retirerQuestions(examEl);
       eresult.innerHTML = ring(score, tot) +
         '<h3>' + (ok ? 'Félicitations, module ' + MN + ' réussi !' : 'Module ' + MN + ' pas encore réussi') + '</h3>' +
         (tempsEcoule ? '<p><strong>Le temps est écoulé :</strong> tes réponses ont été remises automatiquement.</p>' : '') +
         '<p>Ta note : ' + score + ' / ' + tot + ' (seuil : ' + Math.ceil(tot * PASS - 1e-9) + ' / ' + tot + ').' +
-        (ok ? (nextMod <= LASTMOD ? ' Le module ' + nextMod + ' est maintenant ouvert.' : ' Les 12 modules sont réussis! Sabrina te contacte pour la suite : l\'étude de cas finale, l\'examen final et la validation de tes stages.')
-            : ' Relis les sections indiquées ci-dessous. Tu pourras reprendre l\'examen dans 48 heures, avec un nouveau tirage, après avoir relu ' + (chapsRates.length > 1 ? 'les chapitres ' : 'le chapitre ') + chapsRates.join(', ') + '.' +
-              ((fe.n || 0) + 1 >= 2 ? ' Après deux échecs, prends rendez-vous avec Sabrina avant ta troisième tentative.' : '')) + '</p>' +
-        (aRevoir.length ? '<div class="a-relire"><strong>Sections à relire :</strong><ul class="bullets">' + aRevoir.map(function (s) { return '<li>' + s.replace(/</g, '&lt;') + '</li>'; }).join('') + '</ul></div>' : '') +
+        (ok ? (nextMod <= LASTMOD ? ' Le module ' + nextMod + ' est maintenant ouvert.' : ' Les 12 modules sont réussis ! Sabrina te contacte pour fixer ta date d\'examen final en direct (caméra ouverte), ton étude de cas finale et la validation de tes stages.')
+            : (echecs >= 2 ? ' L\'examen est maintenant bloqué jusqu\'à ta rencontre avec Sabrina (elle a été avisée) : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>. D\'ici là, relis les sections ci-dessous.'
+                           : ' Relis les sections indiquées ci-dessous. Tu pourras reprendre l\'examen dans 48 heures, avec un nouveau tirage. Attention : après un 2e échec, une rencontre avec Sabrina sera obligatoire.')) + '</p>' +
+        (aRevoir.length && !ok ? '<div class="a-relire"><strong>À relire :</strong><ul class="bullets">' + aRevoir.map(function (s) { return '<li>' + s.replace(/</g, '&lt;') + '</li>'; }).join('') + '</ul></div>' : '') +
         '<div class="actions">' + (ok ? (nextMod <= LASTMOD ? '<a class="btn" href="../module-' + nextMod + '/index.html">Passer au module ' + nextMod + ' →</a>' : '<a class="btn" href="../index.html">Accueil de la formation</a>')
                                      : (chapsRates.length ? '<a class="btn" href="' + url('chapitre', chapsRates[0]) + '">Relire le chapitre ' + chapsRates[0] + ' →</a>' : '<a class="btn" href="index.html">Revoir le module</a>')) + '</div>';
       eresult.classList.add('show');

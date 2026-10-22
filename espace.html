@@ -781,7 +781,7 @@ function afficherCours() {
       return ligneCours('Module ' + m.n + ' · ' + m.titre, ex ? '✓ Module réussi' : (verrou ? '🔒 S\'ouvre quand l\'examen du module ' + (m.n - 1) + ' est réussi' : fait + ' / ' + m.ch + ' quiz réussis'), fait, m.ch, ex,
         'Formation/doula/module-' + m.n + '/index.html', verrou ? 'Aperçu' : (fait === 0 && !ex ? 'Commencer' : (ex ? 'Revoir' : 'Continuer')));
     }).join('');
-    hd += ligneCours('Documents et outils', 'Syllabus, trousse de modèles, guide des rencontres prénatales et manuels PDF', 0, 0, false, 'Formation/doula/documents.html', 'Ouvrir');
+    hd += ligneCours('Documents et outils', 'Syllabus, trousse de modèles et guide des rencontres prénatales', 0, 0, false, 'Formation/doula/documents.html', 'Ouvrir');
     hd += ligneCours('Annexe · Repères par région', 'Numéros et ressources de chaque province, des territoires et de la France', 0, 0, false, 'Formation/doula/annexe.html', 'Ouvrir');
     $('liste-doula').innerHTML = hd;
   }

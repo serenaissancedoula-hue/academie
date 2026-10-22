@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Formation doula · déblocages</title>
+<link rel="icon" href="/icones/admin-192.png?v=2">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/securite.js"></script>
+<style>
+:root { --fond:#fbf7f2; --encre:#2c221e; --doux:#7a6f66; --terre:#a85743; --ligne:#ece3d9; --ok:#5f8570; --rouge:#b23b3b; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--fond); color:var(--encre); font:16px/1.5 Inter, "Segoe UI", system-ui, Arial, sans-serif; }
+main { max-width:820px; margin:0 auto; padding:20px 16px 60px; }
+h1 { font-family:Georgia, serif; font-size:1.6rem; margin:6px 0 4px; }
+h2 { font-family:Georgia, serif; font-size:1.2rem; margin:28px 0 10px; }
+p.doux { color:var(--doux); margin:0 0 14px; }
+a { color:var(--terre); }
+.carte { background:#fff; border:1px solid var(--ligne); border-radius:14px; padding:14px 16px; margin:0 0 12px; }
+.carte h3 { margin:0 0 4px; font-size:1rem; }
+.ligne { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; justify-content:space-between; }
+.etat { font-size:.88rem; color:var(--doux); }
+.btn { border:0; border-radius:999px; background:var(--terre); color:#fff; font:600 .9rem Inter, Arial, sans-serif; padding:9px 16px; cursor:pointer; }
+.btn[disabled] { opacity:.5; cursor:default; }
+.vide { color:var(--doux); font-style:italic; }
+table { width:100%; border-collapse:collapse; font-size:.88rem; background:#fff; border:1px solid var(--ligne); border-radius:12px; overflow:hidden; }
+th, td { text-align:left; padding:8px 10px; border-top:1px solid var(--ligne); }
+th { background:#f5ede4; border-top:0; }
+.ok { color:var(--ok); font-weight:600; } .ko { color:var(--rouge); font-weight:600; }
+.wrap { overflow-x:auto; }
+input.note { width:100%; margin-top:8px; padding:8px 10px; border:1px solid var(--ligne); border-radius:10px; font:inherit; }
+</style>
+</head>
+<body>
+<main>
+  <a href="/admin.html">← Retour à l'administration</a>
+  <h1>Formation doula · tentatives et déblocages</h1>
+  <p class="doux">Un quiz est bloqué après 3 échecs, un examen de module après 2 échecs. Après ta rencontre avec l'étudiante, clique sur « Débloquer » : elle a droit à une nouvelle série de tentatives.</p>
+  <div id="msg"></div>
+  <h2>🔒 Évaluations bloquées</h2>
+  <div id="bloques"><p class="vide">Chargement…</p></div>
+  <h2>⏳ Bientôt bloquées (une seule tentative restante)</h2>
+  <div id="presque"><p class="vide">Chargement…</p></div>
+  <h2>📋 Derniers résultats</h2>
+  <div class="wrap" id="derniers"><p class="vide">Chargement…</p></div>
+</main>
+<script>
+(function () {
+  'use strict';
+  var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co', SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
+  var sb = window.supabase.createClient(SB_URL, SB_CLE, window.SereSecurite ? SereSecurite.options() : undefined);
+  function $(id) { return document.getElementById(id); }
+  function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
+  function quand(d) { return new Date(d).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+  function seuil(ev) { return /^examen/i.test(ev) ? 2 : 3; }
+
+  function charger() {
+    return Promise.all([
+      sb.from('resultats').select('user_id,courriel,evaluation,score,total,reussi,created_at').eq('formation', 'doula').order('created_at', { ascending: true }).limit(5000),
+      sb.from('deblocages').select('user_id,evaluation,created_at').eq('formation', 'doula'),
+      sb.from('etudiantes').select('user_id,courriel,prenom,nom').eq('formation', 'doula')
+    ]).then(function (x) {
+      if (x[0].error) throw x[0].error;
+      var res = x[0].data || [], deb = x[1].data || [], etu = x[2].data || [];
+      function nom(uid, courriel) {
+        var e = etu.filter(function (y) { return y.user_id === uid || (y.courriel || '').toLowerCase() === (courriel || '').toLowerCase(); })[0];
+        return e ? ((e.prenom || '') + ' ' + (e.nom || '')).trim() || e.courriel : courriel;
+      }
+      var groupes = {};
+      res.forEach(function (r) { var k = r.user_id + '|' + r.evaluation; (groupes[k] = groupes[k] || []).push(r); });
+      var bloques = [], presque = [];
+      Object.keys(groupes).forEach(function (k) {
+        var l = groupes[k], u = l[0].user_id, ev = l[0].evaluation;
+        if (l.some(function (r) { return r.reussi; })) return;
+        var d = deb.filter(function (y) { return y.user_id === u && y.evaluation === ev; }).map(function (y) { return new Date(y.created_at).getTime(); });
+        var depuis = d.length ? Math.max.apply(null, d) : 0;
+        var echecs = l.filter(function (r) { return !r.reussi && new Date(r.created_at).getTime() > depuis; });
+        var item = { u: u, ev: ev, nom: nom(u, l[0].courriel), courriel: l[0].courriel, echecs: echecs, n: echecs.length, s: seuil(ev) };
+        if (item.n >= item.s) bloques.push(item); else if (item.n === item.s - 1) presque.push(item);
+      });
+      afficher($('bloques'), bloques, true);
+      afficher($('presque'), presque, false);
+      var der = res.slice(-40).reverse();
+      $('derniers').innerHTML = der.length ? '<table><tr><th>Quand</th><th>Étudiante</th><th>Évaluation</th><th>Note</th></tr>' + der.map(function (r) {
+        return '<tr><td>' + esc(quand(r.created_at)) + '</td><td>' + esc(nom(r.user_id, r.courriel)) + '</td><td>' + esc(r.evaluation) + '</td><td class="' + (r.reussi ? 'ok' : 'ko') + '">' + (+r.score) + '/' + (+r.total) + (r.reussi ? ' ✓' : '') + '</td></tr>';
+      }).join('') + '</table>' : '<p class="vide">Aucun résultat pour le moment.</p>';
+    }).catch(function (e) {
+      $('msg').innerHTML = '<div class="carte">Connecte-toi d\'abord à <a href="/admin.html">l\'administration</a>, puis reviens sur cette page. (' + esc(e.message || e) + ')</div>';
+    });
+  }
+
+  function afficher(boite, liste, bouton) {
+    if (!liste.length) { boite.innerHTML = '<p class="vide">Aucune pour le moment.</p>'; return; }
+    boite.innerHTML = '';
+    liste.forEach(function (it) {
+      var c = document.createElement('div'); c.className = 'carte';
+      c.innerHTML = '<div class="ligne"><div><h3>' + esc(it.nom) + ' · ' + esc(it.ev) + '</h3><div class="etat">' + it.n + ' échec' + (it.n > 1 ? 's' : '') + ' : ' +
+        it.echecs.map(function (r) { return (+r.score) + '/' + (+r.total) + ' (' + esc(quand(r.created_at)) + ')'; }).join(' · ') + '</div></div>' +
+        (bouton ? '<button class="btn" type="button">Débloquer</button>' : '') + '</div>' +
+        (bouton ? '<input class="note" maxlength="300" placeholder="Note (facultatif) : date de la rencontre, points revus…">' : '');
+      if (bouton) c.querySelector('.btn').addEventListener('click', function () {
+        var b = this; b.disabled = true;
+        sb.from('deblocages').insert({ user_id: it.u, formation: 'doula', evaluation: it.ev, note: c.querySelector('.note').value.trim() || null }).then(function (r) {
+          if (r.error) { b.disabled = false; alert('Le déblocage n\'a pas fonctionné : ' + r.error.message); return; }
+          c.innerHTML = '<div class="etat">✅ ' + esc(it.nom) + ' · ' + esc(it.ev) + ' débloqué. Elle peut faire une nouvelle tentative.</div>';
+        });
+      });
+      boite.appendChild(c);
+    });
+  }
+
+  sb.auth.getSession().then(function (r) {
+    if (!r.data || !r.data.session) { $('msg').innerHTML = '<div class="carte">Connecte-toi d\'abord à <a href="/admin.html">l\'administration</a>, puis reviens sur cette page.</div>'; ['bloques', 'presque', 'derniers'].forEach(function (i) { $(i).innerHTML = ''; }); return; }
+    charger();
+  });
+})();
+</script>
+</body>
+</html>
