@@ -56,8 +56,13 @@
   }
   function texte(sb, v) {
     if (cache.textes[v]) return Promise.resolve(cache.textes[v]);
-    return sb.from('textes_consentement').select('texte').eq('version', v).maybeSingle().then(function (r) {
-      var t = r && r.data && r.data.texte; if (t) cache.textes[v] = t; return t || '';
+    // Texte de l'entente avec le nom et les coordonnées de l'étudiante (tirés de son compte)
+    return sb.rpc('entente_personnalisee', { p_version: v }).then(function (r) {
+      var t = r && !r.error && r.data;
+      if (t) { cache.textes[v] = t; return t; }
+      return sb.from('textes_consentement').select('texte').eq('version', v).maybeSingle().then(function (r2) {
+        var t2 = r2 && r2.data && r2.data.texte; if (t2) cache.textes[v] = t2; return t2 || '';
+      });
     });
   }
   function imprimer(titre, corps) {

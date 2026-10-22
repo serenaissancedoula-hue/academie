@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Formation doula · déblocages</title>
+<title>Formation doula · examens et tentatives</title>
 <link rel="icon" href="/icones/admin-192.png?v=2">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/securite.js"></script>
@@ -29,15 +29,48 @@ th, td { text-align:left; padding:8px 10px; border-top:1px solid var(--ligne); }
 th { background:#f5ede4; border-top:0; }
 .ok { color:var(--ok); font-weight:600; } .ko { color:var(--rouge); font-weight:600; }
 .wrap { overflow-x:auto; }
+.grille { display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin-bottom:12px; }
+.grille label { display:flex; flex-direction:column; gap:4px; font-size:.85rem; font-weight:600; }
+.grille label.large { grid-column:1 / -1; }
+.grille input, .grille select { padding:8px 10px; border:1px solid var(--ligne); border-radius:10px; font:inherit; font-weight:400; background:#fff; }
+@media (max-width:600px) { .grille { grid-template-columns:1fr; } }
+.btn.secondaire { background:#fff; color:var(--terre); border:1px solid var(--terre); }
 input.note { width:100%; margin-top:8px; padding:8px 10px; border:1px solid var(--ligne); border-radius:10px; font:inherit; }
 </style>
 </head>
 <body>
 <main>
   <a href="/admin.html">← Retour à l'administration</a>
-  <h1>Formation doula · tentatives et déblocages</h1>
-  <p class="doux">Un quiz est bloqué après 3 échecs, un examen de module après 2 échecs. Après ta rencontre avec l'étudiante, clique sur « Débloquer » : elle a droit à une nouvelle série de tentatives.</p>
+  <h1>Formation doula · examens et tentatives</h1>
+  <p class="doux">Un quiz est bloqué après 3 échecs, un examen de module après 2 échecs. Si l'étudiante ferme la page pendant une évaluation, ça compte comme un essai. Tu peux toujours lui redonner une chance ici : elle reçoit un courriel et peut recommencer tout de suite, sans délai d'attente.</p>
   <div id="msg"></div>
+  <h2>📅 Planifier un examen en direct</h2>
+  <div class="carte">
+    <p class="doux" style="margin-bottom:10px">L'examen final (2 h) n'est visible pour l'étudiante que pendant sa séance : de 15 minutes avant l'heure fixée jusqu'à la fin de la durée prévue. Elle reçoit un courriel dès que tu enregistres la date, puis un rappel la veille et une heure avant.</p>
+    <div class="grille">
+      <label>Étudiante<select id="pl-etu"><option value="">Chargement…</option></select></label>
+      <label>Évaluation<select id="pl-ev"></select></label>
+      <label>Date et heure (heure de ton appareil)<input type="datetime-local" id="pl-debut"></label>
+      <label>Durée (minutes)<input type="number" id="pl-duree" min="15" max="600" value="120"></label>
+      <label class="large">Lien de la visio (facultatif)<input type="url" id="pl-lien" placeholder="https://…"></label>
+    </div>
+    <button class="btn" type="button" id="pl-ok">Enregistrer et envoyer le courriel</button>
+    <div id="pl-msg" class="etat" style="margin-top:8px"></div>
+  </div>
+  <div id="planifies"><p class="vide">Chargement…</p></div>
+  <h2>🔓 Redonner une chance</h2>
+  <div class="carte">
+    <p class="doux" style="margin-bottom:10px">Par exemple après un bogue, une coupure Internet ou un ordinateur qu'elle a dû redémarrer. La tentative en cours est annulée sans compter, les échecs sont remis à zéro et l'attente de 24 h / 48 h est levée. Écris toujours le motif : il reste au dossier.</p>
+    <div class="grille">
+      <label>Étudiante<select id="rc-etu"><option value="">Chargement…</option></select></label>
+      <label>Évaluation<select id="rc-ev"></select></label>
+      <label class="large">Motif (obligatoire)<input type="text" id="rc-note" maxlength="300" placeholder="Ex. : coupure Internet à 14 h 32, constatée en visio"></label>
+    </div>
+    <button class="btn" type="button" id="rc-ok">Redonner une chance</button>
+    <div id="rc-msg" class="etat" style="margin-top:8px"></div>
+  </div>
+  <h2>⏱️ Tentatives en cours</h2>
+  <div id="encours"><p class="vide">Chargement…</p></div>
   <h2>🔒 Évaluations bloquées</h2>
   <div id="bloques"><p class="vide">Chargement…</p></div>
   <h2>⏳ Bientôt bloquées (une seule tentative restante)</h2>
@@ -101,18 +134,107 @@ input.note { width:100%; margin-top:8px; padding:8px 10px; border:1px solid var(
         (bouton ? '<input class="note" maxlength="300" placeholder="Note (facultatif) : date de la rencontre, points revus…">' : '');
       if (bouton) c.querySelector('.btn').addEventListener('click', function () {
         var b = this; b.disabled = true;
-        sb.from('deblocages').insert({ user_id: it.u, formation: 'doula', evaluation: it.ev, note: c.querySelector('.note').value.trim() || null }).then(function (r) {
+        sb.rpc('admin_redonner_chance', { p_user: it.u, p_evaluation: it.ev, p_note: c.querySelector('.note').value.trim() || null }).then(function (r) {
           if (r.error) { b.disabled = false; alert('Le déblocage n\'a pas fonctionné : ' + r.error.message); return; }
-          c.innerHTML = '<div class="etat">✅ ' + esc(it.nom) + ' · ' + esc(it.ev) + ' débloqué. Elle peut faire une nouvelle tentative.</div>';
+          c.innerHTML = '<div class="etat">✅ ' + esc(it.nom) + ' · ' + esc(it.ev) + ' débloqué. Elle a reçu un courriel et peut faire une nouvelle tentative.</div>';
         });
       });
       boite.appendChild(c);
     });
   }
 
+  /* ---------- examens en direct, nouvelle chance, tentatives en cours ---------- */
+  var ETU = [];
+  var EVALS = ['Examen final'];
+  for (var i = 1; i <= 12; i++) EVALS.push('Examen du module ' + i);
+  function nomEtu(uid) { var e = ETU.filter(function (x) { return x.user_id === uid; })[0]; return e ? (((e.prenom || '') + ' ' + (e.nom || '')).trim() || e.courriel) : uid; }
+  function options(sel, liste, val, lib) { sel.innerHTML = liste.map(function (x) { return '<option value="' + esc(val(x)) + '">' + esc(lib(x)) + '</option>'; }).join(''); }
+  function chargerOutils() {
+    return Promise.all([
+      sb.from('etudiantes').select('user_id,courriel,prenom,nom').eq('formation', 'doula').not('user_id', 'is', null).order('prenom'),
+      sb.from('doula_corrige').select('evaluation')
+    ]).then(function (x) {
+      ETU = (x[0].data || []);
+      var tous = EVALS.slice();
+      (x[1].data || []).map(function (r) { return r.evaluation; }).filter(function (e) { return /^Quiz/.test(e); })
+        .sort(function (a, b) { var p = a.slice(5).split('.').map(Number), q = b.slice(5).split('.').map(Number); return p[0] - q[0] || p[1] - q[1]; })
+        .forEach(function (e) { tous.push(e); });
+      var vide = [{ user_id: '', prenom: ETU.length ? '— Choisis une étudiante —' : 'Aucune étudiante doula', nom: '' }];
+      [$('pl-etu'), $('rc-etu')].forEach(function (s) { options(s, vide.concat(ETU), function (e) { return e.user_id; }, function (e) { return e.user_id ? (nomEtu(e.user_id) + ' (' + (e.courriel || '') + ')') : e.prenom; }); });
+      options($('pl-ev'), EVALS, function (e) { return e; }, function (e) { return e; });
+      options($('rc-ev'), tous, function (e) { return e; }, function (e) { return e; });
+      return Promise.all([chargerPlanifies(), chargerEnCours()]);
+    });
+  }
+  function chargerPlanifies() {
+    return sb.from('examens_planifies').select('*').order('debut', { ascending: true }).then(function (r) {
+      var l = (r.data || []).filter(function (x) { return new Date(x.debut).getTime() + x.duree_min * 60000 > Date.now() - 86400000; });
+      if (!l.length) { $('planifies').innerHTML = '<p class="vide">Aucun examen planifié.</p>'; return; }
+      $('planifies').innerHTML = '';
+      l.forEach(function (x) {
+        var c = document.createElement('div'); c.className = 'carte';
+        c.innerHTML = '<div class="ligne"><div><h3>' + esc(nomEtu(x.user_id)) + ' · ' + esc(x.evaluation) + '</h3><div class="etat">' + esc(quand(x.debut)) + ' · ' + x.duree_min + ' min' + (x.lien ? ' · <a href="' + esc(x.lien) + '" target="_blank" rel="noopener">lien visio</a>' : '') + '</div></div><button class="btn secondaire" type="button">Annuler</button></div>';
+        c.querySelector('button').addEventListener('click', function () {
+          if (!confirm('Annuler cet examen ? L\'étudiante recevra un courriel.')) return;
+          var b = this; b.disabled = true;
+          sb.rpc('annuler_examen', { p_id: x.id }).then(function (r) { if (r.error) { b.disabled = false; alert(r.error.message); return; } chargerPlanifies(); });
+        });
+        $('planifies').appendChild(c);
+      });
+    });
+  }
+  function chargerEnCours() {
+    return sb.from('doula_tentatives').select('id,user_id,evaluation,debut,limite').is('remise', null).order('debut', { ascending: false }).limit(50).then(function (r) {
+      var l = r.data || [];
+      if (!l.length) { $('encours').innerHTML = '<p class="vide">Aucune tentative en cours.</p>'; return; }
+      $('encours').innerHTML = '';
+      l.forEach(function (t) {
+        var c = document.createElement('div'); c.className = 'carte';
+        var fin = t.limite ? (new Date(t.limite) < new Date() ? ' · temps écoulé' : ' · se termine à ' + esc(quand(t.limite))) : '';
+        c.innerHTML = '<div class="ligne"><div><h3>' + esc(nomEtu(t.user_id)) + ' · ' + esc(t.evaluation) + '</h3><div class="etat">Commencée ' + esc(quand(t.debut)) + fin + '</div></div><button class="btn secondaire" type="button">Annuler sans compter</button></div>' +
+          '<input class="note" maxlength="300" placeholder="Motif (obligatoire) : bogue, coupure, ordinateur redémarré…">';
+        c.querySelector('button').addEventListener('click', function () {
+          var note = c.querySelector('.note').value.trim(); if (!note) { c.querySelector('.note').focus(); return; }
+          var b = this; b.disabled = true;
+          sb.rpc('admin_redonner_chance', { p_user: t.user_id, p_evaluation: t.evaluation, p_note: note }).then(function (r) {
+            if (r.error) { b.disabled = false; alert(r.error.message); return; }
+            c.innerHTML = '<div class="etat">✅ Tentative annulée sans compter. ' + esc(nomEtu(t.user_id)) + ' a reçu un courriel et peut recommencer.</div>';
+          });
+        });
+        $('encours').appendChild(c);
+      });
+    });
+  }
+  $('pl-ok').addEventListener('click', function () {
+    var u = $('pl-etu').value, ev = $('pl-ev').value, d = $('pl-debut').value, du = parseInt($('pl-duree').value, 10) || 120, li = $('pl-lien').value.trim();
+    if (!u || !d) { $('pl-msg').textContent = 'Choisis une étudiante et une date.'; return; }
+    if (li && !/^https:\/\//i.test(li)) { $('pl-msg').textContent = 'Le lien doit commencer par https://'; return; }
+    var b = this; b.disabled = true; $('pl-msg').textContent = 'Enregistrement…';
+    sb.rpc('planifier_examen', { p_user: u, p_evaluation: ev, p_debut: new Date(d).toISOString(), p_lien: li || null, p_duree: du }).then(function (r) {
+      b.disabled = false;
+      if (r.error) { $('pl-msg').textContent = '⚠️ ' + r.error.message; return; }
+      $('pl-msg').textContent = '✅ Examen planifié. ' + nomEtu(u) + ' a reçu un courriel.';
+      chargerPlanifies();
+    });
+  });
+  $('pl-ev').addEventListener('change', function () { $('pl-duree').value = /final/i.test(this.value) ? 120 : 45; });
+  $('rc-ok').addEventListener('click', function () {
+    var u = $('rc-etu').value, ev = $('rc-ev').value, note = $('rc-note').value.trim();
+    if (!u) { $('rc-msg').textContent = 'Choisis une étudiante.'; return; }
+    if (!note) { $('rc-msg').textContent = 'Écris le motif : il reste au dossier.'; $('rc-note').focus(); return; }
+    var b = this; b.disabled = true; $('rc-msg').textContent = 'Envoi…';
+    sb.rpc('admin_redonner_chance', { p_user: u, p_evaluation: ev, p_note: note }).then(function (r) {
+      b.disabled = false;
+      if (r.error) { $('rc-msg').textContent = '⚠️ ' + r.error.message; return; }
+      $('rc-msg').textContent = '✅ Nouvelle chance accordée pour « ' + ev + ' ». ' + nomEtu(u) + ' a reçu un courriel.';
+      $('rc-note').value = ''; charger(); chargerEnCours();
+    });
+  });
+
   sb.auth.getSession().then(function (r) {
     if (!r.data || !r.data.session) { $('msg').innerHTML = '<div class="carte">Connecte-toi d\'abord à <a href="/admin.html">l\'administration</a>, puis reviens sur cette page.</div>'; ['bloques', 'presque', 'derniers'].forEach(function (i) { $(i).innerHTML = ''; }); return; }
     charger();
+    chargerOutils().catch(function (e) { $('pl-msg').textContent = '⚠️ ' + (e.message || e); });
   });
 })();
 </script>
