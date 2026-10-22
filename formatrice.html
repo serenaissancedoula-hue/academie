@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Formatrices · Académie Sérénaissance</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/icones/favicon-64.png?v=2">
+<link rel="manifest" href="/formatrice.webmanifest">
+<meta name="theme-color" content="#6b4a3c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Formatrices">
+<link rel="apple-touch-icon" href="/icones/apple-touch-icon.png?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/securite.js"></script>
+<script src="/reglages.js"></script>
+<script src="/appli.js" defer></script>
+<style>
+:root { --bg: #f7f1ea; --texte: #2c221e; --doux: #7a685e; --terra: #a85743; --brun: #6b4a3c; --carte: #fffbf8; --bord: #e3d5c8; --vert: #2f6b2a; --rouge: #b23b2e; --ambre: #9a6a12; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', Arial, sans-serif; background: var(--bg); color: var(--texte); line-height: 1.55; min-height: 100vh; }
+a { color: var(--terra); }
+h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; line-height: 1.25; }
+h1 { font-size: 1.6rem; margin-bottom: 4px; }
+h2 { font-size: 1.25rem; margin: 22px 0 10px; }
+.entete { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; background: var(--bg); border-bottom: 1px solid var(--bord); position: sticky; top: 0; z-index: 20; }
+.entete img { height: 44px; mix-blend-mode: darken; }
+.entete .role { font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--brun); background: #efe2d8; border-radius: 50px; padding: 4px 10px; }
+main { max-width: 720px; margin: 0 auto; padding: 22px 16px 110px; }
+.vue[hidden], [hidden] { display: none !important; }
+.sous { color: var(--doux); margin-bottom: 16px; font-size: .92rem; }
+.carte { background: var(--carte); border: 1px solid var(--bord); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+form { display: flex; flex-direction: column; gap: 12px; }
+label.champ { display: flex; flex-direction: column; gap: 5px; font-size: .88rem; font-weight: 600; }
+input, select, textarea { font: inherit; font-weight: 400; padding: 11px 13px; border: 1px solid var(--bord); border-radius: 12px; background: #fff; color: var(--texte); width: 100%; }
+textarea { resize: vertical; }
+.rang { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--terra); color: #fff; border: 0; border-radius: 50px; padding: 12px 22px; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; font-size: .92rem; }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn.fantome { background: #fff; color: var(--terra); border: 1.5px solid var(--terra); }
+.btn.petit { padding: 8px 14px; font-size: .84rem; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.note { font-size: .8rem; color: var(--doux); font-weight: 400; }
+.message { border-radius: 14px; padding: 12px 14px; font-size: .9rem; margin-bottom: 14px; }
+.message.ok { background: #eef5ec; border: 1px solid #cfe3ca; color: var(--vert); }
+.message.info { background: #fbf5ef; border: 1px solid var(--bord); }
+.message.erreur { background: #fbeeea; border: 1px solid #e3b5a8; color: #8c4434; }
+.camera { background: #fbf3ee; border: 1px solid #f0d5c8; border-radius: 12px; padding: 10px 12px; font-size: .84rem; color: #8c3f2c; margin-bottom: 14px; }
+/* Ateliers */
+.at { background: #fff; border: 1px solid var(--bord); border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+.at-quand { font-weight: 700; color: var(--terra); font-size: .88rem; }
+.at-titre { font-weight: 700; margin: 3px 0; }
+.at-info { font-size: .82rem; color: var(--doux); word-break: break-word; }
+.tag { display: inline-block; font-size: .72rem; font-weight: 700; background: #f6e7df; color: #8c3f2c; border-radius: 50px; padding: 2px 9px; margin-right: 6px; }
+.etat { display: inline-block; font-size: .74rem; font-weight: 700; border-radius: 50px; padding: 3px 10px; margin-top: 8px; }
+.etat.afaire { background: #fff4e0; color: var(--ambre); }
+.etat.soumis { background: #eef1fb; color: #34508c; }
+.etat.revoir { background: #fbeeea; color: var(--rouge); }
+.etat.valide { background: #eef5ec; color: var(--vert); }
+.at .actions { margin-top: 10px; }
+/* Présences */
+.eleve { background: #fff; border: 1px solid var(--bord); border-radius: 14px; padding: 12px; margin-bottom: 8px; }
+.eleve-nom { font-weight: 700; margin-bottom: 8px; }
+.choix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.choix button { border: 1.5px solid var(--bord); background: #fff; border-radius: 10px; padding: 8px 4px; font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; color: var(--doux); }
+.choix button.on[data-s="presente"] { background: #eef5ec; border-color: #9cc796; color: var(--vert); }
+.choix button.on[data-s="retard"] { background: #fff4e0; border-color: #e8c98f; color: var(--ambre); }
+.choix button.on[data-s="absente"] { background: #fbeeea; border-color: #e3b5a8; color: var(--rouge); }
+.choix button:disabled { cursor: default; }
+.eleve .case { display: flex; gap: 8px; align-items: center; font-size: .86rem; margin-top: 8px; }
+.eleve .case input { width: auto; }
+.eleve textarea { margin-top: 8px; font-size: .88rem; }
+.resume-cr { display: flex; gap: 10px; flex-wrap: wrap; font-size: .86rem; font-weight: 700; margin: 4px 0 12px; }
+/* Messages */
+.conv { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--bord); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; }
+.conv small { display: block; color: var(--doux); font-size: .78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62vw; }
+.pastille { min-width: 22px; height: 22px; border-radius: 50px; background: #d64545; color: #fff; font-size: .72rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; }
+.bulles { min-height: 240px; max-height: calc(100vh - 330px); overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; background: var(--carte); border: 1px solid var(--bord); border-radius: 18px 18px 0 0; }
+.bulle { max-width: 82%; padding: 9px 13px; border-radius: 16px; font-size: .93rem; white-space: pre-wrap; word-wrap: break-word; }
+.bulle small { display: block; font-size: .68rem; opacity: .7; margin-top: 3px; }
+.bulle.moi { align-self: flex-end; background: var(--terra); color: #fff; border-bottom-right-radius: 4px; }
+.bulle.elle { align-self: flex-start; background: #fff; border: 1px solid var(--bord); border-bottom-left-radius: 4px; }
+.saisie { display: flex; flex-direction: row; align-items: flex-end; gap: 8px; padding: 10px; border: 1px solid var(--bord); border-top: 0; border-radius: 0 0 18px 18px; background: var(--carte); }
+.saisie textarea { border-radius: 18px; max-height: 140px; }
+.saisie .btn { border-radius: 50%; width: 46px; height: 46px; padding: 0; flex-shrink: 0; }
+.vide { text-align: center; color: var(--doux); font-style: italic; padding: 16px 6px; font-size: .9rem; }
+/* Navigation du bas */
+.nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; background: var(--carte); border-top: 1px solid var(--bord); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+.nav button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: 0; font: inherit; font-size: .72rem; font-weight: 700; color: var(--doux); cursor: pointer; padding: 6px 2px; border-radius: 10px; position: relative; }
+.nav button span { font-size: 1.3rem; }
+.nav button.actif { color: var(--terra); background: #f3e5dc; }
+.nav .pastille { position: absolute; top: 0; right: 22%; min-width: 18px; height: 18px; font-size: .64rem; }
+.toast { position: fixed; left: 50%; bottom: 86px; transform: translateX(-50%) translateY(20px); background: var(--texte); color: #fff; padding: 10px 18px; border-radius: 50px; font-size: .88rem; opacity: 0; pointer-events: none; transition: .25s; z-index: 50; max-width: 90vw; text-align: center; }
+.toast.voir { opacity: 1; transform: translateX(-50%) translateY(0); }
+@media (max-width: 520px) { .rang { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="entete">
+  <img src="/logo.jpg" alt="Académie Sérénaissance">
+  <span class="role">Formatrices</span>
+</header>
+
+<main>
+  <!-- Connexion -->
+  <section class="vue" id="vue-connexion" hidden>
+    <h1>Espace formatrices</h1>
+    <p class="sous">Planifie tes ateliers, prends les présences, envoie ton compte rendu à Sabrina et réponds aux étudiantes.</p>
+    <div id="msg-connexion"></div>
+    <div class="carte">
+      <form id="form-connexion">
+        <label class="champ">Courriel<input type="email" id="c-courriel" required autocomplete="email"></label>
+        <label class="champ">Mot de passe<input type="password" id="c-mdp" required autocomplete="current-password"></label>
+        <button class="btn" type="submit" id="c-bouton">Me connecter</button>
+      </form>
+      <p class="note" style="margin-top:12px;"><a href="#" id="lien-oubli">Mot de passe oublié ?</a> · <a href="#" id="lien-creer">Première connexion : créer mon mot de passe</a></p>
+    </div>
+    <div class="carte" id="carte-creer" hidden>
+      <h3 style="margin-bottom:6px;">Créer mon accès</h3>
+      <p class="note" style="margin-bottom:10px;">Utilise le courriel que Sabrina a inscrit pour toi. Tu recevras un courriel pour confirmer ton adresse.</p>
+      <form id="form-creer">
+        <label class="champ">Courriel<input type="email" id="n-courriel" required autocomplete="email"></label>
+        <div class="rang">
+          <label class="champ">Mot de passe<input type="password" id="n-mdp" required autocomplete="new-password"></label>
+          <label class="champ">Répète-le<input type="password" id="n-mdp2" required autocomplete="new-password"></label>
+        </div>
+        <p class="note">Au moins 8 caractères, avec une majuscule, une minuscule et un chiffre.</p>
+        <button class="btn" type="submit" id="n-bouton">Créer mon accès</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Lien reçu par courriel -->
+  <section class="vue" id="vue-confirmation" hidden>
+    <h1 id="conf-titre">Confirmer mon adresse</h1>
+    <p class="sous" id="conf-texte">Clique sur le bouton pour confirmer ton adresse courriel.</p>
+    <div id="msg-confirmation"></div>
+    <button class="btn" type="button" id="conf-bouton">Confirmer ✓</button>
+  </section>
+
+  <!-- Nouveau mot de passe -->
+  <section class="vue" id="vue-mdp" hidden>
+    <h1>Nouveau mot de passe</h1>
+    <div id="msg-mdp"></div>
+    <div class="carte">
+      <form id="form-mdp">
+        <label class="champ">Nouveau mot de passe<input type="password" id="m-1" required autocomplete="new-password"></label>
+        <label class="champ">Répète-le<input type="password" id="m-2" required autocomplete="new-password"></label>
+        <button class="btn" type="submit" id="m-bouton">Enregistrer</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Ateliers -->
+  <section class="vue" id="vue-ateliers" hidden>
+    <h1 id="bonjour">Mes ateliers</h1>
+    <p class="sous">Tes ateliers en direct, les présences et tes comptes rendus.</p>
+    <div class="camera">📹 Rappel : les étudiantes doivent garder leur caméra ouverte en tout temps, sauf exception accordée par la direction. Note-le dans les présences si une caméra reste fermée.</div>
+    <div class="actions" style="margin-bottom:12px;"><button class="btn" type="button" id="btn-nouveau">➕ Planifier un atelier</button></div>
+    <div class="carte" id="carte-form" hidden>
+      <h3 style="margin-bottom:8px;" id="form-titre">Planifier un atelier</h3>
+      <form id="form-atelier">
+        <label class="champ">Formation<select id="a-formation"></select></label>
+        <label class="champ">Titre<input id="a-titre" maxlength="140" required placeholder="Ex. Atelier allaitement · mise au sein"></label>
+        <div class="rang">
+          <label class="champ">Date et heure<input type="datetime-local" id="a-debut" required></label>
+          <label class="champ">Durée<select id="a-duree"><option value="60">1 h</option><option value="90">1 h 30</option><option value="120" selected>2 h</option><option value="150">2 h 30</option><option value="180">3 h</option><option value="240">4 h</option></select></label>
+        </div>
+        <label class="champ">Lien Zoom, Meet ou Teams<input type="url" id="a-lien" maxlength="500" placeholder="https://…"></label>
+        <label class="champ">Description <span class="note">(facultatif : à préparer, matériel…)</span><textarea id="a-desc" rows="3" maxlength="2000"></textarea></label>
+        <p class="note">L'heure est celle de ton appareil ; chaque étudiante la voit dans son propre fuseau. Les étudiantes reçoivent une notification, puis un rappel la veille et 1 heure avant.</p>
+        <div class="actions"><button class="btn" type="submit" id="a-bouton">Enregistrer l'atelier</button><button class="btn fantome" type="button" id="a-annuler">Annuler</button></div>
+      </form>
+    </div>
+    <div id="liste-ateliers"><div class="vide">Chargement…</div></div>
+  </section>
+
+  <!-- Présences et compte rendu -->
+  <section class="vue" id="vue-cr" hidden>
+    <p style="margin-bottom:8px;"><a href="#ateliers">← Mes ateliers</a></p>
+    <h1 id="cr-titre">Compte rendu</h1>
+    <p class="sous" id="cr-quand"></p>
+    <div id="cr-etat"></div>
+    <h2>Présences</h2>
+    <p class="note" style="margin-bottom:10px;">Chaque choix s'enregistre aussitôt. Les étudiantes ne voient leur présence qu'après la validation de Sabrina. Les notes restent privées (toi et Sabrina seulement).</p>
+    <div class="resume-cr" id="cr-compte"></div>
+    <div id="cr-eleves"></div>
+    <h2>Compte rendu</h2>
+    <form id="form-cr">
+      <label class="champ">Résumé de l'atelier <span class="note">(ce qui a été vu, questions des étudiantes)</span><textarea id="cr-resume" rows="5" maxlength="6000" required></textarea></label>
+      <label class="champ">Observations et suivis <span class="note">(facultatif : incidents, caméras, étudiante à soutenir, suivi à faire…)</span><textarea id="cr-obs" rows="4" maxlength="6000"></textarea></label>
+      <button class="btn" type="submit" id="cr-bouton">📤 Envoyer le compte rendu à Sabrina</button>
+    </form>
+  </section>
+
+  <!-- Messages -->
+  <section class="vue" id="vue-messages" hidden>
+    <h1>Messages</h1>
+    <p class="sous">Les étudiantes de tes formations peuvent t'écrire ici. Sabrina peut consulter les échanges.</p>
+    <div id="liste-conv"><div class="vide">Chargement…</div></div>
+  </section>
+  <section class="vue" id="vue-chat" hidden>
+    <p style="margin-bottom:8px;"><a href="#messages">← Messages</a></p>
+    <h2 id="chat-nom" style="margin-top:0;"></h2>
+    <div class="bulles" id="bulles"></div>
+    <form class="saisie" id="form-chat">
+      <textarea id="chat-texte" rows="1" maxlength="4000" placeholder="Écris ta réponse…" required></textarea>
+      <button class="btn" type="submit" aria-label="Envoyer">➤</button>
+    </form>
+  </section>
+
+  <!-- Réglages -->
+  <section class="vue" id="vue-reglages" hidden>
+    <h1>Réglages</h1>
+    <div class="carte"><h3 style="margin-bottom:8px;">🔔 Notifications</h3><div id="rg"></div></div>
+    <div class="carte"><h3 style="margin-bottom:8px;">📲 L'appli Formatrices</h3><div class="bloc-appli"></div></div>
+    <div class="carte">
+      <p class="note" style="margin-bottom:10px;" id="qui"></p>
+      <button class="btn fantome" type="button" id="btn-sortir">Me déconnecter</button>
+    </div>
+  </section>
+</main>
+
+<nav class="nav" id="nav" hidden>
+  <button data-v="ateliers" class="actif"><span>🎥</span>Ateliers</button>
+  <button data-v="messages"><span>💬</span>Messages<i class="pastille" id="nb-msg" hidden></i></button>
+  <button data-v="reglages"><span>⚙️</span>Réglages</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+'use strict';
+var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co', SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
+var VAPID = 'BA1eSxrp55R_nk6-rHpCI0Pi6OjPh-0MIOmlG2XZOLEptXG0xFUS4eB9aKAl3qQelLJqfouEq3FXWkYf02YhKMc';
+var ICI = 'https://academiesere.ca/formatrice.html';
+var sb = window.supabase.createClient(SB_URL, SB_CLE, window.SereSecurite ? SereSecurite.options() : undefined);
+var NOMS = { doula: 'Doula de base', '4e-trimestre': '4ᵉ trimestre', marraine: 'Marraine d\'allaitement', toutes: 'Toutes les formations' };
+var S = { session: null, fiche: null, ateliers: [], cr: {}, atelier: null, eleves: [], pres: {}, notes: {}, chat: null, etudiantes: [], msgs: [], gardien: null, reglages: false, minuterie: null };
+
+function $(id) { return document.getElementById(id); }
+function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
+function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('voir'); clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove('voir'); }, 3000); }
+function message(id, genre, html) { $(id).innerHTML = html ? '<div class="message ' + genre + '">' + html + '</div>' : ''; }
+function quand(d) { var t = new Date(d).toLocaleString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }); return t.charAt(0).toUpperCase() + t.slice(1); }
+function heure(d) { return new Date(d).toLocaleString('fr-CA', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }); }
+function fin(a) { return new Date(new Date(a.debut).getTime() + a.duree_min * 60000); }
+function lienSur(u) { return /^https:\/\/[^\s<>"]+$/i.test(u || '') ? u : ''; }
+function localInput(d) { var x = new Date(d), p = function (n) { return (n < 10 ? '0' : '') + n; }; return x.getFullYear() + '-' + p(x.getMonth() + 1) + '-' + p(x.getDate()) + 'T' + p(x.getHours()) + ':' + p(x.getMinutes()); }
+function mdpValide(m) { return m.length >= 8 && /[A-Z]/.test(m) && /[a-z]/.test(m) && /\d/.test(m); }
+
+function vue(nom) {
+  document.querySelectorAll('.vue').forEach(function (v) { v.hidden = v.id !== 'vue-' + nom; });
+  var onglet = nom === 'cr' ? 'ateliers' : nom === 'chat' ? 'messages' : nom;
+  document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('actif', b.dataset.v === onglet); });
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('.nav button').forEach(function (b) { b.addEventListener('click', function () { location.hash = b.dataset.v; }); });
+
+/* ---------- Connexion ---------- */
+$('lien-creer').addEventListener('click', function (e) { e.preventDefault(); $('carte-creer').hidden = false; $('carte-creer').scrollIntoView({ behavior: 'smooth' }); });
+$('form-connexion').addEventListener('submit', function (e) {
+  e.preventDefault(); var b = $('c-bouton'); b.disabled = true; message('msg-connexion');
+  if (window.SereSecurite && SereSecurite.reinitialiser) SereSecurite.reinitialiser();
+  sb.auth.signInWithPassword({ email: $('c-courriel').value.trim().toLowerCase(), password: $('c-mdp').value }).then(function (r) {
+    b.disabled = false;
+    if (r.error) { message('msg-connexion', 'erreur', /confirm/i.test(r.error.message) ? 'Ton adresse n\'est pas encore confirmée : ouvre le courriel de confirmation reçu.' : 'Courriel ou mot de passe incorrect.'); return; }
+    entrer(r.data.session);
+  });
+});
+$('lien-oubli').addEventListener('click', function (e) {
+  e.preventDefault(); var c = $('c-courriel').value.trim().toLowerCase();
+  if (!c) { message('msg-connexion', 'info', 'Écris ton courriel dans le champ ci-dessus, puis clique de nouveau sur « Mot de passe oublié ? ».'); return; }
+  sb.auth.resetPasswordForEmail(c, { redirectTo: ICI }).then(function () { message('msg-connexion', 'ok', 'Si ce courriel a un accès, tu vas recevoir un lien pour choisir un nouveau mot de passe.'); });
+});
+$('form-creer').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var c = $('n-courriel').value.trim().toLowerCase(), m1 = $('n-mdp').value, m2 = $('n-mdp2').value;
+  if (m1 !== m2) { message('msg-connexion', 'erreur', 'Les deux mots de passe ne sont pas identiques.'); return; }
+  if (!mdpValide(m1)) { message('msg-connexion', 'erreur', 'Le mot de passe doit avoir au moins 8 caractères, avec une majuscule, une minuscule et un chiffre.'); return; }
+  var b = $('n-bouton'); b.disabled = true;
+  sb.auth.signUp({ email: c, password: m1, options: { emailRedirectTo: ICI } }).then(function (r) {
+    b.disabled = false;
+    if (r.error) { message('msg-connexion', 'erreur', /registered|exists/i.test(r.error.message) ? 'Ce courriel a déjà un accès : connecte-toi, ou utilise « Mot de passe oublié ? ».' : 'Impossible de créer l\'accès : ' + esc(r.error.message)); return; }
+    if (r.data && r.data.session) { entrer(r.data.session); return; }
+    $('carte-creer').hidden = true;
+    message('msg-connexion', 'ok', '📩 Presque fini ! Ouvre le courriel de confirmation que tu viens de recevoir, puis reviens te connecter ici.');
+  });
+});
+
+/* ---------- Liens reçus par courriel ---------- */
+var params = new URLSearchParams(location.search);
+function preparerConfirmation() {
+  var type = params.get('type') || 'signup';
+  vue('confirmation');
+  if (type === 'recovery') { $('conf-titre').textContent = 'Nouveau mot de passe'; $('conf-texte').textContent = 'Clique sur le bouton pour choisir ton nouveau mot de passe.'; $('conf-bouton').textContent = 'Choisir mon mot de passe'; }
+  $('conf-bouton').addEventListener('click', function () {
+    var b = $('conf-bouton'); b.disabled = true;
+    if (window.SereSecurite && SereSecurite.reinitialiser) SereSecurite.reinitialiser();
+    sb.auth.verifyOtp({ token_hash: params.get('token_hash'), type: type }).then(function (r) {
+      history.replaceState(null, '', 'formatrice.html');
+      if (r.error) { b.disabled = false; message('msg-confirmation', 'erreur', 'Ce lien a expiré ou a déjà été utilisé. <a href="formatrice.html">Retour à la connexion</a>.'); return; }
+      if (type === 'recovery') { S.session = r.data.session; vue('mdp'); return; }
+      entrer(r.data.session, '✅ Ton adresse est confirmée. Bienvenue dans l\'espace formatrices !');
+    });
+  });
+}
+$('form-mdp').addEventListener('submit', function (e) {
+  e.preventDefault(); var m1 = $('m-1').value;
+  if (m1 !== $('m-2').value) { message('msg-mdp', 'erreur', 'Les deux mots de passe ne sont pas identiques.'); return; }
+  if (!mdpValide(m1)) { message('msg-mdp', 'erreur', 'Au moins 8 caractères, avec une majuscule, une minuscule et un chiffre.'); return; }
+  $('m-bouton').disabled = true;
+  sb.auth.updateUser({ password: m1 }).then(function (r) {
+    $('m-bouton').disabled = false;
+    if (r.error) { message('msg-mdp', 'erreur', 'Impossible : ' + esc(r.error.message)); return; }
+    sb.auth.getSession().then(function (s) { entrer(s.data.session, '✅ Ton mot de passe est changé.'); });
+  });
+});
+
+/* ---------- Entrée dans l'appli ---------- */
+function entrer(session, bienvenue) {
+  S.session = session;
+  sb.rpc('ma_fiche_formatrice').then(function (r) {
+    if (!r.data) {
+      sb.auth.signOut().then(function () {
+        vue('connexion'); $('nav').hidden = true;
+        message('msg-connexion', 'erreur', 'Ce compte n\'est pas inscrit comme formatrice (ou l\'accès est désactivé). Écris à Sabrina : <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a>.');
+      });
+      return;
+    }
+    S.fiche = r.data;
+    if (!S.gardien && window.SereSecurite) S.gardien = SereSecurite.surveiller({ sb: sb, minutes: 15, apres: 'formatrice.html' });
+    $('bonjour').textContent = 'Bonjour ' + S.fiche.prenom + ' 🌸';
+    $('qui').textContent = 'Connectée : ' + S.fiche.prenom + ' ' + (S.fiche.nom || '') + ' · ' + (session.user.email || '');
+    $('a-formation').innerHTML = (S.fiche.formations || []).map(function (f) { return '<option value="' + esc(f) + '">' + esc(NOMS[f] || f) + '</option>'; }).join('');
+    $('nav').hidden = false;
+    if (!S.reglages && window.Reglages) { S.reglages = true; Reglages.monter($('rg'), { sb: sb, vapid: VAPID, admin: false, surPush: function () { chargerMessages(); } }); }
+    chargerMessages();
+    clearInterval(S.minuterie); S.minuterie = setInterval(function () { chargerMessages(); if (!$('vue-ateliers').hidden) dessinerAteliers(); }, 25000);
+    route();
+    if (bienvenue) toast(bienvenue);
+  });
+}
+function route() {
+  if (!S.fiche) return;
+  var h = (location.hash || '#ateliers').slice(1);
+  if (h.indexOf('cr-') === 0) { ouvrirCR(+h.slice(3)); return; }
+  if (h.indexOf('chat-') === 0) { ouvrirChat(h.slice(5)); return; }
+  if (['ateliers', 'messages', 'reglages'].indexOf(h) < 0) h = 'ateliers';
+  vue(h);
+  if (h === 'ateliers') chargerAteliers();
+  if (h === 'messages') dessinerConversations();
+}
+window.addEventListener('hashchange', route);
+$('btn-sortir').addEventListener('click', function () { sb.auth.signOut().then(function () { location.href = 'formatrice.html?deconnectee=1'; }); });
+
+/* ---------- Ateliers ---------- */
+var edition = null;
+$('btn-nouveau').addEventListener('click', function () { edition = null; $('form-atelier').reset(); $('form-titre').textContent = 'Planifier un atelier'; $('carte-form').hidden = false; $('a-titre').focus(); });
+$('a-annuler').addEventListener('click', function () { $('carte-form').hidden = true; edition = null; });
+$('form-atelier').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var lien = $('a-lien').value.trim(), d = new Date($('a-debut').value);
+  if (isNaN(d)) { toast('Choisis la date et l\'heure.'); return; }
+  if (lien && !lienSur(lien)) { toast('Le lien doit commencer par https://'); return; }
+  var rangee = { formation: $('a-formation').value, titre: $('a-titre').value.trim(), debut: d.toISOString(), duree_min: +$('a-duree').value,
+    lien: lien || null, description: $('a-desc').value.trim() || null, formatrice_id: S.fiche.id };
+  if (!edition && d.getTime() < Date.now() && !confirm('Cette date est déjà passée. Enregistrer quand même ?')) return;
+  var b = $('a-bouton'); b.disabled = true;
+  var req;
+  if (edition) {
+    var ancien = S.ateliers.filter(function (x) { return x.id === edition; })[0];
+    if (ancien && new Date(ancien.debut).getTime() !== d.getTime()) { rangee.rappel_24h = false; rangee.rappel_1h = false; }
+    req = sb.from('ateliers').update(rangee).eq('id', edition);
+  } else req = sb.from('ateliers').insert(rangee);
+  req.then(function (r) {
+    b.disabled = false;
+    if (r.error) { toast('Impossible : ' + r.error.message); return; }
+    toast(edition ? '✏️ Atelier modifié' : '🎥 Atelier planifié : les étudiantes sont avisées');
+    $('carte-form').hidden = true; edition = null; chargerAteliers();
+  });
+});
+function chargerAteliers() {
+  Promise.all([
+    sb.from('ateliers').select('*').eq('formatrice_id', S.fiche.id).order('debut'),
+    sb.from('comptes_rendus').select('atelier_id,statut,commentaire_admin,soumis_le')
+  ]).then(function (r) {
+    if (r[0].error) { $('liste-ateliers').innerHTML = '<div class="message erreur">Impossible de charger tes ateliers : ' + esc(r[0].error.message) + '</div>'; return; }
+    S.ateliers = r[0].data || []; S.cr = {};
+    ((r[1] && r[1].data) || []).forEach(function (c) { S.cr[c.atelier_id] = c; });
+    dessinerAteliers();
+  });
+}
+function etatCR(a) {
+  var c = S.cr[a.id];
+  if (!c) return Date.now() >= new Date(a.debut).getTime() ? '<span class="etat afaire">📝 Compte rendu à faire</span>' : '';
+  if (c.statut === 'valide') return '<span class="etat valide">✓ Validé par Sabrina</span>';
+  if (c.statut === 'a_revoir') return '<span class="etat revoir">✏️ À revoir</span>';
+  return '<span class="etat soumis">📤 Envoyé, en attente de Sabrina</span>';
+}
+function dessinerAteliers() {
+  var n = Date.now();
+  var avenir = S.ateliers.filter(function (a) { return fin(a).getTime() > n; });
+  var passes = S.ateliers.filter(function (a) { return fin(a).getTime() <= n; }).reverse();
+  function carte(a) {
+    var commence = n >= new Date(a.debut).getTime() - 15 * 60000, c = S.cr[a.id];
+    return '<div class="at"><div class="at-quand">' + esc(quand(a.debut)) + '</div><div class="at-titre">' + esc(a.titre) + '</div>' +
+      '<div class="at-info"><span class="tag">' + esc(NOMS[a.formation] || a.formation) + '</span>' + a.duree_min + ' min</div>' +
+      (lienSur(a.lien) ? '<div class="at-info" style="margin-top:4px;">🔗 <a href="' + esc(a.lien) + '" target="_blank" rel="noopener">' + esc(a.lien) + '</a></div>' : '<div class="at-info" style="margin-top:4px;color:var(--rouge);">⚠️ Ajoute le lien de l\'atelier</div>') +
+      etatCR(a) +
+      '<div class="actions">' +
+      (commence ? '<a class="btn petit" href="#cr-' + a.id + '">' + (c && c.statut === 'valide' ? '👀 Voir le compte rendu' : '📝 Présences et compte rendu') + '</a>' : '') +
+      (!c && n < new Date(a.debut).getTime() ? '<button class="btn petit fantome" type="button" data-modifier="' + a.id + '">✏️ Modifier</button><button class="btn petit fantome" type="button" data-retirer="' + a.id + '">Retirer</button>' : '') +
+      '</div></div>';
+  }
+  $('liste-ateliers').innerHTML =
+    '<h2>À venir</h2>' + (avenir.length ? avenir.map(carte).join('') : '<div class="vide">Aucun atelier à venir. Clique sur « Planifier un atelier ».</div>') +
+    (passes.length ? '<h2>Passés</h2>' + passes.map(carte).join('') : '');
+}
+$('liste-ateliers').addEventListener('click', function (e) {
+  var m = e.target.closest('[data-modifier]'), x = e.target.closest('[data-retirer]');
+  if (m) {
+    var a = S.ateliers.filter(function (y) { return y.id === +m.dataset.modifier; })[0]; if (!a) return;
+    edition = a.id; $('form-titre').textContent = 'Modifier l\'atelier';
+    $('a-formation').value = a.formation; $('a-titre').value = a.titre; $('a-debut').value = localInput(a.debut);
+    $('a-duree').value = String(a.duree_min); $('a-lien').value = a.lien || ''; $('a-desc').value = a.description || '';
+    $('carte-form').hidden = false; $('carte-form').scrollIntoView({ behavior: 'smooth' });
+  }
+  if (x) {
+    var b = S.ateliers.filter(function (y) { return y.id === +x.dataset.retirer; })[0]; if (!b) return;
+    if (!confirm('Retirer « ' + b.titre + ' » ? Il disparaîtra du compte des étudiantes.')) return;
+    sb.from('ateliers').delete().eq('id', b.id).then(function (r) { toast(r.error ? 'Impossible : ' + r.error.message : 'Atelier retiré'); chargerAteliers(); });
+  }
+});
+
+/* ---------- Présences et compte rendu ---------- */
+function brouillonCle(id) { return 'sere-cr-' + id; }
+function ouvrirCR(id) {
+  vue('cr');
+  $('cr-eleves').innerHTML = '<div class="vide">Chargement…</div>';
+  Promise.all([
+    sb.from('ateliers').select('*').eq('id', id).maybeSingle(),
+    sb.rpc('etudiantes_atelier', { p_atelier: id }),
+    sb.from('presences_ateliers').select('user_id,statut,camera_fermee').eq('atelier_id', id),
+    sb.from('notes_atelier').select('user_id,note').eq('atelier_id', id),
+    sb.from('comptes_rendus').select('*').eq('atelier_id', id).maybeSingle()
+  ]).then(function (r) {
+    var a = r[0].data; if (!a) { $('cr-eleves').innerHTML = '<div class="message erreur">Atelier introuvable.</div>'; return; }
+    S.atelier = a; S.eleves = (r[1] && r[1].data) || []; S.pres = {}; S.notes = {};
+    ((r[2] && r[2].data) || []).forEach(function (p) { S.pres[p.user_id] = p; });
+    ((r[3] && r[3].data) || []).forEach(function (n) { S.notes[n.user_id] = n.note; });
+    var c = r[4] && r[4].data, fige = !!(c && c.statut === 'valide');
+    S.fige = fige;
+    $('cr-titre').textContent = a.titre;
+    $('cr-quand').textContent = quand(a.debut) + ' · ' + (NOMS[a.formation] || a.formation);
+    $('cr-etat').innerHTML = !c ? '' : c.statut === 'valide' ? '<div class="message ok">✓ Compte rendu validé par Sabrina. Il ne peut plus être modifié.</div>'
+      : c.statut === 'a_revoir' ? '<div class="message erreur"><strong>✏️ Sabrina te demande une correction :</strong><br>' + esc(c.commentaire_admin || '') + '</div>'
+      : '<div class="message info">📤 Envoyé le ' + esc(heure(c.soumis_le)) + '. Tu peux encore le corriger et le renvoyer tant que Sabrina ne l\'a pas validé.</div>';
+    var br = null; try { br = JSON.parse(localStorage.getItem(brouillonCle(id)) || 'null'); } catch (e) {}
+    $('cr-resume').value = c ? (c.resume || '') : (br && br.resume) || '';
+    $('cr-obs').value = c ? (c.observations || '') : (br && br.obs) || '';
+    ['cr-resume', 'cr-obs', 'cr-bouton'].forEach(function (k) { $(k).disabled = fige; });
+    $('cr-bouton').hidden = fige;
+    $('cr-bouton').textContent = c && c.statut !== 'valide' ? '📤 Renvoyer le compte rendu corrigé' : '📤 Envoyer le compte rendu à Sabrina';
+    dessinerEleves();
+  });
+}
+function compter() {
+  var p = 0, rt = 0, ab = 0, cam = 0, vide = 0;
+  S.eleves.forEach(function (e) { var x = S.pres[e.user_id]; if (!x) vide++; else if (x.statut === 'presente') p++; else if (x.statut === 'retard') rt++; else ab++; if (x && x.camera_fermee) cam++; });
+  $('cr-compte').innerHTML = '<span style="color:var(--vert)">✅ ' + p + '</span><span style="color:var(--ambre)">⏰ ' + rt + '</span><span style="color:var(--rouge)">❌ ' + ab + '</span>' + (cam ? '<span>📷 ' + cam + ' caméra(s) fermée(s)</span>' : '') + (vide ? '<span class="note">· ' + vide + ' à noter</span>' : '');
+  return vide;
+}
+function dessinerEleves() {
+  if (!S.eleves.length) { $('cr-eleves').innerHTML = '<div class="vide">Aucune étudiante n\'a encore accès à cette formation.</div>'; compter(); return; }
+  var d = S.fige ? ' disabled' : '';
+  $('cr-eleves').innerHTML = S.eleves.map(function (e) {
+    var x = S.pres[e.user_id] || {}, s = x.statut;
+    return '<div class="eleve" data-u="' + esc(e.user_id) + '"><div class="eleve-nom">' + esc((e.prenom || '') + ' ' + (e.nom || '')) + '</div>' +
+      '<div class="choix">' +
+      '<button type="button" data-s="presente"' + d + ' class="' + (s === 'presente' ? 'on' : '') + '">✅ Présente</button>' +
+      '<button type="button" data-s="retard"' + d + ' class="' + (s === 'retard' ? 'on' : '') + '">⏰ Retard</button>' +
+      '<button type="button" data-s="absente"' + d + ' class="' + (s === 'absente' ? 'on' : '') + '">❌ Absente</button></div>' +
+      '<label class="case"><input type="checkbox" data-cam' + d + (x.camera_fermee ? ' checked' : '') + '> 📷 Caméra fermée sans permission</label>' +
+      '<textarea rows="1" maxlength="2000" data-note placeholder="Note privée pour Sabrina (facultatif)"' + d + '>' + esc(S.notes[e.user_id] || '') + '</textarea></div>';
+  }).join('');
+  compter();
+}
+function enregistrerPresence(u, maj) {
+  var x = S.pres[u] || { statut: 'presente', camera_fermee: false };
+  var rangee = { atelier_id: S.atelier.id, user_id: u, statut: maj.statut || x.statut || 'presente', camera_fermee: maj.camera_fermee != null ? maj.camera_fermee : !!x.camera_fermee, maj_le: new Date().toISOString() };
+  return sb.from('presences_ateliers').upsert(rangee, { onConflict: 'atelier_id,user_id' }).then(function (r) {
+    if (r.error) { toast('Impossible : ' + r.error.message); return false; }
+    S.pres[u] = rangee; compter(); return true;
+  });
+}
+$('cr-eleves').addEventListener('click', function (e) {
+  var b = e.target.closest('.choix button'); if (!b || b.disabled) return;
+  var u = b.closest('.eleve').dataset.u;
+  enregistrerPresence(u, { statut: b.dataset.s }).then(function (ok) {
+    if (ok) b.parentNode.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+  });
+});
+$('cr-eleves').addEventListener('change', function (e) {
+  var u = e.target.closest('.eleve') && e.target.closest('.eleve').dataset.u; if (!u) return;
+  if (e.target.matches('[data-cam]')) {
+    var c = e.target;
+    if (!S.pres[u]) toast('Note aussi si elle était présente, en retard ou absente.');
+    enregistrerPresence(u, { camera_fermee: c.checked }).then(function (ok) { if (!ok) c.checked = !c.checked; });
+  }
+  if (e.target.matches('[data-note]')) {
+    var t = e.target.value.trim();
+    var req = t ? sb.from('notes_atelier').upsert({ atelier_id: S.atelier.id, user_id: u, note: t, maj_le: new Date().toISOString() }, { onConflict: 'atelier_id,user_id' })
+                : sb.from('notes_atelier').delete().eq('atelier_id', S.atelier.id).eq('user_id', u);
+    req.then(function (r) { if (r.error) toast('Note non enregistrée : ' + r.error.message); else { S.notes[u] = t; toast('Note enregistrée'); } });
+  }
+});
+['cr-resume', 'cr-obs'].forEach(function (k) {
+  $(k).addEventListener('input', function () {
+    if (!S.atelier) return;
+    try { localStorage.setItem(brouillonCle(S.atelier.id), JSON.stringify({ resume: $('cr-resume').value, obs: $('cr-obs').value })); } catch (e) {}
+  });
+});
+$('form-cr').addEventListener('submit', function (e) {
+  e.preventDefault();
+  var vide = compter();
+  if (vide && !confirm(vide + ' étudiante(s) n\'ont pas de présence notée : elles seront comptées absentes. Envoyer quand même ?')) return;
+  if (!confirm('Envoyer ce compte rendu à Sabrina ?')) return;
+  var b = $('cr-bouton'); b.disabled = true;
+  sb.rpc('soumettre_compte_rendu', { p_atelier: S.atelier.id, p_resume: $('cr-resume').value, p_observations: $('cr-obs').value }).then(function (r) {
+    b.disabled = false;
+    if (r.error) { toast('Impossible : ' + r.error.message); return; }
+    try { localStorage.removeItem(brouillonCle(S.atelier.id)); } catch (x) {}
+    toast('📤 Compte rendu envoyé à Sabrina. Merci !');
+    location.hash = 'ateliers';
+  });
+});
+
+/* ---------- Messages ---------- */
+function chargerMessages() {
+  if (!S.fiche) return Promise.resolve();
+  return Promise.all([
+    sb.rpc('mes_etudiantes'),
+    sb.from('messages_formatrices').select('*').eq('formatrice_id', S.fiche.id).order('created_at')
+  ]).then(function (r) {
+    S.etudiantes = (r[0] && r[0].data) || []; S.msgs = (r[1] && r[1].data) || [];
+    var nonlus = S.msgs.filter(function (m) { return !m.de_formatrice && !m.lu; }).length;
+    $('nb-msg').textContent = nonlus; $('nb-msg').hidden = !nonlus;
+    if (!$('vue-messages').hidden) dessinerConversations();
+    if (!$('vue-chat').hidden && S.chat) dessinerChat();
+  });
+}
+function nomEtudiante(u) { var e = S.etudiantes.filter(function (x) { return x.user_id === u; })[0]; return e ? ((e.prenom || '') + ' ' + (e.nom || '')).trim() : 'Étudiante'; }
+function dessinerConversations() {
+  var par = {};
+  S.msgs.forEach(function (m) { par[m.etudiante] = par[m.etudiante] || []; par[m.etudiante].push(m); });
+  var liste = S.etudiantes.map(function (e) { var l = par[e.user_id] || []; return { u: e.user_id, nom: nomEtudiante(e.user_id), dernier: l[l.length - 1], nonlus: l.filter(function (m) { return !m.de_formatrice && !m.lu; }).length, f: e.formation }; });
+  liste.sort(function (a, b) { var x = a.dernier ? +new Date(a.dernier.created_at) : 0, y = b.dernier ? +new Date(b.dernier.created_at) : 0; return y - x || a.nom.localeCompare(b.nom, 'fr'); });
+  $('liste-conv').innerHTML = liste.length ? liste.map(function (c) {
+    return '<a class="conv" href="#chat-' + esc(c.u) + '" style="text-decoration:none;color:inherit;"><div><strong>' + esc(c.nom) + '</strong><small>' + (c.dernier ? (c.dernier.de_formatrice ? 'Toi : ' : '') + esc(c.dernier.texte) : esc(NOMS[c.f] || '') + ' · aucun message') + '</small></div>' +
+      (c.nonlus ? '<span class="pastille">' + c.nonlus + '</span>' : '') + '</a>';
+  }).join('') : '<div class="vide">Aucune étudiante n\'a encore accès à tes formations.</div>';
+}
+function ouvrirChat(u) {
+  S.chat = u; vue('chat');
+  var go = function () { $('chat-nom').textContent = nomEtudiante(u); dessinerChat(); sb.rpc('marquer_lus_formatrice', { p_autre: u }).then(function () { S.msgs.forEach(function (m) { if (m.etudiante === u && !m.de_formatrice) m.lu = true; }); chargerMessages(); }); };
+  if (!S.etudiantes.length) chargerMessages().then(go); else go();
+}
+function dessinerChat() {
+  var l = S.msgs.filter(function (m) { return m.etudiante === S.chat; }), el = $('bulles');
+  var bas = el.scrollHeight - el.scrollTop - el.clientHeight < 60;
+  el.innerHTML = l.length ? l.map(function (m) {
+    return '<div class="bulle ' + (m.de_formatrice ? 'moi' : 'elle') + '">' + esc(m.texte) + '<small>' + esc(heure(m.created_at)) + '</small></div>';
+  }).join('') : '<div class="vide">Aucun message pour l\'instant. Tu peux lui écrire en premier.</div>';
+  if (bas || el.dataset.vu !== S.chat) { el.scrollTop = el.scrollHeight; el.dataset.vu = S.chat; }
+}
+$('form-chat').addEventListener('submit', function (e) {
+  e.preventDefault(); var t = $('chat-texte').value.trim(); if (!t || !S.chat) return;
+  $('chat-texte').value = '';
+  sb.rpc('ecrire_etudiante', { p_etudiante: S.chat, p_texte: t }).then(function (r) {
+    if (r.error) { $('chat-texte').value = t; toast('Message non envoyé : ' + r.error.message); return; }
+    chargerMessages();
+  });
+});
+$('chat-texte').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !/Mobi|Android/i.test(navigator.userAgent)) { e.preventDefault(); $('form-chat').requestSubmit(); } });
+
+/* ---------- Démarrage ---------- */
+if (params.get('token_hash')) preparerConfirmation();
+else sb.auth.getSession().then(function (s) {
+  if (s.data && s.data.session) entrer(s.data.session);
+  else { vue('connexion'); if (params.get('inactivite')) message('msg-connexion', 'info', 'Tu as été déconnectée après un moment d\'inactivité. Reconnecte-toi.'); }
+});
+})();
+</script>
+</body>
+</html>

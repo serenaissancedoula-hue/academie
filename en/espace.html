@@ -265,6 +265,10 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
       <h2>🎥 My live workshops</h2>
       <div id="liste-ateliers"></div>
     </div>
+    <div id="bloc-formatrices" hidden>
+      <h2>💬 My trainers</h2>
+      <div id="liste-formatrices-etudiante"></div>
+    </div>
     <div id="bloc-4e" hidden>
       <h2>Advanced Fourth Trimester Support</h2>
       <ul class="cours" id="liste-4e"></ul>
@@ -574,7 +578,7 @@ function routeConnectee() {
   if (h === 'stage' && !etat.valide) h = 'cours';
   if (h === 'marraine' && !etat.marraine) h = 'cours';
   if (h === 'avis') h = 'messages';
-  if (h === 'ateliers') h = 'cours';
+  if (h === 'ateliers' || h === 'formatrices') h = 'cours';
   if (h === 'infos') h = 'parametres';   // « Mes informations » est maintenant dans Paramètres
   if (h === 'evaluations' && !etat.valide && !etat.marraine) h = 'cours';
   if (['cours', 'infos', 'stage', 'marraine', 'messages', 'parametres', 'evaluations'].indexOf(h) < 0) h = 'cours';
@@ -743,6 +747,7 @@ function afficherCours() {
   if (d && d.formation === 'doula' && !etat.doulaOk && !etat.suspendu) $('attente').innerHTML = '<strong>⏳ Your doula training registration has been received.</strong><br>I confirm your spot as soon as I see your payment (usually within 24 hours), and you receive an email. In the meantime, you can complete your information.';
   $('bloc-doula').hidden = !etat.doulaOk;
   if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Your access is suspended for the moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Your progress is saved. Write to <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a> or call 506-759-2044 to sort things out, and your access will be reopened.'; }
+  if (!d) sb.rpc('ma_fiche_formatrice').then(function (f) { if (f && f.data) location.href = '/formatrice.html'; });
   if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'We could not find a registration file linked to this email. Write to <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a> and Sabrina will sort it out quickly.'; }
   $('bloc-4e').hidden = !etat.valide;
   $('bloc-marraine').hidden = !etat.marraine;

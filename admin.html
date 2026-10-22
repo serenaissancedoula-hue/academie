@@ -275,7 +275,7 @@ document.addEventListener('click', function (e) { var a = e.target.closest && e.
 
   <section class="vue" id="vue-outils" hidden>
     <div class="carte" id="carte-ateliers">
-      <h3 style="margin-bottom:6px;">🎥 Ateliers en direct</h3>
+      <h3 style="margin-bottom:6px;">🎥 Ateliers en direct<span id="at-a-valider" style="color:#c0392b;font-size:.85rem;"></span></h3>
       <p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Les étudiantes de la formation choisie voient l'atelier dans leur compte, avec le lien (il s'ouvre 15 minutes avant). Elles reçoivent une notification à l'ajout, un courriel et une notification la veille, puis une notification 1 heure avant. L'heure est celle de ton appareil ; chaque étudiante la voit dans son propre fuseau.</p>
       <form id="form-atelier" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
         <label class="champ">Pour qui
@@ -285,6 +285,8 @@ document.addEventListener('click', function (e) { var a = e.target.closest && e.
             <option value="marraine">Marraine d'allaitement</option>
             <option value="toutes">Toutes les formations</option>
           </select></label>
+        <label class="champ">Formatrice responsable <span style="font-weight:400;">(elle prendra les présences et t'enverra le compte rendu)</span>
+          <select id="at-formatrice"><option value="">Aucune (je m'en occupe)</option></select></label>
         <label class="champ">Titre<input id="at-titre" maxlength="140" placeholder="Ex. Atelier 3 · Positions et gestes de confort"></label>
         <div class="rang"><label class="champ">Date et heure<input type="datetime-local" id="at-debut"></label>
           <label class="champ">Durée<select id="at-duree"><option value="60">1 h</option><option value="90" selected>1 h 30</option><option value="120">2 h</option><option value="150">2 h 30</option><option value="180">3 h</option><option value="240">4 h</option></select></label></div>
@@ -293,6 +295,21 @@ document.addEventListener('click', function (e) { var a = e.target.closest && e.
         <div class="actions"><button class="btn" type="submit" id="at-bouton">🎥 Ajouter l'atelier</button><button class="btn gris" type="button" id="at-annuler" hidden>Annuler</button></div>
       </form>
       <div id="liste-ateliers-admin">Chargement…</div>
+    </div>
+    <div class="carte" id="carte-formatrices">
+      <h3 style="margin-bottom:6px;">👩‍🏫 Formatrices</h3>
+      <p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Inscris ici le courriel de chaque formatrice. Elle crée ensuite son accès sur <strong>academiesere.ca/formatrice.html</strong> (« Première connexion »). Elle y planifie ses ateliers, prend les présences, t'envoie son compte rendu et répond aux étudiantes de ses formations. Elle ne voit que le prénom et le nom des étudiantes.</p>
+      <form id="form-formatrice" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+        <div class="rang"><label class="champ">Prénom<input id="ff-prenom" maxlength="60"></label><label class="champ">Nom<input id="ff-nom" maxlength="80"></label></div>
+        <label class="champ">Courriel<input id="ff-courriel" type="email" maxlength="200"></label>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.86rem;">
+          <label style="display:flex;gap:6px;align-items:center;"><input type="checkbox" id="ff-doula" style="width:auto;"> Doula de base</label>
+          <label style="display:flex;gap:6px;align-items:center;"><input type="checkbox" id="ff-4e-trimestre" style="width:auto;"> 4ᵉ trimestre</label>
+          <label style="display:flex;gap:6px;align-items:center;"><input type="checkbox" id="ff-marraine" style="width:auto;"> Marraine</label>
+        </div>
+        <div class="actions"><button class="btn" type="submit">➕ Ajouter la formatrice</button></div>
+      </form>
+      <div id="liste-formatrices">Chargement…</div>
     </div>
     <div class="carte" id="carte-temoignages">
       <h3 style="margin-bottom:6px;">💬 Témoignages</h3>
