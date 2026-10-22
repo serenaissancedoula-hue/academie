@@ -280,6 +280,8 @@
       }).then(function () {
         menu();
         bandeauMiseAJour();
+        // Lettre de bienvenue personnalisée (première ouverture de chaque formation)
+        chargerScript('/lettre-accueil.js').then(function () { if (window.SereLettre) SereLettre.demarrer({ sb: sb, session: session, formation: FORMATION, en: EN }); }).catch(function () {});
         // Déconnexion automatique après 5 minutes sans activité
         chargerScript('/securite.js').then(function () {
           if (window.SereSecurite) SereSecurite.surveiller({ sb: sb, minutes: 5, avant: function () { envoyerProgression(true); ss('cle:4e-trimestre', null); ss('cle:marraine', null); ss('cle:doula', null); }, apres: ESPACE });
