@@ -11,23 +11,24 @@
   var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co';
   var SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
   var EN = location.pathname.indexOf('/Formation/en/') >= 0;
+  var SANS_EN = location.pathname.indexOf('/Formation/doula/') >= 0;   // formation doula : français seulement pour l'instant
   function L(fr, en) { return EN ? en : fr; }
   // Langue choisie par l'étudiante : on ouvre la même page dans sa langue
   try {
     var pref = localStorage.getItem('sere-langue');
-    if (pref === 'en' && !EN && location.pathname.indexOf('/Formation/') === 0) { location.replace(location.pathname.replace('/Formation/', '/Formation/en/') + location.search + location.hash); return; }
+    if (pref === 'en' && !EN && !SANS_EN && location.pathname.indexOf('/Formation/') === 0) { location.replace(location.pathname.replace('/Formation/', '/Formation/en/') + location.search + location.hash); return; }
     if (pref === 'fr' && EN) { location.replace(location.pathname.replace('/Formation/en/', '/Formation/') + location.search + location.hash); return; }
   } catch (e) {}
   var SCRIPT = document.currentScript && document.currentScript.src;
   var RACINE = SCRIPT ? new URL(EN ? '../../' : '../', SCRIPT).href : 'https://academiesere.ca/';
   var ESPACE = RACINE + (EN ? 'en/' : '') + 'espace.html';
-  var PREFIXES = /^(m\d+|marraine|final):/;
+  var PREFIXES = /^(m\d+|d\d+|marraine|final):/;
 
   var bloc = document.getElementById('contenu-chiffre');
   if (!bloc) return;
   var FORMATION = bloc.getAttribute('data-f');
   var NOMS = EN ? { '4e-trimestre': 'the Advanced Fourth Trimester Support program', 'marraine': 'the Breastfeeding Peer Supporter course' }
-                : { '4e-trimestre': "l'Accompagnement de pointe du 4ᵉ trimestre", 'marraine': "la formation de marraine d'allaitement" };
+                : { '4e-trimestre': "l'Accompagnement de pointe du 4ᵉ trimestre", 'marraine': "la formation de marraine d'allaitement", 'doula': 'la Formation de base de doula' };
   var sb = null, session = null, cleCrypto = null;
 
   function b64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
@@ -163,6 +164,7 @@
       ['📅', L('Mentorat', 'Mentoring'), 'https://cal.com/sabrina-chavanel-zs5clq/mentorat']
     ];
     if (FORMATION === 'marraine') liens.splice(1, 1);   // pas de stage pour la formation de marraine
+    if (SANS_EN) liens = liens.filter(function (l) { return !l[3]; });   // pas de version anglaise
     liens.forEach(function (l) {
       var a = document.createElement('a'); a.href = l[2]; a.title = l[1];
       if (/^https:\/\/cal/.test(l[2])) { a.target = '_blank'; a.rel = 'noopener'; }
@@ -178,7 +180,7 @@
     sortir.innerHTML = '<span class="t">' + L('Me déconnecter', 'Log out') + '</span><span>🚪</span>';
     sortir.addEventListener('click', function () {
       envoyerProgression(true);
-      ss('cle:4e-trimestre', null); ss('cle:marraine', null);
+      ss('cle:4e-trimestre', null); ss('cle:marraine', null); ss('cle:doula', null);
       sb.auth.signOut().finally(function () { location.href = ESPACE + '?deconnectee=1'; });
     });
     m.appendChild(sortir);
@@ -279,7 +281,7 @@
         bandeauMiseAJour();
         // Déconnexion automatique après 5 minutes sans activité
         chargerScript('/securite.js').then(function () {
-          if (window.SereSecurite) SereSecurite.surveiller({ sb: sb, minutes: 5, avant: function () { envoyerProgression(true); ss('cle:4e-trimestre', null); ss('cle:marraine', null); }, apres: ESPACE });
+          if (window.SereSecurite) SereSecurite.surveiller({ sb: sb, minutes: 5, avant: function () { envoyerProgression(true); ss('cle:4e-trimestre', null); ss('cle:marraine', null); ss('cle:doula', null); }, apres: ESPACE });
         }).catch(function () {});
         if (brouillon) marquer();
       });

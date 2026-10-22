@@ -13,9 +13,10 @@
   function jour(d) { return d ? new Date(d).toLocaleDateString(EN ? 'en-CA' : 'fr-CA', { day: 'numeric', month: 'long', year: 'numeric' }) : ''; }
   function heure(d) { return d ? new Date(d).toLocaleTimeString(EN ? 'en-CA' : 'fr-CA', { hour: '2-digit', minute: '2-digit' }) : ''; }
   var NOMS = { '4e-trimestre': L('Accompagnement de pointe du 4ᵉ trimestre', 'Advanced Fourth Trimester and Deep Postpartum Support'),
-               'marraine': L('Formation de marraine d\'allaitement', 'Breastfeeding Peer Supporter course') };
-  var VERSION = { '4e-trimestre': 'entente-4e-v1', 'marraine': 'entente-marraine-v1' };
-  function version(f) { return VERSION[f] + (EN ? '-en' : ''); }
+               'marraine': L('Formation de marraine d\'allaitement', 'Breastfeeding Peer Supporter course'),
+               'doula': L('Formation de base de doula', 'Foundational Doula Training') };
+  var VERSION = { '4e-trimestre': 'entente-4e-v1', 'marraine': 'entente-marraine-v1', 'doula': 'entente-doula-v1' };
+  function version(f) { return VERSION[f] + (EN && f !== 'doula' ? '-en' : ''); }
 
   function css() {
     if ($('style-espace-plus')) return;
@@ -179,6 +180,7 @@
     var formations = [];
     if (etat.valide) formations.push({ f: '4e-trimestre', bloc: $('bloc-4e'), liste: $('liste-4e'), fini: reussi(etat, 'final:score') });
     if (etat.marraine) formations.push({ f: 'marraine', bloc: $('bloc-marraine'), liste: $('liste-marraine'), fini: reussi(etat, 'marraine:score:exam') });
+    if (etat.doulaOk) formations.push({ f: 'doula', bloc: $('bloc-doula'), liste: $('liste-doula'), fini: false });
     if (!formations.length) return;
     Promise.all([chargerEntentes(sb), chargerQuestionnaires(sb)]).then(function (x) {
       var ententes = x[0], qs = x[1];

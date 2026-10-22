@@ -259,7 +259,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     </div>
     <div id="bloc-doula" hidden>
       <h2>Formation de base de doula · 400 h</h2>
-      <div class="message ok" id="doula-message"><strong>🌸 Ta place est confirmée !</strong><br>Ta formation de doula (12 modules) s'ouvrira ici : tu recevras un courriel à ce moment-là. D'ici là, tu peux compléter tes informations, ajouter ta photo et m'écrire dans tes Messages.</div>
+      <ul class="cours" id="liste-doula"></ul>
     </div>
     <div id="bloc-ateliers" hidden>
       <h2>🎥 Mes ateliers en direct</h2>
@@ -545,6 +545,14 @@ var APPLI = window.matchMedia('(display-mode: standalone)').matches || window.na
 if (APPLI) document.getElementById('lien-logo').setAttribute('href', 'espace.html#cours');
 try { emailjs.init(EMAILJS.cle); } catch (e) {}
 
+var MODULES_DOULA = [
+  { n: 1, ch: 6, titre: 'Devenir doula : rôle, posture et éthique' }, { n: 2, ch: 6, titre: 'Relation d\'aide et communication' },
+  { n: 3, ch: 5, titre: 'Anatomie et physiologie de la grossesse' }, { n: 4, ch: 5, titre: 'Grossesses particulières et préparation à la naissance' },
+  { n: 5, ch: 5, titre: 'Physiologie du travail et de l\'accouchement' }, { n: 6, ch: 7, titre: 'Soutien pendant le travail' },
+  { n: 7, ch: 7, titre: 'Interventions médicales et naissances particulières' }, { n: 8, ch: 6, titre: 'Post-partum immédiat et nouveau-né' },
+  { n: 9, ch: 6, titre: 'Bases de l\'allaitement' }, { n: 10, ch: 6, titre: 'Santé mentale périnatale et deuil' },
+  { n: 11, ch: 6, titre: 'Diversité, sécurisation culturelle et traditions' }, { n: 12, ch: 6, titre: 'Bâtir sa pratique de doula' }
+];
 var MODULES = [
   { n: 1, titre: 'Fondements physiologiques, neurobiologiques et psychosociaux', ch: 9 },
   { n: 2, titre: 'Hygiène de vie, diététique et protocoles de soutien non invasifs', ch: 6 },
@@ -759,6 +767,18 @@ function afficherCours() {
     html += ligneCours('Grand examen final', fin ? '✓ Formation réussie !' : 'Après les 5 modules', fin ? 1 : 0, fin ? 1 : 0, fin, 'Formation/examen-final.html', fin ? 'Revoir' : 'Ouvrir');
     html += ligneCours('Trousse de stage', 'Modèles de documents à télécharger', 0, 0, false, 'Formation/stage.html', 'Ouvrir');
     $('liste-4e').innerHTML = html;
+  }
+  if (etat.doulaOk) {
+    var hd = MODULES_DOULA.map(function (m) {
+      var fait = 0; for (var i = 1; i <= m.ch; i++) if (reussi(score('d' + m.n + ':score:' + m.n + '.' + i))) fait++;
+      var ex = reussi(score('d' + m.n + ':score:exam'));
+      var verrou = m.n > 1 && !reussi(score('d' + (m.n - 1) + ':score:exam'));
+      return ligneCours('Module ' + m.n + ' · ' + m.titre, ex ? '✓ Module réussi' : (verrou ? '🔒 S\'ouvre quand l\'examen du module ' + (m.n - 1) + ' est réussi' : fait + ' / ' + m.ch + ' quiz réussis'), fait, m.ch, ex,
+        'Formation/doula/module-' + m.n + '/index.html', verrou ? 'Aperçu' : (fait === 0 && !ex ? 'Commencer' : (ex ? 'Revoir' : 'Continuer')));
+    }).join('');
+    hd += ligneCours('Documents et outils', 'Syllabus, trousse de modèles, guide des rencontres prénatales et manuels PDF', 0, 0, false, 'Formation/doula/documents.html', 'Ouvrir');
+    hd += ligneCours('Annexe · Repères par région', 'Numéros et ressources de chaque province, des territoires et de la France', 0, 0, false, 'Formation/doula/annexe.html', 'Ouvrir');
+    $('liste-doula').innerHTML = hd;
   }
   if (etat.marraine) {
     var f = 0; for (var j = 1; j <= 6; j++) if (reussi(score('marraine:score:1.' + j))) f++;

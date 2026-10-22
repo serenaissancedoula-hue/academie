@@ -1,0 +1,481 @@
+/* =========================================================
+   Formation de base de doula 400 h — menu, verrous, quiz, examens
+   ========================================================= */
+(function () {
+  'use strict';
+
+  var CONF = window.MODULE_CONF || { num: '1', chapters: [] };
+  var MN = String(CONF.num), CH = CONF.chapters || [], NCH = CH.length, LASTCH = CH[NCH - 1];
+  var LASTMOD = 12;
+  var PREFIX = 'd' + MN + ':';
+  function url(type, id) { return type + '-' + MN + '-' + id.split('.')[1] + '.html'; }
+  var MENTORAT = 'https://cal.com/sabrina-chavanel-zs5clq/mentorat';
+  var H = 3600 * 1000;
+
+  var store = {
+    get: function (k) { try { return JSON.parse(localStorage.getItem(PREFIX + k)); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(PREFIX + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  var PASS = 0.8;
+
+  /* ---------- 📊 Envoi des résultats à l'Académie (Supabase) ---------- */
+  var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co';
+  var SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
+  var SB_JETON = 'sb-zeptirfcwstufcpgvkzx-auth-token';
+  var FILE_ATTENTE = 'resultats-a-envoyer';
+  function lireSession() { try { return JSON.parse(sessionStorage.getItem(SB_JETON)); } catch (e) { return null; } }
+  function rafraichirSession(s) {
+    if (!s || !s.refresh_token) return Promise.resolve(null);
+    return fetch(SB_URL + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST', headers: { 'apikey': SB_CLE, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: s.refresh_token })
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (n) { if (!n || !n.access_token) return null; try { sessionStorage.setItem(SB_JETON, JSON.stringify(n)); } catch (e) {} return n; })
+      .catch(function () { return null; });
+  }
+  function sessionValide() {
+    var s = lireSession();
+    if (!s || !s.access_token) return Promise.resolve(null);
+    var expire = s.expires_at ? s.expires_at * 1000 : 0;
+    if (expire && expire - Date.now() < 60000) return rafraichirSession(s);
+    return Promise.resolve(s);
+  }
+  function lireFile() { try { return JSON.parse(localStorage.getItem(FILE_ATTENTE)) || []; } catch (e) { return []; } }
+  function ecrireFile(f) { try { localStorage.setItem(FILE_ATTENTE, JSON.stringify(f.slice(-200))); } catch (e) {} }
+  function envoyerFile() {
+    var file = lireFile();
+    if (!file.length) return;
+    sessionValide().then(function (s) {
+      if (!s || !s.user) return;
+      var lignes = file.map(function (r) { r.user_id = s.user.id; r.courriel = s.user.email; return r; });
+      fetch(SB_URL + '/rest/v1/resultats', {
+        method: 'POST',
+        headers: { 'apikey': SB_CLE, 'Authorization': 'Bearer ' + s.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify(lignes)
+      }).then(function (r) { if (r.ok) ecrireFile([]); }).catch(function () {});
+    });
+  }
+  function enregistrerResultat(evaluation, score, total) {
+    var file = lireFile();
+    file.push({ formation: 'doula', module: 'module-' + MN, evaluation: evaluation, score: score, total: total,
+                pourcentage: Math.round(score / total * 100), reussi: score / total >= PASS, created_at: new Date().toISOString() });
+    ecrireFile(file); envoyerFile();
+  }
+  envoyerFile();
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function shuffle(arr) { for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; } return arr; }
+  function heures(ms) { var h = Math.ceil(ms / H); return h > 1 ? h + ' heures' : 'moins d’une heure'; }
+
+  /* ---------- scores ---------- */
+  function passed(id) { var r = store.get('score:' + id); return !!(r && r.score / r.total >= PASS); }
+  function isRead(id) { return !!store.get('read:' + id); }
+  function aRelire() { return store.get('arelire') || []; }
+  function doitRelire(id) { return aRelire().indexOf(id) >= 0; }
+  function paintScores() {
+    document.querySelectorAll('[data-score]').forEach(function (e) {
+      var r = store.get('score:' + e.dataset.score);
+      if (!r) { e.textContent = ''; return; }
+      e.textContent = r.score + '/' + r.total;
+      e.classList.toggle('fail', r.score / r.total < PASS);
+    });
+    var dc = document.getElementById('doneCount');
+    if (dc) dc.textContent = CH.filter(passed).length + '/' + NCH;
+  }
+
+  /* ---------- délais après un échec ---------- */
+  // quiz : nouvelle tentative 24 h après un échec ; examen : 48 h
+  function attente(cle, delai) {
+    var f = store.get(cle);
+    if (!f || !f.t) return 0;
+    var reste = f.t + delai - Date.now();
+    return reste > 0 ? reste : 0;
+  }
+
+  /* ---------- verrous ---------- */
+  function keyOf(href) {
+    var f = (href || '').split('/').pop().split('#')[0].split('?')[0];
+    var m = f.match(new RegExp('^chapitre-' + MN + '-(\\d+)\\.html$')); if (m) return { type: 'chap', id: MN + '.' + m[1] };
+    m = f.match(new RegExp('^quiz-' + MN + '-(\\d+)\\.html$')); if (m) return { type: 'quiz', id: MN + '.' + m[1] };
+    if (f === 'examen.html') return { type: 'exam' };
+    return null;
+  }
+  function lockReason(k) {
+    if (!k) return null;
+    if (k.type === 'chap') {
+      var i = CH.indexOf(k.id);
+      if (i <= 0 || passed(CH[i - 1])) return null;
+      return { msg: 'Réussis d\'abord le quiz ' + CH[i - 1] + ' (80 % et plus) pour ouvrir le chapitre ' + k.id + '.', href: url('quiz', CH[i - 1]), label: 'Aller au quiz ' + CH[i - 1] };
+    }
+    if (k.type === 'quiz') {
+      var r = lockReason({ type: 'chap', id: k.id });
+      if (r) return r;
+      if (isRead(k.id)) return null;
+      return { msg: 'Termine d\'abord la lecture du chapitre ' + k.id + ' pour ouvrir son quiz.', href: url('chapitre', k.id), label: 'Lire le chapitre ' + k.id };
+    }
+    if (k.type === 'exam') {
+      var miss = CH.filter(function (id) { return !passed(id); });
+      if (miss.length) return { msg: 'Réussis d\'abord les ' + NCH + ' quiz du module pour ouvrir l\'examen. Il te reste : quiz ' + miss.join(', ') + '.', href: url('quiz', miss[0]), label: 'Continuer le parcours' };
+      var relire = aRelire();
+      if (relire.length && !passed('exam')) return { msg: 'Avant de reprendre l\'examen, relis jusqu\'au bout ' + (relire.length > 1 ? 'les chapitres ' : 'le chapitre ') + relire.join(', ') + ' et clique sur « J\'ai terminé ma lecture ».', href: url('chapitre', relire[0]), label: 'Relire le chapitre ' + relire[0] };
+      return null;
+    }
+    return null;
+  }
+  var modLock = null;
+  if (+MN > 1) {
+    var pm = +MN - 1, pe = null;
+    try { pe = JSON.parse(localStorage.getItem('d' + pm + ':score:exam')); } catch (e) {}
+    if (!pe || pe.score / pe.total < PASS)
+      modLock = { msg: 'Le module ' + MN + ' s\'ouvre quand l\'examen du module ' + pm + ' est réussi (80 % et plus).', href: '../module-' + pm + '/index.html', label: 'Aller au module ' + pm };
+  }
+  var toastEl;
+  function toast(msg, icone) {
+    if (!toastEl) { toastEl = document.createElement('div'); toastEl.className = 'toast'; document.body.appendChild(toastEl); }
+    toastEl.textContent = (icone || '🔒') + ' ' + msg;
+    toastEl.classList.add('show'); clearTimeout(toastEl._t);
+    toastEl._t = setTimeout(function () { toastEl.classList.remove('show'); }, 3800);
+  }
+  function applyLocks() {
+    if (modLock) {
+      document.querySelectorAll('.sidebar a, .chap-grid a, .hero a, .quiz-cta a').forEach(function (a) {
+        if (a.classList.contains('all-modules') || /\.\.\/(annexe|documents)\.html$/.test(a.getAttribute('href') || '')) return;
+        a.classList.add('is-locked'); a.setAttribute('aria-disabled', 'true'); a.dataset.lockMsg = modLock.msg;
+      });
+      return;
+    }
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var r = lockReason(keyOf(a.getAttribute('href')));
+      a.classList.toggle('is-locked', !!r);
+      if (r) { a.setAttribute('aria-disabled', 'true'); a.dataset.lockMsg = r.msg; } else { a.removeAttribute('aria-disabled'); delete a.dataset.lockMsg; }
+    });
+    document.querySelectorAll('.chap-card').forEach(function (c) {
+      var a = c.querySelector('h3 a'); var k = a && keyOf(a.getAttribute('href'));
+      c.classList.toggle('is-locked', !!lockReason(k));
+      c.classList.toggle('is-done', !!(k && passed(k.id)));
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a.is-locked');
+    if (a) { e.preventDefault(); toast(a.dataset.lockMsg || 'Contenu verrouillé.'); }
+  }, true);
+
+  function pageVerrouillee(lock, img) {
+    var main = document.querySelector('.main'); var toc = document.getElementById('toc');
+    if (toc) toc.remove();
+    if (!main) return;
+    var keep = main.querySelector('.footer');
+    main.innerHTML = '';
+    var box = el('section', 'lock-page');
+    box.innerHTML = '<img src="../assets/img/' + (img || 'cadenas.svg') + '" alt="" width="96" height="96"><h1></h1><p></p><div class="actions"><a class="btn"></a>' +
+      (modLock ? '<a class="btn-ghost" href="../index.html">Accueil de la formation</a>' : '<a class="btn-ghost" href="index.html">Accueil du module</a>') + '</div>';
+    box.querySelector('h1').textContent = lock.titre || 'Contenu verrouillé';
+    box.querySelector('p').innerHTML = lock.html || '';
+    if (!lock.html) box.querySelector('p').textContent = lock.msg;
+    box.querySelector('.btn').textContent = lock.label + ' →';
+    box.querySelector('.btn').href = lock.href;
+    main.appendChild(box);
+    if (keep) main.appendChild(keep);
+  }
+  var pageKey = keyOf(location.pathname);
+  var pageLock = modLock || lockReason(pageKey);
+  if (pageLock) pageVerrouillee(pageLock);
+
+  /* ---------- fin de lecture ---------- */
+  var readBtn = document.getElementById('readDone'), quizGo = document.getElementById('quizGo');
+  if (readBtn && !pageLock) {
+    var cid = readBtn.dataset.chap, hint = document.getElementById('readHint');
+    var setRead = function () { readBtn.hidden = true; if (hint) hint.hidden = true; quizGo.hidden = false; };
+    if (doitRelire(cid)) {
+      var ban = el('div', 'callout caution');
+      ban.innerHTML = '<p><strong>📖 Relecture demandée.</strong> Relis ce chapitre jusqu\'au bout et clique sur « J\'ai terminé ma lecture » en bas de page pour pouvoir reprendre l\'examen.</p>';
+      var art = document.querySelector('.content'); if (art) art.insertBefore(ban, art.firstChild);
+    }
+    if (isRead(cid) && !doitRelire(cid)) setRead();
+    else {
+      readBtn.disabled = true;
+      var check = function () {
+        var h = document.documentElement;
+        if (h.scrollTop + h.clientHeight >= document.getElementById('endCta').offsetTop + 40) {
+          readBtn.disabled = false;
+          if (hint) hint.textContent = 'Lecture parcourue jusqu\'au bout : tu peux valider.';
+          window.removeEventListener('scroll', check);
+        }
+      };
+      window.addEventListener('scroll', check, { passive: true }); check();
+      readBtn.addEventListener('click', function () {
+        store.set('read:' + cid, true);
+        store.set('arelire', aRelire().filter(function (x) { return x !== cid; }));
+        setRead(); applyLocks();
+        toast('Lecture validée : le quiz ' + cid + ' est ouvert !', '✅');
+      });
+    }
+  }
+
+  /* ---------- menu mobile, progression de lecture, sommaire ---------- */
+  var btn = document.getElementById('menuBtn');
+  if (btn) btn.addEventListener('click', function () { document.body.classList.toggle('menu-open'); });
+  var ov = document.getElementById('overlay');
+  if (ov) ov.addEventListener('click', function () { document.body.classList.remove('menu-open'); });
+  var bar = document.getElementById('progress');
+  var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var secs = tocLinks.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    if (bar) bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+    var cur = 0;
+    secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top < 140) cur = i; });
+    tocLinks.forEach(function (a, i) { a.classList.toggle('active', i === cur); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  /* ---------- outils communs ---------- */
+  var LETTERS = ['a', 'b', 'c', 'd', 'e'];
+  function ring(score, total) {
+    var pct = score / total, r = 60, c = 2 * Math.PI * r, color = pct >= PASS ? '#5f8570' : '#b4654a';
+    return '<div class="ring"><svg width="140" height="140"><circle cx="70" cy="70" r="' + r + '" fill="none" stroke="#ece3d9" stroke-width="10"/>' +
+      '<circle cx="70" cy="70" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + (c * pct) + ' ' + c + '"/></svg><span>' + Math.round(pct * 100) + ' %</span></div>';
+  }
+  // prépare une question : options mélangées (sauf vrai ou faux)
+  function preparer(d) {
+    var idx = d.o.map(function (_, i) { return i; });
+    if (!d.vf) shuffle(idx);
+    return { q: d.q, o: idx.map(function (k) { return d.o[k]; }), a: idx.indexOf(d.a), e: d.e || '', s: d.s || '', src: d };
+  }
+  function questionCard(q, label, src) {
+    var card = el('div', 'q-card'), head = el('div', 'q-head');
+    head.appendChild(el('span', 'q-num', label));
+    if (src) head.appendChild(el('span', 'q-src', src));
+    card.appendChild(head);
+    card.appendChild(el('p', 'q-text', q.q));
+    var opts = el('div', 'opts');
+    q.o.forEach(function (txt, i) {
+      var b = el('button', 'opt'); b.type = 'button'; b.dataset.i = i;
+      b.appendChild(el('span', 'letter', LETTERS[i])); b.appendChild(el('span', null, txt));
+      opts.appendChild(b);
+    });
+    card.appendChild(opts);
+    return card;
+  }
+
+  /* ---------- quiz de chapitre : une question par thème, correction immédiate ---------- */
+  var quizEl = document.getElementById('quiz');
+  if (quizEl && window.QUIZ_DATA && !pageLock) {
+    var id = quizEl.dataset.quiz, data = window.QUIZ_DATA[id];
+    var fq = store.get('qfail:' + id) || { n: 0 };
+    var resteQ = passed(id) ? 0 : attente('qfail:' + id, 24 * H);
+    if (resteQ) {
+      pageVerrouillee({ titre: 'Nouvelle tentative bientôt', html: 'Tu pourras reprendre ce quiz dans ' + heures(resteQ) + ', avec d\'autres questions. Profites-en pour relire le chapitre ' + id + ', surtout les sections indiquées dans ta correction.' +
+        (fq.n >= 3 ? '<br><br><strong>Tu as fait 3 tentatives sans atteindre le seuil.</strong> Prends rendez-vous avec Sabrina pour faire le point avant de recommencer : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>.' : ''),
+        href: url('chapitre', id), label: 'Relire le chapitre ' + id }, 'quiz.svg');
+    } else {
+      var vues = store.get('qv:' + id) || [];
+      var tirage = data.themes.map(function (t, ti) {
+        var choix = t.v.map(function (_, i) { return i; }).filter(function (i) { return vues.indexOf(ti + ':' + i) < 0; });
+        if (!choix.length) choix = t.v.map(function (_, i) { return i; });
+        var k = choix[Math.floor(Math.random() * choix.length)];
+        return { ti: ti, k: k, theme: t.t, q: preparer(t.v[k]) };
+      });
+      store.set('qv:' + id, tirage.map(function (x) { return x.ti + ':' + x.k; }));
+      var answered = 0, good = 0, NQ = tirage.length, result = el('div', 'result'), sectionsErr = [];
+      if (fq.n >= 3 && !passed(id)) {
+        var av = el('div', 'callout caution');
+        av.innerHTML = '<p><strong>Tu as déjà fait ' + fq.n + ' tentatives.</strong> Tu peux reprendre le quiz, mais une rencontre avec Sabrina t\'aidera à faire le point : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>.</p>';
+        quizEl.appendChild(av);
+      }
+      tirage.forEach(function (x, n) {
+        var q = x.q, card = questionCard(q, 'Question ' + (n + 1) + ' / ' + NQ, x.theme), fb = el('div', 'feedback');
+        card.appendChild(fb);
+        card.querySelectorAll('.opt').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var i = +b.dataset.i;
+            card.querySelectorAll('.opt').forEach(function (z) { z.disabled = true; });
+            card.querySelectorAll('.opt')[q.a].classList.add('correct');
+            if (i === q.a) { good++; fb.textContent = '✓ Bonne réponse' + (q.e ? ' · ' + q.e : ''); fb.className = 'feedback show ok'; }
+            else {
+              b.classList.add('wrong');
+              fb.textContent = '✗ La bonne réponse est ' + LETTERS[q.a] + ') ' + q.o[q.a] + (q.e ? '. Pourquoi : ' + q.e : '') + (q.s ? ' (' + q.s + ')' : '');
+              fb.className = 'feedback show ko';
+              if (q.s && sectionsErr.indexOf(q.s) < 0) sectionsErr.push(q.s);
+            }
+            answered++;
+            if (answered === NQ) finish();
+          });
+        });
+        quizEl.appendChild(card);
+      });
+      quizEl.appendChild(result);
+      var finish = function () {
+        var prev = store.get('score:' + id);
+        if (!prev || good >= prev.score) store.set('score:' + id, { score: good, total: NQ });
+        enregistrerResultat('Quiz ' + id, good, NQ);
+        var ok = good / NQ >= PASS, seuil = Math.ceil(NQ * PASS - 1e-9);
+        if (!ok && !passed(id)) store.set('qfail:' + id, { n: (fq.n || 0) + 1, t: Date.now() });
+        if (ok) store.set('qfail:' + id, { n: 0 });
+        var next = id === LASTCH ? 'examen.html' : url('chapitre', CH[CH.indexOf(id) + 1]);
+        result.innerHTML = ring(good, NQ) + '<h3>' + (ok ? 'Bravo, quiz réussi !' : 'Pas encore réussi') + '</h3>' +
+          '<p>' + good + ' bonne' + (good > 1 ? 's' : '') + ' réponse' + (good > 1 ? 's' : '') + ' sur ' + NQ + ' (seuil : ' + seuil + ' sur ' + NQ + '). ' +
+          (ok ? (id === LASTCH ? 'Tous les quiz du module sont réussis : l\'examen du module est ouvert. Pense à réviser avec le cahier pratique.' : 'Le chapitre suivant est ouvert.')
+              : 'Relis le chapitre ' + id + (sectionsErr.length ? ' (surtout : ' + sectionsErr.join('; ') + ')' : '') + '. Tu pourras reprendre le quiz dans 24 heures, avec d\'autres questions.' +
+                ((fq.n || 0) + 1 >= 3 ? ' Après trois tentatives, prends rendez-vous avec Sabrina pour faire le point.' : '')) + '</p>' +
+          '<div class="actions">' + (passed(id) ? '<a class="btn" href="' + next + '">' + (id === LASTCH ? 'Aller à l\'examen du module →' : 'Chapitre suivant →') + '</a>'
+                                                : '<a class="btn" href="' + url('chapitre', id) + '">Relire le chapitre ' + id + '</a>') + '</div>';
+        result.classList.add('show');
+        result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        paintScores(); applyLocks();
+      };
+    }
+  }
+
+  /* ---------- examen du module ---------- */
+  var examEl = document.getElementById('exam'), intro = document.getElementById('examIntro'), startBtn = document.getElementById('examStart');
+  if (examEl && window.EXAM_DATA && startBtn && !pageLock) {
+    var fe = store.get('efail') || { n: 0 };
+    var resteE = passed('exam') ? 0 : attente('efail', 48 * H);
+    var best = store.get('score:exam');
+    if (best) {
+      var info = el('div', 'callout ' + (passed('exam') ? 'note' : 'caution'));
+      info.innerHTML = '<p><strong>' + (passed('exam') ? 'Examen réussi ✓' : 'Meilleur résultat') + ' :</strong> ' + best.score + ' / ' + best.total + '.' +
+        (passed('exam') ? (+MN < LASTMOD ? ' Le module ' + (+MN + 1) + ' est ouvert. Tu peux repasser l\'examen pour t\'exercer.' : '') : '') + '</p>';
+      intro.insertBefore(info, intro.firstChild.nextSibling);
+    }
+    if (resteE) {
+      startBtn.disabled = true;
+      startBtn.textContent = 'Nouvelle tentative possible dans ' + heures(resteE);
+      var w = el('div', 'callout caution');
+      w.innerHTML = '<p>Une nouvelle tentative est possible 48 heures après un échec, avec un nouveau tirage. Relis d\'ici là les sections indiquées dans ton résultat.' +
+        (fe.n >= 2 ? ' <strong>Après deux échecs, une rencontre avec Sabrina est prévue avant la troisième tentative</strong> : <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserver une rencontre</a>.' : '') + '</p>';
+      intro.appendChild(w);
+    } else if (fe.n >= 2 && !passed('exam')) {
+      var w2 = el('div', 'callout caution');
+      w2.innerHTML = '<p><strong>Troisième tentative :</strong> as-tu fait ta rencontre avec Sabrina? Si ce n\'est pas fait, <a href="' + MENTORAT + '" target="_blank" rel="noopener">réserve-la ici</a> avant de commencer.</p>';
+      intro.appendChild(w2);
+    }
+    startBtn.addEventListener('click', function () {
+      if (startBtn.disabled) return;
+      if (!confirm('Commencer l\'examen maintenant? La minuterie démarre dès que tu confirmes.')) return;
+      intro.hidden = true; examEl.hidden = false;
+      lancerExamen();
+    });
+  }
+
+  function lancerExamen() {
+    var D = window.EXAM_DATA, vues = store.get('exam:vues') || [], TIRAGE = [];
+    D.chap.forEach(function (c) {
+      var l = shuffle(c.q.slice());
+      l.sort(function (a, b) { return (vues.indexOf(a.q) >= 0 ? 1 : 0) - (vues.indexOf(b.q) >= 0 ? 1 : 0); });
+      l.slice(0, Math.min(c.n, l.length)).forEach(function (d) { TIRAGE.push({ d: d, c: c.c, t: c.t }); });
+    });
+    var cas = null;
+    if (D.cas && D.cas.length) {
+      var dernier = store.get('exam:cas');
+      var choix = D.cas.filter(function (x) { return x.id !== dernier; });
+      cas = (choix.length ? choix : D.cas)[Math.floor(Math.random() * (choix.length || D.cas.length))];
+      store.set('exam:cas', cas.id);
+    }
+    store.set('exam:vues', TIRAGE.map(function (x) { return x.d.q; }));
+    var all = [], total = TIRAGE.length + (cas ? cas.q.length : 0), n = 0, lastC = null;
+    TIRAGE.forEach(function (x) {
+      if (x.c !== lastC) {
+        lastC = x.c;
+        var part = el('h2', 'exam-part'); part.textContent = 'Chapitre ' + x.c + ' '; part.appendChild(el('small', null, x.t)); examEl.appendChild(part);
+      }
+      ajouter(x.d, 'Chapitre ' + x.c, x.c);
+    });
+    if (cas) {
+      var p = el('h2', 'exam-part'); p.textContent = 'Mise en situation '; p.appendChild(el('small', null, cas.t)); examEl.appendChild(p);
+      var recit = el('div', 'card case');
+      recit.innerHTML = '<div class="card-tag">Cas à lire</div>';
+      cas.r.split(/\n\n+/).forEach(function (para) { recit.appendChild(el('p', null, para)); });
+      examEl.appendChild(recit);
+      cas.q.forEach(function (d) { ajouter(d, 'Mise en situation', null); });
+    }
+    function ajouter(d, src, c) {
+      n++;
+      var q = preparer(d), card = questionCard(q, 'Question ' + n + ' / ' + total, src);
+      var item = { q: q, card: card, choice: null, c: c };
+      card.querySelectorAll('.opt').forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (item.fini) return;
+          card.querySelectorAll('.opt').forEach(function (z) { z.classList.remove('selected'); });
+          b.classList.add('selected'); item.choice = +b.dataset.i; card.classList.remove('missing'); update();
+        });
+      });
+      all.push(item); examEl.appendChild(card);
+    }
+    var ebar = el('div', 'exam-bar');
+    ebar.innerHTML = '<span class="count">0 / ' + all.length + ' répondues</span><span class="timer" id="timer"></span><div class="track"><i></i></div>';
+    var submit = el('button', 'btn', 'Remettre mon examen'); submit.type = 'button'; ebar.appendChild(submit);
+    examEl.appendChild(ebar);
+    var eresult = el('div', 'result'); examEl.appendChild(eresult);
+    function update() {
+      var c = all.filter(function (x) { return x.choice !== null; }).length;
+      ebar.querySelector('.count').textContent = c + ' / ' + all.length + ' répondues';
+      ebar.querySelector('.track i').style.width = (c / all.length * 100) + '%';
+    }
+    var fin = Date.now() + (CONF.examMinutes || 45) * 60000, timerEl = ebar.querySelector('#timer'), fini = false;
+    var tick = setInterval(function () {
+      var r = Math.max(0, fin - Date.now()), m = Math.floor(r / 60000), s = Math.floor(r % 60000 / 1000);
+      timerEl.textContent = '⏱ ' + m + ':' + (s < 10 ? '0' : '') + s;
+      timerEl.classList.toggle('urgent', r < 5 * 60000);
+      if (r <= 0) { clearInterval(tick); corriger(true); }
+    }, 1000);
+    window.addEventListener('beforeunload', function (e) { if (!fini) { e.preventDefault(); e.returnValue = ''; } });
+    submit.addEventListener('click', function () {
+      var missing = all.filter(function (x) { return x.choice === null; });
+      if (missing.length) {
+        missing.forEach(function (x) { x.card.classList.add('missing'); });
+        missing[0].card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        ebar.querySelector('.count').textContent = missing.length + ' question' + (missing.length > 1 ? 's' : '') + ' sans réponse';
+        return;
+      }
+      corriger(false);
+    });
+    function corriger(tempsEcoule) {
+      if (fini) return; fini = true; clearInterval(tick);
+      var score = 0, aRevoir = [], chapsRates = [];
+      all.forEach(function (x) {
+        x.fini = true;
+        x.card.querySelectorAll('.opt').forEach(function (b) { b.disabled = true; });
+        var fb = el('div', 'feedback show');
+        if (x.choice === x.q.a) { score++; fb.textContent = '✓ Bonne réponse'; fb.className += ' ok'; }
+        else {
+          var lab = x.q.s || (x.c ? 'chapitre ' + x.c : '');
+          fb.textContent = '✗ Réponse incorrecte' + (x.choice === null ? ' (sans réponse)' : '') + (lab ? ' · À relire : ' + lab : '');
+          fb.className += ' ko';
+          if (lab && aRevoir.indexOf(lab) < 0) aRevoir.push(lab);
+          var cs = (x.q.s || '').match(new RegExp('\\b' + MN + '\\.(\\d+)\\.\\d+', 'g')) || [];
+          cs.forEach(function (sx) { var k = MN + '.' + sx.split('.')[1]; if (CH.indexOf(k) >= 0 && chapsRates.indexOf(k) < 0) chapsRates.push(k); });
+          if (x.c && chapsRates.indexOf(x.c) < 0) chapsRates.push(x.c);
+        }
+        x.card.appendChild(fb);
+      });
+      var tot = all.length, ok = score / tot >= PASS;
+      chapsRates.sort(function (a, b) { return +a.split('.')[1] - +b.split('.')[1]; });
+      var prev = store.get('score:exam');
+      if (!prev || score >= prev.score) store.set('score:exam', { score: score, total: tot });
+      enregistrerResultat('Examen du module ' + MN, score, tot);
+      if (ok) { store.set('efail', { n: 0 }); store.set('arelire', []); }
+      else if (!passed('exam')) { store.set('efail', { n: (fe.n || 0) + 1, t: Date.now() }); store.set('arelire', chapsRates); }
+      var nextMod = +MN + 1;
+      ebar.style.display = 'none';
+      eresult.innerHTML = ring(score, tot) +
+        '<h3>' + (ok ? 'Félicitations, module ' + MN + ' réussi !' : 'Module ' + MN + ' pas encore réussi') + '</h3>' +
+        (tempsEcoule ? '<p><strong>Le temps est écoulé :</strong> tes réponses ont été remises automatiquement.</p>' : '') +
+        '<p>Ta note : ' + score + ' / ' + tot + ' (seuil : ' + Math.ceil(tot * PASS - 1e-9) + ' / ' + tot + ').' +
+        (ok ? (nextMod <= LASTMOD ? ' Le module ' + nextMod + ' est maintenant ouvert.' : ' Les 12 modules sont réussis! Sabrina te contacte pour la suite : l\'étude de cas finale, l\'examen final et la validation de tes stages.')
+            : ' Relis les sections indiquées ci-dessous. Tu pourras reprendre l\'examen dans 48 heures, avec un nouveau tirage, après avoir relu ' + (chapsRates.length > 1 ? 'les chapitres ' : 'le chapitre ') + chapsRates.join(', ') + '.' +
+              ((fe.n || 0) + 1 >= 2 ? ' Après deux échecs, prends rendez-vous avec Sabrina avant ta troisième tentative.' : '')) + '</p>' +
+        (aRevoir.length ? '<div class="a-relire"><strong>Sections à relire :</strong><ul class="bullets">' + aRevoir.map(function (s) { return '<li>' + s.replace(/</g, '&lt;') + '</li>'; }).join('') + '</ul></div>' : '') +
+        '<div class="actions">' + (ok ? (nextMod <= LASTMOD ? '<a class="btn" href="../module-' + nextMod + '/index.html">Passer au module ' + nextMod + ' →</a>' : '<a class="btn" href="../index.html">Accueil de la formation</a>')
+                                     : (chapsRates.length ? '<a class="btn" href="' + url('chapitre', chapsRates[0]) + '">Relire le chapitre ' + chapsRates[0] + ' →</a>' : '<a class="btn" href="index.html">Revoir le module</a>')) + '</div>';
+      eresult.classList.add('show');
+      examEl.insertBefore(eresult, examEl.firstChild);
+      eresult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      paintScores(); applyLocks();
+    }
+  }
+
+  paintScores();
+  applyLocks();
+})();
