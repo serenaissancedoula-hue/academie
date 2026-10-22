@@ -259,7 +259,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
     </div>
     <div id="bloc-doula" hidden>
       <h2>Foundational doula training · 400 h</h2>
-      <div class="message ok" id="doula-message"><strong>🌸 Your spot is confirmed!</strong><br>Your doula training (12 modules, in French and English) will open here: you will receive an email at that time. Until then, you can complete your information, add your photo and write to me in your Messages.</div>
+      <ul class="cours" id="liste-doula"></ul>
     </div>
     <div id="bloc-ateliers" hidden>
       <h2>🎥 My live workshops</h2>
@@ -549,6 +549,15 @@ var APPLI = window.matchMedia('(display-mode: standalone)').matches || window.na
 if (APPLI) document.getElementById('lien-logo').setAttribute('href', 'espace.html#cours');
 try { emailjs.init(EMAILJS.cle); } catch (e) {}
 
+var MODULES_DOULA = [
+  { n: 1, ch: 6, titre: 'Becoming a doula: role, stance and ethics' }, { n: 2, ch: 6, titre: 'Helping relationships and communication' },
+  { n: 3, ch: 5, titre: 'Anatomy and physiology of pregnancy' }, { n: 4, ch: 5, titre: 'Special pregnancies and preparing for the birth' },
+  { n: 5, ch: 5, titre: 'Physiology of labour and birth' }, { n: 6, ch: 7, titre: 'Support during labour' },
+  { n: 7, ch: 7, titre: 'Medical interventions and special births' }, { n: 8, ch: 6, titre: 'The immediate postpartum and the newborn' },
+  { n: 9, ch: 6, titre: 'Breastfeeding basics' }, { n: 10, ch: 6, titre: 'Perinatal mental health and loss' },
+  { n: 11, ch: 6, titre: 'Diversity, cultural safety and traditions' }, { n: 12, ch: 6, titre: 'Building your doula practice' }
+];
+var DOULA_EN = [1];   // doula modules available in English; the others open in French
 var MODULES = [
   { n: 1, titre: 'Physiological, neurobiological and psychosocial foundations', ch: 9 },
   { n: 2, titre: 'Lifestyle, nutrition and non-invasive support protocols', ch: 6 },
@@ -737,7 +746,7 @@ function ligneCours(titre, sousTitre, fait, total, examOk, lien, libelle) {
   var pct = total ? Math.round(fait / total * 100) : 0;
   return '<li><div><h3>' + titre + '</h3><div class="etat' + (examOk ? ' fini' : '') + '">' + sousTitre + '</div>' +
     (total ? '<div class="barre"><i style="width:' + (examOk ? 100 : pct) + '%"></i></div>' : '') + '</div>' +
-    '<a class="btn" href="/' + lien + '">' + libelle + ' →</a></li>';
+    '<a class="btn" href="/' + lien.replace(/^\/+/, '') + '">' + libelle + ' →</a></li>';
 }
 function afficherCours() {
   var d = etat.dossier;
@@ -764,6 +773,19 @@ function afficherCours() {
     html += ligneCours('Comprehensive final exam', fin ? '✓ Course passed!' : 'After the 5 modules', fin ? 1 : 0, fin ? 1 : 0, fin, '/Formation/en/examen-final.html', fin ? 'Review' : 'Open');
     html += ligneCours('Practicum kit', 'Document templates to download', 0, 0, false, '/Formation/en/stage.html', 'Open');
     $('liste-4e').innerHTML = html;
+  }
+  if (etat.doulaOk) {
+    var hd = MODULES_DOULA.map(function (m) {
+      var fait = 0; for (var i = 1; i <= m.ch; i++) if (reussi(score('d' + m.n + ':score:' + m.n + '.' + i))) fait++;
+      var ex = reussi(score('d' + m.n + ':score:exam'));
+      var verrou = m.n > 1 && !reussi(score('d' + (m.n - 1) + ':score:exam'));
+      var en = DOULA_EN.indexOf(m.n) >= 0;
+      return ligneCours('Module ' + m.n + ' · ' + m.titre + (en ? '' : ' <small>(in French for now)</small>'), ex ? '✓ Module passed' : (verrou ? '🔒 Opens when you pass the module ' + (m.n - 1) + ' exam' : fait + ' / ' + m.ch + ' quizzes passed'), fait, m.ch, ex,
+        (en ? 'Formation/en/doula/module-' : 'Formation/doula/module-') + m.n + '/index.html', verrou ? 'Preview' : (fait === 0 && !ex ? 'Start' : (ex ? 'Review' : 'Continue')));
+    }).join('');
+    hd += ligneCours('Documents and tools', 'Syllabus, template kit and prenatal meetings guide (in French for now)', 0, 0, false, 'Formation/en/doula/documents.html', 'Open');
+    hd += ligneCours('Appendix · Regional reference guide', 'Numbers and resources for each province, the territories and France', 0, 0, false, 'Formation/en/doula/annexe.html', 'Open');
+    $('liste-doula').innerHTML = hd;
   }
   if (etat.marraine) {
     var f = 0; for (var j = 1; j <= 6; j++) if (reussi(score('marraine:score:1.' + j))) f++;

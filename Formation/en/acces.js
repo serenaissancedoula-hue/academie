@@ -21,13 +21,13 @@
   var SCRIPT = document.currentScript && document.currentScript.src;
   var RACINE = SCRIPT ? new URL(EN ? '../../' : '../', SCRIPT).href : 'https://academiesere.ca/';
   var ESPACE = RACINE + (EN ? 'en/' : '') + 'espace.html';
-  var PREFIXES = /^(m\d+|marraine|final):/;
+  var PREFIXES = /^(m\d+|d\d+|marraine|final):/;
 
   var bloc = document.getElementById('contenu-chiffre');
   if (!bloc) return;
   var FORMATION = bloc.getAttribute('data-f');
-  var NOMS = EN ? { '4e-trimestre': 'the Advanced Fourth Trimester Support program', 'marraine': 'the Breastfeeding Peer Supporter course' }
-                : { '4e-trimestre': "l'Accompagnement de pointe du 4ᵉ trimestre", 'marraine': "la formation de marraine d'allaitement" };
+  var NOMS = EN ? { '4e-trimestre': 'the Advanced Fourth Trimester Support program', 'marraine': 'the Breastfeeding Peer Supporter course', 'doula': 'the Foundational doula training' }
+                : { '4e-trimestre': "l'Accompagnement de pointe du 4ᵉ trimestre", 'marraine': "la formation de marraine d'allaitement", 'doula': 'la Formation de base de doula' };
   var sb = null, session = null, cleCrypto = null;
 
   function b64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
@@ -178,7 +178,7 @@
     sortir.innerHTML = '<span class="t">' + L('Me déconnecter', 'Log out') + '</span><span>🚪</span>';
     sortir.addEventListener('click', function () {
       envoyerProgression(true);
-      ss('cle:4e-trimestre', null); ss('cle:marraine', null);
+      ss('cle:4e-trimestre', null); ss('cle:marraine', null); ss('cle:doula', null);
       sb.auth.signOut().finally(function () { location.href = ESPACE + '?deconnectee=1'; });
     });
     m.appendChild(sortir);
@@ -279,7 +279,7 @@
         bandeauMiseAJour();
         // Déconnexion automatique après 5 minutes sans activité
         chargerScript('/securite.js').then(function () {
-          if (window.SereSecurite) SereSecurite.surveiller({ sb: sb, minutes: 5, avant: function () { envoyerProgression(true); ss('cle:4e-trimestre', null); ss('cle:marraine', null); }, apres: ESPACE });
+          if (window.SereSecurite) SereSecurite.surveiller({ sb: sb, minutes: 5, avant: function () { envoyerProgression(true); ss('cle:4e-trimestre', null); ss('cle:marraine', null); ss('cle:doula', null); }, apres: ESPACE });
         }).catch(function () {});
         if (brouillon) marquer();
       });
