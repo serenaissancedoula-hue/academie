@@ -185,7 +185,7 @@ textarea { resize: vertical; }
     <p class="sous" id="cr-quand"></p>
     <div id="cr-etat"></div>
     <h2>Présences</h2>
-    <p class="note" style="margin-bottom:10px;">Chaque choix s'enregistre aussitôt. Les étudiantes ne voient leur présence qu'après la validation de Sabrina. Les notes restent privées (toi et Sabrina seulement).</p>
+    <p class="note" style="margin-bottom:10px;">La liste se met à jour toute seule quand Sabrina valide une nouvelle étudiante. Coche seulement Présente, Retard ou Absente : chaque choix s'enregistre aussitôt. Les étudiantes ne voient leur présence qu'après la validation de Sabrina. Les notes restent privées (toi et Sabrina seulement).</p>
     <div class="resume-cr" id="cr-compte"></div>
     <div id="cr-eleves"></div>
     <h2>Compte rendu</h2>
@@ -212,6 +212,13 @@ textarea { resize: vertical; }
     </form>
   </section>
 
+  <!-- Notes de Sabrina -->
+  <section class="vue" id="vue-notes" hidden>
+    <h1>Notes de Sabrina</h1>
+    <p class="sous">Ce que Sabrina partage avec toi sur certaines étudiantes. Ces notes sont confidentielles : les étudiantes ne les voient pas.</p>
+    <div id="liste-notes"><div class="vide">Chargement…</div></div>
+  </section>
+
   <!-- Réglages -->
   <section class="vue" id="vue-reglages" hidden>
     <h1>Réglages</h1>
@@ -227,6 +234,7 @@ textarea { resize: vertical; }
 <nav class="nav" id="nav" hidden>
   <button data-v="ateliers" class="actif"><span>🎥</span>Ateliers</button>
   <button data-v="messages"><span>💬</span>Messages<i class="pastille" id="nb-msg" hidden></i></button>
+  <button data-v="notes"><span>📌</span>Notes</button>
   <button data-v="reglages"><span>⚙️</span>Réglages</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -239,7 +247,7 @@ var VAPID = 'BA1eSxrp55R_nk6-rHpCI0Pi6OjPh-0MIOmlG2XZOLEptXG0xFUS4eB9aKAl3qQelLJ
 var ICI = 'https://academiesere.ca/formatrice.html';
 var sb = window.supabase.createClient(SB_URL, SB_CLE, window.SereSecurite ? SereSecurite.options() : undefined);
 var NOMS = { doula: 'Doula de base', '4e-trimestre': '4ᵉ trimestre', marraine: 'Marraine d\'allaitement', toutes: 'Toutes les formations' };
-var S = { session: null, fiche: null, ateliers: [], cr: {}, atelier: null, eleves: [], pres: {}, notes: {}, chat: null, etudiantes: [], msgs: [], gardien: null, reglages: false, minuterie: null };
+var S = { notesS: [], session: null, fiche: null, ateliers: [], cr: {}, atelier: null, eleves: [], pres: {}, notes: {}, chat: null, etudiantes: [], msgs: [], gardien: null, reglages: false, minuterie: null };
 
 function $(id) { return document.getElementById(id); }
 function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
@@ -349,10 +357,11 @@ function route() {
   var h = (location.hash || '#ateliers').slice(1);
   if (h.indexOf('cr-') === 0) { ouvrirCR(+h.slice(3)); return; }
   if (h.indexOf('chat-') === 0) { ouvrirChat(h.slice(5)); return; }
-  if (['ateliers', 'messages', 'reglages'].indexOf(h) < 0) h = 'ateliers';
+  if (['ateliers', 'messages', 'notes', 'reglages'].indexOf(h) < 0) h = 'ateliers';
   vue(h);
   if (h === 'ateliers') chargerAteliers();
   if (h === 'messages') dessinerConversations();
+  if (h === 'notes') chargerNotes().then(dessinerNotes);
 }
 window.addEventListener('hashchange', route);
 $('btn-sortir').addEventListener('click', function () { sb.auth.signOut().then(function () { location.href = 'formatrice.html?deconnectee=1'; }); });
@@ -446,7 +455,8 @@ function ouvrirCR(id) {
     sb.rpc('etudiantes_atelier', { p_atelier: id }),
     sb.from('presences_ateliers').select('user_id,statut,camera_fermee').eq('atelier_id', id),
     sb.from('notes_atelier').select('user_id,note').eq('atelier_id', id),
-    sb.from('comptes_rendus').select('*').eq('atelier_id', id).maybeSingle()
+    sb.from('comptes_rendus').select('*').eq('atelier_id', id).maybeSingle(),
+    chargerNotes()
   ]).then(function (r) {
     var a = r[0].data; if (!a) { $('cr-eleves').innerHTML = '<div class="message erreur">Atelier introuvable.</div>'; return; }
     S.atelier = a; S.eleves = (r[1] && r[1].data) || []; S.pres = {}; S.notes = {};
@@ -479,7 +489,9 @@ function dessinerEleves() {
   var d = S.fige ? ' disabled' : '';
   $('cr-eleves').innerHTML = S.eleves.map(function (e) {
     var x = S.pres[e.user_id] || {}, s = x.statut;
+    var ns = notesDe(e.user_id);
     return '<div class="eleve" data-u="' + esc(e.user_id) + '"><div class="eleve-nom">' + esc((e.prenom || '') + ' ' + (e.nom || '')) + '</div>' +
+      (ns.length ? '<div class="note" style="background:#fbf5ef;border-radius:10px;padding:8px 10px;margin-bottom:8px;color:var(--texte);">' + ns.map(function (n) { return '📌 <em>Sabrina :</em> ' + esc(n.texte); }).join('<br>') + '</div>' : '') +
       '<div class="choix">' +
       '<button type="button" data-s="presente"' + d + ' class="' + (s === 'presente' ? 'on' : '') + '">✅ Présente</button>' +
       '<button type="button" data-s="retard"' + d + ' class="' + (s === 'retard' ? 'on' : '') + '">⏰ Retard</button>' +
@@ -586,6 +598,22 @@ $('form-chat').addEventListener('submit', function (e) {
   });
 });
 $('chat-texte').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !/Mobi|Android/i.test(navigator.userAgent)) { e.preventDefault(); $('form-chat').requestSubmit(); } });
+
+/* ---------- Notes de Sabrina ---------- */
+function chargerNotes() {
+  return sb.rpc('mes_notes_partagees').then(function (r) { S.notesS = (r && r.data) || []; });
+}
+function notesDe(u) { return S.notesS.filter(function (n) { return n.etudiante === u; }); }
+function dessinerNotes() {
+  var par = {}, ordre = [];
+  S.notesS.forEach(function (n) { if (!par[n.etudiante]) { par[n.etudiante] = []; ordre.push(n.etudiante); } par[n.etudiante].push(n); });
+  $('liste-notes').innerHTML = ordre.length ? ordre.map(function (u) {
+    var l = par[u];
+    return '<div class="at"><div class="at-titre">' + esc((l[0].prenom || '') + ' ' + (l[0].nom || '')) + '</div>' + l.map(function (n) {
+      return '<div style="white-space:pre-line;font-size:.9rem;margin-top:6px;">📌 ' + esc(n.texte) + '</div><div class="at-info">' + esc(heure(n.maj_le)) + '</div>';
+    }).join('') + '</div>';
+  }).join('') : '<div class="vide">Sabrina n\'a partagé aucune note avec toi pour l\'instant.</div>';
+}
 
 /* ---------- Démarrage ---------- */
 if (params.get('token_hash')) preparerConfirmation();

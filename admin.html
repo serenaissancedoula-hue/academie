@@ -824,6 +824,7 @@ function ouvrirFiche(id, rafraichir) {
     '<div class="carte"><h3 style="margin-bottom:6px;">Notes privées</h3><p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Visibles seulement par toi.</p>' +
     '<textarea id="f-notes" rows="3" placeholder="Ex. : paiement 2/4 reçu le…"></textarea><div class="actions" style="margin-top:8px;"><button class="btn gris" data-a="notes">Enregistrer la note</button></div></div>' +
 
+    (e.user_id ? '<div class="carte"><h3 style="margin-bottom:6px;">📌 Notes pour les formatrices</h3><p style="font-size:.8rem;color:var(--doux);margin-bottom:8px;">Choisis quelles formatrices voient chaque note. L\'étudiante ne les voit jamais.</p><div id="f-notes-formatrices">Chargement…</div></div>' : '') +
     '<div class="carte"><h3 style="margin-bottom:10px;">Compte de connexion</h3><div class="actions">' +
     '<button class="btn gris" data-a="reconfirmer">Renvoyer le courriel de confirmation</button>' +
     '<button class="btn gris" data-a="motdepasse">Envoyer un lien « nouveau mot de passe »</button></div></div>' +
@@ -842,6 +843,7 @@ $('fiche-fermer').addEventListener('click', fermerFiche);
 
 function chargerDetails(e) {
   sb.from('notes_admin').select('texte').eq('etudiante_id', e.id).maybeSingle().then(function (r) { if (r.data && $('f-notes')) $('f-notes').value = r.data.texte || ''; });
+  if (e.user_id && window.SereAteliers && $('f-notes-formatrices')) SereAteliers.notesEtudiante($('f-notes-formatrices'), e.user_id);
   $('f-compte').textContent = e.user_id ? 'créé ✓' : 'pas encore créé (elle n\'a pas fini l\'inscription)';
   if (e.user_id) sb.storage.from('rapports').list(e.user_id, { sortBy: { column: 'created_at', order: 'desc' } }).then(function (r) {
     var l = (r.data || []).filter(function (x) { return x.name && x.name.charAt(0) !== '.'; });

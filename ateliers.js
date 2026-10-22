@@ -199,7 +199,7 @@
   });
 
   /* ================= Admin ================= */
-  var A = { sb: null, toast: function () {}, liste: [], etudiantes: [], formatrices: [], cr: {}, pres: {}, notes: {}, msgs: [], branche: false, edition: null };
+  var A = { sb: null, toast: function () {}, liste: [], etudiantes: [], formatrices: [], cr: {}, pres: {}, notes: {}, msgs: [], roster: {}, branche: false, edition: null };
   var FORMS = ['doula', '4e-trimestre', 'marraine'];
 
   function aAcces(lignes, f) {
@@ -218,6 +218,17 @@
     return Object.keys(par).filter(function (u) { return aAcces(par[u], f); }).map(function (u) {
       var e = par[u][0]; return { user_id: u, nom: ((e.prenom || '') + ' ' + (e.nom || '')).trim() || e.courriel };
     }).sort(function (x, y) { return x.nom.localeCompare(y.nom, 'fr'); });
+  }
+  // Liste d'un atelier : automatique (étudiantes validées) moins les retirées, plus les ajoutées
+  function participantes(a) {
+    var base = inscrites(a.formation), vus = {};
+    var l = base.filter(function (g) { return A.roster[a.id + '|' + g.user_id] !== false; });
+    l.forEach(function (g) { vus[g.user_id] = 1; });
+    Object.keys(A.roster).forEach(function (k) {
+      var p = k.split('|'); if (+p[0] !== a.id || A.roster[k] !== true || vus[p[1]]) return;
+      l.push({ user_id: p[1], nom: nomEtudiante(p[1]), ajoutee: true });
+    });
+    return l.sort(function (x, y) { return x.nom.localeCompare(y.nom, 'fr'); });
   }
   function nomEtudiante(u) {
     var e = A.etudiantes.filter(function (x) { return x.user_id === u; })[0];
@@ -264,6 +275,23 @@
       });
     });
     $('at-annuler').addEventListener('click', annulerEdition);
+    $('liste-ateliers-admin').addEventListener('change', function (e) {
+      var c = e.target;
+      if (c.dataset && c.dataset.liste) {
+        var p = c.dataset.liste.split('|');
+        A.sb.from('liste_atelier').upsert({ atelier_id: +p[0], user_id: p[1], inclus: c.checked }, { onConflict: 'atelier_id,user_id' }).then(function (r) {
+          if (r.error) { c.checked = !c.checked; A.toast('Impossible : ' + r.error.message); return; }
+          A.toast(c.checked ? '✓ Ajoutée à la liste' : 'Retirée de la liste'); chargerAdmin();
+        });
+      }
+      if (c.dataset && c.dataset.ajout) {
+        if (!c.value) return;
+        A.sb.from('liste_atelier').upsert({ atelier_id: +c.dataset.ajout, user_id: c.value, inclus: true }, { onConflict: 'atelier_id,user_id' }).then(function (r) {
+          if (r.error) { A.toast('Impossible : ' + r.error.message); return; }
+          A.toast('✓ Ajoutée à la liste'); chargerAdmin();
+        });
+      }
+    });
     $('liste-ateliers-admin').addEventListener('click', function (e) {
       var t = e.target.closest('[data-at]'); if (!t) return; e.preventDefault();
       var id = +t.dataset.at, a = A.liste.filter(function (x) { return x.id === id; })[0]; if (!a) return;
@@ -278,6 +306,8 @@
         $('at-formatrice').value = a.formatrice_id ? String(a.formatrice_id) : '';
         $('at-bouton').textContent = '💾 Enregistrer les changements'; $('at-annuler').hidden = false;
         $('form-atelier').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (act === 'liste') {
+        var zl = $('at-liste-' + id); if (zl) { zl.hidden = !zl.hidden; A.ouverte = zl.hidden ? null : id; }
       } else if (act === 'cr') {
         var z = $('at-cr-' + id); if (z) z.hidden = !z.hidden;
       } else if (act === 'valider') {
@@ -328,8 +358,26 @@
     $('at-bouton').textContent = '🎥 Ajouter l\'atelier'; $('at-annuler').hidden = true;
   }
 
+  function vueListe(a) {
+    var base = inscrites(a.formation), dans = {};
+    var lignes = base.map(function (g) {
+      var ok = A.roster[a.id + '|' + g.user_id] !== false; dans[g.user_id] = 1;
+      return '<label><input type="checkbox" data-liste="' + a.id + '|' + g.user_id + '"' + (ok ? ' checked' : '') + '> ' + esc(g.nom) + '</label>';
+    });
+    Object.keys(A.roster).forEach(function (k) {
+      var p = k.split('|'); if (+p[0] !== a.id || dans[p[1]]) return; dans[p[1]] = 1;
+      lignes.push('<label><input type="checkbox" data-liste="' + a.id + '|' + p[1] + '"' + (A.roster[k] ? ' checked' : '') + '> ' + esc(nomEtudiante(p[1])) + ' <span class="at-detail">(ajoutée)</span></label>');
+    });
+    var vus = {}, autres = A.etudiantes.filter(function (e) { if (!e.user_id || dans[e.user_id] || vus[e.user_id]) return false; vus[e.user_id] = 1; return true; });
+    return '<div class="at-pres" id="at-liste-' + a.id + '"' + (A.ouverte === a.id ? '' : ' hidden') + '>' +
+      '<div class="at-detail">Les étudiantes validées de cette formation s\'ajoutent toutes seules. Décoche pour retirer une étudiante de cet atelier ; elle ne le verra plus. La feuille de présence de la formatrice suit cette liste.</div>' +
+      (lignes.length ? lignes.join('') : '<div class="at-detail">Aucune étudiante pour l\'instant.</div>') +
+      (autres.length ? '<select data-ajout="' + a.id + '" style="margin-top:6px;"><option value="">➕ Ajouter une autre étudiante…</option>' + autres.map(function (e) { return '<option value="' + esc(e.user_id) + '">' + esc(((e.prenom || '') + ' ' + (e.nom || '')).trim()) + '</option>'; }).join('') + '</select>' : '') +
+      '</div>';
+  }
+
   function vueCR(a) {
-    var c = A.cr[a.id], gens = inscrites(a.formation);
+    var c = A.cr[a.id], gens = participantes(a);
     var lignes = gens.map(function (g) {
       var p = A.pres[a.id + '|' + g.user_id], n = A.notes[a.id + '|' + g.user_id];
       var st = !p ? '<span style="color:#c0392b">❌ Absente (non notée)</span>' : p.statut === 'presente' ? '<span style="color:var(--vert,#2f6b2a)">✅ Présente</span>' : p.statut === 'retard' ? '<span style="color:#9a6a12">⏰ En retard</span>' : '<span style="color:#c0392b">❌ Absente</span>';
@@ -356,13 +404,15 @@
       A.sb.from('notes_atelier').select('atelier_id,user_id,note'),
       A.sb.from('etudiantes').select('user_id,prenom,nom,courriel,formation,statut,acces_marraine,suspendu,created_at').order('created_at', { ascending: false }),
       A.sb.from('formatrices').select('*').order('prenom'),
-      A.sb.from('messages_formatrices').select('*').order('created_at')
+      A.sb.from('messages_formatrices').select('*').order('created_at'),
+      A.sb.from('liste_atelier').select('atelier_id,user_id,inclus')
     ]).then(function (r) {
       if (r[0].error) { el.innerHTML = '<div class="vide">Impossible de charger les ateliers : ' + esc(r[0].error.message) + '</div>'; return; }
       A.liste = r[0].data || []; A.etudiantes = (r[4] && r[4].data) || []; A.formatrices = (r[5] && r[5].data) || []; A.msgs = (r[6] && r[6].data) || [];
       A.cr = {}; ((r[1] && r[1].data) || []).forEach(function (c) { A.cr[c.atelier_id] = c; });
       A.pres = {}; ((r[2] && r[2].data) || []).forEach(function (p) { A.pres[p.atelier_id + '|' + p.user_id] = p; });
       A.notes = {}; ((r[3] && r[3].data) || []).forEach(function (n) { A.notes[n.atelier_id + '|' + n.user_id] = n.note; });
+      A.roster = {}; ((r[7] && r[7].data) || []).forEach(function (l) { A.roster[l.atelier_id + '|' + l.user_id] = l.inclus; });
 
       var sel = $('at-formatrice');
       if (sel) { var v = sel.value; sel.innerHTML = '<option value="">Aucune (je m\'en occupe)</option>' + A.formatrices.filter(function (f) { return f.actif; }).map(function (f) { return '<option value="' + f.id + '">' + esc(f.prenom + ' ' + (f.nom || '')) + '</option>'; }).join(''); sel.value = v; }
@@ -374,7 +424,7 @@
       var avenir = A.liste.filter(function (a) { return fin(a).getTime() > n; });
       var passes = A.liste.filter(function (a) { return fin(a).getTime() <= n; }).reverse();
       function carte(a) {
-        var gens = inscrites(a.formation), c = A.cr[a.id], fo = nomFormatrice(a.formatrice_id), commence = n >= new Date(a.debut).getTime();
+        var gens = participantes(a), c = A.cr[a.id], fo = nomFormatrice(a.formatrice_id), commence = n >= new Date(a.debut).getTime();
         var etat = !commence ? '' : !c ? '<div class="at-detail" style="margin-top:6px;color:#9a6a12;">⏳ ' + (fo ? 'En attente du compte rendu de ' + esc(fo) : 'Aucune formatrice assignée : pas de compte rendu') + '</div>'
           : c.statut === 'valide' ? '<div class="at-detail" style="margin-top:6px;color:var(--vert,#2f6b2a);font-weight:700;">✓ Compte rendu validé</div>'
           : c.statut === 'a_revoir' ? '<div class="at-detail" style="margin-top:6px;color:#c0392b;font-weight:700;">✏️ Correction demandée</div>'
@@ -386,9 +436,10 @@
           etat +
           '<div class="at-actions">' +
           (c ? '<a href="#" class="btn' + (c.statut === 'soumis' ? '' : ' at-gris') + '" data-at="' + a.id + '" data-action="cr">📝 Compte rendu</a>' : '') +
+          '<a href="#" class="btn at-gris" data-at="' + a.id + '" data-action="liste">👥 Liste (' + gens.length + ')</a>' +
           '<a href="#" class="btn at-gris" data-at="' + a.id + '" data-action="modifier">✏️ Modifier</a>' +
           '<a href="#" class="btn at-gris" data-at="' + a.id + '" data-action="retirer">Retirer</a></div>' +
-          (c ? vueCR(a) : '') + '</div>';
+          vueListe(a) + (c ? vueCR(a) : '') + '</div>';
       }
       el.innerHTML = (avenir.length ? '<h4 style="margin:4px 0 8px;">À venir</h4>' + avenir.map(carte).join('') : '<div class="vide" style="padding:10px;">Aucun atelier à venir.</div>') +
         (passes.length ? '<h4 style="margin:14px 0 8px;">Passés</h4>' + passes.map(carte).join('') : '');
@@ -417,5 +468,47 @@
     }).join('') : '<div class="vide" style="padding:10px;">Aucune formatrice inscrite pour l\'instant.</div>';
   }
 
-  window.SereAteliers = { admin: admin, chargerAdmin: chargerAdmin, etudiante: etudiante };
+  /* ---------- Notes de Sabrina pour les formatrices (fiche étudiante) ---------- */
+  function notesEtudiante(el, uid) {
+    if (!A.sb || !el) return; css();
+    Promise.all([
+      A.sb.from('notes_partagees').select('*').eq('etudiante', uid).order('maj_le', { ascending: false }),
+      A.sb.from('formatrices').select('id,prenom,nom,actif').order('prenom')
+    ]).then(function (r) {
+      var notes = (r[0] && r[0].data) || [], fos = ((r[1] && r[1].data) || []);
+      var actives = fos.filter(function (f) { return f.actif; });
+      function nom(id) { var f = fos.filter(function (x) { return x.id === id; })[0]; return f ? f.prenom : '?'; }
+      if (!fos.length) { el.innerHTML = '<div class="at-detail">Ajoute d\'abord tes formatrices dans Outils → Formatrices.</div>'; return; }
+      el.innerHTML = notes.map(function (n) {
+        return '<div class="at-item"><div style="white-space:pre-line;font-size:.9rem;">' + esc(n.texte) + '</div>' +
+          '<div class="at-detail" style="margin-top:4px;">👁️ ' + (n.formatrices.length ? n.formatrices.map(nom).map(esc).join(', ') : 'aucune formatrice') + ' · ' + esc(court(n.maj_le)) + '</div>' +
+          '<div class="at-actions"><a href="#" class="btn at-gris" data-np-suppr="' + n.id + '">Retirer</a></div></div>';
+      }).join('') +
+        '<form data-np-form style="display:flex;flex-direction:column;gap:8px;">' +
+        '<textarea rows="3" maxlength="3000" placeholder="Ex. : a besoin de pauses fréquentes ; préfère être appelée par son deuxième prénom…"></textarea>' +
+        '<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:.86rem;">' + actives.map(function (f) {
+          return '<label style="display:flex;gap:6px;align-items:center;"><input type="checkbox" value="' + f.id + '" style="width:auto;"> ' + esc(f.prenom + ' ' + (f.nom || '')) + '</label>';
+        }).join('') + '</div>' +
+        '<div class="actions"><button class="btn gris" type="submit">📌 Partager la note</button></div></form>';
+      var form = el.querySelector('[data-np-form]');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var t = form.querySelector('textarea').value.trim();
+        var ids = Array.prototype.map.call(form.querySelectorAll('input:checked'), function (c) { return +c.value; });
+        if (!t) { A.toast('Écris la note.'); return; }
+        if (!ids.length) { A.toast('Coche au moins une formatrice.'); return; }
+        A.sb.from('notes_partagees').insert({ etudiante: uid, texte: t, formatrices: ids }).then(function (r) {
+          A.toast(r.error ? 'Impossible : ' + r.error.message : '📌 Note partagée'); notesEtudiante(el, uid);
+        });
+      });
+      el.querySelectorAll('[data-np-suppr]').forEach(function (b) {
+        b.addEventListener('click', function (e) {
+          e.preventDefault(); if (!confirm('Retirer cette note ? Les formatrices ne la verront plus.')) return;
+          A.sb.from('notes_partagees').delete().eq('id', +b.dataset.npSuppr).then(function (r) { A.toast(r.error ? 'Impossible : ' + r.error.message : 'Note retirée'); notesEtudiante(el, uid); });
+        });
+      });
+    });
+  }
+
+  window.SereAteliers = { admin: admin, chargerAdmin: chargerAdmin, etudiante: etudiante, notesEtudiante: notesEtudiante };
 })();
