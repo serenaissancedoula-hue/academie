@@ -1356,7 +1356,8 @@ function depuis(d) {
 }
 function chargerAvis() {
   return sb.from('avis').select('*').order('created_at', { ascending: false }).limit(60).then(function (r) {
-    avis = (r && r.data) || [];
+    /* Les messages de l'appli Sérénaissance (doulas/familles) ne s'affichent pas ici. */
+    avis = ((r && r.data) || []).filter(function (x) { return !/\(appli\)/i.test(x.titre || '') && !/doula-app|\/parents\//i.test(x.url || ''); });
     var n = avis.filter(function (a) { return !a.lu; }).length;
     $('nb-avis').hidden = !n; $('nb-avis').textContent = n > 99 ? '99+' : n;
     if (navigator.setAppBadge) { (n ? navigator.setAppBadge(n) : navigator.clearAppBadge()).catch(function () {}); }
