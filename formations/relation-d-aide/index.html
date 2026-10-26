@@ -27,6 +27,7 @@
     <meta name="apple-mobile-web-app-title" content="Sérénaissance">
     <link rel="apple-touch-icon" href="/icones/apple-touch-icon.png?v=2">
     <script src="/langue.js"></script>
+<script src="/devise.js"></script>
 <script src="/stats.js" defer></script>
 <script src="/infolettre.js" defer></script>
 <script src="/blogue.js" defer></script>
@@ -3674,8 +3675,8 @@
         // Liens Stripe au prix régulier (550 $)
         const LIENS_STRIPE_REGULIER = {
             '1': 'https://buy.stripe.com/00wcMYg9W0gE3OccDMffy0y',
-            '2': 'https://buy.stripe.com/5kQ28k2j65AYacAdHQffy0z',
-            '4': 'https://buy.stripe.com/8x2eV6cXK5AYacA7jsffy0A'
+            '2': 'https://buy.stripe.com/9B69AMaPC2oMacA1Z8ffy04',
+            '4': 'https://buy.stripe.com/9B6aEQbTG4wUesQeLUffy05'
         };
         // Liens de l'offre : le lien régulier avec le code promo Stripe déjà appliqué
         const LIENS_STRIPE_OFFRE = {
@@ -3893,7 +3894,8 @@
             } else {
                 choixPaiement = [];
                 if (offreEstActive()) choixPaiement.push(['offre', "🔥 Offre de lancement — 250 $ (au lieu de 550 $) + marraine d'allaitement en cadeau · paiement unique"]);
-                choixPaiement.push(['1', 'Paiement complet — 550 $'], ['2', '2 versements — 275 $ chacun'], ['4', '4 versements aux 2 semaines — 137,50 $ chacun']);
+                if (window.SereDevise && SereDevise.euro) choixPaiement.push(['1', 'Paiement complet — 550 $']); // en euros : paiement complet seulement
+                else choixPaiement.push(['1', 'Paiement complet — 550 $'], ['2', '2 versements — 275 $ chacun'], ['4', '4 versements aux 2 semaines — 137,50 $ chacun']);
             }
             select.innerHTML = '<option value="">-- Choisis ton option de paiement --</option>' +
                 choixPaiement.map(c => '<option value="' + c[0] + '">' + c[1] + '</option>').join('');

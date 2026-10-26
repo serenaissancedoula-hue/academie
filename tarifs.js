@@ -25,8 +25,8 @@
       diplome: true, marraine: false,
       options: {
         '1': { prix: '550 $', detail: 'paiement complet', en: { prix: '$550', detail: 'full payment' }, lien: 'https://buy.stripe.com/00wcMYg9W0gE3OccDMffy0y' },
-        '2': { prix: '2 × 275 $', detail: '2 versements', en: { prix: '2 × $275', detail: '2 instalments' }, lien: 'https://buy.stripe.com/5kQ28k2j65AYacAdHQffy0z' },
-        '4': { prix: '4 × 137,50 $', detail: '4 versements aux 2 semaines', en: { prix: '4 × $137.50', detail: '4 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/8x2eV6cXK5AYacA7jsffy0A' }
+        '2': { prix: '2 × 275 $', detail: '2 versements', en: { prix: '2 × $275', detail: '2 instalments' }, lien: 'https://buy.stripe.com/9B69AMaPC2oMacA1Z8ffy04' },
+        '4': { prix: '4 × 137,50 $', detail: '4 versements aux 2 semaines', en: { prix: '4 × $137.50', detail: '4 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/9B6aEQbTG4wUesQeLUffy05' }
       }
     },
     'marraine': {
