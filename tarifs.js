@@ -13,9 +13,9 @@
       diplome: false, marraine: false, cohorte: 'en continu', places: null,
       prixRegulier: '1 950 $',
       options: {
-        '1': { prix: '1 950 $', detail: 'paiement complet', en: { prix: '$1,950', detail: 'full payment' }, lien: 'https://buy.stripe.com/fZueV6e1O7J6esQbzIffy0v' },
-        '3': { prix: '3 × 650 $', detail: '3 versements', en: { prix: '3 × $650', detail: '3 instalments' }, lien: 'https://buy.stripe.com/14A6oA5vifby1G4avEffy0w' },
-        '6': { prix: '6 × 325 $', detail: '6 versements aux 2 semaines', en: { prix: '6 × $325', detail: '6 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/28EcMYe1Oe7u84sdHQffy0x' }
+        '1': { prix: '1 950 $', detail: 'paiement complet', en: { prix: '$1,950', detail: 'full payment' }, lien: 'https://buy.stripe.com/fZu5kw0aY2oMgAYbzIffy0J' },
+        '3': { prix: '3 × 650 $', detail: '3 versements', en: { prix: '3 × $650', detail: '3 instalments' }, lien: 'https://buy.stripe.com/3cIfZa6zme7u84s5bkffy0K' },
+        '6': { prix: '6 × 325 $', detail: '6 versements aux 2 semaines', en: { prix: '6 × $325', detail: '6 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/fZu5kw7DqgfC1G45bkffy0L' }
       }
     },
     '4e-trimestre': {
