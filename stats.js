@@ -20,6 +20,8 @@
     if (navigator.doNotTrack === '1' || window.doNotTrack === '1' || navigator.globalPrivacyControl) return;
     if (localStorage.getItem('sere-admin') === '1') return;
     if (/^(localhost|127\.)/.test(location.hostname)) return;
+    // Robots et navigateurs automatisés : pas comptés
+    if (navigator.webdriver || /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit/i.test(navigator.userAgent || '')) return;
   } catch (e) { return; }
   var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co', SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
   var langue = (document.documentElement.lang || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr';
@@ -72,6 +74,8 @@
     };
     if (tz === 'America/Toronto' || tz === 'America/Nipigon' || tz === 'America/Thunder_Bay') return fr ? 'Québec (probable)' : 'Ontario (probable)';
     if (R[tz]) return R[tz];
+    // Plusieurs téléphones de l'Est du Canada indiquent le fuseau « New_York » : en français, c'est presque toujours le Québec ou le N.-B.
+    if ((tz === 'America/New_York' || tz === 'America/Detroit') && fr) return 'Est du Canada (probable)';
     if (/^America\/(New_York|Chicago|Denver|Los_Angeles|Phoenix|Anchorage|Detroit|Indiana|Kentucky|Boise)/.test(tz) || tz === 'Pacific/Honolulu') return 'États-Unis';
     if (/^Europe\//.test(tz)) return 'Europe (autre)';
     if (/^Africa\//.test(tz)) return 'Afrique';
