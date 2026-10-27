@@ -1,5 +1,5 @@
 /* =========================================================
-   Formation de base de doula 400 h — menu, verrous, quiz, examens
+   Formation de base de doula 450 h — menu, verrous, quiz, examens
    ========================================================= */
 (function () {
   'use strict';

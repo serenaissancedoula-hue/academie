@@ -567,7 +567,7 @@ function paiement(v) {
   var s = String(v || '');
   if (s.indexOf('bon:') === 0) return '🎁 Carte-cadeau ' + s.slice(4);
   if (s === 'marraine') return "Marraine · 175 $";
-  if (s.indexOf('doula-') === 0) return 'Doula 400 h · ' + ({ '1': '1 950 $ en 1 paiement', '3': '3 × 650 $', '6': '6 × 325 $ aux 2 semaines' }[s.split('-')[1]] || s);
+  if (s.indexOf('doula-') === 0) return 'Doula 450 h · ' + ({ '1': '1 950 $ en 1 paiement', '3': '3 × 650 $', '6': '6 × 325 $ aux 2 semaines' }[s.split('-')[1]] || s);
   if (s.indexOf('lien-manuel') === 0) return '🔗 Lien manuel' + (s.indexOf('combo') >= 0 ? ' · combo (les 2)' : s.indexOf('cadeau') >= 0 ? ' · 4ᵉ + marraine en cadeau' : '') + ' (vérifier le paiement)';
   if (s.indexOf('combo') === 0) return 'Combo (4ᵉ + marraine) · ' + ({ '1': 'paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[1]] || '');
   var base = { '1': 'Paiement complet', '2': '2 versements', '4': '4 versements' }[s.split('-')[0]] || s;
@@ -576,7 +576,7 @@ function paiement(v) {
 function pastilles(e) {
   var p = '';
   if (e.suspendu) p += '<span class="pastille p-suspendu">⛔ Suspendue</span>';
-  if (e.formation === 'doula') p += doulaOk(e) ? '<span class="pastille p-valide">Doula 400 h · place confirmée</span>' : '<span class="pastille p-attente">Doula 400 h · en attente</span>';
+  if (e.formation === 'doula') p += doulaOk(e) ? '<span class="pastille p-valide">Doula 450 h · place confirmée</span>' : '<span class="pastille p-attente">Doula 450 h · en attente</span>';
   else if (e.formation === 'marraine') p += e.acces_marraine ? '<span class="pastille p-valide">Marraine · accès ouvert</span>' : '<span class="pastille p-attente">Marraine · en attente</span>';
   else {
     p += valide(e) ? '<span class="pastille p-valide">4ᵉ trimestre · validée</span>' : '<span class="pastille p-attente">4ᵉ trimestre · en attente</span>';
@@ -801,7 +801,7 @@ function ouvrirFiche(id, rafraichir) {
   var html =
     '<div class="carte"><div>' + pastilles(e) + '</div>' +
     (e.suspendu ? '<p class="infos-ligne ko" style="margin-top:8px;">⛔ Accès suspendu' + (e.motif_suspension ? ' : ' + esc(e.motif_suspension) : '') + '</p>' : '') +
-    '<p class="infos-ligne" style="margin-top:8px;"><b>Formation :</b> ' + (fd ? 'Formation de base de doula · 400 h' : f ? "Marraine d'allaitement" : 'Accompagnement de pointe du 4ᵉ trimestre') + '</p>' +
+    '<p class="infos-ligne" style="margin-top:8px;"><b>Formation :</b> ' + (fd ? 'Formation de base de doula · 450 h' : f ? "Marraine d'allaitement" : 'Accompagnement de pointe du 4ᵉ trimestre') + '</p>' +
     '<p class="infos-ligne"><b>Paiement :</b> ' + esc(paiement(e.option_paiement)) + '</p>' +
     '<p class="infos-ligne"><b>Inscrite le :</b> ' + jour(e.created_at) + '</p>' +
     '<p class="infos-ligne"><b>Langue :</b> ' + (e.langue === 'en' ? '🇬🇧 English (courriels et certificat en anglais)' : 'Français') + '</p>' +
@@ -928,11 +928,11 @@ function courrielBienvenue(e) {
 function courrielDoula(e) {
   return courrielBilingue(e, { fr: 'Ta place est confirmée · formation de doula 🌸', en: 'Your spot is confirmed · doula training 🌸' }, {
     accroche: 'Bienvenue', titre: (e.prenom || '') + ', ta place est confirmée !',
-    message: 'Ton paiement est bien reçu et ta place est confirmée dans la formation de base de doula (400 h). Quelle joie de t\'accueillir ! 💕',
+    message: 'Ton paiement est bien reçu et ta place est confirmée dans la formation de base de doula (450 h). Quelle joie de t\'accueillir ! 💕',
     details: 'Ta formation s\'ouvrira dans ton compte et tu recevras un courriel à ce moment-là. D\'ici là, connecte-toi pour compléter tes informations et ajouter ta photo. Au besoin, écris-moi dans tes Messages ou appelle-moi au 506-759-2044.',
     bouton: 'Ouvrir mon compte →', lien: ESPACE_FR }, {
     accroche: 'Welcome', titre: (e.prenom || '') + ', your spot is confirmed!',
-    message: 'Your payment has been received and your spot is confirmed in the foundational doula training (400 h, in French and English). I am so happy to welcome you! 💕',
+    message: 'Your payment has been received and your spot is confirmed in the foundational doula training (450 h, in French and English). I am so happy to welcome you! 💕',
     details: 'Your training will open in your account, and you will receive an email at that time. Until then, log in to complete your information and add your photo. If you have any questions, write to me in your Messages or call me at 506-759-2044.',
     bouton: 'Open my account →', lien: ESPACE_EN });
 }

@@ -11,7 +11,7 @@
   var TEXTES = {
     fr: {
       'doula': {
-        titre: 'Formation de base de doula · 400 h',
+        titre: 'Formation de base de doula · 450 h',
         corps: [
           'Bienvenue à l\'Académie Sérénaissance ! Je suis tellement heureuse que tu aies choisi la <strong>Formation de base de doula</strong> pour faire tes premiers pas dans ce beau métier. Merci de ta confiance : elle me touche profondément.',
           'Choisir de devenir doula, c\'est choisir d\'être là pour les familles dans l\'un des moments les plus importants de leur vie. Au fil des 12 modules, tu vas apprendre à accompagner avant, pendant et après la naissance, avec rigueur et douceur, en gardant toujours notre boussole : <em>observer, rassurer, référer</em>. Tu vas aussi apprendre à prendre soin de toi, parce qu\'une doula qui dure est une doula qui se respecte.',
@@ -67,7 +67,7 @@
     },
     en: {
       'doula': {
-        titre: 'Foundational doula training · 400 h',
+        titre: 'Foundational doula training · 450 h',
         corps: [
           'Welcome to Académie Sérénaissance! I\'m so happy you chose the <strong>Foundational doula training</strong> to take your first steps in this beautiful work. Thank you for your trust: it truly touches me.',
           'Choosing to become a doula means choosing to be there for families in one of the most important moments of their lives. Over the 12 modules, you\'ll learn to support families before, during and after the birth, with rigour and gentleness, always keeping our compass: <em>observe, reassure, refer</em>. You\'ll also learn to take care of yourself, because a doula who lasts is a doula who respects her own limits.',

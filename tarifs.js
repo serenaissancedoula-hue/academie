@@ -7,9 +7,9 @@
 
   var T = {
     'doula': {
-      nom: 'Formation de base de doula · 400 h',
-      court: 'Doula 400 h',
-      en: { nom: 'Foundational doula training · 400 h', court: 'Doula 400 h' },
+      nom: 'Formation de base de doula · 450 h',
+      court: 'Doula 450 h',
+      en: { nom: 'Foundational doula training · 450 h', court: 'Doula 450 h' },
       diplome: false, marraine: false, cohorte: 'en continu', places: null,
       prixRegulier: '1 950 $',
       options: {

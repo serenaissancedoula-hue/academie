@@ -1,5 +1,5 @@
 /* =========================================================
-   Foundational doula training 400 h (English) — menu, locks, quizzes, exams
+   Foundational doula training 450 h (English) — menu, locks, quizzes, exams
    Evaluation names sent to the Académie stay in French ('Quiz 1.1', 'Examen du module 1').
    ========================================================= */
 (function () {
