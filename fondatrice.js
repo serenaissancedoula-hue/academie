@@ -43,6 +43,18 @@
     if (typeof orig === 'function') window.ajusterFormulaireInscription = function () { var r = orig.apply(this, arguments); maj(); return r; };
     maj();
   }
+  // Sur les pages de l'accueil (application d'une seule page), « /#inscription-doula » ne recharge pas la page :
+  // on ouvre directement le formulaire d'inscription avec la formation de doula.
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href="/#inscription-doula"]');
+    if (!a || typeof window.inscrireA !== 'function' || !document.getElementById('page-inscription')) return;
+    e.preventDefault();
+    window.inscrireA('doula', null);
+    window.scrollTo(0, 0);
+  });
+  window.addEventListener('hashchange', function () {
+    if ((location.hash || '').toLowerCase() === '#inscription-doula' && typeof window.inscrireA === 'function') { window.inscrireA('doula', null); window.scrollTo(0, 0); }
+  });
   function go() { montrerBlocs(); bandeau(); noteInscription(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
 })();
