@@ -181,7 +181,7 @@
   function programmer() {
     if (!peutAfficher()) return;
     var fait = false;
-    function go() { if (fait) return; fait = true; window.removeEventListener('scroll', defil); if (!document.querySelector('.modal-fond.ouvert, .modal-fond[style*="flex"], .cad-fond, #sere-accueil, #page-inscription.active')) ouvrir();   // jamais par-dessus le formulaire d'inscription }
+    function go() { if (fait) return; fait = true; window.removeEventListener('scroll', defil); if (!document.querySelector('.modal-fond.ouvert, .modal-fond[style*="flex"], .cad-fond, #sere-accueil, #page-inscription.active')) ouvrir(); }   /* jamais par-dessus le formulaire d'inscription */
     function defil() { var h = document.documentElement; if ((h.scrollTop + innerHeight) / h.scrollHeight > 0.45) go(); }
     setTimeout(go, 9000);
     window.addEventListener('scroll', defil, { passive: true });

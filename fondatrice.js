@@ -23,7 +23,7 @@
     var d = document.createElement('div');
     d.className = 'fondatrice-bandeau'; d.setAttribute('role', 'region'); d.setAttribute('aria-label', 'Offre cohorte fondatrice');
     d.innerHTML = '🌸 <strong>Cohorte fondatrice</strong> · formation de doula : <strong>' + (euro ? '333\u00a0€' : '500\u00a0$') + ' de rabais</strong> avec le code <strong>FONDATRICE</strong> · 5 places seulement, jusqu\'au 30 novembre. ' +
-      '<a href="/#inscription-doula">En profiter →</a><button type="button" aria-label="Fermer">✕</button>';
+      '<a href="/?inscription=doula#inscription-doula">En profiter →</a><button type="button" aria-label="Fermer">✕</button>';
     d.querySelector('button').addEventListener('click', function () { d.remove(); try { localStorage.setItem(CLE, String(Date.now())); } catch (e) {} });
     document.body.insertBefore(d, document.body.firstChild);
   }
@@ -46,7 +46,7 @@
   // Sur les pages de l'accueil (application d'une seule page), « /#inscription-doula » ne recharge pas la page :
   // on ouvre directement le formulaire d'inscription avec la formation de doula.
   document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a[href="/#inscription-doula"]');
+    var a = e.target.closest && e.target.closest('a[href="/?inscription=doula#inscription-doula"]');
     if (!a || typeof window.inscrireA !== 'function' || !document.getElementById('page-inscription')) return;
     e.preventDefault();
     window.inscrireA('doula', null);
