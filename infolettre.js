@@ -32,6 +32,15 @@
     erreur: 'Oups, ça n\'a pas fonctionné. Réessaie dans un instant.', invalide: 'Entre une adresse courriel valide.', coche: 'Coche la case pour donner ton consentement.',
     lienOffre: '/formations/', lienConfid: '/confidentialite/'
   };
+  // Pages de formation (FR) : la fenêtre offre le mini-cours gratuit (inscription + courriels automatiques du mini-cours)
+  var MC = !EN && !/^\/(accompagnements|doula-campbellton|marraines|mini-cours-doula)\//.test(location.pathname);
+  var MCT = {
+    titre: 'Ton mini-cours gratuit 🌸',
+    texte: 'Tu rêves de devenir doula ? Reçois mon mini-cours « Les 3 erreurs à éviter quand on commence comme doula », avec 3 exercices pratiques et une version PDF.',
+    accord: 'J\'accepte de recevoir le mini-cours et l\'infolettre de l\'Académie Sérénaissance (' + ADRESSE + '). Je peux me désabonner en tout temps grâce au lien dans chaque courriel.',
+    bouton: 'Je veux le mini-cours',
+    ok: '💕 Merci ! Ton mini-cours t\'attend ici : <a href="/mini-cours-doula/#section-cours" style="color:#a85743;font-weight:700">lire le mini-cours</a>. Je te l\'envoie aussi par courriel.'
+  };
   var NOMS = EN ? { 'relation-aide': 'Helping relationship · 300 h', yoga: 'Prenatal and postnatal yoga · 85 h' } : { 'relation-aide': 'Relation d\'aide · 300 h', yoga: 'Yoga prénatal et postnatal · 85 h' };
   var A = EN ? {
     titre: 'Waiting list 🌸', texte: 'Leave your email and you will be among the first to hear when registration opens. Dates and prices will be announced soon.',
@@ -112,15 +121,15 @@
     fond.innerHTML = '<div class="il-boite">' +
       '<button type="button" class="il-fermer" aria-label="' + T.fermer + '">✕</button>' +
       '<img class="il-logo" src="/logo.png" alt="Académie Sérénaissance">' +
-      '<h2 id="il-titre">' + (att ? A.titre : T.titre) + '</h2>' +
+      '<h2 id="il-titre">' + (att ? A.titre : MC ? MCT.titre : T.titre) + '</h2>' +
       (offre ? '<div class="il-offre">' + T.offre + '<span class="il-places" hidden></span><a href="' + T.lienOffre + '">' + T.voir + '</a></div>' : '') +
-      '<p>' + (att ? A.texte : T.texte) + '</p>' +
+      '<p>' + (att ? A.texte : MC ? MCT.texte : T.texte) + '</p>' +
       '<form novalidate>' +
         '<input type="text" name="prenom" autocomplete="given-name" maxlength="60" placeholder="' + T.prenom + '" aria-label="' + T.prenom + '">' +
         '<input type="email" name="courriel" autocomplete="email" maxlength="200" required placeholder="' + T.courriel + '" aria-label="' + T.courriel + '">' +
         (att ? casesAttente(att) : '') +
-        '<label class="il-case"><input type="checkbox" name="accord"> <span>' + (att ? A.accord : T.accord) + '</span></label>' +
-        '<button type="submit" class="il-envoyer">' + (att ? A.bouton : T.bouton) + '</button>' +
+        '<label class="il-case"><input type="checkbox" name="accord"> <span>' + (att ? A.accord : MC ? MCT.accord : T.accord) + '</span></label>' +
+        '<button type="submit" class="il-envoyer">' + (att ? A.bouton : MC ? MCT.bouton : T.bouton) + '</button>' +
         '<div class="il-msg" role="status"></div>' +
       '</form>' +
       '<div class="il-petit"><a href="' + T.lienConfid + '">' + T.confid + '</a></div>' +
@@ -144,14 +153,17 @@
       if (att && !choix.length) { msg.textContent = A.aucune; return; }
       if (!f.accord.checked) { msg.textContent = T.coche; return; }
       b.disabled = true; b.textContent = T.envoi; msg.textContent = '';
-      rpc('abonner_infolettre', { p_courriel: c, p_prenom: f.prenom.value.trim(), p_langue: EN ? 'en' : 'fr', p_source: att ? ('attente-' + choix.join('+')).slice(0, 60) : (location.pathname || '/').slice(0, 60), p_consentement: att ? A.accord : T.accord })
+      var mc = MC && !att;
+      (mc ? rpc('inscrire_mini_cours', { p_courriel: c, p_prenom: f.prenom.value.trim(), p_consentement: MCT.accord }) :
+      rpc('abonner_infolettre', { p_courriel: c, p_prenom: f.prenom.value.trim(), p_langue: EN ? 'en' : 'fr', p_source: att ? ('attente-' + choix.join('+')).slice(0, 60) : (location.pathname || '/').slice(0, 60), p_consentement: att ? A.accord : T.accord }))
         .then(function (r) {
           ecrire({ inscrite: Date.now() });
+          if (mc) { try { localStorage.setItem('sere-mini-cours', '1'); } catch (x) {} f.innerHTML = '<div class="il-msg ok">' + MCT.ok + '</div>'; return; }
           if (att) prevenirSabrina(c, f.prenom.value.trim(), choix);
           f.innerHTML = '<div class="il-msg ok">' + (att ? A.ok : (r === 'deja' ? T.deja : T.ok)) + '</div>';
           setTimeout(fermer, 3500);
         }).catch(function (e) {
-          b.disabled = false; b.textContent = att ? A.bouton : T.bouton;
+          b.disabled = false; b.textContent = att ? A.bouton : MC ? MCT.bouton : T.bouton;
           msg.textContent = e && e.message && e.message !== 'erreur' ? e.message : T.erreur;
         });
     });
@@ -161,6 +173,7 @@
     if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) return false;
     var e = lire();
     if (e.inscrite) return false;
+    if (/^\/mini-cours-doula\//.test(location.pathname)) return false;
     if (e.ferme && Date.now() - e.ferme < 14 * 864e5) return false;
     try { if (localStorage.getItem('sere-admin') === '1') return false; } catch (x) {}
     return true;
