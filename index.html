@@ -3839,6 +3839,7 @@
             window.__remplacer = true;
             const a = (window.location.hash || '').toLowerCase();
             if (a === '#doula' || a === '#4e') { allerFormation(a.slice(1), null); window.__remplacer = false; return; }
+            if (a === '#inscription-doula') { inscrireA('doula', null); window.__remplacer = false; return; }   // lien direct vers l'inscription à la formation de doula
             if (a === '#marraine') { allerA(null, 'formation-marraine'); window.__remplacer = false; return; }
             if (PAGES_PAR_ADRESSE[a]) switchPage(PAGES_PAR_ADRESSE[a], null, null);
             window.__remplacer = false;

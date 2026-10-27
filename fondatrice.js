@@ -23,10 +23,26 @@
     var d = document.createElement('div');
     d.className = 'fondatrice-bandeau'; d.setAttribute('role', 'region'); d.setAttribute('aria-label', 'Offre cohorte fondatrice');
     d.innerHTML = '🌸 <strong>Cohorte fondatrice</strong> · formation de doula : <strong>' + (euro ? '333\u00a0€' : '500\u00a0$') + ' de rabais</strong> avec le code <strong>FONDATRICE</strong> · 5 places seulement, jusqu\'au 30 novembre. ' +
-      '<a href="/formation-doula-de-base/">En profiter →</a><button type="button" aria-label="Fermer">✕</button>';
+      '<a href="/#inscription-doula">En profiter →</a><button type="button" aria-label="Fermer">✕</button>';
     d.querySelector('button').addEventListener('click', function () { d.remove(); try { localStorage.setItem(CLE, String(Date.now())); } catch (e) {} });
     document.body.insertBefore(d, document.body.firstChild);
   }
-  function go() { montrerBlocs(); bandeau(); }
+  // Formulaire d'inscription : rappel du code quand la formation de doula est choisie
+  function noteInscription() {
+    var choix = document.getElementById('choix-formation'), bloc = document.getElementById('bloc-paiement');
+    if (!actif || !choix || !bloc) return;
+    var euro = window.SereDevise && window.SereDevise.euro;
+    var note = document.createElement('p');
+    note.id = 'note-fondatrice';
+    note.style.cssText = 'background:#2c221e;color:#fff;border-radius:14px;padding:12px 16px;font-size:.9rem;line-height:1.5;margin:4px 0 0';
+    note.innerHTML = '🌸 <strong style="color:#f6d9cc">Cohorte fondatrice : ' + (euro ? '333\u00a0€' : '500\u00a0$') + ' de rabais.</strong> Entre le code <strong style="color:#f6d9cc">FONDATRICE</strong> à la page de paiement sécurisé (Stripe), dans le champ « Ajouter un code promotionnel ». 5 places, jusqu\'au 30 novembre.';
+    bloc.parentNode.insertBefore(note, bloc.nextSibling);
+    function maj() { note.hidden = choix.value !== 'doula'; }
+    choix.addEventListener('change', maj);
+    var orig = window.ajusterFormulaireInscription;
+    if (typeof orig === 'function') window.ajusterFormulaireInscription = function () { var r = orig.apply(this, arguments); maj(); return r; };
+    maj();
+  }
+  function go() { montrerBlocs(); bandeau(); noteInscription(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
 })();
