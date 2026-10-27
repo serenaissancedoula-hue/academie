@@ -1,0 +1,32 @@
+# Académie Sérénaissance — génère les pages statiques du blogue (pour Google) à partir des articles publiés dans Supabase.
+name: Pages du blogue
+on:
+  schedule:
+    - cron: '17 * * * *'   # toutes les heures
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['outils/generer_blogue.py', 'blogue/index.html', '.github/workflows/blogue.yml']
+permissions:
+  contents: write
+concurrency:
+  group: blogue
+  cancel-in-progress: false
+jobs:
+  generer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Générer les pages
+        run: python3 outils/generer_blogue.py
+      - name: Publier s'il y a du nouveau
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "Blogue Sérénaissance"
+            git config user.email "noreply@academiesere.ca"
+            git add -A blogue sitemap.xml
+            git commit -m "Blogue : pages statiques mises à jour"
+            git push
+          else
+            echo "Rien de nouveau."
+          fi

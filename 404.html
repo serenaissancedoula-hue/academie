@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Page introuvable · Académie Sérénaissance</title>
+<script>
+/* Un nouvel article du blogue dont la page statique n'est pas encore générée : on l'ouvre dans le blogue dynamique. */
+(function () {
+  var m = /^\/blogue\/([a-z0-9][a-z0-9-]*)\/?$/.exec(location.pathname);
+  if (m) location.replace('/blogue/?a=' + m[1]);
+})();
+</script>
+<style>
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;background:#f7f1ea;color:#2c221e;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:24px}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:2rem;margin:0 0 12px}
+a{display:inline-block;margin-top:16px;background:#a85743;color:#fff;text-decoration:none;font-weight:700;padding:12px 24px;border-radius:50px}
+</style>
+</head>
+<body>
+<div>
+<img src="/logo.png" alt="Académie Sérénaissance" width="240" style="height:auto;mix-blend-mode:darken">
+<h1>Page introuvable</h1>
+<p>Cette page n'existe pas ou a été déplacée.</p>
+<a href="/">Retour à l'accueil</a>
+</div>
+</body>
+</html>

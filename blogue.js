@@ -136,7 +136,7 @@
 
   // ---------- Cartes ----------
   function carte(a, l, niveau) {
-    var t = T[l], lien = t.base + '?a=' + encodeURIComponent(a.slug), img = cheminImage(a.image);
+    var t = T[l], lien = l === 'fr' ? t.base + encodeURIComponent(a.slug) + '/' : t.base + '?a=' + encodeURIComponent(a.slug), img = cheminImage(a.image);
     var li = document.createElement('li'); li.className = 'sb-carte';
     var h = '';
     if (img) h += '<a href="' + esc(lien) + '" tabindex="-1" aria-hidden="true"><img src="' + esc(img) + '" alt="" loading="lazy" width="640" height="400"></a>';
@@ -227,7 +227,7 @@
 
   function vueArticle(app, a, liste, l) {
     var t = T[l], titre = champ(a, 'titre', l), resume = champ(a, 'resume', l) || '', img = cheminImage(a.image);
-    var canon = SITE + t.base + '?a=' + encodeURIComponent(a.slug);
+    var canon = l === 'fr' ? SITE + t.base + encodeURIComponent(a.slug) + '/' : SITE + t.base + '?a=' + encodeURIComponent(a.slug); // FR : page statique générée par outils/generer_blogue.py
     var imgAbs = img ? (img.charAt(0) === '/' ? SITE + img : img) : SITE + '/og-image.jpg';
     var desc = (resume || String(champ(a, 'contenu', l)).replace(/[#*\[\]\n]+/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, 300);
     referencer(titre + ' · ' + (l === 'en' ? 'Blog' : 'Blogue') + ' · Sérénaissance', desc, canon, imgAbs);
@@ -261,6 +261,7 @@
   function demarrer() {
     var a = document.getElementById('accueil-blogue'); if (a) initAccueil(a);
     var p = document.getElementById('blogue-app'); if (p) initPage(p);
+    if (document.getElementById('blogue-statique')) styles();   // page d'article statique : seulement les styles
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer); else demarrer();
 })();
