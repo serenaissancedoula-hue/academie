@@ -62,7 +62,7 @@ function courriels(maintenant: Date): Courriel[] {
       paragraphes: [
         "As-tu eu le temps de faire les exercices du mini-cours ? J'aimerais revenir sur l'erreur 1, parce que c'est celle qui surprend le plus.",
         "Un jour, une maman t'écrira : « J'ai mal à la tête depuis ce matin, est-ce normal ? » Ton premier réflexe sera de la rassurer. C'est humain : tu veux l'aider.",
-        "Mais certains symptômes, comme un mal de tête qui ne passe pas, des troubles de la vue, une enflure soudaine ou un bébé qui bouge moins, demandent une évaluation médicale rapide. Ce n'est pas à la doula de décider si c'est grave.",
+        "Mais certains signes, comme un mal de tête sévère, un changement soudain de la vision, une enflure qui se généralise aux mains et au visage ou un bébé qui bouge moins, demandent de consulter rapidement. Ce sont des signaux d'alarme reconnus par la santé publique, et ce n'est pas à la doula de décider si c'est grave.",
         "**Ta vraie force, c'est de savoir orienter** : « C'est important que ta sage-femme ou ton médecin le sache. Veux-tu qu'on l'appelle ensemble ? » Tu restes présente, et la maman reçoit les bons soins.",
         "Dans la formation de base de doula, un module entier apprend à reconnaître les signaux d'alerte, avec des mises en situation de la grossesse au post-partum. Tu peux voir le début du premier chapitre gratuitement.",
       ],
