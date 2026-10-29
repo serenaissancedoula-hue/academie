@@ -12,7 +12,7 @@
   var SB_CLE = 'sb_publishable_OBeZ61m6gGF5tGPUokeS_A_nCZvpdpl';
   var EN = location.pathname.indexOf('/Formation/en/') >= 0;
   // formation doula : seules l'accueil, l'annexe, les documents et le module 1 ont une version anglaise pour l'instant
-  var SANS_EN = location.pathname.indexOf('/Formation/doula/') === 0 && !/^\/Formation\/doula\/(?:$|index\.html$|annexe\.html$|documents\.html$|module-1\/|module-2\/)/.test(location.pathname);
+  var SANS_EN = location.pathname.indexOf('/Formation/doula/') === 0 && !/^\/Formation\/doula\/(?:$|index\.html$|annexe\.html$|documents\.html$|module-1\/|module-2\/|module-3\/)/.test(location.pathname);
   function L(fr, en) { return EN ? en : fr; }
   // Langue choisie par l'étudiante : on ouvre la même page dans sa langue
   try {

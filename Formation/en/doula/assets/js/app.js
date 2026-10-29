@@ -12,7 +12,7 @@
   function url(type, id) { return type + '-' + MN + '-' + id.split('.')[1] + '.html'; }
   var MENTORAT = 'mailto:sc@academiesere.ca?subject=Mentoring';
   // modules available in English; the others open in French
-  var EN_MODS = [1, 2];
+  var EN_MODS = [1, 2, 3];
   function modUrl(n) { return EN_MODS.indexOf(+n) >= 0 ? '../module-' + n + '/index.html' : '/Formation/doula/module-' + n + '/index.html'; }
   var H = 3600 * 1000;
 
