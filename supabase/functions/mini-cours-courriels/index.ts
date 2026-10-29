@@ -76,7 +76,7 @@ function courriels(maintenant: Date): Courriel[] {
         paragraphes: [
           "Si le mini-cours t'a donné envie d'aller plus loin, j'ai une invitation pour toi.",
           "Je cherche mes **5 premières étudiantes** pour la formation de base de doula : la cohorte fondatrice. Tu profites de **500 $ de rabais** sur la formation de 450 h.",
-          "La formation se suit en ligne et à ton rythme : 12 modules, des ateliers en direct avec une consultante en lactation IBCLC et une sage-femme, 4 stages supervisés et 20 h de mentorat.",
+          "La formation se suit en ligne et à ton rythme : 12 modules, des ateliers en direct avec une consultante en lactation IBCLC et une sage-femme, 4 stages supervisés et 30 h de mentorat.",
           "Pour en profiter, inscris-toi et entre le code **FONDATRICE** au moment du paiement. L'offre se termine le 30 novembre, ou dès que les 5 places sont prises.",
           "Une question avant de te lancer ? Réponds simplement à ce courriel ou écris-moi à sc@academiesere.ca : je te réponds personnellement.",
         ],
@@ -87,7 +87,7 @@ function courriels(maintenant: Date): Courriel[] {
         titre: "Prête à faire le grand saut ?",
         paragraphes: [
           "Si le mini-cours t'a donné envie d'aller plus loin, la formation de base de doula est faite pour toi.",
-          "Elle se suit en ligne et à ton rythme : 12 modules, des ateliers en direct avec une consultante en lactation IBCLC et une sage-femme, 4 stages supervisés et 20 h de mentorat.",
+          "Elle se suit en ligne et à ton rythme : 12 modules, des ateliers en direct avec une consultante en lactation IBCLC et une sage-femme, 4 stages supervisés et 30 h de mentorat.",
           "Une question avant de te lancer ? Écris-moi à sc@academiesere.ca : je te réponds personnellement.",
         ],
         bouton: ["Découvrir la formation", `${SITE}/formation-doula-de-base/`],
