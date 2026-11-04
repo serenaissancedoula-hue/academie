@@ -424,3 +424,10 @@ a.is-locked:hover { background: transparent; transform: none; }
 .video-list span.why { display:block; font-size:.85rem; color:#4a423c; margin-top:2px; }
 .callout.nb { background:#e2edf3; border-color:#c6dbe6; padding-left:70px; }
 .callout.nb::before { content:'N.-B.'; width:auto; height:auto; left:12px; top:19px; font-size:.64rem; font-weight:700; letter-spacing:.04em; color:#fff; background:#4f7f9b; border-radius:6px; padding:3px 5px; line-height:1.2; }
+
+/* === Décor de marque Académie Sérénaissance : logo et couleurs (en-têtes de chapitres et de modules) === */
+.hero { background: linear-gradient(135deg, #fbebe5 0%, #f8d9d0 55%, #e9eee5 100%) !important; }
+.hero .hero-img { background: url("../img/logo-academie.png") center / 90% auto no-repeat; object-position: -9999px 0; max-height: none; min-height: 140px; }
+.hero .eyebrow { color: #a86848; }
+@media (max-width: 760px) { .hero .hero-img { min-height: 110px; max-height: 130px; } }
+/* === fin décor de marque === */
