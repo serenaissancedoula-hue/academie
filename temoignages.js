@@ -58,7 +58,7 @@
   }
 
   function construire(sec, donnees) {
-    var cats = ['etudiante', 'famille'].filter(function (c) { return donnees[c].length; });
+    var cats = ['famille', 'etudiante'].filter(function (c) { return donnees[c].length; });
     styles();
     sec.setAttribute('role', 'region');
     sec.setAttribute('aria-roledescription', 'carousel');
