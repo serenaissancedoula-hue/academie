@@ -415,7 +415,7 @@ input[readonly] { background: #f3ede6; color: var(--doux); }
       <div class="bulles" id="chat-bulles"><div class="vide">Chargement…</div></div>
       <form class="chat-saisie" id="chat-form"><textarea id="chat-texte" rows="1" maxlength="2000" placeholder="Écris ton message à Sabrina…" required></textarea><button class="btn" type="submit" aria-label="Envoyer">➤</button></form>
     </div>
-    <p class="note">Pour une urgence, appelle Sabrina au <a href="tel:5067592044">506-759-2044</a>.</p>
+    <p class="note">Pour une urgence, appelle Sabrina au <a href="tel:5067870667">506-787-0667</a>.</p>
   </section>
 
   <!-- Paramètres -->
@@ -756,7 +756,7 @@ function afficherCours() {
   $('attente-diplome').hidden = !!(d && (d.formation === 'marraine' || d.formation === 'doula'));
   if (d && d.formation === 'doula' && !etat.doulaOk && !etat.suspendu) $('attente').innerHTML = '<strong>⏳ Ton inscription à la formation de doula est bien reçue.</strong><br>Je confirme ta place dès que je vois ton paiement (habituellement en 24 heures), et tu reçois un courriel. En attendant, tu peux compléter tes informations.';
   $('bloc-doula').hidden = !etat.doulaOk;
-  if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Ton accès est suspendu pour le moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Ta progression est conservée. Écris à <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a> ou appelle au 506-759-2044 pour régler la situation, et ton accès sera rouvert.'; }
+  if (etat.suspendu) { $('attente').hidden = false; $('attente').className = 'message erreur'; $('attente').innerHTML = '<strong>⛔ Ton accès est suspendu pour le moment' + (etat.motif ? ' (' + echapper(etat.motif) + ')' : '') + '.</strong><br>Ta progression est conservée. Écris à <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a> ou appelle au 506-787-0667 pour régler la situation, et ton accès sera rouvert.'; }
   if (!d) sb.rpc('ma_fiche_formatrice').then(function (f) { if (f && f.data) location.href = '/formatrice.html'; });
   if (!d) { $('attente').hidden = false; $('attente').innerHTML = 'Nous n\'avons pas trouvé de dossier d\'inscription relié à ce courriel. Écris à <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a> et Sabrina règle ça rapidement.'; }
   $('bloc-4e').hidden = !etat.valide;
@@ -1128,7 +1128,7 @@ $('chat-texte').addEventListener('keydown', function (e) { if (e.key === 'Enter'
 $('chat-form').addEventListener('submit', function (e) {
   e.preventDefault();
   var t = $('chat-texte').value.trim(); if (!t) return;
-  if (etat.suspendu) { alert('Ton accès est suspendu pour le moment. Écris à sc@academiesere.ca ou appelle au 506-759-2044.'); return; }
+  if (etat.suspendu) { alert('Ton accès est suspendu pour le moment. Écris à sc@academiesere.ca ou appelle au 506-787-0667.'); return; }
   var bouton = this.querySelector('button'); bouton.disabled = true;
   sb.from('messages').insert({ etudiante: etat.session.user.id, texte: t }).then(function (r) {
     bouton.disabled = false;

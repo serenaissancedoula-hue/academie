@@ -36,7 +36,7 @@ ${bouton(c.bouton)}${bouton(c.bouton2, true)}
 <p style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.6;color:#3d312b;margin:22px 0 0;">Avec douceur,<br><strong>Sabrina</strong><br><span style="font-size:12px;color:#7a685e;">Doula et fondatrice · Académie Sérénaissance</span></p>
 </td></tr>
 <tr><td align="center" style="padding:22px 10px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.7;color:#7a685e;">
-<a href="${SITE}" style="color:#7a685e;">academiesere.ca</a> · 506-759-2044 · sc@academiesere.ca<br>Académie Sérénaissance · Sabrina Chavanel · 43 Tingley Cres., Campbellton (N.-B.) E3N 2S1 · Canada<br><br>
+<a href="${SITE}" style="color:#7a685e;">academiesere.ca</a> · 506-787-0667 · sc@academiesere.ca<br>Académie Sérénaissance · Sabrina Chavanel · 43 Tingley Cres., Campbellton (N.-B.) E3N 2S1 · Canada<br><br>
 Tu reçois ce courriel parce que tu t'es inscrite au mini-cours gratuit de l'Académie Sérénaissance.<br><a href="${desa}" style="color:#a85743;">Me désabonner</a>
 </td></tr></table></td></tr></table></body></html>`;
 }

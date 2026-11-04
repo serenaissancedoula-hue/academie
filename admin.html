@@ -918,22 +918,22 @@ function courrielBienvenue(e) {
   return courrielBilingue(e, { fr: 'Bienvenue à l\'Académie Sérénaissance 🌸', en: 'Welcome to Académie Sérénaissance 🌸' }, {
     accroche: 'Bienvenue', titre: 'Ton accès est ouvert',
     message: 'Ton dossier est vérifié et ton accès à ta formation est maintenant ouvert dans ton compte. Quelle joie de t\'accueillir à l\'Académie ! 💕',
-    details: 'Connecte-toi à ton compte pour commencer ta formation à ton rythme. Au besoin, écris-moi dans tes Messages ou appelle-moi au 506-759-2044.',
+    details: 'Connecte-toi à ton compte pour commencer ta formation à ton rythme. Au besoin, écris-moi dans tes Messages ou appelle-moi au 506-787-0667.',
     bouton: 'Ouvrir mes cours →', lien: ESPACE_FR + '#cours' }, {
     accroche: 'Welcome', titre: 'Your access is open',
     message: 'Your file has been reviewed and your access to your course is now open in your account. I am so happy to welcome you to the Académie! 💕',
-    details: 'Log in to your account to start your course at your own pace. If you have any questions, write to me in your Messages or call me at 506-759-2044.',
+    details: 'Log in to your account to start your course at your own pace. If you have any questions, write to me in your Messages or call me at 506-787-0667.',
     bouton: 'Open my courses →', lien: ESPACE_EN + '#cours' });
 }
 function courrielDoula(e) {
   return courrielBilingue(e, { fr: 'Ta place est confirmée · formation de doula 🌸', en: 'Your spot is confirmed · doula training 🌸' }, {
     accroche: 'Bienvenue', titre: (e.prenom || '') + ', ta place est confirmée !',
     message: 'Ton paiement est bien reçu et ta place est confirmée dans la formation de base de doula (450 h). Quelle joie de t\'accueillir ! 💕',
-    details: 'Ta formation s\'ouvrira dans ton compte et tu recevras un courriel à ce moment-là. D\'ici là, connecte-toi pour compléter tes informations et ajouter ta photo. Au besoin, écris-moi dans tes Messages ou appelle-moi au 506-759-2044.',
+    details: 'Ta formation s\'ouvrira dans ton compte et tu recevras un courriel à ce moment-là. D\'ici là, connecte-toi pour compléter tes informations et ajouter ta photo. Au besoin, écris-moi dans tes Messages ou appelle-moi au 506-787-0667.',
     bouton: 'Ouvrir mon compte →', lien: ESPACE_FR }, {
     accroche: 'Welcome', titre: (e.prenom || '') + ', your spot is confirmed!',
     message: 'Your payment has been received and your spot is confirmed in the foundational doula training (450 h, in French and English). I am so happy to welcome you! 💕',
-    details: 'Your training will open in your account, and you will receive an email at that time. Until then, log in to complete your information and add your photo. If you have any questions, write to me in your Messages or call me at 506-759-2044.',
+    details: 'Your training will open in your account, and you will receive an email at that time. Until then, log in to complete your information and add your photo. If you have any questions, write to me in your Messages or call me at 506-787-0667.',
     bouton: 'Open my account →', lien: ESPACE_EN });
 }
 function courrielMarraine(e) {
@@ -1009,7 +1009,7 @@ $('fiche-corps').addEventListener('click', function (ev) {
     if (motif === null) return;
     maj(e, { suspendu: true, motif_suspension: motif.trim() || null }, '⛔ Accès suspendu').then(function (ok) {
       if (ok && confirm('Veux-tu écrire à ' + e.prenom + ' pour l\'en informer ?')) {
-        var corps = 'Bonjour ' + e.prenom + ',\n\nTon accès à ta formation est suspendu pour le moment' + (motif ? ' (' + motif + ')' : '') + '. Dès que la situation est réglée, je rouvre ton accès et tu retrouves ta progression telle quelle.\n\nN\'hésite pas à m\'écrire ou à m\'appeler au 506-759-2044 pour qu\'on trouve une solution ensemble.\n\nAvec douceur,\nSabrina';
+        var corps = 'Bonjour ' + e.prenom + ',\n\nTon accès à ta formation est suspendu pour le moment' + (motif ? ' (' + motif + ')' : '') + '. Dès que la situation est réglée, je rouvre ton accès et tu retrouves ta progression telle quelle.\n\nN\'hésite pas à m\'écrire ou à m\'appeler au 506-787-0667 pour qu\'on trouve une solution ensemble.\n\nAvec douceur,\nSabrina';
         location.href = 'mailto:' + e.courriel + '?subject=' + encodeURIComponent('Ton accès à l\'Académie Sérénaissance') + '&body=' + encodeURIComponent(corps);
       }
     });
@@ -1839,8 +1839,8 @@ function contenuLien() {
   var diplome = f.diplome ? ' et téléverser ton diplôme de doula' : '', dipEn = f.diplome ? ' and upload your doula certificate' : '';
   var cadeau = cle === '4e-cadeau' ? " La formation de marraine d'allaitement t'est offerte en cadeau 🎁." : (cle === 'combo' ? ' Le combo comprend les deux formations.' : '');
   var cadEn = cle === '4e-cadeau' ? ' The Breastfeeding Peer Supporter course is included as a gift 🎁.' : (cle === 'combo' ? ' The bundle includes both courses.' : '');
-  var etapes = 'Dès que ton dossier est vérifié, j\'ouvre ton accès et tu reçois un courriel de bienvenue. Au besoin, écris-moi ou appelle-moi au 506-759-2044.';
-  var etapesEn = 'As soon as your file is reviewed, I open your access and you receive a welcome email. If you have any questions, write to me or call me at 506-759-2044.';
+  var etapes = 'Dès que ton dossier est vérifié, j\'ouvre ton accès et tu reçois un courriel de bienvenue. Au besoin, écris-moi ou appelle-moi au 506-787-0667.';
+  var etapesEn = 'As soon as your file is reviewed, I open your access and you receive a welcome email. If you have any questions, write to me or call me at 506-787-0667.';
   if (pay === 'recu') return {
     sujets: { fr: 'Complète ton inscription à l\'Académie Sérénaissance 🌸', en: 'Complete your registration with Académie Sérénaissance 🌸' },
     fr: { accroche: 'Bienvenue', titre: 'Ton inscription t\'attend', message: 'Merci pour ton inscription à la formation « ' + f.nom + ' » ! Ton paiement est bien reçu.' + cadeau,
