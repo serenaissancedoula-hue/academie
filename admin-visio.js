@@ -5,7 +5,7 @@
    Les étudiantes déjà terminées gardent leur cohorte (et leur accès pendant « mois d'accès ») ; une nouvelle cohorte n'y touche pas. */
 (function () {
   'use strict';
-  var V = { sb: null, toast: function (m) { alert(m); }, pret: false, cohortes: [], jours: [], liens: [], etu: [], res: [], quiz: [] };
+  var V = { travaux: [], sb: null, toast: function (m) { alert(m); }, pret: false, cohortes: [], jours: [], liens: [], etu: [], res: [], quiz: [] };
   function $(id) { return document.getElementById(id); }
   function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
   function dh(d) { try { return new Date(d).toLocaleString('fr-CA', { timeZone: 'America/Moncton', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }); } catch (e) { return ''; } }
@@ -22,7 +22,8 @@
       '<div class="champ">Les 14 journées + l\'examen (jour 15) : <span style="font-weight:400">choisis les dates</span><div id="vv-dates-nouvelle" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:6px"></div></div>' +
       '<button class="btn" type="submit">Créer la cohorte</button></form></details>' +
       '<h4 style="margin:16px 0 6px">Étudiantes en visio</h4><div id="vv-etudiantes"></div>' +
-      '<h4 style="margin:16px 0 6px">Résultats des quiz</h4><div id="vv-resultats"></div>';
+      '<h4 style="margin:16px 0 6px">Résultats des quiz</h4><div id="vv-resultats"></div>' +
+      '<h4 style="margin:16px 0 6px">Notes d\'étude (études de cas et journal)</h4><p style="font-size:.78rem;color:var(--doux);margin-bottom:6px">Elles ne comptent pas dans l\'examen final : elles servent au mentorat. Le journal reste confidentiel (on voit seulement qu\'il est fait).</p><div id="vv-travaux"></div>';
     ancre.insertAdjacentElement('afterend', c);
     var h = ''; for (var i = 1; i <= 15; i++) h += '<label style="font-size:.78rem">' + (i === 15 ? 'Examen (jour 15)' : 'Jour ' + i) + '<input type="date" data-j="' + i + '" style="width:100%"></label>';
     $('vv-dates-nouvelle').innerHTML = h;
@@ -49,11 +50,13 @@
       V.sb.from('cohorte_etudiantes').select('*'),
       V.sb.from('etudiantes').select('prenom,nom,courriel,statut,option_paiement,suspendu').like('option_paiement', 'doula-%v').order('created_at', { ascending: false }),
       V.sb.from('resultats_visio').select('*').order('cree_le', { ascending: false }).limit(500),
-      V.sb.from('quiz_visio').select('*').order('jour').order('ordre')
+      V.sb.from('quiz_visio').select('*').order('jour').order('ordre'),
+      V.sb.rpc('visio_travaux_admin')
     ]).then(function (r) {
+      V.travaux = (r[6] && r[6].data) || [];
       V.cohortes = r[0].data || []; V.jours = r[1].data || []; V.liens = r[2].data || []; V.etu = r[3].data || []; V.res = r[4].data || []; V.quiz = r[5].data || [];
       if (r[0].error) { $('vv-cohortes').textContent = 'Erreur : ' + r[0].error.message; return; }
-      dessinerCohortes(); dessinerEtudiantes(); dessinerResultats();
+      dessinerCohortes(); dessinerEtudiantes(); dessinerResultats(); dessinerTravaux();
     });
   }
 
@@ -135,6 +138,26 @@
         var v = document.createElement('div'); v.style.cssText = 'position:fixed;inset:0;background:rgba(40,28,22,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:12px';
         v.innerHTML = '<div style="background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:18px;font-size:.88rem"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:10px"><b>' + esc(r.nom || r.courriel) + ' · Jour ' + r.jour + ' · ' + r.score + '/' + r.total + '</b><button class="btn" id="vv-x">Fermer</button></div>' + lignes + '</div>';
         document.body.appendChild(v); v.querySelector('#vv-x').onclick = function () { v.remove(); };
+      };
+    });
+  }
+
+  function dessinerTravaux() {
+    var el = $('vv-travaux'); if (!el) return;
+    var nomC = {}; V.cohortes.forEach(function (c) { nomC[c.id] = c.nom; });
+    if (!V.travaux.length) { el.innerHTML = '<p class="vide">Aucune note d\'étude pour le moment.</p>'; return; }
+    var NOMS = { cas1: 'Étude de cas 1', cas2: 'Étude de cas 2', journal: 'Journal' };
+    el.innerHTML = '<div style="overflow:auto"><table style="width:100%;font-size:.82rem;border-collapse:collapse"><tr style="text-align:left"><th>Étudiante</th><th>Jour</th><th>Travail</th><th>Mots</th><th>Modifié</th><th></th></tr>' +
+      V.travaux.map(function (t, i) {
+        return '<tr style="border-top:1px solid var(--bord)"><td style="padding:5px 4px">' + esc(t.nom || t.courriel) + '</td><td>' + t.jour + '</td><td>' + NOMS[t.type] + '</td><td>' + (t.mots || 0) + '</td><td>' + esc(dh(t.maj)) + '</td><td>' +
+          (t.type === 'journal' ? (t.mots > 0 ? '<span style="color:var(--vert);font-weight:700">✓ fait</span>' : '<span style="color:var(--doux)">vide</span>') : '<button class="btn" style="padding:4px 10px;font-size:.74rem" data-t="' + i + '">Lire</button>') + '</td></tr>';
+      }).join('') + '</table></div>';
+    el.querySelectorAll('button[data-t]').forEach(function (b) {
+      b.onclick = function () {
+        var t = V.travaux[+b.dataset.t];
+        var v = document.createElement('div'); v.style.cssText = 'position:fixed;inset:0;background:rgba(40,28,22,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:12px';
+        v.innerHTML = '<div style="background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:18px;font-size:.9rem"><div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:10px"><b>' + esc(t.nom || t.courriel) + ' · Jour ' + t.jour + ' · ' + NOMS[t.type] + '</b><button class="btn" id="vv-x2">Fermer</button></div><div style="white-space:pre-wrap">' + esc(t.texte || '') + '</div></div>';
+        document.body.appendChild(v); v.querySelector('#vv-x2').onclick = function () { v.remove(); };
       };
     });
   }

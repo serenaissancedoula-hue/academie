@@ -16,6 +16,8 @@
   function dateJour(d) {
     try { var p = String(d).split('-'); return new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return d; }
   }
+  var CAS = {"1": ["Jasmine, une vidéo, une visio et un texto de nuit", "Sarah et le petit Noah"], "2": ["Farah et le déclenchement, dans une autre langue", "Camille, une communication à ajuster"], "3": ["Mélanie, gestatrice pour Raj et Thomas", "Mariam, une décision qui se prend en famille"], "4": ["Amira et le bébé en siège", "Harpreet, le bassin, les poignets et l'huile de la belle-mère"], "5": ["Daniela, au neuvième jour", "Hodan et Abdi, un plan dans une autre langue"], "6": ["Nadia, « Seulement 4 cm! »", "Le placenta de Gaëlle"], "7": ["Anaïs, du foyer à la maison de naissance", "Le silence de Fatoumata"], "8": ["Chloé, vingt heures de travail et une décision à prendre", "Amira, Youssef et l'écran du moniteur"], "9": ["Nour, Samir et l'interprète", "Mélissa et Jordan, un transfert à Winnipeg"], "10": ["Mia et la honte de parler de ses fuites", "Fatou, mère solo après une césarienne"], "11": ["Mylène, deux jours après une césarienne", "« Mon amie dit qu'il a un frein de langue »"], "12": ["Le texto de minuit", "Sophie et les onze semaines"], "13": ["Dans la chambre, après la naissance", "Layla et sa fille de 10 ans"], "14": ["« Pouvez-vous vérifier ma dilatation ? »", "La proposition de Chantal"]};
+  var AVIS_NOTES = 'Ces notes sont un outil d\'étude personnel : elles <b>ne comptent pas dans ton examen final</b>. Elles servent seulement à t\'aider à apprendre et à permettre à tes formatrices de t\'offrir un bon mentorat. Tes réponses sont enregistrées automatiquement. <b>Ton journal reste confidentiel</b> : on voit seulement qu\'il est fait.';
   var cssFait = false;
   function css() {
     if (cssFait) return; cssFait = true;
@@ -50,6 +52,10 @@
       '.vj-q label.juste{border-color:#3d8b45;background:#eaf6e8}',
       '.vj-q label.faux{border-color:#c0392b;background:#fdecea}',
       '.vj-q .vj-expl{font-size:.84rem;color:#5a4a42;margin:4px 0 0}',
+      '.vj-notes textarea{width:100%;min-height:120px;border:1px solid #e6d9cf;border-radius:10px;padding:10px;font:inherit;font-size:.92rem;resize:vertical;box-sizing:border-box}',
+      '.vj-notes label{display:block;font-weight:700;font-size:.9rem;margin:12px 0 4px}',
+      '.vj-notes .vj-save{font-size:.76rem;color:#7a685e;min-height:1em}',
+      '.vj-avis{font-size:.82rem;background:#fbf3ee;border:1px solid #f0d5c8;border-radius:10px;padding:9px 11px;color:#7a4a3a;margin:8px 0}',
       '.vj-note{font-family:Georgia,serif;font-size:1.6rem;font-weight:700;color:#a85a45;margin:0 0 10px}'
     ].join('');
     document.head.appendChild(s);
@@ -122,7 +128,7 @@
       var c = v.querySelector('.vj-contenu');
       if (r.error || !r.data || !r.data.length) { c.innerHTML = '<p>Le quiz n\'est pas disponible pour le moment.</p>'; return; }
       var qs = r.data;
-      c.innerHTML = '<p class="vj-sous">Un petit aide-mémoire pour réviser : réponds à toutes les questions, puis l\'application les corrige. Tu peux le refaire autant de fois que tu veux.</p><form id="vj-form">' +
+      c.innerHTML = '<p class="vj-sous">Un petit aide-mémoire pour réviser : réponds à toutes les questions, puis l\'application les corrige. Tu peux le refaire autant de fois que tu veux. Ces résultats <b>ne comptent pas dans ton examen final</b> : ils servent à t\'aider à apprendre et à offrir un bon mentorat.</p><form id="vj-form">' +
         qs.map(function (q, qi) {
           var ordre = melanger(q.choix.map(function (_, i) { return i; }));
           return '<div class="vj-q" data-id="' + q.id + '"><p>' + (qi + 1) + '. ' + esc(q.question) + '</p>' +
@@ -164,7 +170,8 @@
     var bloc = $('bloc-visio');
     if (!bloc) { bloc = document.createElement('div'); bloc.id = 'bloc-visio'; bloc.hidden = true; ancre.parentNode.insertBefore(bloc, ancre); }
     function charger() {
-      sb.rpc('visio_mon_espace').then(function (r) {
+      Promise.all([sb.rpc('visio_mon_espace'), sb.rpc('visio_mes_travaux')]).then(function (rr) {
+        var r = rr[0], mesTravaux = (rr[1] && rr[1].data) || {};
         var d = r && r.data;
         if (!d || d.acces === false && d.raison !== 'sans-cohorte' && d.raison !== 'termine') { bloc.hidden = true; return; }
         bloc.hidden = false;
@@ -190,11 +197,17 @@
             var quizLigne = '<div class="vj-ligne"><div><div class="vj-nom">Quiz de la journée (' + q.questions + ' questions)</div>' +
               (q.ouvert ? (q.meilleur != null ? '<div class="vj-etat">Meilleur résultat : ' + q.meilleur + ' / ' + q.total + '</div>' : '') : '<div class="vj-etat">🔒 S\'ouvre le ' + esc(quand(j.ouvre_apres)) + '</div>') + '</div>' +
               '<button type="button" class="vj-btn" data-quiz="' + j.jour + '"' + (q.ouvert ? '' : ' disabled') + '>' + (q.ouvert ? (q.meilleur != null ? 'Refaire' : 'Commencer') : 'Bientôt') + '</button></div>';
+            var notes = '<details class="vj-notes" style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">✍️ Mes notes d\'étude : études de cas et journal</summary>' + (q.ouvert ?
+              '<div class="vj-avis">' + AVIS_NOTES + '</div><p class="vj-etat" style="font-size:.8rem;color:#7a685e;margin:4px 0">Les questions sont à la fin de ton cahier « Réviser après la journée ».</p>' +
+              [['cas1', 'Étude de cas 1 · ' + ((CAS[j.jour] || [])[0] || '')], ['cas2', 'Étude de cas 2 · ' + ((CAS[j.jour] || [])[1] || '')], ['journal', 'Mon journal de réflexion (confidentiel)']].map(function (t) {
+                return '<label for="vt-' + j.jour + '-' + t[0] + '">' + esc(t[1]) + '</label><textarea id="vt-' + j.jour + '-' + t[0] + '" data-jour="' + j.jour + '" data-type="' + t[0] + '" maxlength="30000" placeholder="Écris ici…">' + esc(mesTravaux[j.jour + '-' + t[0]] || '') + '</textarea><div class="vj-save"></div>';
+              }).join('')
+              : '<p class="vj-etat" style="font-size:.85rem;color:#7a685e">🔒 S\'ouvre le ' + esc(quand(j.ouvre_apres)) + '</p>') + '</details>';
             var tousOuverts = avant.every(function (x) { return x.ouvert; });
             return '<details class="visio-jour' + (j.jour === cible ? ' aujourdhui' : '') + '"' + (j.jour === cible ? ' open' : '') + '><summary><div><h3>Jour ' + j.jour + ' · ' + esc(dateJour(j.date)) + '</h3><p class="vj-sous">' + esc(j.module || '') + ' · de ' + String(j.debut).slice(0, 2) + ' h à ' + String(j.fin).slice(0, 2) + ' h</p></div>' +
               (q.meilleur != null ? '<span class="vj-badge ok">Quiz ' + q.meilleur + '/' + q.total + '</span>' : (tousOuverts ? '<span class="vj-badge ok">Ouvert</span>' : '<span class="vj-badge">À venir</span>')) + '</summary>' +
               '<div class="vj-corps"><div class="vj-groupe"><h4>Avant la journée</h4>' + avant.map(ligneDoc).join('') + '</div>' +
-              '<div class="vj-groupe"><h4>Après la journée</h4>' + (apres ? ligneDoc(apres) : '') + quizLigne + '</div></div></details>';
+              '<div class="vj-groupe"><h4>Après la journée</h4>' + (apres ? ligneDoc(apres) : '') + quizLigne + '</div>' + notes + '</div></details>';
           }).join('') +
           '<p class="vj-sous" style="margin-top:10px">Ces documents sont personnels et portent ton nom : merci de ne pas les partager.</p>';
         bloc.querySelectorAll('[data-doc]').forEach(function (b) {
@@ -202,6 +215,18 @@
             var doc = null; d.jours.forEach(function (j) { j.docs.forEach(function (x) { if (x.fichier === b.dataset.doc) doc = x; }); });
             if (doc && doc.cle) ouvrirDoc(doc, ligne);
           };
+        });
+        bloc.querySelectorAll('.vj-notes textarea').forEach(function (ta) {
+          var etatEl = ta.nextElementSibling, minuterie = null, dernier = ta.value;
+          function sauver() {
+            if (ta.value === dernier) return; var v = ta.value; etatEl.textContent = 'Enregistrement…';
+            sb.rpc('visio_sauver_travail', { p_jour: +ta.dataset.jour, p_type: ta.dataset.type, p_texte: v }).then(function (x) {
+              if (x.error) { etatEl.textContent = '⚠ Non enregistré : réessaie dans un instant.'; return; }
+              dernier = v; etatEl.textContent = '✓ Enregistré';
+            });
+          }
+          ta.addEventListener('input', function () { clearTimeout(minuterie); etatEl.textContent = ''; minuterie = setTimeout(sauver, 1200); });
+          ta.addEventListener('blur', function () { clearTimeout(minuterie); sauver(); });
         });
         bloc.querySelectorAll('[data-quiz]').forEach(function (b) { b.onclick = function () { ouvrirQuiz(sb, +b.dataset.quiz, charger); }; });
       });
