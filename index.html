@@ -2065,8 +2065,8 @@
         <div class="choix-formations trois" role="tablist">
             <a href="#" class="choix-formation actif" id="onglet-doula" role="tab" aria-selected="true" onclick="montrerFormation('doula', event)">
                 <span class="cf-titre">Formation de base de doula · 450 h</span>
-                <span class="cf-info">Inscriptions en continu · ouverte à toutes</span>
-                <span class="cf-prix">1 950 $</span>
+                <span class="cf-info">À ton rythme ou en visio · ouverte à toutes</span>
+                <span class="cf-prix">dès 1 950 $</span>
             </a>
             <a href="#" class="choix-formation" id="onglet-4e" role="tab" aria-selected="false" onclick="montrerFormation('4e', event)">
                 <span class="cf-titre">Accompagnement de pointe du 4ᵉ trimestre</span>
@@ -2119,7 +2119,48 @@
         <div id="formation-doula" class="ancre-formation"></div>
 
         <div class="academie-page-layout panneau-formation" id="panneau-doula">
-            <div>
+            <style>
+.formules-doula{grid-column:1/-1;margin:0 0 8px}
+.formules-doula h3{font-family:'Playfair Display',serif;font-size:1.5rem;margin:0 0 14px;color:var(--text-dark)}
+.formules-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.formule{background:#fffbf8;border:2px solid var(--accent-terracotta);border-radius:18px;padding:20px 20px 18px;display:flex;flex-direction:column;text-align:left}
+.formule .f-titre{font-weight:700;font-size:1.05rem;margin:0 0 2px}
+.formule .f-sous{font-size:.85rem;color:#7a685e;margin:0 0 10px}
+.formule .f-prix{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--accent-terracotta);margin:0 0 4px;line-height:1.1}
+.formule .f-detail{font-size:.85rem;color:#555;margin:0 0 12px}
+.formule ul{margin:0 0 14px;padding-left:18px;font-size:.88rem;color:#444;line-height:1.55}
+.formule .btn-action{width:100%;justify-content:center;margin-top:auto}
+</style>
+<div class="formules-doula" id="formules-doula">
+  <h3>Deux façons de suivre la formation · 450 h</h3>
+  <div class="formules-grille">
+    <div class="formule">
+      <p class="f-titre">💻 À ton rythme</p>
+      <p class="f-sous">100 % en ligne · inscriptions en continu</p>
+      <p class="f-prix">1 950 $</p>
+      <p class="f-detail">1 paiement, 3 × 650 $ ou 6 × 325 $ aux 2 semaines</p>
+      <ul>
+        <li>Où et quand tu veux (12 à 18 mois suggérés, accès pendant 24 mois)</li>
+        <li>Un quiz par chapitre, un examen par module, puis l'examen final</li>
+        <li>Stage supervisé de 140 h et mentorat inclus</li>
+      </ul>
+      <button onclick="inscrireA('doula', event)" class="btn-action">S'inscrire à ton rythme</button>
+    </div>
+    <div class="formule">
+      <p class="f-titre">🎥 En visio, en direct</p>
+      <p class="f-sous">En groupe sur Zoom · dès le 19 décembre 2026</p>
+      <p class="f-prix">2 250 $</p>
+      <p class="f-detail">1 paiement, 3 × 750 $ ou 6 × 375 $ aux 2 semaines</p>
+      <ul>
+        <li>14 journées de 10 h à 16 h : 19-20 déc., 9-10 et 23-24 janv., 13-14 et 27-28 févr., 6-7 et 20-21 mars</li>
+        <li><strong>Jour 15, examen final : 27 mars 2027</strong></li>
+        <li>Même contenu, même certificat, stage supervisé de 140 h et mentorat inclus</li>
+      </ul>
+      <button onclick="inscrireDoula('1v', event)" class="btn-action">S'inscrire en visio</button>
+    </div>
+  </div>
+</div>
+<div>
                 <img src="doula.jpg" alt="Une doula soutient une maman enceinte appuyée sur un ballon" class="academie-img-discret">
                 <p class="doula-cohorte-ruban"><span class="point"></span> Inscriptions <strong>en continu</strong> · commence quand tu veux</p>
                 <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--text-dark);">
@@ -2305,14 +2346,13 @@
 
             <div class="price-box-sticky">
                 <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #7a685e;">Formation de base · 450 h</span>
-                <div class="price-tag">1 950 $</div>
-                <div class="doula-lancement">Inscriptions en continu</div>
-                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat.</div>
-                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Paiement en <strong>1 versement</strong> (1 950 $), <strong>3 versements</strong> (650 $) ou <strong>6 versements aux 2 semaines</strong> (325 $). Tu choisis dans le formulaire d'inscription.</div>
+                <div class="price-tag">dès 1 950 $</div>
+                <div class="doula-lancement">À ton rythme ou en visio</div>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;"><strong>À ton rythme :</strong> 1 950 $<br><strong>En visio, dès le 19 décembre :</strong> 2 250 $</div>
+                <div style="font-size: 0.85rem; color: #555; margin: 12px 0;">Tout inclus : manuels, ateliers, examens, mentorat, supervision du stage et certificat. Paiement en 1, 3 ou 6 versements.</div>
                 <div style="font-size: 0.85rem; color: var(--accent-terracotta); font-weight: 600; margin-bottom: 15px;">💡 Paiement sécurisé avec Stripe</div>
-                <button onclick="inscrireA('doula', event)" class="btn-action" style="width: 100%; justify-content: center;">S'inscrire en ligne</button>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Inscriptions en continu.</p>
-                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 8px;">Annulation possible selon les règles de la Loi sur la protection du consommateur du Québec (et droit de rétractation de 14 jours pour les résidentes de la France et de l'Union européenne).</p>
+                <button onclick="document.getElementById('formules-doula').scrollIntoView({behavior:'smooth',block:'start'})" class="btn-action" style="width: 100%; justify-content: center;">Choisir ma formule</button>
+                <p style="font-size: 0.78rem; color: #7a685e; margin-top: 14px;">Annulation possible selon les règles de la Loi sur la protection du consommateur du Québec (et droit de rétractation de 14 jours pour les résidentes de la France et de l'Union européenne).</p>
             </div>
         </div>
 
