@@ -15,8 +15,8 @@
   };
 
   var NOMS = {
-    fr: { doula: 'Doula de base', '4e-trimestre': '4ᵉ trimestre', marraine: 'Marraine', toutes: 'Toutes les formations' },
-    en: { doula: 'Foundational doula', '4e-trimestre': 'Fourth trimester', marraine: 'Peer supporter', toutes: 'All courses' }
+    fr: { doula: 'Doula de base', 'doula-visio': 'Doula · en visio', '4e-trimestre': '4ᵉ trimestre', marraine: 'Marraine', toutes: 'Toutes les formations' },
+    en: { doula: 'Foundational doula', 'doula-visio': 'Foundational doula · live online', '4e-trimestre': 'Fourth trimester', marraine: 'Peer supporter', toutes: 'All courses' }
   };
   function quand(d, en) {
     var t = new Date(d).toLocaleString(en ? 'en-CA' : 'fr-CA', { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' });
@@ -207,6 +207,7 @@
     return lignes.some(function (e) {
       var st = (e.statut || '').trim().toLowerCase();
       if (f === 'doula') return e.formation === 'doula' && st === 'doula_valide';
+      if (f === 'doula-visio') return e.formation === 'doula' && st === 'doula_valide' && /^doula-[136]v$/.test(e.option_paiement || '');
       if (f === '4e-trimestre') return st === 'valide';
       if (f === 'marraine') return !!e.acces_marraine;
       return st === 'valide' || st === 'doula_valide' || !!e.acces_marraine;
@@ -402,7 +403,7 @@
       A.sb.from('comptes_rendus').select('*'),
       A.sb.from('presences_ateliers').select('atelier_id,user_id,statut,camera_fermee'),
       A.sb.from('notes_atelier').select('atelier_id,user_id,note'),
-      A.sb.from('etudiantes').select('user_id,prenom,nom,courriel,formation,statut,acces_marraine,suspendu,created_at').order('created_at', { ascending: false }),
+      A.sb.from('etudiantes').select('user_id,prenom,nom,courriel,formation,statut,option_paiement,acces_marraine,suspendu,created_at').order('created_at', { ascending: false }),
       A.sb.from('formatrices').select('*').order('prenom'),
       A.sb.from('messages_formatrices').select('*').order('created_at'),
       A.sb.from('liste_atelier').select('atelier_id,user_id,inclus')

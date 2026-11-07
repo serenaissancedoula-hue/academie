@@ -246,7 +246,7 @@ var SB_URL = 'https://zeptirfcwstufcpgvkzx.supabase.co', SB_CLE = 'sb_publishabl
 var VAPID = 'BA1eSxrp55R_nk6-rHpCI0Pi6OjPh-0MIOmlG2XZOLEptXG0xFUS4eB9aKAl3qQelLJqfouEq3FXWkYf02YhKMc';
 var ICI = 'https://academiesere.ca/formatrice.html';
 var sb = window.supabase.createClient(SB_URL, SB_CLE, window.SereSecurite ? SereSecurite.options() : undefined);
-var NOMS = { doula: 'Doula de base', '4e-trimestre': '4ᵉ trimestre', marraine: 'Marraine d\'allaitement', toutes: 'Toutes les formations' };
+var NOMS = { doula: 'Doula de base', 'doula-visio': 'Doula · en visio', '4e-trimestre': '4ᵉ trimestre', marraine: 'Marraine d\'allaitement', toutes: 'Toutes les formations' };
 var S = { notesS: [], session: null, fiche: null, ateliers: [], cr: {}, atelier: null, eleves: [], pres: {}, notes: {}, chat: null, etudiantes: [], msgs: [], gardien: null, reglages: false, minuterie: null };
 
 function $(id) { return document.getElementById(id); }
@@ -343,7 +343,7 @@ function entrer(session, bienvenue) {
     if (!S.gardien && window.SereSecurite) S.gardien = SereSecurite.surveiller({ sb: sb, minutes: 15, apres: 'formatrice.html' });
     $('bonjour').textContent = 'Bonjour ' + S.fiche.prenom + ' 🌸';
     $('qui').textContent = 'Connectée : ' + S.fiche.prenom + ' ' + (S.fiche.nom || '') + ' · ' + (session.user.email || '');
-    $('a-formation').innerHTML = (S.fiche.formations || []).map(function (f) { return '<option value="' + esc(f) + '">' + esc(NOMS[f] || f) + '</option>'; }).join('');
+    $('a-formation').innerHTML = (S.fiche.formations || []).reduce(function (l, f) { return f === 'doula' ? l.concat(['doula', 'doula-visio']) : l.concat([f]); }, []).map(function (f) { return '<option value="' + esc(f) + '">' + esc(NOMS[f] || f) + '</option>'; }).join('');
     $('nav').hidden = false;
     if (!S.reglages && window.Reglages) { S.reglages = true; Reglages.monter($('rg'), { sb: sb, vapid: VAPID, admin: false, surPush: function () { chargerMessages(); } }); }
     chargerMessages();
