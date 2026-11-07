@@ -2842,7 +2842,7 @@
                 </div>
                 <input type="email" id="lien-courriel" placeholder="Courriel de l'étudiante" required>
                 <select id="lien-formation" style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <option value="doula">Formation de base de doula · 450 h · inscriptions en continu (1 950 $)</option>
+                    <option value="doula">Formation de base de doula · 450 h · à ton rythme (1 950 $) ou en visio (2 250 $)</option>
                     <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                     <option value="marraine">Marraine d'allaitement</option>
                 </select>
@@ -2874,7 +2874,7 @@
                 <div style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
                     <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">Formation choisie :</label>
                     <select id="choix-formation" onchange="ajusterFormulaireInscription()" required style="padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;">
-                        <option value="doula">Formation de base de doula · 450 h · inscriptions en continu (1 950 $)</option>
+                        <option value="doula">Formation de base de doula · 450 h · à ton rythme (1 950 $) ou en visio (2 250 $)</option>
                         <option value="4e-trimestre">Accompagnement de pointe du 4ᵉ trimestre</option>
                         <option value="marraine">Marraine d'allaitement — 175 $</option>
                         <option value="combo">Combo : 4ᵉ trimestre + marraine d'allaitement — 725 $</option>
@@ -3838,7 +3838,8 @@
             window.__remplacer = true;
             const a = (window.location.hash || '').toLowerCase();
             if (a === '#doula' || a === '#4e') { allerFormation(a.slice(1), null); window.__remplacer = false; return; }
-            if (a === '#inscription-doula') { inscrireA('doula', null); window.__remplacer = false; return; }   // lien direct vers l'inscription à la formation de doula
+            if (a === '#inscription-doula') { inscrireA('doula', null); window.__remplacer = false; return; }
+            if (a === '#inscription-doula-visio') { inscrireDoula('1v', null); window.__remplacer = false; return; }   // lien direct : formule en visio   // lien direct vers l'inscription à la formation de doula
             if (a === '#marraine') { allerA(null, 'formation-marraine'); window.__remplacer = false; return; }
             if (PAGES_PAR_ADRESSE[a]) switchPage(PAGES_PAR_ADRESSE[a], null, null);
             window.__remplacer = false;
@@ -3893,7 +3894,8 @@
             const avant = select.value;
             let choixPaiement;
             if (doula) {
-                choixPaiement = [['1', 'Paiement complet — 1 950 $'], ['3', '3 versements — 650 $ chacun'], ['6', '6 versements aux 2 semaines — 325 $ chacun']];
+                choixPaiement = [['1', 'À ton rythme · paiement complet — 1 950 $'], ['3', 'À ton rythme · 3 versements — 650 $ chacun'], ['6', 'À ton rythme · 6 versements aux 2 semaines — 325 $ chacun'],
+                    ['1v', 'En visio dès le 19 décembre · paiement complet — 2 250 $'], ['3v', 'En visio dès le 19 décembre · 3 versements — 750 $ chacun'], ['6v', 'En visio dès le 19 décembre · 6 versements aux 2 semaines — 375 $ chacun']];
             } else if (combo) {
                 choixPaiement = [['1', 'Paiement complet — 725 $'], ['2', '2 versements — 362,50 $ chacun'], ['4', '4 versements aux 2 semaines — 181,25 $ chacun']];
             } else {
@@ -4581,7 +4583,7 @@
             try {
                 emailjs.send("service_82vfhfg", "template_gy588ot", {
                     prenom: d.prenom, nom: d.nom, courriel: d.courriel, telephone: d.telephone, adresse: d.adresse,
-                    option_paiement: (d.formation === 'doula' ? "Formation de doula 450 h · " + ({ '1': '1 950 $ (paiement complet)', '3': '3 × 650 $', '6': '6 × 325 $' }[String(d.option_paiement).split('-')[1]] || '') : d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
+                    option_paiement: (d.formation === 'doula' ? "Formation de doula 450 h · " + ({ '1': '1 950 $ (paiement complet)', '3': '3 × 650 $', '6': '6 × 325 $', '1v': 'EN VISIO dès le 19 déc. · 2 250 $ (paiement complet)', '3v': 'EN VISIO dès le 19 déc. · 3 × 750 $', '6v': 'EN VISIO dès le 19 déc. · 6 × 375 $' }[String(d.option_paiement).split('-')[1]] || '') : d.formation === 'marraine' ? "Formation marraine d'allaitement (175 $)" : d.option_paiement.replace('-offre', ' (offre de lancement 250 $ + marraine d\'allaitement)'))
                 }, "HNvKdORRpRy_vT_FI");
             } catch (e) { console.log('Erreur EmailJS', e); }
             return true;

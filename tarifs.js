@@ -15,7 +15,11 @@
       options: {
         '1': { prix: '1 950 $', detail: 'paiement complet', en: { prix: '$1,950', detail: 'full payment' }, lien: 'https://buy.stripe.com/fZu5kw0aY2oMgAYbzIffy0J' },
         '3': { prix: '3 × 650 $', detail: '3 versements', en: { prix: '3 × $650', detail: '3 instalments' }, lien: 'https://buy.stripe.com/3cIfZa6zme7u84s5bkffy0K' },
-        '6': { prix: '6 × 325 $', detail: '6 versements aux 2 semaines', en: { prix: '6 × $325', detail: '6 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/fZu5kw7DqgfC1G45bkffy0L' }
+        '6': { prix: '6 × 325 $', detail: '6 versements aux 2 semaines', en: { prix: '6 × $325', detail: '6 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/fZu5kw7DqgfC1G45bkffy0L' },
+        // Formule en visio (14 jours en direct, dès le 19 décembre 2026) : 2 250 $
+        '1v': { prix: '2 250 $', detail: 'en visio · paiement complet', en: { prix: '$2,250', detail: 'live online · full payment' }, lien: 'https://buy.stripe.com/4gM7sEbTG9Re1G4eLUffy0P' },
+        '3v': { prix: '3 × 750 $', detail: 'en visio · 3 versements', en: { prix: '3 × $750', detail: 'live online · 3 instalments' }, lien: 'https://buy.stripe.com/fZu7sEg9W7J61G47jsffy0Q' },
+        '6v': { prix: '6 × 375 $', detail: 'en visio · 6 versements aux 2 semaines', en: { prix: '6 × $375', detail: 'live online · 6 instalments every 2 weeks' }, lien: 'https://buy.stripe.com/eVq28k4re0gEgAY9rAffy0R' }
       }
     },
     '4e-trimestre': {
