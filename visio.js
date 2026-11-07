@@ -71,7 +71,7 @@
     });
   }
   function dechiffrer(fichier, cle) {
-    return fetch('/Formation/visio/' + fichier).then(function (r) { if (!r.ok) throw new Error('fichier'); return r.arrayBuffer(); }).then(function (buf) {
+    return fetch(fichier.charAt(0) === '/' ? fichier : '/Formation/visio/' + fichier).then(function (r) { if (!r.ok) throw new Error('fichier'); return r.arrayBuffer(); }).then(function (buf) {
       var o = new Uint8Array(buf);
       return crypto.subtle.importKey('raw', b64(cle), 'AES-GCM', false, ['decrypt']).then(function (k) {
         return crypto.subtle.decrypt({ name: 'AES-GCM', iv: o.slice(0, 12) }, k, o.slice(12));
@@ -122,13 +122,17 @@
 
   /* ---------- quiz corrigé par le serveur ---------- */
   function melanger(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function ouvrirQuiz(sb, jour, rafraichir) {
+  function ouvrirQuiz(sb, jour, rafraichir, ligne) {
     var v = fenetre('Quiz · Jour ' + jour, '<p class="vj-sous">Chargement…</p>');
     sb.rpc('visio_quiz', { p_jour: jour }).then(function (r) {
       var c = v.querySelector('.vj-contenu');
       if (r.error || !r.data || !r.data.length) { c.innerHTML = '<p>Le quiz n\'est pas disponible pour le moment.</p>'; return; }
       var qs = r.data;
-      c.innerHTML = '<div class="vj-avis" style="font-size:.92rem"><b>ℹ️ Ce quiz ne compte pas pour ton examen final.</b><br>C\'est seulement un aide-mémoire pour t\'aider à réviser et permettre à tes formatrices de t\'offrir un bon mentorat. Réponds à toutes les questions : l\'application les corrige. Tu peux le refaire autant de fois que tu veux.</div><form id="vj-form">' +
+      var auj = new Date().toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' });
+      var ident = (ligne || 'Étudiante Sérénaissance') + ' · ' + auj;
+      var wm = encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="420" height="260"><text x="210" y="130" text-anchor="middle" transform="rotate(-28 210 130)" font-family="Arial" font-size="15" fill="#7a4a3a" fill-opacity="0.13">' + esc(ident) + '</text></svg>');
+      c.style.backgroundImage = 'url("data:image/svg+xml,' + wm + '")';
+      c.innerHTML = '<div class="vj-ident" style="font-size:.85rem;font-weight:600;color:#7a4a3a;margin-bottom:6px">👤 ' + esc(ligne || '') + ' · ' + esc(auj) + '</div><div class="vj-avis" style="font-size:.92rem"><b>ℹ️ Ce quiz ne compte pas pour ton examen final.</b><br>C\'est seulement un aide-mémoire pour t\'aider à réviser et permettre à tes formatrices de t\'offrir un bon mentorat. Réponds à toutes les questions : l\'application les corrige. Tu peux le refaire autant de fois que tu veux.</div><form id="vj-form">' +
         qs.map(function (q, qi) {
           var ordre = melanger(q.choix.map(function (_, i) { return i; }));
           return '<div class="vj-q" data-id="' + q.id + '"><p>' + (qi + 1) + '. ' + esc(q.question) + '</p>' +
@@ -154,7 +158,7 @@
           var note = document.createElement('div');
           note.innerHTML = '<p class="vj-note">' + d.score + ' / ' + d.total + '</p><button type="button" class="vj-btn">Recommencer</button>';
           c.insertBefore(note, c.firstChild); c.scrollTop = 0;
-          note.querySelector('button').onclick = function () { fermer(); ouvrirQuiz(sb, jour, rafraichir); };
+          note.querySelector('button').onclick = function () { fermer(); ouvrirQuiz(sb, jour, rafraichir, ligne); };
           if (rafraichir) rafraichir();
         });
       };
@@ -187,6 +191,7 @@
         var maintenant = Date.now(), cible = null;
         d.jours.forEach(function (j) { if (cible === null && new Date(j.ouvre_apres).getTime() + 86400000 > maintenant) cible = j.jour; });
         bloc.innerHTML = '<h2>🎥 Ma formation en visio</h2><p class="sous" style="margin-top:0">' + esc(d.cohorte) + '. Chaque journée : le cahier et le texte à lire s\'ouvrent 24 h avant le cours, puis le cahier de révision et le quiz à la fin de la journée.</p>' +
+          '<p style="margin:6px 0 10px"><button type="button" class="vj-btn" id="vj-plan">📄 Plan de cours (syllabus)</button></p>' +
           d.jours.map(function (j) {
             var avant = j.docs.filter(function (x) { return x.type !== 'apres'; }), apres = j.docs.filter(function (x) { return x.type === 'apres'; })[0];
             function ligneDoc(x) {
@@ -228,7 +233,14 @@
           ta.addEventListener('input', function () { clearTimeout(minuterie); etatEl.textContent = ''; minuterie = setTimeout(sauver, 1200); });
           ta.addEventListener('blur', function () { clearTimeout(minuterie); sauver(); });
         });
-        bloc.querySelectorAll('[data-quiz]').forEach(function (b) { b.onclick = function () { ouvrirQuiz(sb, +b.dataset.quiz, charger); }; });
+        var bp = $('vj-plan');
+        if (bp) bp.onclick = function () {
+          sb.from('cles_formation').select('cle').eq('formation', 'doula').maybeSingle().then(function (k) {
+            if (!k || !k.data) { alert('Le plan de cours n\'est pas disponible pour le moment.'); return; }
+            ouvrirDoc({ titre: 'Plan de cours · Formation de base de doula', fichier: '/Formation/doula/documents/Plan-de-cours-formation-doula-450h.pdf.enc', cle: k.data.cle }, ligne);
+          });
+        };
+        bloc.querySelectorAll('[data-quiz]').forEach(function (b) { b.onclick = function () { ouvrirQuiz(sb, +b.dataset.quiz, charger, ligne); }; });
       });
     }
     charger();
