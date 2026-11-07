@@ -128,7 +128,7 @@
       var c = v.querySelector('.vj-contenu');
       if (r.error || !r.data || !r.data.length) { c.innerHTML = '<p>Le quiz n\'est pas disponible pour le moment.</p>'; return; }
       var qs = r.data;
-      c.innerHTML = '<p class="vj-sous">Un petit aide-mémoire pour réviser : réponds à toutes les questions, puis l\'application les corrige. Tu peux le refaire autant de fois que tu veux. Ces résultats <b>ne comptent pas dans ton examen final</b> : ils servent à t\'aider à apprendre et à offrir un bon mentorat.</p><form id="vj-form">' +
+      c.innerHTML = '<div class="vj-avis" style="font-size:.92rem"><b>ℹ️ Ce quiz ne compte pas pour ton examen final.</b><br>C\'est seulement un aide-mémoire pour t\'aider à réviser et permettre à tes formatrices de t\'offrir un bon mentorat. Réponds à toutes les questions : l\'application les corrige. Tu peux le refaire autant de fois que tu veux.</div><form id="vj-form">' +
         qs.map(function (q, qi) {
           var ordre = melanger(q.choix.map(function (_, i) { return i; }));
           return '<div class="vj-q" data-id="' + q.id + '"><p>' + (qi + 1) + '. ' + esc(q.question) + '</p>' +
