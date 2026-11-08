@@ -165,6 +165,100 @@
     });
   }
 
+
+  /* ---------- examen final du jour 15 : ouverture et fermeture décidées par le serveur ---------- */
+  var minuterieExamen = null;
+  function ouvrirExamen(sb, partie, titre, rafraichir, ligne) {
+    var v = fenetre(titre, '<p class="vj-sous">Chargement…</p>');
+    sb.rpc('examen_ouvrir', { p_partie: partie }).then(function (r) {
+      var c = v.querySelector('.vj-contenu');
+      if (r.error || !r.data) {
+        var m = String((r.error && r.error.message) || '');
+        c.innerHTML = '<p>' + (/ferme/.test(m) ? 'Cette partie est maintenant fermée.' : /pas-ouvert/.test(m) ? 'Cette partie n\'est pas encore ouverte.' : 'Impossible d\'ouvrir cette partie pour le moment. Réessaie dans un instant.') + '</p>';
+        return;
+      }
+      var d = r.data;
+      if (d.deja) { c.innerHTML = '<p><b>✓ Cette partie est déjà remise.</b> Tu ne peux pas la modifier.</p>'; return; }
+      var fin = new Date(d.ferme).getTime(), rep = d.reponses || {}, remis = false;
+      var auj = new Date().toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' });
+      var wm = encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="420" height="260"><text x="210" y="130" text-anchor="middle" transform="rotate(-28 210 130)" font-family="Arial" font-size="15" fill="#7a4a3a" fill-opacity="0.13">' + esc((ligne || 'Étudiante Sérénaissance') + ' · ' + auj) + '</text></svg>');
+      c.style.backgroundImage = 'url("data:image/svg+xml,' + wm + '")';
+      var cont = d.contenu, html = '';
+      if (partie === 'A') {
+        html = cont.map(function (q, qi) {
+          var ordre = melanger(q.choix.map(function (_, i) { return i; }));
+          return '<div class="vj-q" data-id="' + q.id + '"><p>' + (qi + 1) + '. ' + esc(q.question) + '</p>' +
+            ordre.map(function (i) { return '<label><input type="radio" name="q' + q.id + '" value="' + i + '"' + (rep[q.id] === i ? ' checked' : '') + '> ' + esc(q.choix[i]) + '</label>'; }).join('') + '</div>';
+        }).join('');
+      } else {
+        html = (cont.consigne ? '<p><b>' + esc(cont.consigne) + '</b></p>' : '') +
+          (cont.cas || []).map(function (p, i) { return '<p>' + (i === 0 && cont.titre ? '<b>' + esc(cont.titre) + '</b><br>' : '') + esc(p) + '</p>'; }).join('') +
+          cont.items.map(function (it) {
+            return '<div class="vj-notes"><label for="ex-' + it.id + '">' + (partie === 'B' ? 'Situation ' : 'Question ') + it.id + (it.pts ? ' (' + it.pts + ' points)' : '') + '</label><p style="margin:0 0 6px">' + esc(it.t) + '</p><textarea id="ex-' + it.id + '" data-id="' + it.id + '" maxlength="12000" placeholder="Écris ta réponse ici…">' + esc(rep[it.id] || '') + '</textarea></div>';
+          }).join('');
+      }
+      c.innerHTML = '<div class="vj-ident" style="font-size:.85rem;font-weight:600;color:#7a4a3a;margin-bottom:6px">👤 ' + esc(ligne || '') + ' · ' + esc(auj) + '</div>' +
+        '<div class="vj-avis"><b>⏱ Temps restant : <span id="ex-temps"></span></b><br>Tes réponses s\'enregistrent automatiquement. À la fin du temps, la partie est remise automatiquement. Pas de notes, pas d\'Internet, caméra allumée.</div>' +
+        '<div id="ex-corps">' + html + '</div><p id="ex-etat" class="vj-sous"></p><button type="button" class="vj-btn" id="ex-remettre">Remettre cette partie</button>';
+      var etatEl = $('ex-etat'), minuterie = null;
+      function lire() {
+        var o = {};
+        if (partie === 'A') c.querySelectorAll('.vj-q').forEach(function (b) { var x = b.querySelector('input:checked'); if (x) o[b.dataset.id] = +x.value; });
+        else c.querySelectorAll('textarea').forEach(function (t) { o[t.dataset.id] = t.value; });
+        return o;
+      }
+      function sauver() { if (remis) return; sb.rpc('examen_sauver', { p_partie: partie, p_reponses: lire() }).then(function (x) { etatEl.textContent = x.error ? '⚠ Non enregistré : vérifie ta connexion.' : '✓ Enregistré'; }); }
+      c.addEventListener('input', function () { clearTimeout(minuterie); etatEl.textContent = ''; minuterie = setTimeout(sauver, 1500); });
+      c.addEventListener('change', function () { clearTimeout(minuterie); minuterie = setTimeout(sauver, 600); });
+      function remettre(auto) {
+        if (remis) return;
+        if (!auto && !confirm('Remettre cette partie ? Tu ne pourras plus la modifier.')) return;
+        remis = true; clearInterval(chrono);
+        sb.rpc('examen_soumettre', { p_partie: partie, p_reponses: lire() }).then(function (x) {
+          if (x.error || !x.data || !x.data.ok) { remis = false; etatEl.textContent = '⚠ La remise a échoué. Réessaie tout de suite.'; return; }
+          c.innerHTML = '<p class="vj-note">✓ Partie remise</p><p>Merci ! Tes résultats te seront communiqués par Sabrina après la correction.</p>';
+          if (rafraichir) rafraichir();
+        });
+      }
+      $('ex-remettre').onclick = function () { remettre(false); };
+      var chrono = setInterval(function () {
+        var reste = Math.max(0, fin - Date.now()), mm = Math.floor(reste / 60000), ss = Math.floor(reste / 1000) % 60;
+        var el = $('ex-temps'); if (el) el.textContent = mm + ' min ' + (ss < 10 ? '0' : '') + ss + ' s';
+        if (reste <= 0) remettre(true);
+      }, 1000);
+      var fermerOrig = v.querySelector('.vj-x').onclick;
+      v.querySelector('.vj-x').onclick = function () { if (!remis) sauver(); clearInterval(chrono); fermerOrig(); };
+    });
+  }
+  function blocExamen(sb, conteneur, ligne) {
+    function dessiner() {
+      sb.rpc('examen_etat').then(function (r) {
+        var d = r && r.data;
+        if (!d || !d.acces) { conteneur.innerHTML = ''; return; }
+        var h = '<details class="visio-jour"' + (d.ouvert ? ' open' : '') + '><summary><div><h3>📝 Examen final · Jour 15 · ' + esc(dateJour(d.date)) + '</h3><p class="vj-sous">En visio, de 10 h à 16 h · 100 points · réussite à 80 %</p></div><span class="vj-badge' + (d.ouvert ? ' ok' : '') + '">' + (d.ouvert ? 'Ouvert' : 'À venir') + '</span></summary><div class="vj-corps">';
+        if (!d.ouvert) {
+          h += '<div class="vj-ligne"><div><div class="vj-nom">Examen final</div><div class="vj-etat">🔒 S\'ouvre le ' + esc(quand(d.ouvre)) + '</div></div><button type="button" class="vj-btn" disabled>Bientôt</button></div>';
+        } else {
+          h += '<div class="vj-avis"><b>Consignes :</b> caméra allumée, micro coupé, seule dans un endroit calme. Aucune note, aucun site Internet. Une réponse qui donne un conseil médical, un diagnostic ou un geste hors du rôle de la doula perd tous les points de la question. Chaque partie s\'ouvre à son heure et se ferme automatiquement.</div>';
+          d.parties.forEach(function (p) {
+            var etat, bouton;
+            if (p.fait) { etat = '✓ Remise'; bouton = '<button type="button" class="vj-btn" disabled>Remise</button>'; }
+            else if (p.statut === 'avant') { etat = '🔒 S\'ouvre à ' + esc(quand(p.ouvre)); bouton = '<button type="button" class="vj-btn" disabled>Bientôt</button>'; }
+            else if (p.statut === 'ferme') { etat = 'Fermée'; bouton = '<button type="button" class="vj-btn" disabled>Fermée</button>'; }
+            else { etat = 'Ouverte jusqu\'à ' + esc(quand(p.ferme)); bouton = '<button type="button" class="vj-btn" data-ex="' + p.partie + '" data-t="' + esc(p.titre) + '">Ouvrir</button>'; }
+            h += '<div class="vj-ligne"><div><div class="vj-nom">' + esc(p.titre) + ' (' + p.duree + ' min)</div><div class="vj-etat">' + etat + '</div></div>' + bouton + '</div>';
+          });
+        }
+        h += '</div></details>';
+        conteneur.innerHTML = h;
+        conteneur.querySelectorAll('[data-ex]').forEach(function (b) { b.onclick = function () { ouvrirExamen(sb, b.dataset.ex, b.dataset.t, dessiner, ligne); }; });
+      });
+    }
+    dessiner();
+    clearInterval(minuterieExamen);
+    minuterieExamen = setInterval(function () { if (!document.querySelector('.vj-voile')) dessiner(); }, 30000);
+  }
+
   /* ---------- section « Ma formation en visio » ---------- */
   function etudiante(o) {
     css();
@@ -214,7 +308,8 @@
               '<div class="vj-corps"><div class="vj-groupe"><h4>Avant la journée</h4>' + avant.map(ligneDoc).join('') + '</div>' +
               '<div class="vj-groupe"><h4>Après la journée</h4>' + (apres ? ligneDoc(apres) : '') + quizLigne + '</div>' + notes + '</div></details>';
           }).join('') +
-          '<p class="vj-sous" style="margin-top:10px">Ces documents sont personnels et portent ton nom : merci de ne pas les partager.</p>';
+          '<div id="vj-examen" style="margin-top:14px"></div><p class="vj-sous" style="margin-top:10px">Ces documents sont personnels et portent ton nom : merci de ne pas les partager.</p>';
+        blocExamen(sb, $('vj-examen'), ligne);
         bloc.querySelectorAll('[data-doc]').forEach(function (b) {
           b.onclick = function () {
             var doc = null; d.jours.forEach(function (j) { j.docs.forEach(function (x) { if (x.fichier === b.dataset.doc) doc = x; }); });
