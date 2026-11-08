@@ -198,7 +198,7 @@
           }).join('');
       }
       c.innerHTML = '<div class="vj-ident" style="font-size:.85rem;font-weight:600;color:#7a4a3a;margin-bottom:6px">👤 ' + esc(ligne || '') + ' · ' + esc(auj) + '</div>' +
-        '<div class="vj-avis"><b>⏱ Temps restant : <span id="ex-temps"></span></b><br>Tes réponses s\'enregistrent automatiquement. À la fin du temps, la partie est remise automatiquement. Pas de notes, pas d\'Internet, caméra allumée.</div>' +
+        '<div class="vj-avis"><b>⏱ Temps restant : <span id="ex-temps"></span></b><br>Tes réponses s\'enregistrent automatiquement. À 14 h, la partie est remise automatiquement. Pas de notes, pas d\'Internet, caméra allumée.</div>' +
         '<div id="ex-corps">' + html + '</div><p id="ex-etat" class="vj-sous"></p><button type="button" class="vj-btn" id="ex-remettre">Remettre cette partie</button>';
       var etatEl = $('ex-etat'), minuterie = null;
       function lire() {
@@ -235,11 +235,11 @@
       sb.rpc('examen_etat').then(function (r) {
         var d = r && r.data;
         if (!d || !d.acces) { conteneur.innerHTML = ''; return; }
-        var h = '<details class="visio-jour"' + (d.ouvert ? ' open' : '') + '><summary><div><h3>📝 Examen final · Jour 15 · ' + esc(dateJour(d.date)) + '</h3><p class="vj-sous">En visio, de 10 h à 16 h · 100 points · réussite à 80 %</p></div><span class="vj-badge' + (d.ouvert ? ' ok' : '') + '">' + (d.ouvert ? 'Ouvert' : 'À venir') + '</span></summary><div class="vj-corps">';
+        var h = '<details class="visio-jour"' + (d.ouvert ? ' open' : '') + '><summary><div><h3>📝 Examen final · Jour 15 · ' + esc(dateJour(d.date)) + '</h3><p class="vj-sous">Ouvert de 10 h à 14 h · 100 points · réussite à 80 %</p></div><span class="vj-badge' + (d.ouvert ? ' ok' : '') + '">' + (d.ouvert ? 'Ouvert' : 'À venir') + '</span></summary><div class="vj-corps">';
         if (!d.ouvert) {
           h += '<div class="vj-ligne"><div><div class="vj-nom">Examen final</div><div class="vj-etat">🔒 S\'ouvre le ' + esc(quand(d.ouvre)) + '</div></div><button type="button" class="vj-btn" disabled>Bientôt</button></div>';
         } else {
-          h += '<div class="vj-avis"><b>Consignes :</b> caméra allumée, micro coupé, seule dans un endroit calme. Aucune note, aucun site Internet. Une réponse qui donne un conseil médical, un diagnostic ou un geste hors du rôle de la doula perd tous les points de la question. Chaque partie s\'ouvre à son heure et se ferme automatiquement.</div>';
+          h += '<div class="vj-avis"><b>Consignes :</b> caméra allumée, micro coupé, seule dans un endroit calme. Aucune note, aucun site Internet. Une réponse qui donne un conseil médical, un diagnostic ou un geste hors du rôle de la doula perd tous les points de la question. Tout l\'examen est ouvert de 10 h à 14 h : fais les parties dans l\'ordre que tu veux. À 14 h, ce qui n\'est pas remis l\'est automatiquement. Prends tes pauses et ton dîner quand tu veux : le temps ne s\'arrête pas.</div>';
           d.parties.forEach(function (p) {
             var etat, bouton;
             if (p.fait) { etat = '✓ Remise'; bouton = '<button type="button" class="vj-btn" disabled>Remise</button>'; }
