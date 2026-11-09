@@ -25,6 +25,7 @@
       '<h4 style="margin:16px 0 6px">Résultats des quiz</h4><div id="vv-resultats"></div>' +
       '<h4 style="margin:16px 0 6px">Notes d\'étude (études de cas et journal)</h4><p style="font-size:.78rem;color:var(--doux);margin-bottom:6px">Elles ne comptent pas dans l\'examen final : elles servent au mentorat. Le journal reste confidentiel (on voit seulement qu\'il est fait).</p><div id="vv-travaux"></div>';
     ancre.insertAdjacentElement('afterend', c);
+    if (window.SereRepliable) SereRepliable.appliquer('#carte-visio-admin');
     var h = ''; for (var i = 1; i <= 15; i++) h += '<label style="font-size:.78rem">' + (i === 15 ? 'Examen (jour 15)' : 'Jour ' + i) + '<input type="date" data-j="' + i + '" style="width:100%"></label>';
     $('vv-dates-nouvelle').innerHTML = h;
     $('vv-nouvelle').addEventListener('submit', function (e) {
