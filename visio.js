@@ -23,6 +23,10 @@
     if (cssFait) return; cssFait = true;
     var s = document.createElement('style');
     s.textContent = [
+      '#bloc-visio>h2{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;user-select:none}',
+      '#bloc-visio>h2::after{content:"▾";font-size:1rem;color:#a85743;transition:transform .2s;flex-shrink:0}',
+      '#bloc-visio.vj-ferme>h2::after{transform:rotate(-90deg)}',
+      '#bloc-visio.vj-ferme>:not(h2){display:none}',
       '.visio-jour{border:1px solid #e6d9cf;border-radius:14px;background:#fff;margin:0 0 10px;overflow:hidden}',
       '.visio-jour>summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}',
       '.visio-jour>summary::-webkit-details-marker{display:none}',
@@ -267,12 +271,26 @@
     var ancre = $('bloc-ateliers');
     var bloc = $('bloc-visio');
     if (!bloc) { bloc = document.createElement('div'); bloc.id = 'bloc-visio'; bloc.hidden = true; ancre.parentNode.insertBefore(bloc, ancre); }
+    if (!bloc._repli) {
+      bloc._repli = true;
+      var fermeInit = true; try { fermeInit = sessionStorage.getItem('sere-visio-ouvert') !== '1'; } catch (e) {}
+      bloc.classList.toggle('vj-ferme', fermeInit);
+      var bascule = function (ev) {
+        var h = ev.target.closest && ev.target.closest('#bloc-visio>h2'); if (!h) return;
+        if (ev.type === 'keydown') { if (ev.key !== 'Enter' && ev.key !== ' ') return; ev.preventDefault(); }
+        var f = bloc.classList.toggle('vj-ferme');
+        h.setAttribute('aria-expanded', String(!f));
+        try { sessionStorage.setItem('sere-visio-ouvert', f ? '0' : '1'); } catch (e) {}
+      };
+      bloc.addEventListener('click', bascule); bloc.addEventListener('keydown', bascule);
+    }
     function charger() {
       Promise.all([sb.rpc('visio_mon_espace'), sb.rpc('visio_mes_travaux')]).then(function (rr) {
         var r = rr[0], mesTravaux = (rr[1] && rr[1].data) || {};
         var d = r && r.data;
         if (!d || d.acces === false && d.raison !== 'sans-cohorte' && d.raison !== 'termine') { bloc.hidden = true; return; }
         bloc.hidden = false;
+        setTimeout(function () { var h = bloc.querySelector(':scope>h2'); if (h) { h.setAttribute('role', 'button'); h.setAttribute('tabindex', '0'); h.setAttribute('aria-expanded', String(!bloc.classList.contains('vj-ferme'))); } }, 0);
         if (d.acces === false) {
           bloc.innerHTML = '<h2>🎥 Ma formation en visio</h2><div class="message info">' + (d.raison === 'termine'
             ? 'Ton accès aux cahiers et aux quiz de la formation en visio est terminé. Écris à <a href="mailto:sc@academiesere.ca">sc@academiesere.ca</a> si tu en as encore besoin.'
